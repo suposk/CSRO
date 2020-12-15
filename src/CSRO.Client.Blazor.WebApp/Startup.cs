@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MudBlazor;
+using MudBlazor.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,6 +30,11 @@ namespace CSRO.Client.Blazor.WebApp
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
+
+            services.AddMudBlazorDialog();
+            services.AddMudBlazorSnackbar();
+            services.AddMudBlazorResizeListener();
+
             services.AddSingleton<WeatherForecastService>();
         }
 
