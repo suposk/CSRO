@@ -5,8 +5,10 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.Azure.Cosmos.Fluent;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.Services.AppAuthentication;
+using Microsoft.Extensions.Caching.Cosmos;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -35,13 +37,13 @@ namespace CSRO.Client.Blazor.WebApp
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddCosmosCache((CosmosCacheOptions cacheOptions) =>
-            //{
-            //    cacheOptions.ContainerName = Configuration["CosmosCache:ContainerName"];
-            //    cacheOptions.DatabaseName = Configuration["CosmosCache:DatabaseName"];
-            //    cacheOptions.ClientBuilder = new CosmosClientBuilder(Configuration["CosmosCache:ConnectionString"]);
-            //    cacheOptions.CreateIfNotExists = true;
-            //});                       
+            services.AddCosmosCache((CosmosCacheOptions cacheOptions) =>
+            {
+                cacheOptions.ContainerName = Configuration["CosmosCache:ContainerName"];
+                cacheOptions.DatabaseName = Configuration["CosmosCache:DatabaseName"];
+                cacheOptions.ClientBuilder = new CosmosClientBuilder(Configuration["CosmosCache:ConnectionString"]);
+                cacheOptions.CreateIfNotExists = true;
+            });
 
             bool UseKeyVault = Configuration.GetValue<bool>("UseKeyVault");
             var VaultName = Configuration.GetValue<string>("VaultName");
@@ -73,8 +75,8 @@ namespace CSRO.Client.Blazor.WebApp
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
                 .EnableTokenAcquisitionToCallDownstreamApi()
-                .AddInMemoryTokenCaches()
-                ;
+                        //.AddInMemoryTokenCaches();
+                        .AddDistributedTokenCaches();
 
             services.Configure<MicrosoftIdentityOptions>(options =>
             {

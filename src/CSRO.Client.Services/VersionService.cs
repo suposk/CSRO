@@ -12,8 +12,8 @@ namespace CSRO.Client.Services
 {
     public class VersionService : IVersionService
     {
-        //const string apiPart = "https://localhost:6001/api/version/";
-        const string apiPart = "api/version/";
+        //const string _apiPart = "https://localhost:6001/api/version/";
+        const string _apiPart = "api/version/";
         const string scope = "api://ee2f0320-29c3-432a-bf84-a5d4277ce052/user_impersonation";
         JsonSerializerOptions _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
@@ -38,7 +38,7 @@ namespace CSRO.Client.Services
                 var apiToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new string[] { scope });
 
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
-                var url = $"{apiPart}{version}";
+                var url = $"{_apiPart}{version}";
                 var apiData = await _httpClient.GetAsync(url).ConfigureAwait(false);
 
                 if (apiData.IsSuccessStatusCode)
@@ -66,7 +66,7 @@ namespace CSRO.Client.Services
                 var apiToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new string[] { scope });
 
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
-                var url = $"{apiPart}";
+                var url = $"{_apiPart}";
                 var apiData = await _httpClient.GetAsync(url).ConfigureAwait(false);
 
                 if (apiData.IsSuccessStatusCode)
@@ -95,7 +95,7 @@ namespace CSRO.Client.Services
                 var apiToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new string[] { scope });
 
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
-                var url = $"{apiPart}";
+                var url = $"{_apiPart}";
                 var httpcontent = new StringContent(JsonSerializer.Serialize(add, _options), Encoding.UTF8, "application/json");
                 var apiData = await _httpClient.PostAsync(url, httpcontent).ConfigureAwait(false);
 
@@ -124,7 +124,7 @@ namespace CSRO.Client.Services
                 var apiToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new string[] { scope });
 
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
-                var url = $"{apiPart}{id}";
+                var url = $"{_apiPart}{id}";
                 var apiData = await _httpClient.DeleteAsync(url).ConfigureAwait(false);
 
                 if (apiData.IsSuccessStatusCode)

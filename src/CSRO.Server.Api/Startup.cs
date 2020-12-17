@@ -7,7 +7,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Cosmos.Fluent;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Cosmos;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -33,12 +35,21 @@ namespace CSRO.Server.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCosmosCache((CosmosCacheOptions cacheOptions) =>
+            {
+                cacheOptions.ContainerName = Configuration["CosmosCache:ContainerName"];
+                cacheOptions.DatabaseName = Configuration["CosmosCache:DatabaseName"];
+                cacheOptions.ClientBuilder = new CosmosClientBuilder(Configuration["CosmosCache:ConnectionString"]);
+                cacheOptions.CreateIfNotExists = true;
+            });
+
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)
                     .AddMicrosoftIdentityWebApi(Configuration, "AzureAd")
                         .EnableTokenAcquisitionToCallDownstreamApi()
-                        .AddInMemoryTokenCaches();
+                        //.AddInMemoryTokenCaches();
+                        .AddDistributedTokenCaches();
 
             services.AddControllers();
             //services.AddControllers(options => options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
