@@ -25,4 +25,11 @@
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CSRO.Server.Domain\CSRO.Server.Domain.csproj" />
+    <ProjectReference Include="..\CSRO.Server.Entities\CSRO.Server.Entities.csproj" />
+    <ProjectReference Include="..\CSRO.Server.Infrastructure\CSRO.Server.Infrastructure.csproj" />
+    <ProjectReference Include="..\CSRO.Server.Services\CSRO.Server.Services.csproj" />
+  </ItemGroup>
+
 </Project>

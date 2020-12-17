@@ -1,11 +1,18 @@
+using AutoMapper;
+using CSRO.Server.Entities;
+using CSRO.Server.Entities.Entity;
+using CSRO.Server.Infrastructure;
+using CSRO.Server.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Identity.Web;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
@@ -26,11 +33,38 @@ namespace CSRO.Server.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+            services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)
+                    .AddMicrosoftIdentityWebApi(Configuration, "AzureAd")
+                        .EnableTokenAcquisitionToCallDownstreamApi()
+                        .AddInMemoryTokenCaches();
 
             services.AddControllers();
+            //services.AddControllers(options => options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "CSRO.Server.Api", Version = "v1" });
+            });
+
+            
+            services.AddScoped<IVersionRepository, VersionRepository>();
+            services.AddScoped<IRepository<AppVersion>>(sp =>
+            {
+                var serviceProvider = services.BuildServiceProvider();
+                var ctx = serviceProvider.GetService<AppVersionContext>();
+
+                //var ctx = new AppVersionContext(Configuration.GetConnectionString("SqlLiteConnString"));
+                //if (ctx.ChangeTracker != null)
+                //    ctx.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+                IRepository<AppVersion> obj = new Repository<AppVersion>(ctx);
+                return obj;
+            });
+
+            services.AddDbContext<AppVersionContext>(options =>
+            {
+                //sql Lite                
+                options.UseSqlite(Configuration.GetConnectionString("SqlLiteConnString"));
             });
         }
 
@@ -48,6 +82,7 @@ namespace CSRO.Server.Api
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
