@@ -5,6 +5,10 @@ VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSRO.Client.Blazor.WebApp", "CSRO.Client.Blazor.WebApp.csproj", "{5CE9C603-94F0-4933-8F11-08212D63A40D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Server", "Server", "{CABDC83A-65A6-402A-91B6-A6A5514E0D51}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSRO.Server.Api", "..\CSRO.Server.Api\CSRO.Server.Api.csproj", "{6598C403-10AF-4D5E-8D07-B7750E8C5EFE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,9 +19,16 @@ Global
 		{5CE9C603-94F0-4933-8F11-08212D63A40D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5CE9C603-94F0-4933-8F11-08212D63A40D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5CE9C603-94F0-4933-8F11-08212D63A40D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6598C403-10AF-4D5E-8D07-B7750E8C5EFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6598C403-10AF-4D5E-8D07-B7750E8C5EFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6598C403-10AF-4D5E-8D07-B7750E8C5EFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6598C403-10AF-4D5E-8D07-B7750E8C5EFE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{6598C403-10AF-4D5E-8D07-B7750E8C5EFE} = {CABDC83A-65A6-402A-91B6-A6A5514E0D51}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CA7579FF-7D13-4011-86BB-89683A0D4067}
