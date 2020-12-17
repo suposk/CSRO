@@ -7,17 +7,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSRO.Client.Blazor.WebApp",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Server", "Server", "{CABDC83A-65A6-402A-91B6-A6A5514E0D51}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSRO.Server.Api", "..\CSRO.Server.Api\CSRO.Server.Api.csproj", "{6598C403-10AF-4D5E-8D07-B7750E8C5EFE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSRO.Server.Api", "..\CSRO.Server.Api\CSRO.Server.Api.csproj", "{6598C403-10AF-4D5E-8D07-B7750E8C5EFE}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{16E59730-A536-4874-9FB7-26F1DCD8CA4C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSRO.Server.Infrastructure", "..\CSRO.Server.Infrastructure\CSRO.Server.Infrastructure.csproj", "{EF1584F5-B0D7-406D-8531-3E3B0BABE869}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSRO.Server.Infrastructure", "..\CSRO.Server.Infrastructure\CSRO.Server.Infrastructure.csproj", "{EF1584F5-B0D7-406D-8531-3E3B0BABE869}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSRO.Server.Domain", "..\CSRO.Server.Domain\CSRO.Server.Domain.csproj", "{EF99DF60-B314-4116-A135-5C6BCF356F25}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSRO.Server.Domain", "..\CSRO.Server.Domain\CSRO.Server.Domain.csproj", "{EF99DF60-B314-4116-A135-5C6BCF356F25}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSRO.Server.Entities", "..\CSRO.Server.Entities\CSRO.Server.Entities.csproj", "{3C70C54D-E405-4CD7-BA88-9D9CB5CE8AB4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSRO.Server.Entities", "..\CSRO.Server.Entities\CSRO.Server.Entities.csproj", "{3C70C54D-E405-4CD7-BA88-9D9CB5CE8AB4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSRO.Server.Services", "..\CSRO.Server.Services\CSRO.Server.Services.csproj", "{9033E5C1-2111-4D7F-88A0-0943E9307475}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSRO.Server.Services", "..\CSRO.Server.Services\CSRO.Server.Services.csproj", "{9033E5C1-2111-4D7F-88A0-0943E9307475}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSRO.Client.Services", "..\CSRO.Client.Services\CSRO.Client.Services.csproj", "{43D7B4C0-FA3C-488E-AD36-52A5642FB365}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,6 +51,10 @@ Global
 		{9033E5C1-2111-4D7F-88A0-0943E9307475}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9033E5C1-2111-4D7F-88A0-0943E9307475}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9033E5C1-2111-4D7F-88A0-0943E9307475}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43D7B4C0-FA3C-488E-AD36-52A5642FB365}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43D7B4C0-FA3C-488E-AD36-52A5642FB365}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43D7B4C0-FA3C-488E-AD36-52A5642FB365}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43D7B4C0-FA3C-488E-AD36-52A5642FB365}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

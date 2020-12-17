@@ -1,4 +1,5 @@
 using CSRO.Client.Blazor.WebApp.Data;
+using CSRO.Client.Services;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
@@ -100,7 +101,7 @@ namespace CSRO.Client.Blazor.WebApp
 
             services.AddSingleton<WeatherForecastService>();
             //services.AddSingleton<ISampleService, SampleService>();
-            //services.AddScoped<IVersionService, VersionService>();
+            services.AddScoped<IVersionService, VersionService>();
 
             var jano = Configuration.GetValue<string>("JanoSetting");
             Console.WriteLine($"Configuration JanoSetting: {jano}");
