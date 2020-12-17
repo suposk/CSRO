@@ -1,9 +1,59 @@
-﻿<AuthorizeView>
-    <Authorized>
-        Hello, @context.User.Identity.Name!
-        <a href="MicrosoftIdentity/Account/SignOut">Log out</a>
-    </Authorized>
-    <NotAuthorized>
-        <a href="MicrosoftIdentity/Account/SignIn">Log in</a>
-    </NotAuthorized>
-</AuthorizeView>
+﻿@*<AuthorizeView>
+        <Authorized>
+            Hello, @context.User.Identity.Name!
+            <a href="MicrosoftIdentity/Account/SignOut">Log out</a>
+        </Authorized>
+        <NotAuthorized>
+            <a href="MicrosoftIdentity/Account/SignIn">Log in</a>
+        </NotAuthorized>
+    </AuthorizeView>*@
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<MudContainer>
+    @if (_isAuthenticated)
+    {        
+        <MudText Class="m-2">@_name</MudText>    
+        <MudNavLink Href="MicrosoftIdentity/Account/SignOut" 
+                    Match="NavLinkMatch.Prefix">Log out</MudNavLink>
+    }
+    else
+    {        
+        <MudNavLink Href="MicrosoftIdentity/Account/SignIn" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Login">Log in</MudNavLink>
+    }
+</MudContainer>
+
+@code {
+    private string _authMessage;
+    private bool _isAuthenticated = false;
+    private string _surnameMessage;
+    private string _name;
+    private IEnumerable<Claim> _claims = Enumerable.Empty<Claim>();
+
+    protected async override Task OnInitializedAsync()
+    {
+        await GetClaimsPrincipalData();
+    }
+
+    private async Task GetClaimsPrincipalData()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        _isAuthenticated = user.Identity.IsAuthenticated;
+        if (user.Identity.IsAuthenticated)
+        {
+            _name = user.Identity.Name;
+            _authMessage = $"{user.Identity.Name} is authenticated.";
+            _claims = user.Claims;
+            _surnameMessage =
+                $"Surname: {user.FindFirst(c => c.Type == ClaimTypes.Surname)?.Value}";
+        }
+        else
+        {
+            _authMessage = "The user is NOT authenticated.";
+        }
+    }
+}
+
