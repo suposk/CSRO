@@ -11,18 +11,21 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
-<MudContainer>
+<div>
     @if (_isAuthenticated)
     {        
-        <MudText Class="m-2">@_name</MudText>    
-        <MudNavLink Href="MicrosoftIdentity/Account/SignOut" 
+        <MudText Class="m-1">@_name</MudText>    
+        <MudNavLink
+                    Class="m-1"
+                    Href="MicrosoftIdentity/Account/SignOut" 
+                    Target="_blank"
                     Match="NavLinkMatch.Prefix">Log out</MudNavLink>
     }
     else
-    {        
-        <MudNavLink Href="MicrosoftIdentity/Account/SignIn" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Login">Log in</MudNavLink>
+    {                
+        <MudNavLink Href="MicrosoftIdentity/Account/SignIn" Match="NavLinkMatch.Prefix" Target="_blank">Log in</MudNavLink>                    
     }
-</MudContainer>
+</div>
 
 @code {
     private string _authMessage;
