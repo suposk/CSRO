@@ -12,7 +12,6 @@ namespace CSRO.Client.Services
 {
     public class VersionService : IVersionService
     {
-        //const string _apiPart = "https://localhost:6001/api/version/";
         const string _apiPart = "api/version/";
         const string scope = "api://ee2f0320-29c3-432a-bf84-a5d4277ce052/user_impersonation";
         JsonSerializerOptions _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
@@ -25,15 +24,15 @@ namespace CSRO.Client.Services
         {
             _httpClientFactory = httpClientFactory;
             _tokenAcquisition = tokenAcquisition;
+
+            if (_httpClient == null)
+                _httpClient = _httpClientFactory.CreateClient("api");
         }
 
         public async Task<VersionDto> GetVersion(string version = "0")
         {
             try
             {
-                if (_httpClient == null)
-                    _httpClient = _httpClientFactory.CreateClient("api");
-
                 //user_impersonation
                 var apiToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new string[] { scope });
 
@@ -50,7 +49,7 @@ namespace CSRO.Client.Services
             }
             catch (Exception ex)
             {
-
+                throw;
             }
             return null;
         }
@@ -59,9 +58,6 @@ namespace CSRO.Client.Services
         {
             try
             {
-                if (_httpClient == null)
-                    _httpClient = _httpClientFactory.CreateClient("api");
-
                 //user_impersonation
                 var apiToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new string[] { scope });
 
@@ -78,7 +74,7 @@ namespace CSRO.Client.Services
             }
             catch (Exception ex)
             {
-
+                throw;
             }
             return null;
         }
@@ -88,9 +84,6 @@ namespace CSRO.Client.Services
         {
             try
             {
-                if (_httpClient == null)
-                    _httpClient = _httpClientFactory.CreateClient("api");
-
                 //user_impersonation
                 var apiToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new string[] { scope });
 
@@ -108,7 +101,7 @@ namespace CSRO.Client.Services
             }
             catch (Exception ex)
             {
-
+                throw;
             }
             return null;
         }
@@ -117,9 +110,6 @@ namespace CSRO.Client.Services
         {
             try
             {
-                if (_httpClient == null)
-                    _httpClient = _httpClientFactory.CreateClient("api");
-
                 //user_impersonation
                 var apiToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new string[] { scope });
 
@@ -132,7 +122,7 @@ namespace CSRO.Client.Services
             }
             catch (Exception ex)
             {
-
+                throw;
             }
             return false;
         }
