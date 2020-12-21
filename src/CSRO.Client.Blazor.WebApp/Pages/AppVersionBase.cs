@@ -18,20 +18,11 @@ namespace CSRO.Client.Blazor.WebApp.Pages
 
         public string Result { get; private set; }
 
-        //public string ApiEndpoint
-        //{
-        //    get
-        //    {
-        //        return this.Configuration.GetValue<string>("ApiEndpoint");
-        //    }
-        //}
-
 
         protected async override Task OnInitializedAsync()
         {
             Result = null;
-
-            await base.OnInitializedAsync();
+                        
             var v = await VersionService.GetVersion();
             if (v != null)
             {

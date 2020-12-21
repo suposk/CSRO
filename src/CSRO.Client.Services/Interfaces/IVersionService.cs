@@ -10,9 +10,9 @@ namespace CSRO.Client.Services
 {
     public interface IVersionService
     {
-        Task<AppVersionDto> AddVersion(AppVersionDto add);
+        Task<AppVersion> AddVersion(AppVersion add);
         Task<bool> DeleteVersion(int id);
-        Task<List<AppVersionDto>> GetAllVersion();
+        Task<List<AppVersion>> GetAllVersion();
         Task<AppVersion> GetVersion(string version = "0");
     }
 }

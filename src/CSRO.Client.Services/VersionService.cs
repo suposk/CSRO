@@ -58,7 +58,7 @@ namespace CSRO.Client.Services
             return null;
         }
 
-        public async Task<List<AppVersionDto>> GetAllVersion()
+        public async Task<List<AppVersion>> GetAllVersion()
         {
             try
             {
@@ -72,7 +72,8 @@ namespace CSRO.Client.Services
                 if (apiData.IsSuccessStatusCode)
                 {
                     var content = await apiData.Content.ReadAsStringAsync();
-                    var version = JsonSerializer.Deserialize<List<AppVersionDto>>(content, _options);
+                    var ser = JsonSerializer.Deserialize<List<AppVersionDto>>(content, _options);
+                    var version = _mapper.Map<List<AppVersion>>(ser);
                     return version;
                 }
             }
@@ -84,7 +85,7 @@ namespace CSRO.Client.Services
         }
 
 
-        public async Task<AppVersionDto> AddVersion(AppVersionDto add)
+        public async Task<AppVersion> AddVersion(AppVersion add)
         {
             try
             {
@@ -99,8 +100,9 @@ namespace CSRO.Client.Services
                 if (apiData.IsSuccessStatusCode)
                 {
                     var content = await apiData.Content.ReadAsStringAsync();
-                    var version = JsonSerializer.Deserialize<AppVersionDto>(content, _options);
-                    return version;
+                    var ser = JsonSerializer.Deserialize<AppVersionDto>(content, _options);
+                    var result = _mapper.Map<AppVersion>(ser);
+                    return result;
                 }
             }
             catch (Exception ex)
