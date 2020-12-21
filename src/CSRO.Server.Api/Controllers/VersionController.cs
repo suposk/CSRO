@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace CSRO.Server.Api.Controllers
 {
-    //[Authorize]
+    [Authorize]
     //[AutoValidateAntiforgeryToken]
     [Route("api/[controller]")]
     [ApiController]
