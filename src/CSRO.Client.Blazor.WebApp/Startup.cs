@@ -1,3 +1,4 @@
+using AutoMapper;
 using CSRO.Client.Blazor.WebApp.Data;
 using CSRO.Client.Services;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
@@ -44,6 +45,8 @@ namespace CSRO.Client.Blazor.WebApp
                 cacheOptions.ClientBuilder = new CosmosClientBuilder(Configuration["CosmosCache:ConnectionString"]);
                 cacheOptions.CreateIfNotExists = true;
             });
+
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             bool UseKeyVault = Configuration.GetValue<bool>("UseKeyVault");
             var VaultName = Configuration.GetValue<string>("VaultName");

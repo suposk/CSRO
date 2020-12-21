@@ -4,18 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CSRO.Client.Services.Dtos
+namespace CSRO.Client.Services.Models
 {
-    public enum RecomendedAction
-    {
-        Unknown = 0,
-        None = 1,
-        Warning = 2,
-        CloseApplication = 3
-    }
-
-
-    public class VersionDto
+    public class AppVersion
     {
         public int Id { get; set; }
 

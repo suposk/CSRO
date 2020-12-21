@@ -1,4 +1,5 @@
 ﻿using CSRO.Client.Services.Dtos;
+using CSRO.Client.Services.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +10,9 @@ namespace CSRO.Client.Services
 {
     public interface IVersionService
     {
-        Task<VersionDto> AddVersion(VersionDto add);
+        Task<AppVersionDto> AddVersion(AppVersionDto add);
         Task<bool> DeleteVersion(int id);
-        Task<List<VersionDto>> GetAllVersion();
-        Task<VersionDto> GetVersion(string version = "0");
+        Task<List<AppVersionDto>> GetAllVersion();
+        Task<AppVersion> GetVersion(string version = "0");
     }
 }

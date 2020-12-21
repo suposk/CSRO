@@ -1,4 +1,6 @@
-﻿using CSRO.Client.Services.Dtos;
+﻿using AutoMapper;
+using CSRO.Client.Services.Dtos;
+using CSRO.Client.Services.Models;
 using Microsoft.Identity.Web;
 using System;
 using System.Collections.Generic;
@@ -18,18 +20,19 @@ namespace CSRO.Client.Services
 
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ITokenAcquisition _tokenAcquisition;
+        private readonly IMapper _mapper;
         private HttpClient _httpClient;
 
-        public VersionService(IHttpClientFactory httpClientFactory, ITokenAcquisition tokenAcquisition)
+        public VersionService(IHttpClientFactory httpClientFactory, ITokenAcquisition tokenAcquisition, IMapper mapper)
         {
             _httpClientFactory = httpClientFactory;
             _tokenAcquisition = tokenAcquisition;
-
+            _mapper = mapper;
             if (_httpClient == null)
                 _httpClient = _httpClientFactory.CreateClient("api");
         }
 
-        public async Task<VersionDto> GetVersion(string version = "0")
+        public async Task<AppVersion> GetVersion(string version = "0")
         {
             try
             {
@@ -43,7 +46,8 @@ namespace CSRO.Client.Services
                 if (apiData.IsSuccessStatusCode)
                 {
                     var content = await apiData.Content.ReadAsStringAsync();
-                    var result = JsonSerializer.Deserialize<VersionDto>(content, _options);
+                    var ser = JsonSerializer.Deserialize<AppVersionDto>(content, _options);
+                    var result = _mapper.Map<AppVersion>(ser);
                     return result;
                 }
             }
@@ -54,7 +58,7 @@ namespace CSRO.Client.Services
             return null;
         }
 
-        public async Task<List<VersionDto>> GetAllVersion()
+        public async Task<List<AppVersionDto>> GetAllVersion()
         {
             try
             {
@@ -68,7 +72,7 @@ namespace CSRO.Client.Services
                 if (apiData.IsSuccessStatusCode)
                 {
                     var content = await apiData.Content.ReadAsStringAsync();
-                    var version = JsonSerializer.Deserialize<List<VersionDto>>(content, _options);
+                    var version = JsonSerializer.Deserialize<List<AppVersionDto>>(content, _options);
                     return version;
                 }
             }
@@ -80,7 +84,7 @@ namespace CSRO.Client.Services
         }
 
 
-        public async Task<VersionDto> AddVersion(VersionDto add)
+        public async Task<AppVersionDto> AddVersion(AppVersionDto add)
         {
             try
             {
@@ -95,7 +99,7 @@ namespace CSRO.Client.Services
                 if (apiData.IsSuccessStatusCode)
                 {
                     var content = await apiData.Content.ReadAsStringAsync();
-                    var version = JsonSerializer.Deserialize<VersionDto>(content, _options);
+                    var version = JsonSerializer.Deserialize<AppVersionDto>(content, _options);
                     return version;
                 }
             }
