@@ -15,6 +15,10 @@ namespace CSRO.Server.Api.AutoMapperProfiles
             CreateMap<AppVersionDto, AppVersion>()
                 //.ForMember(s => s.CurrentUnits, op => op.Ignore())
                 .ReverseMap();
+
+            CreateMap<TicketDto, Ticket>()
+                //.ForMember(s => s.CurrentUnits, op => op.Ignore())
+                .ReverseMap();
         }
     }
 }

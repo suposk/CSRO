@@ -30,6 +30,7 @@ namespace CSRO.Server.Entities
         }
 
         public DbSet<AppVersion> AppVersions { get; set; }
+        public DbSet<Ticket> Tickets { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

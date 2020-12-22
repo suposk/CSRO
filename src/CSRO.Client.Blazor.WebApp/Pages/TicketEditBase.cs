@@ -51,8 +51,20 @@ namespace CSRO.Client.Blazor.WebApp.Pages
 
         public async Task OnValidSubmit(EditContext context)
         {
-            Success = true;
-            StateHasChanged();
+            var valid = context.Validate();
+            if (valid)
+            {
+                try
+                {
+
+                    Success = await TicketDataStore.AddItemAsync(model);
+                    StateHasChanged();
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError(ex, nameof(OnValidSubmit));
+                }
+            }
         }
 
         public void GoBack()

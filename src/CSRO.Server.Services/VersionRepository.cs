@@ -10,6 +10,7 @@ using CSRO.Server.Entities;
 
 namespace CSRO.Server.Services
 {
+
     public class VersionRepository : IVersionRepository
     {
         private readonly IRepository<AppVersion> _repository;

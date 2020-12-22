@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CSRO.Client.Services;
+using CSRO.Client.Services.Dtos;
 using Microsoft.Identity.Web;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ namespace CSRO.Client.Services.Models
 {
     public class TicketDataStore : IBaseDataStore<Ticket>
     {
-        const string _apiPart = "api/version/";
+        const string _apiPart = "api/ticket/";
         const string scope = "api://ee2f0320-29c3-432a-bf84-a5d4277ce052/user_impersonation";
         JsonSerializerOptions _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
@@ -31,9 +32,32 @@ namespace CSRO.Client.Services.Models
                 _httpClient = _httpClientFactory.CreateClient("api");
         }
 
-        public Task<bool> AddItemAsync(Ticket item)
+        public async Task<bool> AddItemAsync(Ticket item)
         {
-            throw new NotImplementedException();
+            try
+            {
+                //user_impersonation
+                //var apiToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new string[] { scope });
+                //_httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
+
+                var url = $"{_apiPart}";
+                var add = _mapper.Map<TicketDto>(item);
+                var httpcontent = new StringContent(JsonSerializer.Serialize(add, _options), Encoding.UTF8, "application/json");
+                var apiData = await _httpClient.PostAsync(url, httpcontent).ConfigureAwait(false);
+
+                if (apiData.IsSuccessStatusCode)
+                {
+                    var content = await apiData.Content.ReadAsStringAsync();
+                    var ser = JsonSerializer.Deserialize<TicketDto>(content, _options);
+                    var result = _mapper.Map<Ticket>(ser);
+                    return result.Id != 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            return false;
         }
 
         public Task<bool> DeleteItemAsync(int id)

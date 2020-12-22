@@ -71,6 +71,19 @@ namespace CSRO.Server.Api
                 IRepository<AppVersion> obj = new Repository<AppVersion>(ctx);
                 return obj;
             });
+            services.AddScoped<ITicketRepository, TicketRepository>();
+            services.AddScoped<IRepository<Ticket>>(sp =>
+            {
+                var serviceProvider = services.BuildServiceProvider();
+                var ctx = serviceProvider.GetService<AppVersionContext>();
+
+                //var ctx = new AppVersionContext(Configuration.GetConnectionString("SqlLiteConnString"));
+                //if (ctx.ChangeTracker != null)
+                //    ctx.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+                IRepository<Ticket> obj = new Repository<Ticket>(ctx);
+                return obj;
+            });
+
 
             services.AddDbContext<AppVersionContext>(options =>
             {
