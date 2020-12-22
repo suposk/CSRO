@@ -1,6 +1,8 @@
-﻿using CSRO.Client.Services.Models;
+﻿using CSRO.Client.Services;
+using CSRO.Client.Services.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +19,13 @@ namespace CSRO.Client.Blazor.WebApp.Pages
         public NavigationManager NavigationManager { get; set; }
 
 
+        [Inject]
+        IBaseDataStore<Ticket> TicketDataStore { get; set; }
+
+        [Inject]
+        public ILogger<TicketEditBase> Logger { get; set; }
+
+
         public Ticket model { get; set; } = new Ticket();
 
         protected bool Success { get; set; }
@@ -24,10 +33,19 @@ namespace CSRO.Client.Blazor.WebApp.Pages
         //protected bool IsReadOnly => IsEdit;
 
         protected async override Task OnInitializedAsync()
-        {            
-            if (IsEdit)
+        {
+
+            try
             {
-                model.Id = int.Parse(TicketId);
+                if (IsEdit)
+                {
+                    model.Id = int.Parse(TicketId);
+                    var server = TicketDataStore.GetItemByIdAsync(model.Id);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, nameof(OnInitializedAsync));
             }
         }
 

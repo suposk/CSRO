@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
+using CSRO.Client.Services.Models;
 
 namespace CSRO.Client.Blazor.WebApp
 {
@@ -108,6 +109,7 @@ namespace CSRO.Client.Blazor.WebApp
             services.AddSingleton<WeatherForecastService>();
             //services.AddSingleton<ISampleService, SampleService>();
             services.AddScoped<IVersionService, VersionService>();
+            services.AddScoped<IBaseDataStore<Ticket>, TicketDataStore>();
 
             var jano = Configuration.GetValue<string>("JanoSetting");
             Console.WriteLine($"Configuration JanoSetting: {jano}");
