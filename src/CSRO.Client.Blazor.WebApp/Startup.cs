@@ -22,6 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
 
 namespace CSRO.Client.Blazor.WebApp
 {
@@ -133,6 +134,7 @@ namespace CSRO.Client.Blazor.WebApp
                 app.UseHsts();
             }
 
+            //app.UseHeadElementServerPrerendering();
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
@@ -143,7 +145,7 @@ namespace CSRO.Client.Blazor.WebApp
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                //endpoints.MapControllers();
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
             });

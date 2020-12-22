@@ -19,7 +19,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSRO.Server.Entities", "..\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSRO.Server.Services", "..\CSRO.Server.Services\CSRO.Server.Services.csproj", "{9033E5C1-2111-4D7F-88A0-0943E9307475}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSRO.Client.Services", "..\CSRO.Client.Services\CSRO.Client.Services.csproj", "{43D7B4C0-FA3C-488E-AD36-52A5642FB365}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSRO.Client.Services", "..\CSRO.Client.Services\CSRO.Client.Services.csproj", "{43D7B4C0-FA3C-488E-AD36-52A5642FB365}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

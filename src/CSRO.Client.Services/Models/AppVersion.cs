@@ -22,7 +22,7 @@ namespace CSRO.Client.Services.Models
 
         public string DetailsFormat { get; set; }
 
-        public DateTime CreatedAt { get; set; }
+        public DateTime? CreatedAt { get; set; }
 
         public DateTime? ReleasedAt { get; set; }
     }
