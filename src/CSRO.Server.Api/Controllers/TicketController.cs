@@ -94,6 +94,7 @@ namespace CSRO.Server.Api.Controllers
                 _logger.LogInformation(ApiLogEvents.InsertItem, $"{nameof(PostTicket)} Started");
 
                 var repoObj = _mapper.Map<Ticket>(dto);
+                repoObj.CreatedAt = DateTime.UtcNow; //refactor
                 _ticketRepository.Add(repoObj);
                 if (await _ticketRepository.SaveChangesAsync())
                 {

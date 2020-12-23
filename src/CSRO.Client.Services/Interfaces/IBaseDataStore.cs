@@ -12,8 +12,8 @@ namespace CSRO.Client.Services
         Task<bool> UpdateItemAsync(T item);
         Task<bool> DeleteItemAsync(int id);
         Task<T> GetItemByIdAsync(int id);
-        Task<IList<T>> GetItemsAsync(bool forceRefresh = false);
-        Task<IList<T>> GetItemsByTypeAsync(Enum type, bool forceRefresh = false);
-        Task<IList<T>> GetItemsByParrentIdAsync(int parrentId, bool forceRefresh = false);
+        Task<List<T>> GetItemsAsync(bool forceRefresh = false);
+        Task<List<T>> GetItemsByTypeAsync(Enum type, bool forceRefresh = false);
+        Task<List<T>> GetItemsByParrentIdAsync(int parrentId, bool forceRefresh = false);
     }
 }

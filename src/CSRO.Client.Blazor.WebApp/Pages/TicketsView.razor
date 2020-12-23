@@ -1,0 +1,37 @@
+﻿@page "/ticketsview"
+@inherits TicketsViewBase
+@using CSRO.Client.Services.Models;
+
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-16">
+    <MudText Typo="Typo.h3" GutterBottom="true">List Of Tickes</MudText>
+    <MudText Class="mb-8">List of Available.....</MudText>
+    @if (Tickets == null)
+    {
+        <MudText>Loading...</MudText>
+        <MudProgressCircular Color="Color.Default" Indeterminate="true" /> }
+    else
+    {
+        <MudTable Items="Tickets" Hover="true" SortLabel="Sort By" Elevation="0">
+            <HeaderContent>
+                <MudTh><MudTableSortLabel SortBy="new Func<Ticket, object>(x=>x.Id)">Id</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<Ticket, object>(x=>x.RequestedFor)">Requested For</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<Ticket, object>(x=>x.CreatedBy)">Created By</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<Ticket, object>(x=>x.IsOnBehalf)">Is OnBehalf</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<Ticket, object>(x=>x.Description)">Description</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Ticket, object>(x=>x.CreatedAt)">Created At</MudTableSortLabel></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Id">@context.Id</MudTd>
+                <MudTd DataLabel="Requested For">@context.RequestedFor</MudTd>
+                <MudTd DataLabel="Created By">@context.CreatedBy</MudTd>
+                <MudTd DataLabel="Is OnBehalf">@context.IsOnBehalf</MudTd>
+                <MudTd DataLabel="Description">@context.Description</MudTd>
+                <MudTd DataLabel="Created At">@context.CreatedAt</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager PageSizeOptions="new int[]{10, 20, 50}" />
+            </PagerContent>
+        </MudTable>
+    }
+</MudContainer>

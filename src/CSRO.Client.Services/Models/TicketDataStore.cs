@@ -70,17 +70,38 @@ namespace CSRO.Client.Services.Models
             throw new NotImplementedException();
         }
 
-        public Task<IList<Ticket>> GetItemsAsync(bool forceRefresh = false)
+        public async Task<List<Ticket>> GetItemsAsync(bool forceRefresh = false)
+        {
+            try
+            {
+                //user_impersonation
+                //var apiToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new string[] { scope });
+                //_httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
+
+                var url = $"{_apiPart}";
+                var apiData = await _httpClient.GetAsync(url).ConfigureAwait(false);
+
+                if (apiData.IsSuccessStatusCode)
+                {
+                    var content = await apiData.Content.ReadAsStringAsync();
+                    var ser = JsonSerializer.Deserialize<List<TicketDto>>(content, _options);
+                    var version = _mapper.Map<List<Ticket>>(ser);
+                    return version;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            return null;
+        }
+
+        public Task<List<Ticket>> GetItemsByParrentIdAsync(int parrentId, bool forceRefresh = false)
         {
             throw new NotImplementedException();
         }
 
-        public Task<IList<Ticket>> GetItemsByParrentIdAsync(int parrentId, bool forceRefresh = false)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IList<Ticket>> GetItemsByTypeAsync(Enum type, bool forceRefresh = false)
+        public Task<List<Ticket>> GetItemsByTypeAsync(Enum type, bool forceRefresh = false)
         {
             throw new NotImplementedException();
         }

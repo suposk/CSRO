@@ -56,8 +56,14 @@ namespace CSRO.Client.Blazor.WebApp.Pages
             {
                 try
                 {
+                    if (IsEdit)
+                    {
 
-                    Success = await TicketDataStore.AddItemAsync(model);
+                    }
+                    else
+                    {
+                        Success = await TicketDataStore.AddItemAsync(model);
+                    }
                     StateHasChanged();
                 }
                 catch (Exception ex)
