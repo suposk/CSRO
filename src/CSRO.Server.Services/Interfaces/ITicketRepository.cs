@@ -1,4 +1,10 @@
-﻿namespace CSRO.Server.Services
+﻿using CSRO.Server.Entities.Entity;
+using CSRO.Server.Infrastructure;
+
+namespace CSRO.Server.Services
 {
-    public interface ITicketRepository { }
+    public interface ITicketRepository : IRepository<Ticket>
+    {
+
+    }
 }

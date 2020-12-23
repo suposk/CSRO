@@ -22,17 +22,17 @@ namespace CSRO.Server.Api.Controllers
     public class TicketController : ControllerBase
     {
         private readonly ILogger<TicketController> _logger;
-        private readonly IRepository<Ticket> _repository;
+        //private readonly IRepository<Ticket> _repository;
         private readonly ITicketRepository _ticketRepository;
         private readonly IMapper _mapper;
 
         public TicketController(ILogger<TicketController> logger,
-            IRepository<Ticket> repository,
+            //IRepository<Ticket> repository,
             ITicketRepository ticketRepository,
             IMapper mapper)
         {
             _logger = logger;
-            _repository = repository;
+            //_repository = repository;
             _ticketRepository = ticketRepository;
             _mapper = mapper;
         }
@@ -45,7 +45,7 @@ namespace CSRO.Server.Api.Controllers
             {
                 _logger.LogInformation(ApiLogEvents.GetAllItems, $"{nameof(Get)} Started");
 
-                var all = await _repository.GetAllAsync();
+                var all = await _ticketRepository.GetAllAsync();
                 var result = _mapper.Map<List<TicketDto>>(all);
                 return result;
             }
@@ -65,9 +65,9 @@ namespace CSRO.Server.Api.Controllers
             TicketDto result = null;
             try
             {
-                _logger.LogInformation($"{nameof(GetTicket)} with {id} Started");
+                _logger.LogInformation(ApiLogEvents.GetItem, $"{nameof(GetTicket)} with {id} Started");
 
-                var repoObj = await _repository.GetAsync(id);
+                var repoObj = await _ticketRepository.GetAsync(id);
                 if (repoObj == null)
                     return NotFound();
 
@@ -91,11 +91,11 @@ namespace CSRO.Server.Api.Controllers
 
             try
             {
-                _logger.LogInformation($"{nameof(PostTicket)} Started");
+                _logger.LogInformation(ApiLogEvents.InsertItem, $"{nameof(PostTicket)} Started");
 
                 var repoObj = _mapper.Map<Ticket>(dto);
-                _repository.Add(repoObj);
-                if (await _repository.SaveChangesAsync())
+                _ticketRepository.Add(repoObj);
+                if (await _ticketRepository.SaveChangesAsync())
                 {
                     var result = _mapper.Map<TicketDto>(repoObj);
                     return CreatedAtRoute("GetTicket",
