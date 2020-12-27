@@ -3,7 +3,7 @@
 @using CSRO.Client.Services.Models;
 
 
-<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-16">
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-16">
     <MudText Typo="Typo.h3" GutterBottom="true">List Of Tickes</MudText>
     <MudText Class="mb-8">List of Available.....</MudText>
     @if (Tickets == null)
@@ -28,7 +28,14 @@
                 <MudTd DataLabel="Is OnBehalf">@context.IsOnBehalf</MudTd>
                 <MudTd DataLabel="Description">@context.Description</MudTd>
                 <MudTd DataLabel="Created At">@context.CreatedAt</MudTd>
-                <MudNavLink Href="@($"ticketedit/{context.Id}")" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Edit"></MudNavLink>
+                <MudPaper Class="demo-grid-paper" Elevation="0">
+                    <MudTooltip Text="Edit" Delayed="1">
+                        <MudNavLink Href="@($"ticketedit/{context.Id}")" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Edit"></MudNavLink>
+                    </MudTooltip>
+                    <MudTooltip Text="Details">
+                        <MudNavLink Href="@($"ticketedit/{context.Id}")" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Info"></MudNavLink>
+                    </MudTooltip>
+                </MudPaper>
             </RowTemplate>
             <PagerContent>
                 <MudTablePager PageSizeOptions="new int[]{10, 20, 50}" />
