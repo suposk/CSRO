@@ -36,6 +36,18 @@
                         <MudNavLink Href="@($"ticketedit/{context.Id}")" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Info"></MudNavLink>
                     </MudTooltip>
                 </MudPaper>
+            @*<div>
+                <div class="d-inline pa-2">
+                    <MudTooltip Text="Edit" Delayed="1">
+                        <MudNavLink Href="@($"ticketedit/{context.Id}")" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Edit"></MudNavLink>
+                    </MudTooltip>
+                </div>
+                <div class="d-inline pa-2">
+                    <MudTooltip Text="Details">
+                        <MudNavLink Href="@($"ticketedit/{context.Id}")" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Info"></MudNavLink>
+                    </MudTooltip>
+                </div>
+            </div>*@
             </RowTemplate>
             <PagerContent>
                 <MudTablePager PageSizeOptions="new int[]{10, 20, 50}" />
