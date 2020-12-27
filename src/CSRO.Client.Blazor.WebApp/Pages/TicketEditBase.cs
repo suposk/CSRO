@@ -69,7 +69,12 @@ namespace CSRO.Client.Blazor.WebApp.Pages
                     }
                     else
                     {
-                        Success = await TicketDataStore.AddItemAsync(model);
+                        var added = await TicketDataStore.AddItemAsync(model);
+                        if (added != null)
+                        {
+                            Success = true;
+                            model = added;
+                        }
                     }
                     StateHasChanged();
                 }

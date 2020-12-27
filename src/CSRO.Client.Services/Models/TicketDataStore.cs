@@ -32,7 +32,7 @@ namespace CSRO.Client.Services.Models
                 _httpClient = _httpClientFactory.CreateClient("api");
         }
 
-        public async Task<bool> AddItemAsync(Ticket item)
+        public async Task<Ticket> AddItemAsync(Ticket item)
         {
             try
             {
@@ -50,14 +50,14 @@ namespace CSRO.Client.Services.Models
                     var content = await apiData.Content.ReadAsStringAsync();
                     var ser = JsonSerializer.Deserialize<TicketDto>(content, _options);
                     var result = _mapper.Map<Ticket>(ser);
-                    return result.Id != 0;
+                    return result;
                 }
             }
             catch (Exception ex)
             {
                 throw;
             }
-            return false;
+            return null;
         }
 
         public Task<bool> DeleteItemAsync(int id)
@@ -127,7 +127,7 @@ namespace CSRO.Client.Services.Models
             throw new NotImplementedException();
         }
 
-        public Task<bool> UpdateItemAsync(Ticket item)
+        public Task<Ticket> UpdateItemAsync(Ticket item)
         {
             throw new NotImplementedException();
         }
