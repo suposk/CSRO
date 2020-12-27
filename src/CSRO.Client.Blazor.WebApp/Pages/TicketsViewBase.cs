@@ -14,7 +14,6 @@ namespace CSRO.Client.Blazor.WebApp.Pages
         [Inject]
         public NavigationManager NavigationManager { get; set; }
 
-
         [Inject]
         IBaseDataStore<Ticket> TicketDataStore { get; set; }
 

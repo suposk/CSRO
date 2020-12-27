@@ -65,9 +65,30 @@ namespace CSRO.Client.Services.Models
             throw new NotImplementedException();
         }
 
-        public Task<Ticket> GetItemByIdAsync(int id)
+        public async Task<Ticket> GetItemByIdAsync(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                //user_impersonation
+                //var apiToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new string[] { scope });
+                //_httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
+
+                var url = $"{_apiPart}{id}";
+                var apiData = await _httpClient.GetAsync(url).ConfigureAwait(false);
+
+                if (apiData.IsSuccessStatusCode)
+                {
+                    var content = await apiData.Content.ReadAsStringAsync();
+                    var ser = JsonSerializer.Deserialize<TicketDto>(content, _options);
+                    var result = _mapper.Map<Ticket>(ser);
+                    return result;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            return null;
         }
 
         public async Task<List<Ticket>> GetItemsAsync(bool forceRefresh = false)
@@ -85,8 +106,8 @@ namespace CSRO.Client.Services.Models
                 {
                     var content = await apiData.Content.ReadAsStringAsync();
                     var ser = JsonSerializer.Deserialize<List<TicketDto>>(content, _options);
-                    var version = _mapper.Map<List<Ticket>>(ser);
-                    return version;
+                    var result = _mapper.Map<List<Ticket>>(ser);
+                    return result;
                 }
             }
             catch (Exception ex)

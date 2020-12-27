@@ -40,13 +40,20 @@ namespace CSRO.Client.Blazor.WebApp.Pages
                 if (IsEdit)
                 {
                     model.Id = int.Parse(TicketId);
-                    var server = TicketDataStore.GetItemByIdAsync(model.Id);
+                    var server = await TicketDataStore.GetItemByIdAsync(model.Id);
+                    if (server != null)                     
+                        model = server;                    
                 }
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, nameof(OnInitializedAsync));
             }
+        }
+
+        public Task EditTicket()
+        {
+            return Task.CompletedTask;
         }
 
         public async Task OnValidSubmit(EditContext context)
