@@ -1,0 +1,67 @@
+﻿@inherits TicketCsroBase
+
+<div>
+    <MudText Typo="Typo.h3" GutterBottom="true">@Title</MudText>
+
+    @if (Success == false)
+    {
+        <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+            <MudCard>
+                <MudCardContent>
+                    <MudCheckBox Label="On Behalf" Class="mt-3" @bind-Checked="model.IsOnBehalf"
+                                 Disabled="@IsReadOnly"
+                                 @bind-Value="model.IsOnBehalf" For="@(() => model.IsOnBehalf)" />
+
+                    <MudTextField Label="Requested For" HelperText="Name of Person"
+                                  Disabled="@IsReadOnly"
+                                  @bind-Value="model.RequestedFor" For="@(() => model.RequestedFor)" />
+
+                    @if (model.IsOnBehalf)
+                    {
+                        <MudTextField Label="Created By" HelperText="Name of Person"
+                                      Disabled="@IsReadOnly"
+                                      @bind-Value="model.CreatedBy" For="@(() => model.CreatedBy)" />
+                    }
+
+                    <MudTextField Label="Description"
+                                  Disabled="@IsReadOnly"
+                                  @bind-Value="model.Description" For="@(() => model.Description)" />
+
+                    @if (IsReadOnly)
+                    {
+                        <MudTextField Label="Created At" Disabled="true"
+                                      @bind-Value="model.CreatedAt" For="@(() => model.CreatedAt)" />
+                    }
+
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Submit</MudButton>
+                </MudCardActions>
+            </MudCard>
+            <MudText Typo="Typo.body2" Align="Align.Center" Class="my-4">
+                Fill out the form correctly to see the success message.
+            </MudText>
+
+            <MudExpansionPanels>
+                <MudExpansionPanel Text="Show Validation Summary">
+                    @if (Success)
+                    {
+                        <MudText Color="Color.Success">Success</MudText> }
+                    else
+                    {
+                        <MudText Color="@Color.Error">
+                            <ValidationSummary />
+                        </MudText>
+                    }
+                </MudExpansionPanel>
+            </MudExpansionPanels>
+        </EditForm>
+    }
+    else
+    {
+        <div>
+            Not Saved
+        </div>
+    }
+</div>

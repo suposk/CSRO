@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace CSRO.Client.Services.Models
 {
+    public enum OperatioType { Create, Edit, View }
+
     public class Ticket
     {
         public int Id { get; set; }
