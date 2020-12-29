@@ -32,17 +32,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
         protected bool Success { get; set; }
         protected bool IsReadOnly => OperationTypeTicket == OperatioType.View;
-
-        public string Title => OperationTypeTicket.ToString() + " Ticket";
-
-        //public string Title()
-        //{
-        //    switch (this.OperationTypeTicket)
-        //    {
-        //        case OperatioType.View 
-        //    }
-
-        //}
+        protected string Title => OperationTypeTicket.ToString() + " Ticket";
 
         protected async override Task OnInitializedAsync()
         {

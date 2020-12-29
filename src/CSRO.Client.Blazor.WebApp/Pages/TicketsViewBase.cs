@@ -18,7 +18,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages
         IBaseDataStore<Ticket> TicketDataStore { get; set; }
 
         [Inject]
-        public ILogger<TicketEditBase> Logger { get; set; }
+        public ILogger<TicketsViewBase> Logger { get; set; }
 
 
         public Ticket model { get; set; } = new Ticket();

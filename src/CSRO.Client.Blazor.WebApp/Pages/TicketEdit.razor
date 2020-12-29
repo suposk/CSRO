@@ -1,77 +1,11 @@
-﻿@page "/ticketedit"
-@page "/ticketedit/{TicketId}"
-@inherits TicketEditBase
+﻿@page "/ticketedit/{TicketId}"
+@using CSRO.Client.Services.Models
 
-<div>
-    @if (IsEdit)
-    {
-        <MudText Typo="Typo.h3" GutterBottom="true">Edit Ticket</MudText>
-    }
-    else
-    {        
-        <MudText Typo="Typo.h3" GutterBottom="true">Create Ticket</MudText>
-    }
+<TicketCsro OperationTypeTicket="@OperatioType.Edit" TicketId="@TicketId">
 
-    @if (Success == false)
-    {
-        <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
-            <DataAnnotationsValidator />
-            <MudCard>
-                <MudCardContent>
-                    <MudCheckBox Label="On Behalf" Class="mt-3" @bind-Checked="model.IsOnBehalf"
-                                 Disabled="@IsEdit"
-                                 @bind-Value="model.IsOnBehalf" For="@(() => model.IsOnBehalf)" />
+</TicketCsro>
 
-                    <MudTextField Label="Requested For" HelperText="Name of Person"
-                                  Disabled="@IsEdit"
-                                  @bind-Value="model.RequestedFor" For="@(() => model.RequestedFor)" />
-
-                    @if (model.IsOnBehalf)
-                    {
-                        <MudTextField Label="Created By" HelperText="Name of Person"
-                                      Disabled="@IsEdit"
-                                      @bind-Value="model.CreatedBy" For="@(() => model.CreatedBy)" />
-                    }
-
-                    <MudTextField Label="Description"
-                                  Disabled="@IsEdit"
-                                  @bind-Value="model.Description" For="@(() => model.Description)" />
-
-                    @if (IsEdit)
-                    {
-                        <MudTextField Label="Created At" Disabled="true"
-                                      @bind-Value="model.CreatedAt" For="@(() => model.CreatedAt)" />
-                    }
-
-                </MudCardContent>
-                <MudCardActions>
-                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Submit</MudButton>
-                </MudCardActions>
-            </MudCard>
-            <MudText Typo="Typo.body2" Align="Align.Center" Class="my-4">
-                Fill out the form correctly to see the success message.
-            </MudText>
-
-            <MudExpansionPanels>
-                <MudExpansionPanel Text="Show Validation Summary">
-                    @if (Success)
-                    {
-                        <MudText Color="Color.Success">Success</MudText>
-                    }
-                    else
-                    {
-                        <MudText Color="@Color.Error">
-                            <ValidationSummary />
-                        </MudText>
-                    }
-                </MudExpansionPanel>
-            </MudExpansionPanels>
-        </EditForm>
-    }
-    else
-    {
-        <div>
-            Not Saved
-        </div>
-    }
-</div>
+@code {
+    [Parameter]
+    public string TicketId { get; set; }
+}
