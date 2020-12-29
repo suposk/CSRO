@@ -1,7 +1,11 @@
-﻿using CSRO.Client.Services;
+﻿using CSRO.Client.Blazor.WebApp.Components;
+using CSRO.Client.Services;
 using CSRO.Client.Services.Models;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Extensions.Logging;
+using MudBlazor;
+using MudBlazor.Dialog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +17,9 @@ namespace CSRO.Client.Blazor.WebApp.Pages
     {
         [Inject]
         public NavigationManager NavigationManager { get; set; }
+
+        [Inject]
+        public IDialogService DialogService { get; set; }
 
         [Inject]
         IBaseDataStore<Ticket> TicketDataStore { get; set; }
@@ -36,6 +43,27 @@ namespace CSRO.Client.Blazor.WebApp.Pages
             {
                 Logger.LogError(ex, nameof(OnInitializedAsync));
             }
+        }
+
+        public async Task DeleteTicketAsync(Ticket ticket)
+        {
+            var parameters = new DialogParameters();
+            parameters.Add("ContentText", "Do you really want to delete these records? This process cannot be undone.");
+            parameters.Add("ButtonText", "Delete");
+            parameters.Add("Color", Color.Error);
+
+            var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+            var userSelect = DialogService.Show<DialogTemplateExample_Dialog>("Delete", parameters, options);
+            var result = await userSelect.Result;
+            if (!result.Cancelled)
+            {
+                Tickets.Remove(ticket);
+            }
+        }
+
+        public void DeleteTicket(int id)
+        {
+            ;
         }
     }
 }

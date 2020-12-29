@@ -35,6 +35,9 @@
                     <MudTooltip Text="Details">
                         <MudNavLink Href="@($"ticketview/{context.Id}")" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Info"></MudNavLink>
                     </MudTooltip>
+                    <MudTooltip Text="Delete Async">
+                        <MudIconButton OnClick="@(e => DeleteTicketAsync(context))" Icon="@Icons.Material.Delete"></MudIconButton>
+                    </MudTooltip>
                 </MudPaper>
             @*<div>
                 <div class="d-inline pa-2">
