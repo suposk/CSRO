@@ -21,9 +21,8 @@ namespace CSRO.Server.Infrastructure
         {
             entity.CreatedBy = UserId;
             entity.CreatedAt = DateTime.UtcNow;
-            entity.ModifiedAt = DateTime.UtcNow;
-            entity.ModifiedBy = UserId;
-            //DatabaseContext.Entry(entity).State = EntityState.Added;
+            //entity.ModifiedAt = DateTime.UtcNow;
+            //entity.ModifiedBy = UserId;            
             DatabaseContext.Set<TModel>().Add(entity);
         }
         public virtual void Update(TModel entity, string UserId = null)
@@ -36,7 +35,10 @@ namespace CSRO.Server.Infrastructure
         public virtual void Remove(TModel entity, string UserId = null)
         {
             DatabaseContext.Entry(entity).State = EntityState.Deleted;
-            DatabaseContext.Set<TModel>().Remove(entity);
+            if (entity is EntitySoftDeleteBase)
+                (entity as EntitySoftDeleteBase).IsDeleted = true;            
+            else
+                DatabaseContext.Set<TModel>().Remove(entity);
             entity.ModifiedBy = UserId;
             entity.ModifiedAt = DateTime.UtcNow;
         }

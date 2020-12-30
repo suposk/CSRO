@@ -13,10 +13,6 @@ namespace CSRO.Server.Entities.Entity
 
         public string RequestedFor { get; set; }
 
-        public string CreatedBy { get; set; }
-
         public bool IsOnBehalf { get; set; }
-
-        public DateTime? CreatedAt { get; set; }
     }
 }

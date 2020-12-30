@@ -30,8 +30,6 @@ namespace CSRO.Server.Entities.Entity
 
         public string DetailsFormat { get; set; }
 
-        public DateTime CreatedAt { get; set; }
-
         public DateTime? ReleasedAt { get; set; }
     }
 }
