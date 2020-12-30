@@ -48,12 +48,12 @@ namespace CSRO.Client.Blazor.WebApp.Pages
         public async Task DeleteTicketAsync(Ticket ticket)
         {
             var parameters = new DialogParameters();
-            parameters.Add("ContentText", "Do you really want to delete these records? This process cannot be undone.");
+            parameters.Add("ContentText", $"Do you really want to delete these record {ticket.Id}-{ticket.Description}?");
             parameters.Add("ButtonText", "Delete");
             parameters.Add("Color", Color.Error);
 
-            var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
-            var userSelect = DialogService.Show<DialogTemplateExample_Dialog>("Delete", parameters, options);
+            var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Small };
+            var userSelect = DialogService.Show<DialogTemplateExample_Dialog>("Delete Ticket", parameters, options);
             var result = await userSelect.Result;
             if (!result.Cancelled)
             {
