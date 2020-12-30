@@ -4,7 +4,7 @@ using System.Text;
 
 namespace CSRO.Server.Domain
 {
-    public class TicketDto : DtoSoftDeleteBase
+    public class TicketDto : DtoBase
     {
         public int Id { get; set; }
 

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CSRO.Client.Services.Dtos
+namespace CSRO.Client.Services.Models
 {
-    public class DtoBase
+    public class ModelBase
     {
         public bool? IsDeleted { get; set; }
 

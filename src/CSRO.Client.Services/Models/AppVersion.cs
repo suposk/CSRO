@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CSRO.Client.Services.Models
 {
-    public class AppVersion
+    public class AppVersion : ModelBase
     {
         public int Id { get; set; }
 
@@ -21,8 +21,6 @@ namespace CSRO.Client.Services.Models
         public string Details { get; set; }
 
         public string DetailsFormat { get; set; }
-
-        public DateTime? CreatedAt { get; set; }
 
         public DateTime? ReleasedAt { get; set; }
     }

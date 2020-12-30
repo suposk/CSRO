@@ -8,6 +8,6 @@ namespace CSRO.Server.Infrastructure
 {
     public class EntitySoftDeleteBase : EntityBase
     {
-        public bool IsDeleted { get; set; }
+        public bool? IsDeleted { get; set; }
     }
 }

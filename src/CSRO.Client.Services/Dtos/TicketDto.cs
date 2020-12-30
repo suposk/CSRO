@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace CSRO.Client.Services.Dtos
 {
-    public class TicketDto : DtoSoftDeleteBase
+    public class TicketDto : DtoBase
     {
+        public bool? IsDeleted { get; set; }
+
         public int Id { get; set; }
 
         public string Description { get; set; }

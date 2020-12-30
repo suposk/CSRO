@@ -6,6 +6,8 @@ namespace CSRO.Server.Domain
 {
     public class DtoBase
     {
+        public bool? IsDeleted { get; set; }
+
         public DateTime? CreatedAt { get; set; }
 
         public string CreatedBy { get; set; }

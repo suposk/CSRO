@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CSRO.Client.Services.Dtos
 {
-    public class AppVersionDto : DtoSoftDeleteBase
+    public class AppVersionDto : DtoBase
     {
         public int Id { get; set; }
 

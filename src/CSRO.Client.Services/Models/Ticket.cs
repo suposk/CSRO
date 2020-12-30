@@ -9,7 +9,7 @@ namespace CSRO.Client.Services.Models
 {
     public enum OperatioType { Create, Edit, View }
 
-    public class Ticket
+    public class Ticket : ModelBase
     {
         public int Id { get; set; }
 
@@ -17,15 +17,9 @@ namespace CSRO.Client.Services.Models
         public string Description { get; set; }
 
         [Required]
-        public string RequestedFor { get; set; }
-
-        public string CreatedBy { get; set; }
+        public string RequestedFor { get; set; }        
 
         public bool IsOnBehalf { get; set; }        
-
-        public DateTime? CreatedAt { get; set; }
-
-        public DateTime? ModifiedAt { get; set; }
 
     }
 

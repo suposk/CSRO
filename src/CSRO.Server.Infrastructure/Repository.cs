@@ -34,13 +34,17 @@ namespace CSRO.Server.Infrastructure
 
         public virtual void Remove(TModel entity, string UserId = null)
         {
-            DatabaseContext.Entry(entity).State = EntityState.Deleted;
             if (entity is EntitySoftDeleteBase)
-                (entity as EntitySoftDeleteBase).IsDeleted = true;            
+            {
+                (entity as EntitySoftDeleteBase).IsDeleted = true;
+                Update(entity, UserId);
+            }
             else
+            {
+                DatabaseContext.Entry(entity).State = EntityState.Deleted;
                 DatabaseContext.Set<TModel>().Remove(entity);
-            entity.ModifiedBy = UserId;
-            entity.ModifiedAt = DateTime.UtcNow;
+                DatabaseContext.Entry(entity).State = EntityState.Modified;
+            }
         }
 
         public virtual Task<TModel> GetByFilter(Expression<Func<TModel, bool>> expression, params Expression<Func<TModel, object>>[] includes)
