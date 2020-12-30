@@ -9,16 +9,14 @@ namespace CSRO.Server.Infrastructure
 {
     public interface IRepository<TModel> where TModel : class
     {
-        DbContext DatabaseContext { get; }
+        DbContext DatabaseContext { get; }                
 
-        TModel Get(int id);
-
-        Task<TModel> GetAsync(int id);
-        List<TModel> GetAll();
+        Task<TModel> GetAsync(int id);        
 
         Task<List<TModel>> GetAllAsync();
         void Add(TModel entity);
         void Remove(TModel entity);
+        void Update(TModel entity);
 
         Task<bool> SaveChangesAsync();
         Task<TModel> GetByFilter(Expression<Func<TModel, bool>> expression, params Expression<Func<TModel, object>>[] includes);

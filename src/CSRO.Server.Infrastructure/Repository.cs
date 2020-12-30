@@ -17,17 +17,22 @@ namespace CSRO.Server.Infrastructure
             this.DatabaseContext = context;
         }
 
-        public void Add(TModel entity)
+        public virtual void Add(TModel entity)
         {
             DatabaseContext.Set<TModel>().Add(entity);
         }
-
-        public TModel Get(int id)
+        public virtual void Update(TModel entity)
         {
-            return DatabaseContext.Set<TModel>().Find(id);
+            DatabaseContext.Entry(entity).State = EntityState.Modified;
         }
 
-        public Task<TModel> GetByFilter(Expression<Func<TModel, bool>> expression, params Expression<Func<TModel, object>>[] includes)
+        public virtual void Remove(TModel entity)
+        {
+            DatabaseContext.Entry(entity).State = EntityState.Deleted;
+            DatabaseContext.Set<TModel>().Remove(entity);
+        }
+
+        public virtual Task<TModel> GetByFilter(Expression<Func<TModel, bool>> expression, params Expression<Func<TModel, object>>[] includes)
         {
             DbSet<TModel> dbSet = DatabaseContext.Set<TModel>();
             IQueryable<TModel> query = null;
@@ -38,40 +43,26 @@ namespace CSRO.Server.Infrastructure
             return query.FirstOrDefaultAsync(expression);
         }
 
-        public Task<TModel> GetByFilter(Expression<Func<TModel, bool>> expression)
+        public virtual Task<TModel> GetByFilter(Expression<Func<TModel, bool>> expression)
         {
             return DatabaseContext.Set<TModel>().FirstOrDefaultAsync(expression);
         }
 
-        public List<TModel> GetAll()
-        {
-            return DatabaseContext.Set<TModel>().ToList();
-        }
-
-        public Task<List<TModel>> GetAllAsync()
+        public virtual Task<List<TModel>> GetAllAsync()
         {
             return DatabaseContext.Set<TModel>().ToListAsync();
         }
 
-        public async Task<TModel> GetAsync(int id)
+        public virtual async Task<TModel> GetAsync(int id)
         {
             return await DatabaseContext.Set<TModel>().FindAsync(id);
         }
 
-        public void Remove(TModel entity)
-        {
-            DatabaseContext.Entry(entity).State = EntityState.Deleted;
-            DatabaseContext.Set<TModel>().Remove(entity);
-        }
-
-        public async Task<bool> SaveChangesAsync()
+        public virtual async Task<bool> SaveChangesAsync()
         {
             return await DatabaseContext.SaveChangesAsync() >= 0;
         }
 
-        public void UpdateGeneric<T>(T entity) where T : class
-        {
-            DatabaseContext.Entry(entity).State = EntityState.Modified;
-        }
+
     }
 }

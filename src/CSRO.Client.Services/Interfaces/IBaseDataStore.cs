@@ -9,7 +9,8 @@ namespace CSRO.Client.Services
     public interface IBaseDataStore<T>
     {
         Task<T> AddItemAsync(T item);
-        Task<T> UpdateItemAsync(T item);
+        //Task<T> UpdateItemAsync(T item);
+        Task<bool> UpdateItemAsync(T item);
         Task<bool> DeleteItemAsync(int id);
         Task<T> GetItemByIdAsync(int id);
         Task<List<T>> GetItemsAsync(bool forceRefresh = false);

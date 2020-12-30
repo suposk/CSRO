@@ -69,9 +69,13 @@ namespace CSRO.Client.Blazor.WebApp.Components
                             model = added;
                         }
                     }
-                    else
+                    else if (OperationTypeTicket == OperatioType.Edit)
                     {
-
+                        var updated = await TicketDataStore.UpdateItemAsync(model);
+                        if (updated)
+                        {
+                            Success = true;                            
+                        }
                     }
                     StateHasChanged();
                 }
@@ -84,7 +88,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
         public void GoBack()
         {
-            NavigationManager.NavigateTo("/");
+            NavigationManager.NavigateTo("/ticketsview");
         }
 
 

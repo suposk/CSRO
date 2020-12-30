@@ -60,9 +60,27 @@ namespace CSRO.Client.Services.Models
             return null;
         }
 
-        public Task<bool> DeleteItemAsync(int id)
+        public async Task<bool> DeleteItemAsync(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                //user_impersonation
+                //var apiToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new string[] { scope });
+                //_httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
+
+                var url = $"{_apiPart}{id}";
+                var apiData = await _httpClient.DeleteAsync(url).ConfigureAwait(false);
+
+                if (apiData.IsSuccessStatusCode)
+                {
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            return false;
         }
 
         public async Task<Ticket> GetItemByIdAsync(int id)
@@ -127,9 +145,29 @@ namespace CSRO.Client.Services.Models
             throw new NotImplementedException();
         }
 
-        public Task<Ticket> UpdateItemAsync(Ticket item)
+        public async Task<bool> UpdateItemAsync(Ticket item)
         {
-            throw new NotImplementedException();
+            try
+            {
+                //user_impersonation
+                //var apiToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new string[] { scope });
+                //_httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
+
+                var url = $"{_apiPart}";
+                var add = _mapper.Map<TicketDto>(item);
+                var httpcontent = new StringContent(JsonSerializer.Serialize(add, _options), Encoding.UTF8, "application/json");
+                var apiData = await _httpClient.PutAsync(url, httpcontent).ConfigureAwait(false);
+
+                if (apiData.IsSuccessStatusCode)
+                {
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            return false;
         }
     }
 }

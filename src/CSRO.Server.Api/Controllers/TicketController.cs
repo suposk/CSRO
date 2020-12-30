@@ -23,7 +23,7 @@ namespace CSRO.Server.Api.Controllers
     {
         private readonly ILogger<TicketController> _logger;
         //private readonly IRepository<Ticket> _repository;
-        private readonly ITicketRepository _ticketRepository;
+        private readonly ITicketRepository _repository;
         private readonly IMapper _mapper;
 
         public TicketController(ILogger<TicketController> logger,
@@ -33,7 +33,7 @@ namespace CSRO.Server.Api.Controllers
         {
             _logger = logger;
             //_repository = repository;
-            _ticketRepository = ticketRepository;
+            _repository = ticketRepository;
             _mapper = mapper;
         }
 
@@ -45,12 +45,13 @@ namespace CSRO.Server.Api.Controllers
             {
                 _logger.LogInformation(ApiLogEvents.GetAllItems, $"{nameof(Get)} Started");
 
-                var all = await _ticketRepository.GetAllAsync();
+                var all = await _repository.GetAllAsync();
                 var result = _mapper.Map<List<TicketDto>>(all);
                 return result;
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, nameof(Get), null);
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
@@ -67,7 +68,7 @@ namespace CSRO.Server.Api.Controllers
             {
                 _logger.LogInformation(ApiLogEvents.GetItem, $"{nameof(GetTicket)} with {id} Started");
 
-                var repoObj = await _ticketRepository.GetAsync(id);
+                var repoObj = await _repository.GetAsync(id);
                 if (repoObj == null)
                     return NotFound();
 
@@ -77,8 +78,8 @@ namespace CSRO.Server.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, nameof(GetTicket), null);
-                throw;
+                _logger.LogError(ex, nameof(GetTicket), id);
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
 
@@ -95,8 +96,8 @@ namespace CSRO.Server.Api.Controllers
 
                 var repoObj = _mapper.Map<Ticket>(dto);
                 repoObj.CreatedAt = DateTime.UtcNow; //refactor
-                _ticketRepository.Add(repoObj);
-                if (await _ticketRepository.SaveChangesAsync())
+                _repository.Add(repoObj);
+                if (await _repository.SaveChangesAsync())
                 {
                     var result = _mapper.Map<TicketDto>(repoObj);
                     return CreatedAtRoute("GetTicket",
@@ -106,8 +107,75 @@ namespace CSRO.Server.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, nameof(PostTicket), null);
-                throw;
+                _logger.LogError(ex, nameof(PostTicket), dto);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+            return null;
+        }
+
+        // PUT: api/Churchs/5
+        [HttpPut()]
+        public async Task<ActionResult<TicketDto>> PutTicket(TicketDto dto)
+        {
+            if (dto == null || dto.Id < 1)
+                return BadRequest();
+
+            TicketDto result = null;
+            try
+            {
+                _logger.LogInformation(ApiLogEvents.UpdateItem, $"{nameof(PutTicket)} Started");
+
+                var repoObj = await _repository.GetAsync(dto.Id);
+                if (repoObj == null)
+                {
+                    _logger.LogWarning(ApiLogEvents.UpdateItemNotFound, $"{nameof(PutTicket)} not found");
+                    return NotFound();
+                }
+
+                repoObj = _mapper.Map<Ticket>(dto);
+                _repository.Update(repoObj);
+                if (await _repository.SaveChangesAsync())
+                {
+                    return NoContent();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, nameof(PutTicket), dto);
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+            return result;
+        }
+
+        // DELETE: api/ApiWithActions/5
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteTicket(int id)
+        {
+            if (id < 1)
+                return BadRequest();
+
+            try
+            {
+                _logger.LogInformation(ApiLogEvents.DeleteItem, $"{nameof(DeleteTicket)} Started");
+
+                var repoObj = await _repository.GetAsync(id);
+                if (repoObj == null)
+                {
+                    _logger.LogWarning(ApiLogEvents.DeleteItemNotFound, $"{nameof(DeleteTicket)} not found");
+                    return NotFound();
+                }
+
+                _repository.Remove(repoObj);
+                if (await _repository.SaveChangesAsync())
+                {
+                    return NoContent();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, nameof(DeleteTicket), id);
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
             return null;
         }

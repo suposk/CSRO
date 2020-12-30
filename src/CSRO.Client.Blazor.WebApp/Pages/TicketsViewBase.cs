@@ -57,7 +57,11 @@ namespace CSRO.Client.Blazor.WebApp.Pages
             var result = await userSelect.Result;
             if (!result.Cancelled)
             {
-                Tickets.Remove(ticket);
+                var res = await TicketDataStore.DeleteItemAsync(ticket.Id);
+                if (res)
+                {
+                    Tickets.Remove(ticket);
+                }
             }
         }
 

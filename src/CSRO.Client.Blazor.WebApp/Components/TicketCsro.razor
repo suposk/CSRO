@@ -12,9 +12,9 @@
                 <MudCardContent>
                     @if (OperationTypeTicket != OperatioType.Create)
                     {
-                    <MudTextField Label="Id"                                  
-                                  Disabled="true"
-                                  @bind-Value="model.Id" For="@(() => model.Id)" />
+                        <MudTextField Label="Id"
+                                      Disabled="true"
+                                      @bind-Value="model.Id" For="@(() => model.Id)" />
                     }
                     <MudCheckBox Label="On Behalf" Class="mt-3" @bind-Checked="model.IsOnBehalf"
                                  Disabled="@IsReadOnly"
@@ -67,8 +67,7 @@
     }
     else
     {
-        <div>
-            Something went wrong
-        </div>
+        <MudText Color="Color.Success" Typo="Typo.h4">Success</MudText>
+        <MudButton OnClick="GoBack" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary">Go Back</MudButton>
     }
 </div>
