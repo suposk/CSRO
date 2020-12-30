@@ -19,10 +19,12 @@ namespace CSRO.Server.Infrastructure
 
         public virtual void Add(TModel entity, string UserId = null)
         {
-            DatabaseContext.Entry(entity).State = EntityState.Added;
-            DatabaseContext.Set<TModel>().Add(entity);
             entity.CreatedBy = UserId;
             entity.CreatedAt = DateTime.UtcNow;
+            entity.ModifiedAt = DateTime.UtcNow;
+            entity.ModifiedBy = UserId;
+            //DatabaseContext.Entry(entity).State = EntityState.Added;
+            DatabaseContext.Set<TModel>().Add(entity);
         }
         public virtual void Update(TModel entity, string UserId = null)
         {
