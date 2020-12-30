@@ -1,4 +1,5 @@
 ﻿@inherits TicketCsroBase
+@using CSRO.Client.Services.Models
 
 <div>
     <MudText Typo="Typo.h3" GutterBottom="true">@Title</MudText>
@@ -9,6 +10,12 @@
             <DataAnnotationsValidator />
             <MudCard>
                 <MudCardContent>
+                    @if (OperationTypeTicket != OperatioType.Create)
+                    {
+                    <MudTextField Label="Id"                                  
+                                  Disabled="true"
+                                  @bind-Value="model.Id" For="@(() => model.Id)" />
+                    }
                     <MudCheckBox Label="On Behalf" Class="mt-3" @bind-Checked="model.IsOnBehalf"
                                  Disabled="@IsReadOnly"
                                  @bind-Value="model.IsOnBehalf" For="@(() => model.IsOnBehalf)" />
@@ -61,7 +68,7 @@
     else
     {
         <div>
-            Not Saved
+            Something went wrong
         </div>
     }
 </div>
