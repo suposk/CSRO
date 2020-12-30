@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CSRO.Client.Services.Dtos
 {
-    public class TicketDto
+    public class TicketDto : DtoSoftDeleteBase
     {
         public int Id { get; set; }
 
@@ -14,10 +14,6 @@ namespace CSRO.Client.Services.Dtos
 
         public string RequestedFor { get; set; }
 
-        public string CreatedBy { get; set; }
-
         public bool IsOnBehalf { get; set; }
-
-        public DateTime? CreatedAt { get; set; }
     }
 }

@@ -4,7 +4,7 @@ using System.Text;
 
 namespace CSRO.Server.Domain
 {
-    public class TicketDto
+    public class TicketDto : DtoSoftDeleteBase
     {
         public int Id { get; set; }
 
@@ -12,10 +12,6 @@ namespace CSRO.Server.Domain
 
         public string RequestedFor { get; set; }
 
-        public string CreatedBy { get; set; }
-
         public bool IsOnBehalf { get; set; }
-
-        public DateTime? CreatedAt { get; set; }
     }
 }

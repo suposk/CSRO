@@ -20,6 +20,7 @@
                 <MudTh><MudTableSortLabel SortBy="new Func<Ticket, object>(x=>x.IsOnBehalf)">Is OnBehalf</MudTableSortLabel></MudTh>
                 <MudTh><MudTableSortLabel SortBy="new Func<Ticket, object>(x=>x.Description)">Description</MudTableSortLabel></MudTh>
                 <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Ticket, object>(x=>x.CreatedAt)">Created At</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Ticket, object>(x=>x.ModifiedAt)">ModifiedAt At</MudTableSortLabel></MudTh>
             </HeaderContent>
             <RowTemplate>
                 <MudTd DataLabel="Id">@context.Id</MudTd>
@@ -28,6 +29,7 @@
                 <MudTd DataLabel="Is OnBehalf">@context.IsOnBehalf</MudTd>
                 <MudTd DataLabel="Description">@context.Description</MudTd>
                 <MudTd DataLabel="Created At">@context.CreatedAt</MudTd>
+                <MudTd DataLabel="ModifiedAt At">@context.ModifiedAt</MudTd>
                 <MudPaper Class="demo-grid-paper" Elevation="0">
                     <MudTooltip Text="Edit" Delayed="1">
                         <MudIconButton Link="@($"ticketedit/{context.Id}")" Icon="@Icons.Material.Edit"></MudIconButton>
@@ -39,18 +41,18 @@
                         <MudIconButton OnClick="@(e => DeleteTicketAsync(context))" Icon="@Icons.Material.Delete"></MudIconButton>
                     </MudTooltip>
                 </MudPaper>
-            @*<div>
-                <div class="d-inline pa-2">
-                    <MudTooltip Text="Edit" Delayed="1">
-                        <MudNavLink Href="@($"ticketedit/{context.Id}")" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Edit"></MudNavLink>
-                    </MudTooltip>
-                </div>
-                <div class="d-inline pa-2">
-                    <MudTooltip Text="Details">
-                        <MudNavLink Href="@($"ticketedit/{context.Id}")" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Info"></MudNavLink>
-                    </MudTooltip>
-                </div>
-            </div>*@
+                @*<div>
+            <div class="d-inline pa-2">
+                <MudTooltip Text="Edit" Delayed="1">
+                    <MudNavLink Href="@($"ticketedit/{context.Id}")" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Edit"></MudNavLink>
+                </MudTooltip>
+            </div>
+            <div class="d-inline pa-2">
+                <MudTooltip Text="Details">
+                    <MudNavLink Href="@($"ticketedit/{context.Id}")" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Info"></MudNavLink>
+                </MudTooltip>
+            </div>
+        </div>*@
             </RowTemplate>
             <PagerContent>
                 <MudTablePager PageSizeOptions="new int[]{10, 20, 50}" />

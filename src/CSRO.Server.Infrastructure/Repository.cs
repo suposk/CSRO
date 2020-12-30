@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace CSRO.Server.Infrastructure
 {
-    public class Repository<TModel> : IRepository<TModel> where TModel : class
+    public class Repository<TModel> : IRepository<TModel> where TModel : EntityBase
     {
         public DbContext DatabaseContext { get; private set; }
 
@@ -17,19 +17,26 @@ namespace CSRO.Server.Infrastructure
             this.DatabaseContext = context;
         }
 
-        public virtual void Add(TModel entity)
+        public virtual void Add(TModel entity, string UserId = null)
         {
+            DatabaseContext.Entry(entity).State = EntityState.Added;
             DatabaseContext.Set<TModel>().Add(entity);
+            entity.CreatedBy = UserId;
+            entity.CreatedAt = DateTime.UtcNow;
         }
-        public virtual void Update(TModel entity)
+        public virtual void Update(TModel entity, string UserId = null)
         {
             DatabaseContext.Entry(entity).State = EntityState.Modified;
+            entity.ModifiedBy = UserId;
+            entity.ModifiedAt = DateTime.UtcNow;
         }
 
-        public virtual void Remove(TModel entity)
+        public virtual void Remove(TModel entity, string UserId = null)
         {
             DatabaseContext.Entry(entity).State = EntityState.Deleted;
             DatabaseContext.Set<TModel>().Remove(entity);
+            entity.ModifiedBy = UserId;
+            entity.ModifiedAt = DateTime.UtcNow;
         }
 
         public virtual Task<TModel> GetByFilter(Expression<Func<TModel, bool>> expression, params Expression<Func<TModel, object>>[] includes)

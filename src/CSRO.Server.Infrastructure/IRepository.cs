@@ -14,9 +14,9 @@ namespace CSRO.Server.Infrastructure
         Task<TModel> GetAsync(int id);        
 
         Task<List<TModel>> GetAllAsync();
-        void Add(TModel entity);
-        void Remove(TModel entity);
-        void Update(TModel entity);
+        void Add(TModel entity, string UserId = null);
+        void Remove(TModel entity, string UserId = null);
+        void Update(TModel entity, string UserId = null);
 
         Task<bool> SaveChangesAsync();
         Task<TModel> GetByFilter(Expression<Func<TModel, bool>> expression, params Expression<Func<TModel, object>>[] includes);

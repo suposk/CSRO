@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CSRO.Server.Infrastructure;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -13,7 +14,7 @@ namespace CSRO.Server.Entities.Entity
     }
 
 
-    public class AppVersion
+    public class AppVersion: EntityBase
     {
         public int Id { get; set; }
 

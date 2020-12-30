@@ -12,7 +12,7 @@ namespace CSRO.Server.Domain
         CloseApplication = 3
     }
 
-    public class AppVersionDto
+    public class AppVersionDto: DtoBase
     {
         public int Id { get; set; }
 
@@ -27,8 +27,6 @@ namespace CSRO.Server.Domain
         public string Details { get; set; }
 
         public string DetailsFormat { get; set; }
-
-        public DateTime CreatedAt { get; set; }
 
         public DateTime? ReleasedAt { get; set; }
     }

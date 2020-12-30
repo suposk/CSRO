@@ -1,10 +1,11 @@
-﻿using System;
+﻿using CSRO.Server.Infrastructure;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace CSRO.Server.Entities.Entity
 {
-    public class Ticket
+    public class Ticket : EntitySoftDeleteBase
     {
         public int Id { get; set; }
 
