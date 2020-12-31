@@ -47,7 +47,7 @@ namespace CSRO.Server.Infrastructure
             }
         }
 
-        public virtual Task<TModel> GetByFilter(Expression<Func<TModel, bool>> expression, params Expression<Func<TModel, object>>[] includes)
+        public virtual Task<TModel> GetFilter(Expression<Func<TModel, bool>> expression, params Expression<Func<TModel, object>>[] includes)
         {
             DbSet<TModel> dbSet = DatabaseContext.Set<TModel>();
             IQueryable<TModel> query = null;
@@ -58,19 +58,36 @@ namespace CSRO.Server.Infrastructure
             return query.FirstOrDefaultAsync(expression);
         }
 
-        public virtual Task<TModel> GetByFilter(Expression<Func<TModel, bool>> expression)
+        public virtual Task<TModel> GetFilter(Expression<Func<TModel, bool>> expression)
         {
             return DatabaseContext.Set<TModel>().FirstOrDefaultAsync(expression);
         }
 
-        public virtual Task<List<TModel>> GetAllAsync()
+        public virtual Task<List<TModel>> GetList()
         {
             return DatabaseContext.Set<TModel>().ToListAsync();
         }
 
-        public virtual async Task<TModel> GetAsync(int id)
+        public virtual async Task<TModel> GetId(int id)
         {
             return await DatabaseContext.Set<TModel>().FindAsync(id);
+        }
+
+        public virtual Task<List<TModel>> GetListFilter(Expression<Func<TModel, bool>> expression)
+        {
+            return DatabaseContext.Set<TModel>().Where(expression).ToListAsync();
+        }
+
+        public virtual Task<List<TModel>> GetListFilter(Expression<Func<TModel, bool>> expression, params Expression<Func<TModel, object>>[] includes)
+        {
+            DbSet<TModel> dbSet = DatabaseContext.Set<TModel>();
+            IQueryable<TModel> query = null;
+            foreach (var includeExpression in includes)
+            {
+                query = dbSet.Include(includeExpression);
+            }
+
+            return query.Where(expression).ToListAsync();
         }
 
         public virtual async Task<bool> SaveChangesAsync()

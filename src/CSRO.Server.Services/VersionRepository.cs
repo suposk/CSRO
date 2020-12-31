@@ -25,7 +25,7 @@ namespace CSRO.Server.Services
 
         public async Task<AppVersion> GetVersion(string version)
         {
-            var exist = await _repository.GetByFilter(a => a.VersionFull == version);
+            var exist = await _repository.GetFilter(a => a.VersionFull == version);
             var q = _context.AppVersions.Where(e => !_context.AppVersions.Any(e2 => e2.VersionValue > e.VersionValue));
             var max = await q.FirstOrDefaultAsync();
             return max;

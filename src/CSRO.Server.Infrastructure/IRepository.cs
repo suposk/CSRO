@@ -11,15 +11,17 @@ namespace CSRO.Server.Infrastructure
     {
         DbContext DatabaseContext { get; }                
 
-        Task<TModel> GetAsync(int id);        
+        Task<TModel> GetId(int id);        
 
-        Task<List<TModel>> GetAllAsync();
+        Task<List<TModel>> GetList();
         void Add(TModel entity, string UserId = null);
         void Remove(TModel entity, string UserId = null);
         void Update(TModel entity, string UserId = null);
 
         Task<bool> SaveChangesAsync();
-        Task<TModel> GetByFilter(Expression<Func<TModel, bool>> expression, params Expression<Func<TModel, object>>[] includes);
-        Task<TModel> GetByFilter(Expression<Func<TModel, bool>> expression);
+        Task<TModel> GetFilter(Expression<Func<TModel, bool>> expression, params Expression<Func<TModel, object>>[] includes);
+        Task<TModel> GetFilter(Expression<Func<TModel, bool>> expression);
+        Task<List<TModel>> GetListFilter(Expression<Func<TModel, bool>> expression);
+        Task<List<TModel>> GetListFilter(Expression<Func<TModel, bool>> expression, params Expression<Func<TModel, object>>[] includes);        
     }
 }

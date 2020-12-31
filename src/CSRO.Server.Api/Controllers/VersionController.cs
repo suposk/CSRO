@@ -45,7 +45,7 @@ namespace CSRO.Server.Api.Controllers
             {
                 _logger.LogInformation(ApiLogEvents.GetAllItems, $"{nameof(Get)} Started");
 
-                var all = await _repository.GetAllAsync();
+                var all = await _repository.GetList();
                 var result = _mapper.Map<List<AppVersionDto>>(all);
                 return result;
             }

@@ -45,7 +45,7 @@ namespace CSRO.Server.Api.Controllers
             {
                 _logger.LogInformation(ApiLogEvents.GetAllItems, $"{nameof(Get)} Started");
 
-                var all = await _repository.GetAllAsync();
+                var all = await _repository.GetList();
                 var result = _mapper.Map<List<TicketDto>>(all);
                 return result;
             }
@@ -68,7 +68,7 @@ namespace CSRO.Server.Api.Controllers
             {
                 _logger.LogInformation(ApiLogEvents.GetItem, $"{nameof(GetTicket)} with {id} Started");
 
-                var repoObj = await _repository.GetAsync(id);
+                var repoObj = await _repository.GetId(id);
                 if (repoObj == null)
                     return NotFound();
 
@@ -124,7 +124,7 @@ namespace CSRO.Server.Api.Controllers
             {
                 _logger.LogInformation(ApiLogEvents.UpdateItem, $"{nameof(PutTicket)} Started");
 
-                var repoObj = await _repository.GetAsync(dto.Id);
+                var repoObj = await _repository.GetId(dto.Id);
                 if (repoObj == null)
                 {
                     _logger.LogWarning(ApiLogEvents.UpdateItemNotFound, $"{nameof(PutTicket)} not found");
@@ -157,7 +157,7 @@ namespace CSRO.Server.Api.Controllers
             {
                 _logger.LogInformation(ApiLogEvents.DeleteItem, $"{nameof(DeleteTicket)} Started");
 
-                var repoObj = await _repository.GetAsync(id);
+                var repoObj = await _repository.GetId(id);
                 if (repoObj == null)
                 {
                     _logger.LogWarning(ApiLogEvents.DeleteItemNotFound, $"{nameof(DeleteTicket)} not found");
