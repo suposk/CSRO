@@ -147,7 +147,7 @@ namespace CSRO.Client.Blazor.WebApp
 
             app.UseEndpoints(endpoints =>
             {
-                //endpoints.MapControllers();
+                endpoints.MapControllers();
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
             });
