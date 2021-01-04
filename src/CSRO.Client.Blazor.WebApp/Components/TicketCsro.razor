@@ -2,8 +2,8 @@
 @using CSRO.Client.Services.Models
 
 <MudContainer>
-    <div style="max-width: 50%">
-        <MudText Typo="Typo.h3" GutterBottom="true">@Title</MudText>
+    <div style="max-width: 50%" class="m-4">
+        <MudText Typo="Typo.h4" GutterBottom="true">@Title</MudText>
 
         @if (Success == false)
         {
@@ -17,7 +17,7 @@
                                           Disabled="true"
                                           @bind-Value="model.Id" For="@(() => model.Id)" />
                         }
-                        <MudCheckBox Label="On Behalf" Class="mt-3" @bind-Checked="model.IsOnBehalf"
+                        <MudCheckBox Label="On Behalf" @bind-Checked="model.IsOnBehalf"
                                      Disabled="@IsReadOnly"
                                      @bind-Value="model.IsOnBehalf" For="@(() => model.IsOnBehalf)" />
 

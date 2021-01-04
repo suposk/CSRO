@@ -3,8 +3,8 @@
 @using CSRO.Client.Services.Models;
 
 
-<MudContainer MaxWidth="MaxWidth.Large" Class="mt-16">
-    <MudText Typo="Typo.h3" GutterBottom="true">List Of Tickes</MudText>
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-6">
+    <MudText Typo="Typo.h4" GutterBottom="true">Tickes count: @Tickets?.Count</MudText>
     <MudText Class="mb-8">List of Available.....</MudText>
     @if (Tickets == null)
     {
