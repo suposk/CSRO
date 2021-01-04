@@ -1,12 +1,13 @@
 ﻿@*<AuthorizeView>
         <Authorized>
             Hello, @context.User.Identity.Name!
-            <a href="MicrosoftIdentity/Account/SignOut">Log out</a>
+            <a class="oi-account-login" href="MicrosoftIdentity/Account/SignOut">Log out</a>
         </Authorized>
         <NotAuthorized>
-            <a href="MicrosoftIdentity/Account/SignIn">Log in</a>
+            <a class="oi-account-logout" href="MicrosoftIdentity/Account/SignIn">Log in</a>
         </NotAuthorized>
-    </AuthorizeView>*@
+</AuthorizeView>*@
+
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Components.Authorization
 @inject AuthenticationStateProvider AuthenticationStateProvider
