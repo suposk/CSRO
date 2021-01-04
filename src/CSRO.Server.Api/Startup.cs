@@ -63,28 +63,22 @@ namespace CSRO.Server.Api
             services.AddScoped<IRepository<AppVersion>>(sp =>
             {
                 var serviceProvider = services.BuildServiceProvider();
+                var apiIdentity = serviceProvider.GetService<IApiIdentity>();
                 var ctx = serviceProvider.GetService<AppVersionContext>();
-
-                //var ctx = new AppVersionContext(Configuration.GetConnectionString("SqlLiteConnString"));
-                //if (ctx.ChangeTracker != null)
-                //    ctx.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
-                IRepository<AppVersion> obj = new Repository<AppVersion>(ctx);
+                IRepository<AppVersion> obj = new Repository<AppVersion>(ctx, apiIdentity);
                 return obj;
             });
             services.AddScoped<ITicketRepository, TicketRepository>();
             services.AddScoped<IRepository<Ticket>>(sp =>
             {
                 var serviceProvider = services.BuildServiceProvider();
+                var apiIdentity = serviceProvider.GetService<IApiIdentity>();
                 var ctx = serviceProvider.GetService<AppVersionContext>();
-
-                //var ctx = new AppVersionContext(Configuration.GetConnectionString("SqlLiteConnString"));
-                //if (ctx.ChangeTracker != null)
-                //    ctx.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
-                IRepository<Ticket> obj = new Repository<Ticket>(ctx);
+                IRepository<Ticket> obj = new Repository<Ticket>(ctx, apiIdentity);
                 return obj;
             });
 
-
+            services.AddScoped<IApiIdentity, ApiIdentity>();
             services.AddDbContext<AppVersionContext>(options =>
             {
                 //sql Lite                

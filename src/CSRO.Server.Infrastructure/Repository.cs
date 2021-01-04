@@ -11,15 +11,17 @@ namespace CSRO.Server.Infrastructure
     public class Repository<TModel> : IRepository<TModel> where TModel : EntityBase
     {
         public DbContext DatabaseContext { get; private set; }
+        public IApiIdentity ApiIdentity { get; }
 
-        public Repository(DbContext context)
+        public Repository(DbContext context, IApiIdentity apiIdentity)
         {
-            this.DatabaseContext = context;
+            DatabaseContext = context;
+            ApiIdentity = apiIdentity;
         }
 
         public virtual void Add(TModel entity, string UserId = null)
         {
-            entity.CreatedBy = UserId;
+            entity.CreatedBy = UserId ?? ApiIdentity.GetUserName();
             entity.CreatedAt = DateTime.UtcNow;
             //entity.ModifiedAt = DateTime.UtcNow;
             //entity.ModifiedBy = UserId;            
@@ -28,7 +30,7 @@ namespace CSRO.Server.Infrastructure
         public virtual void Update(TModel entity, string UserId = null)
         {
             DatabaseContext.Entry(entity).State = EntityState.Modified;
-            entity.ModifiedBy = UserId;
+            entity.ModifiedBy = UserId ?? ApiIdentity.GetUserName();
             entity.ModifiedAt = DateTime.UtcNow;
         }
 
@@ -37,13 +39,13 @@ namespace CSRO.Server.Infrastructure
             if (entity is EntitySoftDeleteBase)
             {
                 (entity as EntitySoftDeleteBase).IsDeleted = true;
-                Update(entity, UserId);
+                Update(entity, UserId ?? ApiIdentity.GetUserName());
             }
             else
             {
                 DatabaseContext.Entry(entity).State = EntityState.Deleted;
                 DatabaseContext.Set<TModel>().Remove(entity);
-                DatabaseContext.Entry(entity).State = EntityState.Modified;
+                //DatabaseContext.Entry(entity).State = EntityState.Modified;
             }
         }
 

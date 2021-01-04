@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CSRO.Client.Services;
 using CSRO.Client.Services.Dtos;
+using CSRO.Client.Services.Models;
 using Microsoft.Identity.Web;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace CSRO.Client.Services.Models
+namespace CSRO.Client.Services
 {
     public class TicketDataStore : IBaseDataStore<Ticket>
     {
@@ -37,8 +38,8 @@ namespace CSRO.Client.Services.Models
             try
             {
                 //user_impersonation
-                //var apiToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new string[] { scope });
-                //_httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
+                var apiToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new string[] { scope });
+                _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
 
                 var url = $"{_apiPart}";
                 var add = _mapper.Map<TicketDto>(item);
@@ -65,8 +66,8 @@ namespace CSRO.Client.Services.Models
             try
             {
                 //user_impersonation
-                //var apiToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new string[] { scope });
-                //_httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
+                var apiToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new string[] { scope });
+                _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
 
                 var url = $"{_apiPart}{id}";
                 var apiData = await _httpClient.DeleteAsync(url).ConfigureAwait(false);
@@ -88,8 +89,8 @@ namespace CSRO.Client.Services.Models
             try
             {
                 //user_impersonation
-                //var apiToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new string[] { scope });
-                //_httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
+                var apiToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new string[] { scope });
+                _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
 
                 var url = $"{_apiPart}{id}";
                 var apiData = await _httpClient.GetAsync(url).ConfigureAwait(false);
@@ -114,8 +115,8 @@ namespace CSRO.Client.Services.Models
             try
             {
                 //user_impersonation
-                //var apiToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new string[] { scope });
-                //_httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
+                var apiToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new string[] { scope });
+                _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
 
                 var url = $"{_apiPart}";
                 var apiData = await _httpClient.GetAsync(url).ConfigureAwait(false);
@@ -150,8 +151,8 @@ namespace CSRO.Client.Services.Models
             try
             {
                 //user_impersonation
-                //var apiToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new string[] { scope });
-                //_httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
+                var apiToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new string[] { scope });
+                _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
 
                 var url = $"{_apiPart}";
                 var add = _mapper.Map<TicketDto>(item);
