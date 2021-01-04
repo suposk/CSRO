@@ -1,0 +1,63 @@
+﻿@*<AuthorizeView>
+        <Authorized>
+            Hello, @context.User.Identity.Name!
+            <a class="oi-account-login" href="MicrosoftIdentity/Account/SignOut">Log out</a>
+        </Authorized>
+        <NotAuthorized>
+            <a class="oi-account-logout" href="MicrosoftIdentity/Account/SignIn">Log in</a>
+        </NotAuthorized>
+</AuthorizeView>*@
+
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<div>
+    @if (_isAuthenticated)
+    {        
+        <MudText Class="m-1">@_name</MudText>    
+        <MudNavLink
+                    Class="m-1"
+                    Href="MicrosoftIdentity/Account/SignOut" 
+                    Target="_blank"
+                    Match="NavLinkMatch.Prefix">Log out</MudNavLink>
+    }
+    else
+    {                
+        <MudNavLink Href="MicrosoftIdentity/Account/SignIn" Match="NavLinkMatch.Prefix" Target="_blank">Log in</MudNavLink>                    
+    }
+</div>
+
+@code {
+    private string _authMessage;
+    private bool _isAuthenticated = false;
+    private string _surnameMessage;
+    private string _name;
+    private IEnumerable<Claim> _claims = Enumerable.Empty<Claim>();
+
+    protected async override Task OnInitializedAsync()
+    {
+        await GetClaimsPrincipalData();
+    }
+
+    private async Task GetClaimsPrincipalData()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        _isAuthenticated = user.Identity.IsAuthenticated;
+        if (user.Identity.IsAuthenticated)
+        {
+            _name = user.Identity.Name;
+            _authMessage = $"{user.Identity.Name} is authenticated.";
+            _claims = user.Claims;
+            _surnameMessage =
+                $"Surname: {user.FindFirst(c => c.Type == ClaimTypes.Surname)?.Value}";
+        }
+        else
+        {
+            _authMessage = "The user is NOT authenticated.";
+        }
+    }
+}
+

@@ -1,0 +1,11 @@
+﻿@page "/ticketedit/{TicketId}"
+@using CSRO.Client.Services.Models
+
+<TicketCsro OperationTypeTicket="@OperatioType.Edit" TicketId="@TicketId">
+
+</TicketCsro>
+
+@code {
+    [Parameter]
+    public string TicketId { get; set; }
+}
