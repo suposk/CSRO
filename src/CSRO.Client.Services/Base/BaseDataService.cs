@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Net.Http;
 using System.Text.Json;
@@ -17,13 +18,16 @@ namespace CSRO.Client.Services
 
         public readonly IHttpClientFactory HttpClientFactory;
         public readonly IAuthCsroService AuthCsroService;
-        public readonly IMapper Mapper;        
+        public readonly IMapper Mapper;
+        public readonly IConfiguration Configuration;
 
-        public BaseDataService(IHttpClientFactory httpClientFactory, IAuthCsroService authCsroService, IMapper mapper)
+        public BaseDataService(IHttpClientFactory httpClientFactory, IAuthCsroService authCsroService, IMapper mapper, 
+            IConfiguration configuration)
         {
             HttpClientFactory = httpClientFactory;
             AuthCsroService = authCsroService;
-            Mapper = mapper;            
+            Mapper = mapper;
+            Configuration = configuration;
         }
 
         /// <summary>

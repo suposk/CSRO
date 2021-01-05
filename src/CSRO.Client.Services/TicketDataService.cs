@@ -2,6 +2,7 @@
 using CSRO.Client.Services;
 using CSRO.Client.Services.Dtos;
 using CSRO.Client.Services.Models;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Identity.Web;
 using System;
 using System.Collections.Generic;
@@ -15,11 +16,13 @@ namespace CSRO.Client.Services
 {
     public class TicketDataService : BaseDataService, IBaseDataService<Ticket>
     {
-        public TicketDataService(IHttpClientFactory httpClientFactory, IAuthCsroService authCsroService, IMapper mapper)
-            : base(httpClientFactory, authCsroService, mapper)
+        public TicketDataService(IHttpClientFactory httpClientFactory, IAuthCsroService authCsroService, IMapper mapper, 
+            IConfiguration configuration)
+            : base(httpClientFactory, authCsroService, mapper, configuration)
         {
             ApiPart = "api/ticket/";
-            Scope = "api://ee2f0320-29c3-432a-bf84-a5d4277ce052/user_impersonation";
+            //Scope = "api://ee2f0320-29c3-432a-bf84-a5d4277ce052/user_impersonation";
+            Scope = Configuration.GetValue<string>("Scope_Api");
             ClientName = "api";
 
             base.Init();
