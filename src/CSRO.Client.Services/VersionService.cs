@@ -17,7 +17,7 @@ namespace CSRO.Client.Services
     {
         const string _apiPart = "api/version/";
         //string _scope = "api://ee2f0320-29c3-432a-bf84-a5d4277ce052/user_impersonation";
-        readonly string _scope = null;
+        readonly string _scope;
         JsonSerializerOptions _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
         private readonly IHttpClientFactory _httpClientFactory;
