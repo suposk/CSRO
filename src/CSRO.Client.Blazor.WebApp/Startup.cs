@@ -40,12 +40,19 @@ namespace CSRO.Client.Blazor.WebApp
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCosmosCache((CosmosCacheOptions cacheOptions) =>
+            //services.AddCosmosCache((CosmosCacheOptions cacheOptions) =>
+            //{
+            //    cacheOptions.ContainerName = Configuration["CosmosCache:ContainerName"];
+            //    cacheOptions.DatabaseName = Configuration["CosmosCache:DatabaseName"];
+            //    cacheOptions.ClientBuilder = new CosmosClientBuilder(Configuration["CosmosCache:ConnectionString"]);
+            //    cacheOptions.CreateIfNotExists = true;
+            //});
+
+            services.AddDistributedSqlServerCache(options =>
             {
-                cacheOptions.ContainerName = Configuration["CosmosCache:ContainerName"];
-                cacheOptions.DatabaseName = Configuration["CosmosCache:DatabaseName"];
-                cacheOptions.ClientBuilder = new CosmosClientBuilder(Configuration["CosmosCache:ConnectionString"]);
-                cacheOptions.CreateIfNotExists = true;
+                options.ConnectionString = Configuration.GetConnectionString("TokenCacheDbConnStr");
+                options.SchemaName = "dbo";
+                options.TableName = "TokenCache";
             });
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

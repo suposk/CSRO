@@ -35,12 +35,19 @@ namespace CSRO.Server.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCosmosCache((CosmosCacheOptions cacheOptions) =>
+            //services.AddCosmosCache((CosmosCacheOptions cacheOptions) =>
+            //{
+            //    cacheOptions.ContainerName = Configuration["CosmosCache:ContainerName"];
+            //    cacheOptions.DatabaseName = Configuration["CosmosCache:DatabaseName"];
+            //    cacheOptions.ClientBuilder = new CosmosClientBuilder(Configuration["CosmosCache:ConnectionString"]);
+            //    cacheOptions.CreateIfNotExists = true;
+            //});
+
+            services.AddDistributedSqlServerCache(options =>
             {
-                cacheOptions.ContainerName = Configuration["CosmosCache:ContainerName"];
-                cacheOptions.DatabaseName = Configuration["CosmosCache:DatabaseName"];
-                cacheOptions.ClientBuilder = new CosmosClientBuilder(Configuration["CosmosCache:ConnectionString"]);
-                cacheOptions.CreateIfNotExists = true;
+                options.ConnectionString = Configuration.GetConnectionString("TokenCacheDbConnStr");
+                options.SchemaName = "dbo";
+                options.TableName = "TokenCache";
             });
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
