@@ -20,14 +20,14 @@ namespace CSRO.Client.Services
         JsonSerializerOptions _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly ITokenAcquisition _tokenAcquisition;
+        private readonly IAuthCsroService _authCsroService;
         private readonly IMapper _mapper;
         private HttpClient _httpClient;
 
-        public TicketDataStore(IHttpClientFactory httpClientFactory, ITokenAcquisition tokenAcquisition, IMapper mapper)
+        public TicketDataStore(IHttpClientFactory httpClientFactory, IAuthCsroService authCsroService, IMapper mapper)
         {
             _httpClientFactory = httpClientFactory;
-            _tokenAcquisition = tokenAcquisition;
+            _authCsroService = authCsroService;            
             _mapper = mapper;
             if (_httpClient == null)
                 _httpClient = _httpClientFactory.CreateClient("api");
@@ -38,7 +38,7 @@ namespace CSRO.Client.Services
             try
             {
                 //user_impersonation
-                var apiToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new string[] { scope });
+                var apiToken = await _authCsroService.GetAccessTokenForUserAsync(scope);
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
 
                 var url = $"{_apiPart}";
@@ -66,7 +66,7 @@ namespace CSRO.Client.Services
             try
             {
                 //user_impersonation
-                var apiToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new string[] { scope });
+                var apiToken = await _authCsroService.GetAccessTokenForUserAsync(scope);
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
 
                 var url = $"{_apiPart}{id}";
@@ -89,7 +89,7 @@ namespace CSRO.Client.Services
             try
             {
                 //user_impersonation
-                var apiToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new string[] { scope });
+                var apiToken = await _authCsroService.GetAccessTokenForUserAsync(scope);
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
 
                 var url = $"{_apiPart}{id}";
@@ -115,7 +115,7 @@ namespace CSRO.Client.Services
             try
             {
                 //user_impersonation
-                var apiToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new string[] { scope });
+                var apiToken = await _authCsroService.GetAccessTokenForUserAsync(scope);
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
 
                 var url = $"{_apiPart}";
@@ -151,7 +151,7 @@ namespace CSRO.Client.Services
             try
             {
                 //user_impersonation
-                var apiToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new string[] { scope });
+                var apiToken = await _authCsroService.GetAccessTokenForUserAsync(scope);
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
 
                 var url = $"{_apiPart}";

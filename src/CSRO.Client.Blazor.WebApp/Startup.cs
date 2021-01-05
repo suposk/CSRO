@@ -106,6 +106,8 @@ namespace CSRO.Client.Blazor.WebApp
             services.AddServerSideBlazor()
                 .AddMicrosoftIdentityConsentHandler();
 
+            services.AddScoped<IAuthCsroService, AuthCsroService>();
+
             services.AddSingleton<WeatherForecastService>();
             //services.AddSingleton<ISampleService, SampleService>();
             services.AddScoped<IVersionService, VersionService>();
