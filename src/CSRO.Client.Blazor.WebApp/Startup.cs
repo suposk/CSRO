@@ -111,7 +111,7 @@ namespace CSRO.Client.Blazor.WebApp
             services.AddSingleton<WeatherForecastService>();
             //services.AddSingleton<ISampleService, SampleService>();
             services.AddScoped<IVersionService, VersionService>();
-            services.AddScoped<IBaseDataStore<Ticket>, TicketDataStore>();
+            services.AddScoped<IBaseDataService<Ticket>, TicketDataService>();
 
             var jano = Configuration.GetValue<string>("JanoSetting");
             Console.WriteLine($"Configuration JanoSetting: {jano}");

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CSRO.Client.Services
 {
-    public interface IBaseDataStore<T>
+    public interface IBaseDataService<T>
     {
         Task<T> AddItemAsync(T item);
         //Task<T> UpdateItemAsync(T item);

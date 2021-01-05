@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CSRO.Client.Services
 {
-    public class BaseDataStore
+    public class BaseDataService
     {
         public HttpClient HttpClientBase { get; private set; }
         protected string ClientName { get; set; }
@@ -19,7 +19,7 @@ namespace CSRO.Client.Services
         public readonly IAuthCsroService AuthCsroService;
         public readonly IMapper Mapper;        
 
-        public BaseDataStore(IHttpClientFactory httpClientFactory, IAuthCsroService authCsroService, IMapper mapper)
+        public BaseDataService(IHttpClientFactory httpClientFactory, IAuthCsroService authCsroService, IMapper mapper)
         {
             HttpClientFactory = httpClientFactory;
             AuthCsroService = authCsroService;
