@@ -13,66 +13,13 @@ using System.Threading.Tasks;
 
 namespace CSRO.Client.Services
 {
-    public class BaseDataStore
-    {
-        public string ClientName { get; set; }
-        public string _apiPart { get; set; }
-        public string scope { get; set; }
-
-        public JsonSerializerOptions _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-
-        public readonly IHttpClientFactory _httpClientFactory;
-        public readonly IAuthCsroService _authCsroService;
-        public readonly IMapper _mapper;
-        public HttpClient _httpClient { get; private set; }
-
-        public BaseDataStore(IHttpClientFactory httpClientFactory, IAuthCsroService authCsroService, IMapper mapper)
-        {
-            _httpClientFactory = httpClientFactory;
-            _authCsroService = authCsroService;
-            _mapper = mapper;            
-        }
-
-        /// <summary>
-        /// verify all params and create httpclient        
-        /// </summary>
-        public virtual void Init()
-        {
-            if (string.IsNullOrWhiteSpace(ClientName))
-                throw new Exception($"{ClientName} must be set in before calling method.");
-
-            if (string.IsNullOrWhiteSpace(_apiPart))
-                throw new Exception($"{_apiPart} must be set in before calling method.");
-
-            if (string.IsNullOrWhiteSpace(scope))
-                throw new Exception($"{scope} must be set in before calling method.");
-
-            if (_httpClient == null)
-                _httpClient = _httpClientFactory.CreateClient(ClientName);
-
-            //todo read from config
-        }
-
-        public virtual void HandleException(Exception ex)
-        {
-            Console.WriteLine($"{nameof(HandleException)}: {ex}");
-        }
-
-        public virtual async Task AddAuthHeader()
-        {
-            //user_impersonation
-            var apiToken = await _authCsroService.GetAccessTokenForUserAsync(scope);
-            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
-        }
-    }
-
     public class TicketDataStore : BaseDataStore, IBaseDataStore<Ticket>
     {
         public TicketDataStore(IHttpClientFactory httpClientFactory, IAuthCsroService authCsroService, IMapper mapper)
             : base(httpClientFactory, authCsroService, mapper)
         {
-            _apiPart = "api/ticket/";
-            scope = "api://ee2f0320-29c3-432a-bf84-a5d4277ce052/user_impersonation";
+            ApiPart = "api/ticket/";
+            Scope = "api://ee2f0320-29c3-432a-bf84-a5d4277ce052/user_impersonation";
             ClientName = "api";
 
             base.Init();
@@ -84,16 +31,16 @@ namespace CSRO.Client.Services
             {
                 await base.AddAuthHeader();
 
-                var url = $"{_apiPart}";
-                var add = _mapper.Map<TicketDto>(item);
+                var url = $"{ApiPart}";
+                var add = Mapper.Map<TicketDto>(item);
                 var httpcontent = new StringContent(JsonSerializer.Serialize(add, _options), Encoding.UTF8, "application/json");
-                var apiData = await _httpClient.PostAsync(url, httpcontent).ConfigureAwait(false);
+                var apiData = await HttpClientBase.PostAsync(url, httpcontent).ConfigureAwait(false);
 
                 if (apiData.IsSuccessStatusCode)
                 {
                     var content = await apiData.Content.ReadAsStringAsync();
                     var ser = JsonSerializer.Deserialize<TicketDto>(content, _options);
-                    var result = _mapper.Map<Ticket>(ser);
+                    var result = Mapper.Map<Ticket>(ser);
                     return result;
                 }
             }
@@ -110,8 +57,8 @@ namespace CSRO.Client.Services
             {
                 await base.AddAuthHeader();
 
-                var url = $"{_apiPart}{id}";
-                var apiData = await _httpClient.DeleteAsync(url).ConfigureAwait(false);
+                var url = $"{ApiPart}{id}";
+                var apiData = await HttpClientBase.DeleteAsync(url).ConfigureAwait(false);
 
                 if (apiData.IsSuccessStatusCode)
                 {
@@ -131,14 +78,14 @@ namespace CSRO.Client.Services
             {
                 await base.AddAuthHeader();
 
-                var url = $"{_apiPart}{id}";
-                var apiData = await _httpClient.GetAsync(url).ConfigureAwait(false);
+                var url = $"{ApiPart}{id}";
+                var apiData = await HttpClientBase.GetAsync(url).ConfigureAwait(false);
 
                 if (apiData.IsSuccessStatusCode)
                 {
                     var content = await apiData.Content.ReadAsStringAsync();
                     var ser = JsonSerializer.Deserialize<TicketDto>(content, _options);
-                    var result = _mapper.Map<Ticket>(ser);
+                    var result = Mapper.Map<Ticket>(ser);
                     return result;
                 }
             }
@@ -155,14 +102,14 @@ namespace CSRO.Client.Services
             {
                 await base.AddAuthHeader();
 
-                var url = $"{_apiPart}";
-                var apiData = await _httpClient.GetAsync(url).ConfigureAwait(false);
+                var url = $"{ApiPart}";
+                var apiData = await HttpClientBase.GetAsync(url).ConfigureAwait(false);
 
                 if (apiData.IsSuccessStatusCode)
                 {
                     var content = await apiData.Content.ReadAsStringAsync();
                     var ser = JsonSerializer.Deserialize<List<TicketDto>>(content, _options);
-                    var result = _mapper.Map<List<Ticket>>(ser);
+                    var result = Mapper.Map<List<Ticket>>(ser);
                     return result;
                 }
             }
@@ -189,10 +136,10 @@ namespace CSRO.Client.Services
             {
                 await base.AddAuthHeader();
 
-                var url = $"{_apiPart}";
-                var add = _mapper.Map<TicketDto>(item);
+                var url = $"{ApiPart}";
+                var add = Mapper.Map<TicketDto>(item);
                 var httpcontent = new StringContent(JsonSerializer.Serialize(add, _options), Encoding.UTF8, "application/json");
-                var apiData = await _httpClient.PutAsync(url, httpcontent).ConfigureAwait(false);
+                var apiData = await HttpClientBase.PutAsync(url, httpcontent).ConfigureAwait(false);
 
                 if (apiData.IsSuccessStatusCode)
                 {
