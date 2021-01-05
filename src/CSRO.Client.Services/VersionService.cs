@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CSRO.Client.Services.Dtos;
 using CSRO.Client.Services.Models;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Identity.Web;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,8 @@ namespace CSRO.Client.Services
     public class VersionService : IVersionService
     {
         const string _apiPart = "api/version/";
-        const string scope = "api://ee2f0320-29c3-432a-bf84-a5d4277ce052/user_impersonation";
+        //string _scope = "api://ee2f0320-29c3-432a-bf84-a5d4277ce052/user_impersonation";
+        readonly string _scope;
         JsonSerializerOptions _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
         private readonly IHttpClientFactory _httpClientFactory;
@@ -23,13 +25,14 @@ namespace CSRO.Client.Services
         private readonly IMapper _mapper;
         private HttpClient _httpClient;
 
-        public VersionService(IHttpClientFactory httpClientFactory, IAuthCsroService authCsroService, IMapper mapper)
+        public VersionService(IHttpClientFactory httpClientFactory, IAuthCsroService authCsroService, IMapper mapper, 
+            IConfiguration configuration)
         {
             _httpClientFactory = httpClientFactory;
             _authCsroService = authCsroService;
             _mapper = mapper;
-            if (_httpClient == null)
-                _httpClient = _httpClientFactory.CreateClient("api");
+            _httpClient = _httpClientFactory.CreateClient("api");
+            _scope = configuration.GetValue<string>("Scope_Api");
         }
 
         public async Task<AppVersion> GetVersion(string version = "0")
@@ -37,7 +40,7 @@ namespace CSRO.Client.Services
             try
             {
                 //user_impersonation
-                var apiToken = await _authCsroService.GetAccessTokenForUserAsync(scope);
+                var apiToken = await _authCsroService.GetAccessTokenForUserAsync(_scope);
 
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
                 var url = $"{_apiPart}{version}";
@@ -63,7 +66,7 @@ namespace CSRO.Client.Services
             try
             {
                 //user_impersonation
-                var apiToken = await _authCsroService.GetAccessTokenForUserAsync(scope);
+                var apiToken = await _authCsroService.GetAccessTokenForUserAsync(_scope);
 
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
                 var url = $"{_apiPart}";
@@ -90,7 +93,7 @@ namespace CSRO.Client.Services
             try
             {
                 //user_impersonation
-                var apiToken = await _authCsroService.GetAccessTokenForUserAsync(scope);
+                var apiToken = await _authCsroService.GetAccessTokenForUserAsync(_scope);
 
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
                 var url = $"{_apiPart}";
@@ -117,7 +120,7 @@ namespace CSRO.Client.Services
             try
             {
                 //user_impersonation
-                var apiToken = await _authCsroService.GetAccessTokenForUserAsync(scope);
+                var apiToken = await _authCsroService.GetAccessTokenForUserAsync(_scope);
 
                 _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
                 var url = $"{_apiPart}{id}";
