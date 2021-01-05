@@ -51,7 +51,7 @@ namespace CSRO.Client.Services
             Console.WriteLine($"{nameof(HandleException)}: {ex}");
         }
 
-        public virtual async Task AddAuthHeader()
+        public virtual async Task AddAuthHeaderAsync()
         {
             //user_impersonation
             var apiToken = await AuthCsroService.GetAccessTokenForUserAsync(Scope);

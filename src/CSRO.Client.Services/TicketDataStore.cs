@@ -29,7 +29,7 @@ namespace CSRO.Client.Services
         {
             try
             {
-                await base.AddAuthHeader();
+                await base.AddAuthHeaderAsync();
 
                 var url = $"{ApiPart}";
                 var add = Mapper.Map<TicketDto>(item);
@@ -51,11 +51,34 @@ namespace CSRO.Client.Services
             return null;
         }
 
+        public async Task<bool> UpdateItemAsync(Ticket item)
+        {
+            try
+            {
+                await base.AddAuthHeaderAsync();
+
+                var url = $"{ApiPart}";
+                var add = Mapper.Map<TicketDto>(item);
+                var httpcontent = new StringContent(JsonSerializer.Serialize(add, _options), Encoding.UTF8, "application/json");
+                var apiData = await HttpClientBase.PutAsync(url, httpcontent).ConfigureAwait(false);
+
+                if (apiData.IsSuccessStatusCode)
+                {
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                base.HandleException(ex);
+            }
+            return false;
+        }
+
         public async Task<bool> DeleteItemAsync(int id)
         {
             try
             {
-                await base.AddAuthHeader();
+                await base.AddAuthHeaderAsync();
 
                 var url = $"{ApiPart}{id}";
                 var apiData = await HttpClientBase.DeleteAsync(url).ConfigureAwait(false);
@@ -76,7 +99,7 @@ namespace CSRO.Client.Services
         {
             try
             {
-                await base.AddAuthHeader();
+                await base.AddAuthHeaderAsync();
 
                 var url = $"{ApiPart}{id}";
                 var apiData = await HttpClientBase.GetAsync(url).ConfigureAwait(false);
@@ -96,11 +119,11 @@ namespace CSRO.Client.Services
             return null;
         }
 
-        public async Task<List<Ticket>> GetItemsAsync(bool forceRefresh = false)
+        public async Task<List<Ticket>> GetItemsAsync()
         {
             try
             {
-                await base.AddAuthHeader();
+                await base.AddAuthHeaderAsync();
 
                 var url = $"{ApiPart}";
                 var apiData = await HttpClientBase.GetAsync(url).ConfigureAwait(false);
@@ -120,37 +143,14 @@ namespace CSRO.Client.Services
             return null;
         }
 
-        public Task<List<Ticket>> GetItemsByParrentIdAsync(int parrentId, bool forceRefresh = false)
+        public Task<List<Ticket>> GetItemsByParrentIdAsync(int parrentId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<List<Ticket>> GetItemsByTypeAsync(Enum type, bool forceRefresh = false)
+        public Task<List<Ticket>> GetItemsByTypeAsync(string type)
         {
             throw new NotImplementedException();
-        }
-
-        public async Task<bool> UpdateItemAsync(Ticket item)
-        {
-            try
-            {
-                await base.AddAuthHeader();
-
-                var url = $"{ApiPart}";
-                var add = Mapper.Map<TicketDto>(item);
-                var httpcontent = new StringContent(JsonSerializer.Serialize(add, _options), Encoding.UTF8, "application/json");
-                var apiData = await HttpClientBase.PutAsync(url, httpcontent).ConfigureAwait(false);
-
-                if (apiData.IsSuccessStatusCode)
-                {
-                    return true;
-                }
-            }
-            catch (Exception ex)
-            {
-                base.HandleException(ex);
-            }
-            return false;
         }
     }
 }

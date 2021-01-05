@@ -47,13 +47,23 @@ namespace CSRO.Client.Services
             }
         }
 
-        public Task<string> GetAccessTokenForUserAsync(List<string> scopes)
+        public async Task<string> GetAccessTokenForUserAsync(List<string> scopes)
         {
             if (RunWithoutAuth)
-                return Task.FromResult<string>(null);
+                return null;
 
-            var t = _tokenAcquisition.GetAccessTokenForUserAsync(scopes);
-            return t;
+            var auth = await _authenticationStateProvider.GetAuthenticationStateAsync();
+            if (auth != null && auth.User.Identity.IsAuthenticated)
+            {
+                var t = await _tokenAcquisition.GetAccessTokenForUserAsync(scopes);
+                return t;
+            }
+            else
+            {
+                //todo log in
+                _navigationManager.NavigateTo("/MicrosoftIdentity/Account/SignIn", true);
+                return null;
+            }
         }
     }
 }
