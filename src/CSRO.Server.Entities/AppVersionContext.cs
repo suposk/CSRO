@@ -38,12 +38,13 @@ namespace CSRO.Server.Entities
             {
                 //sql Lite
                 if (!string.IsNullOrWhiteSpace(_connectionString))
-                    optionsBuilder.UseSqlite(_connectionString);
-
+                {
+                    //optionsBuilder.UseSqlite(_connectionString);
+                    optionsBuilder.UseSqlServer(_connectionString);
+                }
                 //ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
             }
         }
-
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -55,6 +56,13 @@ namespace CSRO.Server.Entities
             //modelBuilder.Entity<Message>().HasKey(a => a.MessageId);            
             //modelBuilder.UseSerialColumns();
             //modelBuilder.Entity<Message>().Property(b => b.MessageId).UseIdentityAlwaysColumn();
+
+            //modelBuilder.Entity<AppVersion>()
+            //   .Property(a => a.RowVersion)
+            //   .IsRowVersion();
+            //modelBuilder.Entity<Ticket>()
+            //   .Property(a => a.RowVersion)
+            //   .IsRowVersion();
 
             modelBuilder.Entity<AppVersion>().HasData(
                 new AppVersion()
@@ -81,8 +89,6 @@ namespace CSRO.Server.Entities
                     Link = "www.google.sk",
                     RecomendedAction = RecomendedAction.Warning,
                 });
-
-            base.OnModelCreating(modelBuilder);
         }
 
     }

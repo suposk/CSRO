@@ -76,6 +76,10 @@ namespace CSRO.Client.Blazor.WebApp.Components
                         {
                             Success = true;                            
                         }
+                        else
+                        {
+
+                        }
                     }
                     StateHasChanged();
                 }
@@ -90,7 +94,6 @@ namespace CSRO.Client.Blazor.WebApp.Components
         {
             NavigationManager.NavigateTo("/ticketsview");
         }
-
 
     }
 }

@@ -94,7 +94,22 @@ namespace CSRO.Server.Infrastructure
 
         public virtual async Task<bool> SaveChangesAsync()
         {
-            return await DatabaseContext.SaveChangesAsync() >= 0;
+            //return await DatabaseContext.SaveChangesAsync() >= 0;
+            try
+            {
+                var saved = await DatabaseContext.SaveChangesAsync() >= 0;
+                return saved;
+                // move on
+            }
+            catch (DbUpdateException e)
+            {
+                // get latest version of record for display
+                return false;
+            }
+            catch (Exception ee)
+            {
+                return false;
+            }
         }
 
 
