@@ -11,7 +11,7 @@ namespace CSRO.Server.Services
         private readonly IRepository<Ticket> _repository;
         private AppVersionContext _context;
 
-        public TicketRepository(IRepository<Ticket> repository, AppVersionContext context) : base(context)
+        public TicketRepository(IRepository<Ticket> repository, AppVersionContext context, IApiIdentity apiIdentity) : base(context, apiIdentity)
         {
             _repository = repository;            
             _context = context;            
