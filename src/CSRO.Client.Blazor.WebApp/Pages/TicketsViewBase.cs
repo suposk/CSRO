@@ -22,7 +22,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages
         public IDialogService DialogService { get; set; }
 
         [Inject]
-        IBaseDataStore<Ticket> TicketDataStore { get; set; }
+        IBaseDataService<Ticket> TicketDataService { get; set; }
 
         [Inject]
         public ILogger<TicketsViewBase> Logger { get; set; }
@@ -37,7 +37,8 @@ namespace CSRO.Client.Blazor.WebApp.Pages
 
             try
             {
-                Tickets = await TicketDataStore.GetItemsAsync();
+                Tickets = null;
+                Tickets = await TicketDataService.GetItemsAsync();
             }
             catch (Exception ex)
             {
@@ -57,7 +58,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages
             var result = await userSelect.Result;
             if (!result.Cancelled)
             {
-                var res = await TicketDataStore.DeleteItemAsync(ticket.Id);
+                var res = await TicketDataService.DeleteItemAsync(ticket.Id);
                 if (res)
                 {
                     Tickets.Remove(ticket);

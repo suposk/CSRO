@@ -22,7 +22,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
         public NavigationManager NavigationManager { get; set; }
 
         [Inject]
-        IBaseDataStore<Ticket> TicketDataStore { get; set; }
+        IBaseDataService<Ticket> TicketDataService { get; set; }
 
         [Inject]
         public ILogger<TicketCsroBase> Logger { get; set; }
@@ -42,7 +42,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
                 if (OperationTypeTicket != OperatioType.Create)
                 {
                     model.Id = int.Parse(TicketId);
-                    var server = await TicketDataStore.GetItemByIdAsync(model.Id);
+                    var server = await TicketDataService.GetItemByIdAsync(model.Id);
                     if (server != null)
                         model = server;
                 }
@@ -62,7 +62,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
                 {
                     if (OperationTypeTicket == OperatioType.Create)
                     {
-                        var added = await TicketDataStore.AddItemAsync(model);
+                        var added = await TicketDataService.AddItemAsync(model);
                         if (added != null)
                         {
                             Success = true;
@@ -71,7 +71,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
                     }
                     else if (OperationTypeTicket == OperatioType.Edit)
                     {
-                        var updated = await TicketDataStore.UpdateItemAsync(model);
+                        var updated = await TicketDataService.UpdateItemAsync(model);
                         if (updated)
                         {
                             Success = true;                            

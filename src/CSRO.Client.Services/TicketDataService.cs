@@ -13,9 +13,9 @@ using System.Threading.Tasks;
 
 namespace CSRO.Client.Services
 {
-    public class TicketDataStore : BaseDataStore, IBaseDataStore<Ticket>
+    public class TicketDataService : BaseDataService, IBaseDataService<Ticket>
     {
-        public TicketDataStore(IHttpClientFactory httpClientFactory, IAuthCsroService authCsroService, IMapper mapper)
+        public TicketDataService(IHttpClientFactory httpClientFactory, IAuthCsroService authCsroService, IMapper mapper)
             : base(httpClientFactory, authCsroService, mapper)
         {
             ApiPart = "api/ticket/";
