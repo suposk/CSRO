@@ -13,33 +13,76 @@ using System.Threading.Tasks;
 
 namespace CSRO.Client.Services
 {
-    public class TicketDataStore : IBaseDataStore<Ticket>
+    public class BaseDataStore
     {
-        const string _apiPart = "api/ticket/";
-        const string scope = "api://ee2f0320-29c3-432a-bf84-a5d4277ce052/user_impersonation";
-        JsonSerializerOptions _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        public string ClientName { get; set; }
+        public string _apiPart { get; set; }
+        public string scope { get; set; }
 
-        private readonly IHttpClientFactory _httpClientFactory;
-        private readonly IAuthCsroService _authCsroService;
-        private readonly IMapper _mapper;
-        private HttpClient _httpClient;
+        public JsonSerializerOptions _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
-        public TicketDataStore(IHttpClientFactory httpClientFactory, IAuthCsroService authCsroService, IMapper mapper)
+        public readonly IHttpClientFactory _httpClientFactory;
+        public readonly IAuthCsroService _authCsroService;
+        public readonly IMapper _mapper;
+        public HttpClient _httpClient { get; private set; }
+
+        public BaseDataStore(IHttpClientFactory httpClientFactory, IAuthCsroService authCsroService, IMapper mapper)
         {
             _httpClientFactory = httpClientFactory;
-            _authCsroService = authCsroService;            
-            _mapper = mapper;
+            _authCsroService = authCsroService;
+            _mapper = mapper;            
+        }
+
+        /// <summary>
+        /// verify all params and create httpclient        
+        /// </summary>
+        public virtual void Init()
+        {
+            if (string.IsNullOrWhiteSpace(ClientName))
+                throw new Exception($"{ClientName} must be set in before calling method.");
+
+            if (string.IsNullOrWhiteSpace(_apiPart))
+                throw new Exception($"{_apiPart} must be set in before calling method.");
+
+            if (string.IsNullOrWhiteSpace(scope))
+                throw new Exception($"{scope} must be set in before calling method.");
+
             if (_httpClient == null)
-                _httpClient = _httpClientFactory.CreateClient("api");
+                _httpClient = _httpClientFactory.CreateClient(ClientName);
+
+            //todo read from config
+        }
+
+        public virtual void HandleException(Exception ex)
+        {
+            Console.WriteLine($"{nameof(HandleException)}: {ex}");
+        }
+
+        public virtual async Task AddAuthHeader()
+        {
+            //user_impersonation
+            var apiToken = await _authCsroService.GetAccessTokenForUserAsync(scope);
+            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
+        }
+    }
+
+    public class TicketDataStore : BaseDataStore, IBaseDataStore<Ticket>
+    {
+        public TicketDataStore(IHttpClientFactory httpClientFactory, IAuthCsroService authCsroService, IMapper mapper)
+            : base(httpClientFactory, authCsroService, mapper)
+        {
+            _apiPart = "api/ticket/";
+            scope = "api://ee2f0320-29c3-432a-bf84-a5d4277ce052/user_impersonation";
+            ClientName = "api";
+
+            base.Init();
         }
 
         public async Task<Ticket> AddItemAsync(Ticket item)
         {
             try
             {
-                //user_impersonation
-                var apiToken = await _authCsroService.GetAccessTokenForUserAsync(scope);
-                _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
+                await base.AddAuthHeader();
 
                 var url = $"{_apiPart}";
                 var add = _mapper.Map<TicketDto>(item);
@@ -56,7 +99,7 @@ namespace CSRO.Client.Services
             }
             catch (Exception ex)
             {
-                throw;
+                base.HandleException(ex);
             }
             return null;
         }
@@ -65,9 +108,7 @@ namespace CSRO.Client.Services
         {
             try
             {
-                //user_impersonation
-                var apiToken = await _authCsroService.GetAccessTokenForUserAsync(scope);
-                _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
+                await base.AddAuthHeader();
 
                 var url = $"{_apiPart}{id}";
                 var apiData = await _httpClient.DeleteAsync(url).ConfigureAwait(false);
@@ -79,7 +120,7 @@ namespace CSRO.Client.Services
             }
             catch (Exception ex)
             {
-                throw;
+                base.HandleException(ex);
             }
             return false;
         }
@@ -88,9 +129,7 @@ namespace CSRO.Client.Services
         {
             try
             {
-                //user_impersonation
-                var apiToken = await _authCsroService.GetAccessTokenForUserAsync(scope);
-                _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
+                await base.AddAuthHeader();
 
                 var url = $"{_apiPart}{id}";
                 var apiData = await _httpClient.GetAsync(url).ConfigureAwait(false);
@@ -105,7 +144,7 @@ namespace CSRO.Client.Services
             }
             catch (Exception ex)
             {
-                throw;
+                base.HandleException(ex);
             }
             return null;
         }
@@ -114,9 +153,7 @@ namespace CSRO.Client.Services
         {
             try
             {
-                //user_impersonation
-                var apiToken = await _authCsroService.GetAccessTokenForUserAsync(scope);
-                _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
+                await base.AddAuthHeader();
 
                 var url = $"{_apiPart}";
                 var apiData = await _httpClient.GetAsync(url).ConfigureAwait(false);
@@ -131,7 +168,7 @@ namespace CSRO.Client.Services
             }
             catch (Exception ex)
             {
-                throw;
+                base.HandleException(ex);
             }
             return null;
         }
@@ -150,9 +187,7 @@ namespace CSRO.Client.Services
         {
             try
             {
-                //user_impersonation
-                var apiToken = await _authCsroService.GetAccessTokenForUserAsync(scope);
-                _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
+                await base.AddAuthHeader();
 
                 var url = $"{_apiPart}";
                 var add = _mapper.Map<TicketDto>(item);
@@ -166,7 +201,7 @@ namespace CSRO.Client.Services
             }
             catch (Exception ex)
             {
-                throw;
+                base.HandleException(ex);
             }
             return false;
         }
