@@ -17,5 +17,7 @@ namespace CSRO.Client.Services.Dtos
         public DateTime? ModifiedAt { get; set; }
 
         public string ModifiedBy { get; set; }
+
+        public byte[] RowVersion { get; set; }
     }
 }

@@ -89,7 +89,10 @@ namespace CSRO.Server.Api
             services.AddDbContext<AppVersionContext>(options =>
             {
                 //sql Lite                
-                options.UseSqlite(Configuration.GetConnectionString("SqlLiteConnString"));
+                //options.UseSqlite(Configuration.GetConnectionString("SqlLiteConnString"));
+
+                //sql Server
+                options.UseSqlServer(Configuration.GetConnectionString("SqlConnString"));
             });
         }
 

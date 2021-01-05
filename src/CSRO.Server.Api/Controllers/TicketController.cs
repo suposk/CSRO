@@ -137,6 +137,10 @@ namespace CSRO.Server.Api.Controllers
                 {
                     return NoContent();
                 }
+                else
+                {
+                    return Conflict("Conflict detected, refresh and try again.");
+                }
             }
             catch (Exception ex)
             {
