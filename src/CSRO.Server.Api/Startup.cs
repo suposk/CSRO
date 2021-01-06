@@ -103,6 +103,7 @@ namespace CSRO.Server.Api
                 //sql Lite                
                 //options.UseSqlite(Configuration.GetConnectionString("SqlLiteConnString"));
 
+                //test
                 //sql Server
                 options.UseSqlServer(Configuration.GetConnectionString("TokenCacheDbConnStr"));
             });            
