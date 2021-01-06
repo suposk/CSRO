@@ -11,8 +11,6 @@ namespace CSRO.Client.Services.Models
 
     public class Ticket : ModelBase
     {
-        public int Id { get; set; }
-
         [Required]
         public string Description { get; set; }
 

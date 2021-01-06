@@ -7,8 +7,6 @@ namespace CSRO.Server.Entities.Entity
 {
     public class Ticket : EntitySoftDeleteBase
     {
-        public int Id { get; set; }
-
         public string Description { get; set; }
 
         public string RequestedFor { get; set; }
