@@ -25,6 +25,8 @@ namespace CSRO.Server.Api
             {
                 ILogger<Program> logger = null;
                 AppVersionContext context = null;
+                TokenCacheContext tokenCache = null;
+
                 try
                 {
                     logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
@@ -33,7 +35,7 @@ namespace CSRO.Server.Api
 
                 try
                 {
-                    logger?.LogInformation("CreateHostBuilder Started");
+                    logger?.LogInformation("CreateHostBuilder Started AppVersionContext");
 
                     context = scope.ServiceProvider.GetService<AppVersionContext>();
 
@@ -44,7 +46,7 @@ namespace CSRO.Server.Api
                 }
                 catch (Exception ex)
                 {
-                    logger?.LogError(ex, "An error occurred while migrating the database.");
+                    logger?.LogError(ex, "An error occurred while migrating the database AppVersionContext.");
 
                     try
                     {
@@ -56,6 +58,19 @@ namespace CSRO.Server.Api
                         logger?.LogError(e, "An error occurred while migrating the database.");
                     }
                 }
+
+                try
+                {
+                    logger?.LogInformation("CreateHostBuilder Started TokenCacheContext");
+
+                    tokenCache = scope.ServiceProvider.GetService<TokenCacheContext>();
+                    tokenCache?.Database.Migrate(); logger?.LogInformation("Called Migrate");
+                }
+                catch (Exception ex)
+                {
+                    logger?.LogError(ex, "An error occurred while migrating the database TokenCacheContext.");
+                }
+
                 // run the web app
                 host.Run();
             }

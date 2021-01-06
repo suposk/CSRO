@@ -48,6 +48,9 @@ namespace CSRO.Server.Api
                 options.ConnectionString = Configuration.GetConnectionString("TokenCacheDbConnStr");
                 options.SchemaName = "dbo";
                 options.TableName = "TokenCache";
+
+                //def is 2 minutes
+                options.DefaultSlidingExpiration = TimeSpan.FromMinutes(30);
             });
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -94,6 +97,15 @@ namespace CSRO.Server.Api
                 //sql Server
                 options.UseSqlServer(Configuration.GetConnectionString("SqlConnString"));
             });
+
+            services.AddDbContext<TokenCacheContext>(options =>
+            {
+                //sql Lite                
+                //options.UseSqlite(Configuration.GetConnectionString("SqlLiteConnString"));
+
+                //sql Server
+                options.UseSqlServer(Configuration.GetConnectionString("TokenCacheDbConnStr"));
+            });            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

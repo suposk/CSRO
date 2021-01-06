@@ -53,6 +53,9 @@ namespace CSRO.Client.Blazor.WebApp
                 options.ConnectionString = Configuration.GetConnectionString("TokenCacheDbConnStr");
                 options.SchemaName = "dbo";
                 options.TableName = "TokenCache";
+
+                //def is 2 minutes
+                options.DefaultSlidingExpiration = TimeSpan.FromMinutes(30);
             });
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
