@@ -14,13 +14,13 @@ using System.Threading.Tasks;
 
 namespace CSRO.Client.Services
 {
-    public class VmDataService : BaseDataService, IBaseDataService<Vm>
+    public class VmTicketDataService : BaseDataService, IBaseDataService<Vm>
     {
-        public VmDataService(IHttpClientFactory httpClientFactory, IAuthCsroService authCsroService, IMapper mapper, 
+        public VmTicketDataService(IHttpClientFactory httpClientFactory, IAuthCsroService authCsroService, IMapper mapper, 
             IConfiguration configuration)
             : base(httpClientFactory, authCsroService, mapper, configuration)
         {
-            ApiPart = "api/vm/";
+            ApiPart = "api/vmticket/";
             //Scope = "api://ee2f0320-29c3-432a-bf84-a5d4277ce052/user_impersonation";
             Scope = Configuration.GetValue<string>("Scope_Api");
             ClientName = "api";

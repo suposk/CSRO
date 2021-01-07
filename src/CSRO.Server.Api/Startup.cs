@@ -67,8 +67,7 @@ namespace CSRO.Server.Api
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "CSRO.Server.Api", Version = "v1" });
             });
-
-            
+                        
             services.AddScoped<IVersionRepository, VersionRepository>();
             services.AddScoped<IRepository<AppVersion>>(sp =>
             {
@@ -79,6 +78,17 @@ namespace CSRO.Server.Api
                 return obj;
             });
             services.AddScoped<ITicketRepository, TicketRepository>();
+            services.AddScoped<IRepository<Vm>>(sp =>
+            {
+                var serviceProvider = services.BuildServiceProvider();
+                var apiIdentity = serviceProvider.GetService<IApiIdentity>();
+                var ctx = serviceProvider.GetService<AppVersionContext>();
+                IRepository<Vm> obj = new Repository<Vm>(ctx, apiIdentity);
+                return obj;
+            });
+
+
+            services.AddScoped<IVmRepository, VmRepository>();            
             services.AddScoped<IRepository<Ticket>>(sp =>
             {
                 var serviceProvider = services.BuildServiceProvider();
