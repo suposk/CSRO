@@ -57,7 +57,7 @@
                     }
                 </MudCard>
                 @if (!IsReadOnly)
-                { 
+                {
                     <MudText Typo="Typo.body2" Align="Align.Center" Class="my-4">
                         Fill out the form correctly to see the success message.
                     </MudText>
@@ -81,7 +81,7 @@
         else
         {
             <MudText Color="Color.Success" Typo="Typo.h4">Success</MudText>
-            <MudButton OnClick="GoBack" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary">Go Back</MudButton>
         }
+        <MudButton Class="mt-4" OnClick="GoBack" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary">Go Back</MudButton>
     </div>
 </MudContainer>
