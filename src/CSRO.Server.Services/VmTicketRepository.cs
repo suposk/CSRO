@@ -22,12 +22,24 @@ namespace CSRO.Server.Services
             _context = context;
         }
 
-        public override Task<List<VmTicket>> GetList()
+        public override void Add(VmTicket entity, string UserId = null)
         {
-            //return base.GetList();
-            //var exist = await _repository.GetFilter(a => a.VersionFull == version);
-            //var q = _context.AppVersions.Where(e => !_context.AppVersions.Any(e2 => e2.VersionValue > e.VersionValue));
-            return _repository.GetListFilter(a => a.IsDeleted != true);
+            base.Add(entity, UserId);
+            entity.Status = "Opened";
         }
+
+        public override void Remove(VmTicket entity, string UserId = null)
+        {
+            base.Remove(entity, UserId);
+            entity.Status = "Closed";
+        }
+
+        //public override Task<List<VmTicket>> GetList()
+        //{
+        //    //return base.GetList();
+        //    //var exist = await _repository.GetFilter(a => a.VersionFull == version);
+        //    //var q = _context.AppVersions.Where(e => !_context.AppVersions.Any(e2 => e2.VersionValue > e.VersionValue));
+        //    return _repository.GetListFilter(a => a.IsDeleted != true);
+        //}
     }
 }
