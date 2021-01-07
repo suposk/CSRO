@@ -6,23 +6,23 @@ using System.Collections.Generic;
 
 namespace CSRO.Server.Services
 {
-    public interface IVmRepository : IRepository<Vm>
+    public interface IVmTicketRepository : IRepository<VmTicket>
     {
 
     }
 
-    public class VmRepository : Repository<Vm>, IVmRepository
+    public class VmTicketRepository : Repository<VmTicket>, IVmTicketRepository
     {
-        private readonly IRepository<Vm> _repository;
+        private readonly IRepository<VmTicket> _repository;
         private AppVersionContext _context;
 
-        public VmRepository(IRepository<Vm> repository, AppVersionContext context, IApiIdentity apiIdentity) : base(context, apiIdentity)
+        public VmTicketRepository(IRepository<VmTicket> repository, AppVersionContext context, IApiIdentity apiIdentity) : base(context, apiIdentity)
         {
             _repository = repository;
             _context = context;
         }
 
-        public override Task<List<Vm>> GetList()
+        public override Task<List<VmTicket>> GetList()
         {
             //return base.GetList();
             //var exist = await _repository.GetFilter(a => a.VersionFull == version);

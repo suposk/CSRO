@@ -23,11 +23,11 @@ namespace CSRO.Server.Api.Controllers
     {
         private readonly ILogger<VmTicketController> _logger;
         //private readonly IRepository<Vm> _repository;
-        private readonly IVmRepository _repository;
+        private readonly IVmTicketRepository _repository;
         private readonly IMapper _mapper;
 
         public VmTicketController(ILogger<VmTicketController> logger,            
-            IVmRepository repository,
+            IVmTicketRepository repository,
             IMapper mapper)
         {
             _logger = logger;            
@@ -37,14 +37,14 @@ namespace CSRO.Server.Api.Controllers
 
         // GET: api/<VersionController>
         [HttpGet]
-        public async Task<ActionResult<List<VmDto>>> Get()
+        public async Task<ActionResult<List<VmTicketDto>>> Get()
         {
             try
             {
                 _logger.LogInformation(ApiLogEvents.GetAllItems, $"{nameof(Get)} Started");
 
                 var all = await _repository.GetList();
-                var result = _mapper.Map<List<VmDto>>(all);
+                var result = _mapper.Map<List<VmTicketDto>>(all);
                 return result;
             }
             catch (Exception ex)
@@ -56,7 +56,7 @@ namespace CSRO.Server.Api.Controllers
 
         // GET: api/MessageDetails/5        
         [HttpGet("{id}", Name = "GetById")]
-        public async Task<ActionResult<VmDto>> GetById(int id)
+        public async Task<ActionResult<VmTicketDto>> GetById(int id)
         {
             if (id < 1)
                 return BadRequest();
@@ -70,7 +70,7 @@ namespace CSRO.Server.Api.Controllers
                     return NotFound();
 
                 //_mapper.Map(repoObj, result);
-                var result = _mapper.Map<VmDto>(repoObj);
+                var result = _mapper.Map<VmTicketDto>(repoObj);
                 return result;
             }
             catch (Exception ex)
@@ -82,7 +82,7 @@ namespace CSRO.Server.Api.Controllers
 
         //// POST: api/MessageDetails
         [HttpPost]
-        public async Task<ActionResult<VmDto>> PostVmTicket(VmDto dto)
+        public async Task<ActionResult<VmTicketDto>> PostVmTicket(VmTicketDto dto)
         {
             if (dto == null)
                 return BadRequest();
@@ -91,11 +91,11 @@ namespace CSRO.Server.Api.Controllers
             {
                 _logger.LogInformation(ApiLogEvents.InsertItem, $"{nameof(PostVmTicket)} Started");
 
-                var repoObj = _mapper.Map<Vm>(dto);                
+                var repoObj = _mapper.Map<VmTicket>(dto);                
                 _repository.Add(repoObj);
                 if (await _repository.SaveChangesAsync())
                 {
-                    var result = _mapper.Map<VmDto>(repoObj);
+                    var result = _mapper.Map<VmTicketDto>(repoObj);
                     return CreatedAtRoute("GetById",
                         new { id = result.Id }, result);
                 }
@@ -111,7 +111,7 @@ namespace CSRO.Server.Api.Controllers
 
         // PUT: api/Churchs/5
         [HttpPut()]
-        public async Task<ActionResult<VmDto>> PutVmTicket(VmDto dto)
+        public async Task<ActionResult<VmTicketDto>> PutVmTicket(VmTicketDto dto)
         {
             if (dto == null || dto.Id < 1)
                 return BadRequest();
@@ -127,7 +127,7 @@ namespace CSRO.Server.Api.Controllers
                     return NotFound();
                 }
 
-                repoObj = _mapper.Map<Vm>(dto);
+                repoObj = _mapper.Map<VmTicket>(dto);
                 _repository.Update(repoObj);
                 if (await _repository.SaveChangesAsync())
                 {

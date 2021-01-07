@@ -2,7 +2,7 @@
 
 namespace CSRO.Server.Entities.Entity
 {
-    public class Vm : EntitySoftDeleteBase
+    public class VmTicket : EntitySoftDeleteBase
     {
         public string Note { get; set; }
 

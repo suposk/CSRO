@@ -20,7 +20,7 @@ namespace CSRO.Server.Api.AutoMapperProfiles
                 //.ForMember(s => s.CurrentUnits, op => op.Ignore())
                 .ReverseMap();
 
-            CreateMap<VmDto, Vm>()
+            CreateMap<VmTicketDto, VmTicket>()
                 .ReverseMap();
 
         }

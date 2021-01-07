@@ -1,6 +1,10 @@
-﻿namespace CSRO.Client.Services.Dtos
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace CSRO.Server.Domain
 {
-    public class VmDto : DtoBase
+    public class VmTicketDto : DtoBase
     {
         public string Note { get; set; }
 

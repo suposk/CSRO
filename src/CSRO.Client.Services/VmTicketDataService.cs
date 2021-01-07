@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace CSRO.Client.Services
 {
-    public class VmTicketDataService : BaseDataService, IBaseDataService<Vm>
+    public class VmTicketDataService : BaseDataService, IBaseDataService<VmTicket>
     {
         public VmTicketDataService(IHttpClientFactory httpClientFactory, IAuthCsroService authCsroService, IMapper mapper, 
             IConfiguration configuration)
@@ -28,22 +28,22 @@ namespace CSRO.Client.Services
             base.Init();
         }
 
-        public async Task<Vm> AddItemAsync(Vm item)
+        public async Task<VmTicket> AddItemAsync(VmTicket item)
         {
             try
             {
                 await base.AddAuthHeaderAsync();
 
                 var url = $"{ApiPart}";
-                var add = Mapper.Map<TicketDto>(item);
+                var add = Mapper.Map<VmTicketDto>(item);
                 var httpcontent = new StringContent(JsonSerializer.Serialize(add, _options), Encoding.UTF8, "application/json");
                 var apiData = await HttpClientBase.PostAsync(url, httpcontent).ConfigureAwait(false);
 
                 if (apiData.IsSuccessStatusCode)
                 {
                     var content = await apiData.Content.ReadAsStringAsync();
-                    var ser = JsonSerializer.Deserialize<TicketDto>(content, _options);
-                    var result = Mapper.Map<Vm>(ser);
+                    var ser = JsonSerializer.Deserialize<VmTicketDto>(content, _options);
+                    var result = Mapper.Map<VmTicket>(ser);
                     return result;
                 }
             }
@@ -54,14 +54,14 @@ namespace CSRO.Client.Services
             return null;
         }
 
-        public async Task<bool> UpdateItemAsync(Vm item)
+        public async Task<bool> UpdateItemAsync(VmTicket item)
         {
             try
             {
                 await base.AddAuthHeaderAsync();
 
                 var url = $"{ApiPart}";
-                var add = Mapper.Map<TicketDto>(item);
+                var add = Mapper.Map<VmTicketDto>(item);
                 var httpcontent = new StringContent(JsonSerializer.Serialize(add, _options), Encoding.UTF8, "application/json");
                 var apiData = await HttpClientBase.PutAsync(url, httpcontent).ConfigureAwait(false);
 
@@ -98,7 +98,7 @@ namespace CSRO.Client.Services
             return false;
         }
 
-        public async Task<Vm> GetItemByIdAsync(int id)
+        public async Task<VmTicket> GetItemByIdAsync(int id)
         {
             try
             {
@@ -110,8 +110,8 @@ namespace CSRO.Client.Services
                 if (apiData.IsSuccessStatusCode)
                 {
                     var content = await apiData.Content.ReadAsStringAsync();
-                    var ser = JsonSerializer.Deserialize<TicketDto>(content, _options);
-                    var result = Mapper.Map<Vm>(ser);
+                    var ser = JsonSerializer.Deserialize<VmTicketDto>(content, _options);
+                    var result = Mapper.Map<VmTicket>(ser);
                     return result;
                 }
             }
@@ -122,7 +122,7 @@ namespace CSRO.Client.Services
             return null;
         }
 
-        public async Task<List<Vm>> GetItemsAsync()
+        public async Task<List<VmTicket>> GetItemsAsync()
         {
             try
             {
@@ -134,8 +134,8 @@ namespace CSRO.Client.Services
                 if (apiData.IsSuccessStatusCode)
                 {
                     var content = await apiData.Content.ReadAsStringAsync();
-                    var ser = JsonSerializer.Deserialize<List<TicketDto>>(content, _options);
-                    var result = Mapper.Map<List<Vm>>(ser);
+                    var ser = JsonSerializer.Deserialize<List<VmTicketDto>>(content, _options);
+                    var result = Mapper.Map<List<VmTicket>>(ser);
                     return result;
                 }
             }
@@ -146,12 +146,12 @@ namespace CSRO.Client.Services
             return null;
         }
 
-        public Task<List<Vm>> GetItemsByParrentIdAsync(int parrentId)
+        public Task<List<VmTicket>> GetItemsByParrentIdAsync(int parrentId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<List<Vm>> GetItemsByTypeAsync(string type)
+        public Task<List<VmTicket>> GetItemsByTypeAsync(string type)
         {
             throw new NotImplementedException();
         }

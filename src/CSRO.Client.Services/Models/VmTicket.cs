@@ -2,7 +2,7 @@
 
 namespace CSRO.Client.Services.Models
 {
-    public class Vm : ModelBase
+    public class VmTicket : ModelBase
     {
         public string Note { get; set; }
 

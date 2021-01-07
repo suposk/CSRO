@@ -23,7 +23,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
         public NavigationManager NavigationManager { get; set; }
 
         [Inject]
-        IBaseDataService<Vm> VmDataService { get; set; }
+        IBaseDataService<VmTicket> VmDataService { get; set; }
 
         [Inject]
         public IDialogService DialogService { get; set; }
@@ -32,7 +32,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
         public ILogger<RestartVmCsroBase> Logger { get; set; }
 
 
-        public Vm model { get; set; } = new Vm();
+        public VmTicket model { get; set; } = new VmTicket();
 
         protected bool Success { get; set; }
         protected bool IsReadOnly => OperationTypeTicket == OperatioType.View;
