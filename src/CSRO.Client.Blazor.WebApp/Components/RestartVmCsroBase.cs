@@ -23,7 +23,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
         public NavigationManager NavigationManager { get; set; }
 
         [Inject]
-        IBaseDataService<VmTicket> VmDataService { get; set; }
+        IBaseDataService<VmTicket> VmTicketDataService { get; set; }
 
         [Inject]
         public IDialogService DialogService { get; set; }
@@ -50,7 +50,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
                 if (OperationTypeTicket != OperatioType.Create)
                 {
                     model.Id = int.Parse(TicketId);
-                    var server = await VmDataService.GetItemByIdAsync(model.Id);
+                    var server = await VmTicketDataService.GetItemByIdAsync(model.Id);
                     if (server != null)
                         model = server;
                 }
@@ -70,7 +70,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
                 {
                     if (OperationTypeTicket == OperatioType.Create)
                     {
-                        var added = await VmDataService.AddItemAsync(model);
+                        var added = await VmTicketDataService.AddItemAsync(model);
                         if (added != null)
                         {
                             Success = true;
@@ -79,7 +79,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
                     }
                     else if (OperationTypeTicket == OperatioType.Edit)
                     {
-                        var updated = await VmDataService.UpdateItemAsync(model);
+                        var updated = await VmTicketDataService.UpdateItemAsync(model);
                         if (updated)
                         {
                             Success = true;                            
