@@ -1,4 +1,4 @@
-﻿@inherits TicketCsroBase
+﻿@inherits RestartVmCsroBase
 @using CSRO.Client.Services.Models
 
 <MudContainer>
@@ -16,25 +16,27 @@
                             <MudTextField Label="Id:"
                                           Disabled="true"
                                           @bind-Value="model.Id" For="@(() => model.Id)" />
-                        }
-                        <MudCheckBox Label="On Behalf" @bind-Checked="model.IsOnBehalf"
-                                     Disabled="@IsReadOnly"
-                                     @bind-Value="model.IsOnBehalf" For="@(() => model.IsOnBehalf)" />
 
-                        <MudTextField Label="Requested For:" HelperText="Name of Person"
-                                      Disabled="@IsReadOnly"
-                                      @bind-Value="model.RequestedFor" For="@(() => model.RequestedFor)" />
-
-                        @if (model.IsOnBehalf)
-                        {
-                            <MudTextField Label="Created By:" HelperText="Name of Person"
-                                          Disabled="@IsReadOnly"
-                                          @bind-Value="model.CreatedBy" For="@(() => model.CreatedBy)" />
+                            <MudTextField Label="Current Status:"
+                                          Disabled="true"
+                                          @bind-Value="model.Status" For="@(() => model.Status)" />
                         }
 
-                        <MudTextField Label="Description:"
+                        <MudTextField Label="SubcriptionId:"
                                       Disabled="@IsReadOnly"
-                                      @bind-Value="model.Description" For="@(() => model.Description)" />
+                                      @bind-Value="model.SubcriptionId" For="@(() => model.SubcriptionId)" />
+
+                        <MudTextField Label="ResorceGroup:"
+                                      Disabled="@IsReadOnly"
+                                      @bind-Value="model.ResorceGroup" For="@(() => model.ResorceGroup)" />
+
+                        <MudTextField Label="Vm Name:" HelperText="Name of Virtual Machine"
+                                      Disabled="@IsReadOnly"
+                                      @bind-Value="model.VmName" For="@(() => model.VmName)" />
+
+                        <MudTextField Label="Note:"
+                                      Disabled="@IsReadOnly"
+                                      @bind-Value="model.Note" For="@(() => model.Note)" />
 
                         @if (IsReadOnly)
                         {
