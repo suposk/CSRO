@@ -1,18 +1,22 @@
 ﻿<MudNavMenu Class="mudblazor-navmenu">
     <div class="docs-nav-fader"></div>
     <MudNavGroup Title="Self Service" Icon="@Icons.Material.Shop" Expanded="true" ExpandIcon="@Icons.Material.ExpandMore" Style="margin-top: 4px;">
-        <MudNavLink Href="/ticketsview" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.List">Sample Tickets</MudNavLink>
+
         <MudNavLink Href="/ticketcreate" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Add">Create Sample Ticket</MudNavLink>
-        <MudNavLink Href="/wm" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Computer">WM Tickets</MudNavLink>        
+        <MudNavLink Href="/ticketsview" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.List">Sample Tickets</MudNavLink>
+
+        <MudNavLink Href="/wm/restart" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Restore">WM Restart</MudNavLink>
+        <MudNavLink Href="/wm" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Computer">WM Tickets</MudNavLink>
+
         <MudNavLink Href="/appversion" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Verified">App Version</MudNavLink>
     </MudNavGroup>
 
-    <MudNavGroup Title="Mud Version" Icon="@Icons.Material.School" Expanded="false" ExpandIcon="@Icons.Material.ExpandMore" Style="margin-top: 4px;">
+    <MudNavGroup Title="Mud Views" Icon="@Icons.Custom.MudBlazor" Expanded="false" ExpandIcon="@Icons.Material.ExpandMore" Style="margin-top: 4px;">
         <MudNavLink Href="/mcounter" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Add">Mud Counter</MudNavLink>
         <MudNavLink Href="/mfetchdata" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.List">Mud Fetch data</MudNavLink>
     </MudNavGroup>
 
-    <MudNavGroup Title="Simple Version" Icon="@Icons.Material.Adjust" Expanded="false" ExpandIcon="@Icons.Material.ExpandMore" Style="margin-top: 4px;">
+    <MudNavGroup Title="Default Views" Icon="@Icons.Material.Adjust" Expanded="false" ExpandIcon="@Icons.Material.ExpandMore" Style="margin-top: 4px;">
         <MudNavLink Href="/counter" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Add">Counter</MudNavLink>
         <MudNavLink Href="/fetchdata" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.List">Fetch data</MudNavLink>
     </MudNavGroup>
