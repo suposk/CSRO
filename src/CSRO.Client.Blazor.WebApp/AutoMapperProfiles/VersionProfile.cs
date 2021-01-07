@@ -20,7 +20,7 @@ namespace CSRO.Client.Blazor.WebApp.AutoMapperProfiles
                 //.ForMember(s => s.CurrentUnits, op => op.Ignore())
                 .ReverseMap();
 
-            CreateMap<RestartVmDto, RestartVm>()
+            CreateMap<VmDto, Vm>()
                 .ReverseMap();
         }
     }

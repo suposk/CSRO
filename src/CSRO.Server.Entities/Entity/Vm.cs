@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using CSRO.Server.Infrastructure;
 
-namespace CSRO.Server.Domain
+namespace CSRO.Server.Entities.Entity
 {
-    public class RestartVmDto : DtoBase
+    public class Vm : EntitySoftDeleteBase
     {
-        public string Reason { get; set; }
+        public string Note { get; set; }
 
         public string SubcriptionId { get; set; }
 

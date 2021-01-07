@@ -1,8 +1,12 @@
-﻿namespace CSRO.Client.Services.Dtos
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace CSRO.Server.Domain
 {
-    public class RestartVmDto : DtoBase
+    public class VmDto : DtoBase
     {
-        public string Reason { get; set; }
+        public string Note { get; set; }
 
         public string SubcriptionId { get; set; }
 

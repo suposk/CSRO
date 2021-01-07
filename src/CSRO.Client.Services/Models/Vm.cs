@@ -2,11 +2,9 @@
 
 namespace CSRO.Client.Services.Models
 {
-    public class RestartVm : ModelBase
+    public class Vm : ModelBase
     {
-
-        [Required]
-        public string Reason { get; set; }
+        public string Note { get; set; }
 
         [Required]
         public string SubcriptionId { get; set; }

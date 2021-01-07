@@ -1,10 +1,8 @@
-﻿using CSRO.Server.Infrastructure;
-
-namespace CSRO.Server.Entities.Entity
+﻿namespace CSRO.Client.Services.Dtos
 {
-    public class RestartVm : EntitySoftDeleteBase
+    public class VmDto : DtoBase
     {
-        public string Reason { get; set; }
+        public string Note { get; set; }
 
         public string SubcriptionId { get; set; }
 
