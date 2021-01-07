@@ -16,8 +16,6 @@ namespace CSRO.Server.Entities.Entity
 
     public class AppVersion: EntityBase
     {
-        public int Id { get; set; }
-
         public RecomendedAction RecomendedAction { get; set; }
 
         public int VersionValue { get; set; }

@@ -1,0 +1,11 @@
+﻿@page "/wm/restart/edit/{TicketId}"
+@using CSRO.Client.Services.Models
+
+<RestartVmCsro TicketId="@TicketId"
+               OperationTypeTicket="@OperatioType.Edit">
+</RestartVmCsro>
+
+@code {
+    [Parameter]
+    public string TicketId { get; set; }
+}

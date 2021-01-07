@@ -8,8 +8,6 @@ namespace CSRO.Client.Services.Models
 {
     public class AppVersion : ModelBase
     {
-        public int Id { get; set; }
-
         public RecomendedAction RecomendedAction { get; set; }
 
         public int VersionValue { get; set; }

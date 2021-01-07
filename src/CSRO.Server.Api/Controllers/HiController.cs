@@ -47,7 +47,7 @@ namespace CSRO.Server.Api.Controllers
         }
 
         // GET api/<VersionController>/5
-        [HttpGet("{id}", Name = "GetById")]
+        [HttpGet("{id}")]
         public async Task<ActionResult<string>> GetById(int id)
         {
             try

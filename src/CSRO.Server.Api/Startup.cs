@@ -68,7 +68,10 @@ namespace CSRO.Server.Api
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "CSRO.Server.Api", Version = "v1" });
             });
 
-            
+            services.AddScoped<IApiIdentity, ApiIdentity>();
+
+            #region Repositories
+
             services.AddScoped<IVersionRepository, VersionRepository>();
             services.AddScoped<IRepository<AppVersion>>(sp =>
             {
@@ -76,6 +79,17 @@ namespace CSRO.Server.Api
                 var apiIdentity = serviceProvider.GetService<IApiIdentity>();
                 var ctx = serviceProvider.GetService<AppVersionContext>();
                 IRepository<AppVersion> obj = new Repository<AppVersion>(ctx, apiIdentity);
+                return obj;
+            });
+
+            
+            services.AddScoped<IVmTicketRepository, VmTicketRepository>();
+            services.AddScoped<IRepository<VmTicket>>(sp =>
+            {
+                var serviceProvider = services.BuildServiceProvider();
+                var apiIdentity = serviceProvider.GetService<IApiIdentity>();
+                var ctx = serviceProvider.GetService<AppVersionContext>();
+                IRepository<VmTicket> obj = new Repository<VmTicket>(ctx, apiIdentity);
                 return obj;
             });
             services.AddScoped<ITicketRepository, TicketRepository>();
@@ -88,7 +102,10 @@ namespace CSRO.Server.Api
                 return obj;
             });
 
-            services.AddScoped<IApiIdentity, ApiIdentity>();
+            #endregion
+
+            #region DbContext
+
             services.AddDbContext<AppVersionContext>(options =>
             {
                 //sql Lite                
@@ -106,7 +123,9 @@ namespace CSRO.Server.Api
                 //test
                 //sql Server
                 options.UseSqlServer(Configuration.GetConnectionString("TokenCacheDbConnStr"));
-            });            
+            });
+
+            #endregion
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

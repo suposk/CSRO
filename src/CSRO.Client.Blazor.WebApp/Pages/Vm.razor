@@ -1,0 +1,66 @@
+﻿@page "/wm"
+@inherits VmBase
+@using CSRO.Client.Services.Models;
+
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-6">
+    <MudText Typo="Typo.h4" GutterBottom="true">Tickes count: @Tickets?.Count</MudText>
+    <MudText Class="mb-8">List of Available.....</MudText>
+    @if (Tickets == null)
+    {
+        <MudText>Loading...</MudText>
+        <MudProgressCircular Color="Color.Default" Indeterminate="true" /> }
+    else
+    {
+        <MudTable Items="Tickets" Hover="true" SortLabel="Sort By" Elevation="0">
+            <HeaderContent>
+                <MudTh><MudTableSortLabel SortBy="new Func<VmTicket, object>(x=>x.Id)">Id</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<VmTicket, object>(x=>x.Status)">Status</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<VmTicket, object>(x=>x.CreatedBy)">Created By</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<VmTicket, object>(x=>x.VmName)">Vm Name</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<VmTicket, object>(x=>x.SubcriptionId)">Subcription Id</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<VmTicket, object>(x=>x.ResorceGroup)">Resorce Group</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<VmTicket, object>(x=>x.Note)">Note</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<VmTicket, object>(x=>x.CreatedAt)">Created At</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<VmTicket, object>(x=>x.ModifiedAt)">ModifiedAt At</MudTableSortLabel></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Id">@context.Id</MudTd>
+                <MudTd DataLabel="Status">@context.Status</MudTd>
+                <MudTd DataLabel="Created By">@context.CreatedBy</MudTd>
+                <MudTd DataLabel="Vm Name">@context.VmName</MudTd>
+                <MudTd DataLabel="Subcription Id">@context.SubcriptionId</MudTd>
+                <MudTd DataLabel="Resorce Group">@context.ResorceGroup</MudTd>
+                <MudTd DataLabel="Note">@context.Note</MudTd>
+                <MudTd DataLabel="Created At">@context.CreatedAt</MudTd>
+                <MudTd DataLabel="Modified At">@context.ModifiedAt</MudTd>
+                <MudPaper Class="demo-grid-paper" Elevation="0">
+                    <MudTooltip Text="Edit" Delayed="1">
+                        <MudIconButton Link="@($"wm/restart/edit/{context.Id}")" Icon="@Icons.Material.Edit"></MudIconButton>
+                    </MudTooltip>
+                    <MudTooltip Text="Details">
+                        <MudIconButton Link="@($"wm/restart/view/{context.Id}")" Icon="@Icons.Material.Info"></MudIconButton>
+                    </MudTooltip>
+                    <MudTooltip Text="Delete">
+                        <MudIconButton OnClick="@(e => DeleteTicketAsync(context))" Icon="@Icons.Material.Delete"></MudIconButton>
+                    </MudTooltip>
+                </MudPaper>
+                @*<div>
+            <div class="d-inline pa-2">
+                <MudTooltip Text="Edit" Delayed="1">
+                    <MudNavLink Href="@($"ticketedit/{context.Id}")" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Edit"></MudNavLink>
+                </MudTooltip>
+            </div>
+            <div class="d-inline pa-2">
+                <MudTooltip Text="Details">
+                    <MudNavLink Href="@($"ticketedit/{context.Id}")" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Info"></MudNavLink>
+                </MudTooltip>
+            </div>
+        </div>*@
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager PageSizeOptions="new int[]{10, 20, 50}" />
+            </PagerContent>
+        </MudTable>
+    }
+</MudContainer>

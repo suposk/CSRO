@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace CSRO.Client.Blazor.WebApp.Pages
 {
-    public class TicketsViewBase : ComponentBase
+    public class VmBase : ComponentBase
     {
         [Inject]
         public NavigationManager NavigationManager { get; set; }
@@ -22,15 +22,15 @@ namespace CSRO.Client.Blazor.WebApp.Pages
         public IDialogService DialogService { get; set; }
 
         [Inject]
-        IBaseDataService<Ticket> TicketDataService { get; set; }
+        IBaseDataService<VmTicket> VmTicketDataService { get; set; }
 
         [Inject]
-        public ILogger<TicketsViewBase> Logger { get; set; }
+        public ILogger<VmBase> Logger { get; set; }
 
 
-        public Ticket model { get; set; } = new Ticket();
+        public VmTicket model { get; set; } = new VmTicket();
         
-        public List<Ticket> Tickets { get; set; }
+        public List<VmTicket> Tickets { get; set; }
 
         protected async override Task OnInitializedAsync()
         {
@@ -38,7 +38,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages
             try
             {
                 Tickets = null;
-                Tickets = await TicketDataService.GetItemsAsync();
+                Tickets = await VmTicketDataService.GetItemsAsync();
             }
             catch (Exception ex)
             {
@@ -46,25 +46,24 @@ namespace CSRO.Client.Blazor.WebApp.Pages
             }
         }
 
-        public async Task DeleteTicketAsync(Ticket ticket)
+        public async Task DeleteTicketAsync(VmTicket ticket)
         {
             var parameters = new DialogParameters();
-            parameters.Add("ContentText", $"Do you really want to delete these record {ticket.Id}-{ticket.Description}?");
+            parameters.Add("ContentText", $"Do you really want to delete these record {ticket.Id}?");
             parameters.Add("ButtonText", "Delete");
             parameters.Add("Color", Color.Error);
 
             var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Small };
-            var userSelect = DialogService.Show<DialogTemplateExample_Dialog>("Delete Ticket", parameters, options);
+            var userSelect = DialogService.Show<DialogTemplateExample_Dialog>("Delete VmTicket", parameters, options);
             var result = await userSelect.Result;
             if (!result.Cancelled)
             {
-                var res = await TicketDataService.DeleteItemAsync(ticket.Id);
+                var res = await VmTicketDataService.DeleteItemAsync(ticket.Id);
                 if (res)
                 {
                     Tickets.Remove(ticket);
                 }
             }
         }
-
     }
 }

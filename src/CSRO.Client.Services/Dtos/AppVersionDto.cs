@@ -8,8 +8,6 @@ namespace CSRO.Client.Services.Dtos
 {
     public class AppVersionDto : DtoBase
     {
-        public int Id { get; set; }
-
         public RecomendedAction RecomendedAction { get; set; }
 
         public int VersionValue { get; set; }

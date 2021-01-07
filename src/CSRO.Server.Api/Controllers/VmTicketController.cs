@@ -19,15 +19,15 @@ namespace CSRO.Server.Api.Controllers
     //[AutoValidateAntiforgeryToken]
     [Route("api/[controller]")]
     [ApiController]
-    public class TicketController : ControllerBase
+    public class VmTicketController : ControllerBase
     {
-        private readonly ILogger<TicketController> _logger;
-        //private readonly IRepository<Ticket> _repository;
-        private readonly ITicketRepository _repository;
+        private readonly ILogger<VmTicketController> _logger;
+        //private readonly IRepository<Vm> _repository;
+        private readonly IVmTicketRepository _repository;
         private readonly IMapper _mapper;
 
-        public TicketController(ILogger<TicketController> logger,            
-            ITicketRepository repository,
+        public VmTicketController(ILogger<VmTicketController> logger,            
+            IVmTicketRepository repository,
             IMapper mapper)
         {
             _logger = logger;            
@@ -37,14 +37,14 @@ namespace CSRO.Server.Api.Controllers
 
         // GET: api/<VersionController>
         [HttpGet]
-        public async Task<ActionResult<List<TicketDto>>> Get()
+        public async Task<ActionResult<List<VmTicketDto>>> Get()
         {
             try
             {
                 _logger.LogInformation(ApiLogEvents.GetAllItems, $"{nameof(Get)} Started");
 
                 var all = await _repository.GetList();
-                var result = _mapper.Map<List<TicketDto>>(all);
+                var result = _mapper.Map<List<VmTicketDto>>(all);
                 return result;
             }
             catch (Exception ex)
@@ -55,55 +55,55 @@ namespace CSRO.Server.Api.Controllers
         }
 
         // GET: api/MessageDetails/5        
-        [HttpGet("{id}", Name = "GetTicket")]
-        public async Task<ActionResult<TicketDto>> GetTicket(int id)
+        [HttpGet("{id}", Name = "GetById")]
+        public async Task<ActionResult<VmTicketDto>> GetById(int id)
         {
             if (id < 1)
                 return BadRequest();
                         
             try
             {
-                _logger.LogInformation(ApiLogEvents.GetItem, $"{nameof(GetTicket)} with {id} Started");
+                _logger.LogInformation(ApiLogEvents.GetItem, $"{nameof(GetById)} with {id} Started");
 
                 var repoObj = await _repository.GetId(id);
                 if (repoObj == null)
                     return NotFound();
 
                 //_mapper.Map(repoObj, result);
-                var result = _mapper.Map<TicketDto>(repoObj);
+                var result = _mapper.Map<VmTicketDto>(repoObj);
                 return result;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, nameof(GetTicket), id);
+                _logger.LogError(ex, nameof(GetById), id);
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
 
         //// POST: api/MessageDetails
         [HttpPost]
-        public async Task<ActionResult<TicketDto>> PostTicket(TicketDto dto)
+        public async Task<ActionResult<VmTicketDto>> PostVmTicket(VmTicketDto dto)
         {
             if (dto == null)
                 return BadRequest();
 
             try
             {
-                _logger.LogInformation(ApiLogEvents.InsertItem, $"{nameof(PostTicket)} Started");
+                _logger.LogInformation(ApiLogEvents.InsertItem, $"{nameof(PostVmTicket)} Started");
 
-                var repoObj = _mapper.Map<Ticket>(dto);                
+                var repoObj = _mapper.Map<VmTicket>(dto);                
                 _repository.Add(repoObj);
                 if (await _repository.SaveChangesAsync())
                 {
-                    var result = _mapper.Map<TicketDto>(repoObj);
-                    return CreatedAtRoute("GetTicket",
+                    var result = _mapper.Map<VmTicketDto>(repoObj);
+                    return CreatedAtRoute("GetById",
                         new { id = result.Id }, result);
                 }
                 
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, nameof(PostTicket), dto);
+                _logger.LogError(ex, nameof(PostVmTicket), dto);
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
             return null;
@@ -111,23 +111,23 @@ namespace CSRO.Server.Api.Controllers
 
         // PUT: api/Churchs/5
         [HttpPut()]
-        public async Task<ActionResult<TicketDto>> PutTicket(TicketDto dto)
+        public async Task<ActionResult<VmTicketDto>> PutVmTicket(VmTicketDto dto)
         {
             if (dto == null || dto.Id < 1)
                 return BadRequest();
                         
             try
             {
-                _logger.LogInformation(ApiLogEvents.UpdateItem, $"{nameof(PutTicket)} Started");
+                _logger.LogInformation(ApiLogEvents.UpdateItem, $"{nameof(PutVmTicket)} Started");
 
                 var repoObj = await _repository.GetId(dto.Id);
                 if (repoObj == null)
                 {
-                    _logger.LogWarning(ApiLogEvents.UpdateItemNotFound, $"{nameof(PutTicket)} not found");
+                    _logger.LogWarning(ApiLogEvents.UpdateItemNotFound, $"{nameof(PutVmTicket)} not found");
                     return NotFound();
                 }
 
-                repoObj = _mapper.Map<Ticket>(dto);
+                repoObj = _mapper.Map<VmTicket>(dto);
                 _repository.Update(repoObj);
                 if (await _repository.SaveChangesAsync())
                 {
@@ -140,26 +140,26 @@ namespace CSRO.Server.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, nameof(PutTicket), dto);
+                _logger.LogError(ex, nameof(PutVmTicket), dto);
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }            
         }
 
         // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteTicket(int id)
+        public async Task<ActionResult> DeleteVmTicket(int id)
         {
             if (id < 1)
                 return BadRequest();
 
             try
             {
-                _logger.LogInformation(ApiLogEvents.DeleteItem, $"{nameof(DeleteTicket)} Started");
+                _logger.LogInformation(ApiLogEvents.DeleteItem, $"{nameof(DeleteVmTicket)} Started");
 
                 var repoObj = await _repository.GetId(id);
                 if (repoObj == null)
                 {
-                    _logger.LogWarning(ApiLogEvents.DeleteItemNotFound, $"{nameof(DeleteTicket)} not found");
+                    _logger.LogWarning(ApiLogEvents.DeleteItemNotFound, $"{nameof(DeleteVmTicket)} not found");
                     return NotFound();
                 }
 
@@ -172,7 +172,7 @@ namespace CSRO.Server.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, nameof(DeleteTicket), id);
+                _logger.LogError(ex, nameof(DeleteVmTicket), id);
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
             return null;
