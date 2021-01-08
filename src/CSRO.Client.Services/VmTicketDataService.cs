@@ -14,8 +14,20 @@ using System.Threading.Tasks;
 
 namespace CSRO.Client.Services
 {
-    public class VmTicketDataService : BaseDataService, IBaseDataService<VmTicket>
+    public interface IVmTicketDataService : IBaseDataService<VmTicket>
     {
+        /// <summary>
+        /// Call directly azure api and updated status
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        Task<bool> GetRestartStatus(VmTicket item);
+    }
+
+    public class VmTicketDataService : BaseDataService, IVmTicketDataService
+    {
+        private string _azureScope = "https://management.azure.com//.default";
+
         public VmTicketDataService(IHttpClientFactory httpClientFactory, IAuthCsroService authCsroService, IMapper mapper, 
             IConfiguration configuration)
             : base(httpClientFactory, authCsroService, mapper, configuration)
@@ -28,8 +40,82 @@ namespace CSRO.Client.Services
             base.Init();
         }
 
+
+        //custom method
+        private async Task<bool> RestarVmInAzure(VmTicket item)
+        {
+            try
+            {
+                //1. Call azure api
+                //await base.AddAuthHeaderAsync();
+                var azureApiToken = await AuthCsroService.GetAccessTokenForUserAsync(_azureScope);
+                HttpClientBase.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", azureApiToken);
+
+                var url = $"https://management.azure.com/subscriptions/{item.SubcriptionId}/resourceGroups/{item.ResorceGroup}/providers/Microsoft.Compute/virtualMachines/{item.VmName}/restart?api-version=2020-06-01";
+                var apiData = await HttpClientBase.PostAsync(url, null).ConfigureAwait(false);
+
+                if (apiData.IsSuccessStatusCode)
+                {
+                    var content = await apiData.Content.ReadAsStringAsync();
+                    if (apiData.StatusCode == System.Net.HttpStatusCode.OK || apiData.StatusCode == System.Net.HttpStatusCode.Accepted)
+                        return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                base.HandleException(ex);
+            }
+            return false;
+        }
+
+        public async Task<bool> GetRestartStatus(VmTicket item)
+        {
+            
+            try
+            {
+                ////1. Call azure api
+                ////await base.AddAuthHeaderAsync();
+                //var azureApiToken = await AuthCsroService.GetAccessTokenForUserAsync(_azureScope);
+                //HttpClientBase.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", azureApiToken);
+
+
+                //var url = $"https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}/restart?api-version=2020-06-01";
+                //var apiData = await HttpClientBase.GetAsync(url).ConfigureAwait(false);
+
+                //if (apiData.IsSuccessStatusCode)
+                //{
+                //    var content = await apiData.Content.ReadAsStringAsync();
+                //    //var ser = JsonSerializer.Deserialize<VmTicketDto>(content, _options);
+                //    //var result = Mapper.Map<VmTicket>(ser);
+                //    return result;
+
+
+                //    //2. if get response update status in CSRO
+                //}
+            }
+            catch (Exception ex)
+            {
+                base.HandleException(ex);
+            }
+            return false;
+        }
+
+        // generic methods
+
         public async Task<VmTicket> AddItemAsync(VmTicket item)
         {
+
+            try
+            {
+                var sent = await RestarVmInAzure(item);
+                if (!sent)
+                    return null;
+            }
+            catch
+            {
+                throw;
+            }
+
             try
             {
                 await base.AddAuthHeaderAsync();

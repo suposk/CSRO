@@ -16,6 +16,8 @@ namespace CSRO.Client.Services.Models
         public string VmName { get; set; }
 
         public string Status { get; set; }
+
+        public string VmState { get; set; }
     }
 
 }

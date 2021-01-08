@@ -22,7 +22,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages
         public IDialogService DialogService { get; set; }
 
         [Inject]
-        IBaseDataService<VmTicket> VmTicketDataService { get; set; }
+        IVmTicketDataService VmTicketDataService { get; set; }
 
         [Inject]
         public ILogger<VmBase> Logger { get; set; }

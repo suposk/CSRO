@@ -23,7 +23,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
         public NavigationManager NavigationManager { get; set; }
 
         [Inject]
-        IBaseDataService<VmTicket> VmTicketDataService { get; set; }
+        IVmTicketDataService VmTicketDataService { get; set; }
 
         [Inject]
         public IDialogService DialogService { get; set; }
@@ -54,6 +54,13 @@ namespace CSRO.Client.Blazor.WebApp.Components
                     if (server != null)
                         model = server;
                 }
+#if DEBUG
+                //dubug only
+                model.SubcriptionId = "33fb38df-688e-4ca1-8dd8-b46e26262ff8";
+                model.ResorceGroup = "dev-VMS";
+                model.VmName = "VmDelete";
+
+#endif
             }
             catch (Exception ex)
             {
@@ -75,6 +82,8 @@ namespace CSRO.Client.Blazor.WebApp.Components
                         {
                             Success = true;
                             model = added;
+
+                            NavigationManager.NavigateTo($"vm/restart/view/{model.Id}");
                         }
                     }
                     else if (OperationTypeTicket == OperatioType.Edit)
@@ -111,7 +120,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
         public void GoBack()
         {
-            NavigationManager.NavigateTo("/vm");
+            NavigationManager.NavigateTo("vm");
         }
 
     }

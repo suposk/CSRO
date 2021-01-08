@@ -1,4 +1,4 @@
-﻿@page "/wm"
+﻿@page "/vm"
 @inherits VmBase
 @using CSRO.Client.Services.Models;
 
@@ -36,10 +36,10 @@
                 <MudTd DataLabel="Modified At">@context.ModifiedAt</MudTd>
                 <MudPaper Class="demo-grid-paper" Elevation="0">
                     <MudTooltip Text="Edit" Delayed="1">
-                        <MudIconButton Link="@($"wm/restart/edit/{context.Id}")" Icon="@Icons.Material.Edit"></MudIconButton>
+                        <MudIconButton Link="@($"vm/restart/edit/{context.Id}")" Icon="@Icons.Material.Edit"></MudIconButton>
                     </MudTooltip>
                     <MudTooltip Text="Details">
-                        <MudIconButton Link="@($"wm/restart/view/{context.Id}")" Icon="@Icons.Material.Info"></MudIconButton>
+                        <MudIconButton Link="@($"vm/restart/view/{context.Id}")" Icon="@Icons.Material.Info"></MudIconButton>
                     </MudTooltip>
                     <MudTooltip Text="Delete">
                         <MudIconButton OnClick="@(e => DeleteTicketAsync(context))" Icon="@Icons.Material.Delete"></MudIconButton>
