@@ -68,7 +68,8 @@ namespace CSRO.Client.Blazor.WebApp.Components
                                 if (model.VmState == "Restart Started" || !string.Equals(model.VmState, "VM running"))
                                 {
                                     //need to create delay to update vm state after restart                                                                       
-                                    LoadingMessage = $"Current state: {model.VmState}";                                    
+                                    LoadingMessage = $"Current state: {model.VmState}";
+                                    StateHasChanged();
 
                                     await Task.Delay(10 * 1000);                                
                                     
