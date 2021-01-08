@@ -26,6 +26,7 @@ namespace CSRO.Server.Services
         {
             base.Add(entity, UserId);
             entity.Status = "Opened";
+            entity.VmState = "Restart Started";
         }
 
         public override void Remove(VmTicket entity, string UserId = null)

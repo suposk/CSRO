@@ -23,7 +23,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
         public NavigationManager NavigationManager { get; set; }
 
         [Inject]
-        IBaseDataService<VmTicket> VmTicketDataService { get; set; }
+        IVmTicketDataService VmTicketDataService { get; set; }
 
         [Inject]
         public IDialogService DialogService { get; set; }
@@ -31,9 +31,11 @@ namespace CSRO.Client.Blazor.WebApp.Components
         [Inject]
         public ILogger<RestartVmCsroBase> Logger { get; set; }
 
-
         public VmTicket model { get; set; } = new VmTicket();
 
+        public bool IsLoading { get; set; }
+
+        public string LoadingMessage { get; set; }
         protected bool Success { get; set; }
         protected bool IsReadOnly => OperationTypeTicket == OperatioType.View;
         protected string Title => OperationTypeTicket == OperatioType.Create ? "Request Vm Restart" : $"View {model.Status} of {model.VmName}";
@@ -46,18 +48,60 @@ namespace CSRO.Client.Blazor.WebApp.Components
         private async Task Load()
         {
             try
-            {
+            {                
                 if (OperationTypeTicket != OperatioType.Create)
                 {
+                    IsLoading = true;
+                    LoadingMessage = "Loading...";
+
                     model.Id = int.Parse(TicketId);
                     var server = await VmTicketDataService.GetItemByIdAsync(model.Id);
                     if (server != null)
+                    {
                         model = server;
+                        if (OperationTypeTicket == OperatioType.View)
+                        {
+                            int i = 0;
+                            while (i < 10)
+                            {
+                                i++;
+                                if (model.VmState == "Restart Started" || !string.Equals(model.VmState, "VM running"))
+                                {
+                                    //need to create delay to update vm state after restart                                                                       
+                                    LoadingMessage = $"Current state: {model.VmState}";
+                                    StateHasChanged();
+
+                                    await Task.Delay(10 * 1000);                                
+                                    
+                                    var running = await VmTicketDataService.VerifyRestartStatus(model).ConfigureAwait(false);
+                                    if (running)
+                                    {
+                                        model = await VmTicketDataService.GetItemByIdAsync(model.Id);                                        
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
+                #if DEBUG
+                else
+                {
+                    //dubug only
+                    model.SubcriptionId = "33fb38df-688e-4ca1-8dd8-b46e26262ff8";
+                    model.ResorceGroup = "dev-VMS";
+                    model.VmName = "VmDelete";
+                }
+                #endif
+
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, nameof(OnInitializedAsync));
+                Logger.LogError(ex, nameof(OnInitializedAsync));                
+            }
+            finally
+            {
+                IsLoading = false;
             }
         }
 
@@ -75,6 +119,8 @@ namespace CSRO.Client.Blazor.WebApp.Components
                         {
                             Success = true;
                             model = added;
+
+                            NavigationManager.NavigateTo($"vm/restart/view/{model.Id}");
                         }
                     }
                     else if (OperationTypeTicket == OperatioType.Edit)
@@ -111,7 +157,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
         public void GoBack()
         {
-            NavigationManager.NavigateTo("/vm");
+            NavigationManager.NavigateTo("vm");
         }
 
     }

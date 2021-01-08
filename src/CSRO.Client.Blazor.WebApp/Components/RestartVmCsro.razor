@@ -4,6 +4,11 @@
 <MudContainer>
     <div style="max-width: 50%" class="m-4">
         <MudText Typo="Typo.h4" GutterBottom="true">@Title</MudText>
+        @if (IsLoading)
+        {
+            <MudText>@LoadingMessage</MudText>
+            <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+        }
 
         @if (Success == false)
         {
@@ -13,11 +18,16 @@
                     <MudCardContent>
                         @if (OperationTypeTicket != OperatioType.Create)
                         {
+                            <MudTextField Label="Current Vm States:"
+                                          Disabled="true"
+                                          Class="text-warning"
+                                          @bind-Value="model.VmState" For="@(() => model.VmState)" />
+
                             <MudTextField Label="Id:"
                                           Disabled="true"
                                           @bind-Value="model.Id" For="@(() => model.Id)" />
 
-                            <MudTextField Label="Current Status:"
+                            <MudTextField Label="Status:"
                                           Disabled="true"
                                           @bind-Value="model.Status" For="@(() => model.Status)" />
                         }
