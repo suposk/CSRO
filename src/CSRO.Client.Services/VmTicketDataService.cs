@@ -21,12 +21,12 @@ namespace CSRO.Client.Services
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        Task<bool> GetRestartStatus(VmTicket item);
+        Task<bool> VerifyRestartStatus(VmTicket item);
     }
 
     public class VmTicketDataService : BaseDataService, IVmTicketDataService
     {
-        private string _azureScope = "https://management.azure.com//.default";
+        const string MANAGEMENT_AZURE_SCOPE = "https://management.azure.com//.default";
 
         public VmTicketDataService(IHttpClientFactory httpClientFactory, IAuthCsroService authCsroService, IMapper mapper, 
             IConfiguration configuration)
@@ -48,7 +48,7 @@ namespace CSRO.Client.Services
             {
                 //1. Call azure api
                 //await base.AddAuthHeaderAsync();
-                var azureApiToken = await AuthCsroService.GetAccessTokenForUserAsync(_azureScope);
+                var azureApiToken = await AuthCsroService.GetAccessTokenForUserAsync(MANAGEMENT_AZURE_SCOPE);
                 HttpClientBase.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", azureApiToken);
 
                 var url = $"https://management.azure.com/subscriptions/{item.SubcriptionId}/resourceGroups/{item.ResorceGroup}/providers/Microsoft.Compute/virtualMachines/{item.VmName}/restart?api-version=2020-06-01";
@@ -68,30 +68,43 @@ namespace CSRO.Client.Services
             return false;
         }
 
-        public async Task<bool> GetRestartStatus(VmTicket item)
+        public async Task<bool> VerifyRestartStatus(VmTicket item)
         {
             
             try
             {
-                ////1. Call azure api
-                ////await base.AddAuthHeaderAsync();
-                //var azureApiToken = await AuthCsroService.GetAccessTokenForUserAsync(_azureScope);
-                //HttpClientBase.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", azureApiToken);
+                //1. Call azure api
+                //await base.AddAuthHeaderAsync();
+                var azureApiToken = await AuthCsroService.GetAccessTokenForUserAsync(MANAGEMENT_AZURE_SCOPE);
+                HttpClientBase.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", azureApiToken);
 
+                var url = $"https://management.azure.com/subscriptions/{item.SubcriptionId}/resourceGroups/{item.ResorceGroup}/providers/Microsoft.Compute/virtualMachines/{item.VmName}/instanceView?api-version=2020-06-01";
+                var apiData = await HttpClientBase.GetAsync(url).ConfigureAwait(false);
 
-                //var url = $"https://management.azure.com/subscriptions/{subscriptionId}/resourceGroups/{resourceGroupName}/providers/Microsoft.Compute/virtualMachines/{vmName}/restart?api-version=2020-06-01";
-                //var apiData = await HttpClientBase.GetAsync(url).ConfigureAwait(false);
+                if (apiData.IsSuccessStatusCode)
+                {
+                    var content = await apiData.Content.ReadAsStringAsync();
+                    var ser = JsonSerializer.Deserialize<AzureInstanceViewDto>(content, _options);    
+                    if (ser?.Statuses.Count > 0)
+                    {
+                        //"VM running"
+                        var last = ser.Statuses.Last();
+                        if (last.Code.Contains("PowerState"))
+                        {
+                            var server = await GetItemByIdAsync(item.Id);
+                            if (server == null)
+                                return false;
 
-                //if (apiData.IsSuccessStatusCode)
-                //{
-                //    var content = await apiData.Content.ReadAsStringAsync();
-                //    //var ser = JsonSerializer.Deserialize<VmTicketDto>(content, _options);
-                //    //var result = Mapper.Map<VmTicket>(ser);
-                //    return result;
-
-
-                //    //2. if get response update status in CSRO
-                //}
+                            server.VmState = last.DisplayStatus;
+                            var up = await UpdateItemAsync(server);
+                            if (server.VmState.ToLower().Contains("running"))
+                            {
+                                item = server;
+                                return true;
+                            }
+                        }
+                    }
+                }
             }
             catch (Exception ex)
             {
