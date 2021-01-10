@@ -26,7 +26,6 @@ namespace CSRO.Client.Services
 
     public class VmTicketDataService : BaseDataService, IVmTicketDataService
     {
-        const string MANAGEMENT_AZURE_SCOPE = "https://management.azure.com//.default";
         private readonly IAzureVmManagementService _azureVmManagementService;
 
         public VmTicketDataService(
@@ -50,38 +49,22 @@ namespace CSRO.Client.Services
             
             try
             {
-                //1. Call azure api
-                //await base.AddAuthHeaderAsync();
-                var azureApiToken = await AuthCsroService.GetAccessTokenForUserAsync(MANAGEMENT_AZURE_SCOPE);
-                HttpClientBase.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", azureApiToken);
-
-                var url = $"https://management.azure.com/subscriptions/{item.SubcriptionId}/resourceGroups/{item.ResorceGroup}/providers/Microsoft.Compute/virtualMachines/{item.VmName}/instanceView?api-version=2020-06-01";
-                var apiData = await HttpClientBase.GetAsync(url).ConfigureAwait(false);
-
-                if (apiData.IsSuccessStatusCode)
+                var status = await _azureVmManagementService.GetVmDisplayStatus(item);
+                if (status != null)
                 {
-                    var content = await apiData.Content.ReadAsStringAsync();
-                    var ser = JsonSerializer.Deserialize<AzureInstanceViewDto>(content, _options);    
-                    if (ser?.Statuses.Count > 0)
-                    {
-                        //"VM running"
-                        var last = ser.Statuses.Last();
-                        if (last.Code.Contains("PowerState"))
-                        {
-                            var server = await GetItemByIdAsync(item.Id);
-                            if (server == null)
-                                return false;
+                    var server = await GetItemByIdAsync(item.Id);
+                    if (server == null)
+                        return false;
 
-                            server.VmState = last.DisplayStatus;
-                            var up = await UpdateItemAsync(server);
-                            if (server.VmState.ToLower().Contains("running"))
-                            {
-                                item = server;
-                                return true;
-                            }
-                        }
+                    server.VmState = status;
+                    var up = await UpdateItemAsync(server);
+                    if (server.VmState.ToLower().Contains("running"))
+                    {
+                        item = server;
+                        return true;
                     }
-                }
+                }                   
+                
             }
             catch (Exception ex)
             {
@@ -97,6 +80,10 @@ namespace CSRO.Client.Services
 
             try
             {
+                var vmstatus = await _azureVmManagementService.GetVmDisplayStatus(item);
+                if (vmstatus.Contains("deallocat"))
+                    throw new Exception($"Unable to process request: {vmstatus}");
+
                 var sent = await _azureVmManagementService.RestarVmInAzure(item);
                 if (!sent.suc)
                     throw new Exception(sent.errorMessage);
@@ -106,8 +93,19 @@ namespace CSRO.Client.Services
                 throw;
             }
 
+            string errorTxt = null;
             try
             {
+                var i = 1;
+                while (i < 5)
+                {
+                    i++;
+                    await Task.Delay(2 * 1000);
+                    var vmstatus = await _azureVmManagementService.GetVmDisplayStatus(item);
+                    if (vmstatus.Contains("restarting"))
+                        break;
+                }                
+
                 await base.AddAuthHeaderAsync();
 
                 var url = $"{ApiPart}";

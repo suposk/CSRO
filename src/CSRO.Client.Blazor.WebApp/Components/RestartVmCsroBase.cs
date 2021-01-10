@@ -155,6 +155,20 @@ namespace CSRO.Client.Blazor.WebApp.Components
                 catch (Exception ex)
                 {
                     Logger.LogError(ex, nameof(OnValidSubmit));
+
+                    var parameters = new DialogParameters();
+                    parameters.Add("ContentText", $"Detail error: {ex.Message}");
+                    parameters.Add("ButtonText", "Close");
+                    parameters.Add("Color", Color.Error);
+                    parameters.Add("ShowCancel", false);
+
+                    var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Small };
+                    var userSelect = DialogService.Show<DialogTemplateExample_Dialog>("Update Error", parameters, options);
+                    var result = await userSelect.Result;
+                }
+                finally
+                {
+                    IsLoading = false;
                 }
             }
         }

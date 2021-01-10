@@ -8,5 +8,6 @@ namespace CSRO.Client.Services
     {
         //Task<(bool, AzureManagErrorDto)> RestarVmInAzure2(VmTicket item);
         Task<(bool suc, string errorMessage)> RestarVmInAzure(VmTicket item);
+        Task<string> GetVmDisplayStatus(VmTicket item);
     }
 }

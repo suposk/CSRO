@@ -3,6 +3,7 @@ using CSRO.Client.Services.Dtos;
 using CSRO.Client.Services.Models;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -26,12 +27,46 @@ namespace CSRO.Client.Services
             base.Init();
         }
 
-        public async Task<(bool suc, AzureManagErrorDto error)> RestarVmInAzure2(VmTicket item)
+        public async Task<string> GetVmDisplayStatus(VmTicket item)
         {
             try
             {
                 //1. Call azure api
                 await base.AddAuthHeaderAsync();
+
+                var url = $"https://management.azure.com/subscriptions/{item.SubcriptionId}/resourceGroups/{item.ResorceGroup}/providers/Microsoft.Compute/virtualMachines/{item.VmName}/instanceView?api-version=2020-06-01";
+                var apiData = await HttpClientBase.GetAsync(url).ConfigureAwait(false);
+
+                if (apiData.IsSuccessStatusCode)
+                {
+                    var content = await apiData.Content.ReadAsStringAsync();
+                    var ser = JsonSerializer.Deserialize<AzureInstanceViewDto>(content, _options);
+                    if (ser?.Statuses.Count > 0)
+                    {
+                        //"VM running"
+                        //var last = ser.Statuses.Last();
+                        var last = ser.Statuses.LastOrDefault(a => a.Code.Contains("PowerState"));
+                        if (last!= null)
+                        {
+                            return last.DisplayStatus;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                base.HandleException(ex);
+            }
+            return null;
+        }
+
+        private async Task<(bool suc, AzureManagErrorDto error)> RestarVmInAzure2(VmTicket item)
+        {
+            try
+            {
+                //1. Call azure api
+                await base.AddAuthHeaderAsync();
+
                 var url = $"https://management.azure.com/subscriptions/{item.SubcriptionId}/resourceGroups/{item.ResorceGroup}/providers/Microsoft.Compute/virtualMachines/{item.VmName}/restart?api-version=2020-06-01";
                 var apiData = await HttpClientBase.PostAsync(url, null).ConfigureAwait(false);
 
