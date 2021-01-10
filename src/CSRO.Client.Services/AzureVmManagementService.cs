@@ -58,7 +58,7 @@ namespace CSRO.Client.Services
         public async Task<(bool suc, string errorMessage)> RestarVmInAzure(VmTicket item)
         {
             var res = await RestarVmInAzure2(item);
-            if (res.error == null)
+            if (res.suc)
                 return (res.suc, null);
             else
                 return (res.suc, $"{res.error}");

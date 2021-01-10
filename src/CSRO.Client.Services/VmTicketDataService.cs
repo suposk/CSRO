@@ -29,7 +29,8 @@ namespace CSRO.Client.Services
         const string MANAGEMENT_AZURE_SCOPE = "https://management.azure.com//.default";
         private readonly IAzureVmManagementService _azureVmManagementService;
 
-        public VmTicketDataService(IAzureVmManagementService azureVmManagementService, 
+        public VmTicketDataService(
+            IAzureVmManagementService azureVmManagementService, 
             IHttpClientFactory httpClientFactory, IAuthCsroService authCsroService, IMapper mapper, IConfiguration configuration)
             : base(httpClientFactory, authCsroService, mapper, configuration)
         {
