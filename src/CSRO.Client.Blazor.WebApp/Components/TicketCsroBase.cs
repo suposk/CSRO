@@ -32,7 +32,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
         public ILogger<TicketCsroBase> Logger { get; set; }
 
 
-        public Ticket model { get; set; } = new Ticket();
+        public Ticket Model { get; set; } = new Ticket();
 
         protected bool Success { get; set; }
         protected bool IsReadOnly => OperationTypeTicket == OperatioType.View;
@@ -49,10 +49,10 @@ namespace CSRO.Client.Blazor.WebApp.Components
             {
                 if (OperationTypeTicket != OperatioType.Create)
                 {
-                    model.Id = int.Parse(TicketId);
-                    var server = await TicketDataService.GetItemByIdAsync(model.Id);
+                    Model.Id = int.Parse(TicketId);
+                    var server = await TicketDataService.GetItemByIdAsync(Model.Id);
                     if (server != null)
-                        model = server;
+                        Model = server;
                 }
             }
             catch (Exception ex)
@@ -70,16 +70,16 @@ namespace CSRO.Client.Blazor.WebApp.Components
                 {
                     if (OperationTypeTicket == OperatioType.Create)
                     {
-                        var added = await TicketDataService.AddItemAsync(model);
+                        var added = await TicketDataService.AddItemAsync(Model);
                         if (added != null)
                         {
                             Success = true;
-                            model = added;
+                            Model = added;
                         }
                     }
                     else if (OperationTypeTicket == OperatioType.Edit)
                     {
-                        var updated = await TicketDataService.UpdateItemAsync(model);
+                        var updated = await TicketDataService.UpdateItemAsync(Model);
                         if (updated)
                         {
                             Success = true;                            

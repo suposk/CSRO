@@ -28,7 +28,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages
         public ILogger<TicketsViewBase> Logger { get; set; }
 
 
-        public Ticket model { get; set; } = new Ticket();
+        public Ticket Model { get; set; } = new Ticket();
         
         public List<Ticket> Tickets { get; set; }
 

@@ -27,9 +27,10 @@ namespace CSRO.Client.Services
     public class VmTicketDataService : BaseDataService, IVmTicketDataService
     {
         const string MANAGEMENT_AZURE_SCOPE = "https://management.azure.com//.default";
+        private readonly IAzureVmManagementService _azureVmManagementService;
 
-        public VmTicketDataService(IHttpClientFactory httpClientFactory, IAuthCsroService authCsroService, IMapper mapper, 
-            IConfiguration configuration)
+        public VmTicketDataService(IAzureVmManagementService azureVmManagementService, 
+            IHttpClientFactory httpClientFactory, IAuthCsroService authCsroService, IMapper mapper, IConfiguration configuration)
             : base(httpClientFactory, authCsroService, mapper, configuration)
         {
             ApiPart = "api/vmticket/";
@@ -38,35 +39,10 @@ namespace CSRO.Client.Services
             ClientName = "api";
 
             base.Init();
+
+            _azureVmManagementService = azureVmManagementService;
         }
 
-
-        //custom method
-        private async Task<bool> RestarVmInAzure(VmTicket item)
-        {
-            try
-            {
-                //1. Call azure api
-                //await base.AddAuthHeaderAsync();
-                var azureApiToken = await AuthCsroService.GetAccessTokenForUserAsync(MANAGEMENT_AZURE_SCOPE);
-                HttpClientBase.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", azureApiToken);
-
-                var url = $"https://management.azure.com/subscriptions/{item.SubcriptionId}/resourceGroups/{item.ResorceGroup}/providers/Microsoft.Compute/virtualMachines/{item.VmName}/restart?api-version=2020-06-01";
-                var apiData = await HttpClientBase.PostAsync(url, null).ConfigureAwait(false);
-
-                if (apiData.IsSuccessStatusCode)
-                {
-                    var content = await apiData.Content.ReadAsStringAsync();
-                    if (apiData.StatusCode == System.Net.HttpStatusCode.OK || apiData.StatusCode == System.Net.HttpStatusCode.Accepted)
-                        return true;
-                }
-            }
-            catch (Exception ex)
-            {
-                base.HandleException(ex);
-            }
-            return false;
-        }
 
         public async Task<bool> VerifyRestartStatus(VmTicket item)
         {
@@ -120,9 +96,9 @@ namespace CSRO.Client.Services
 
             try
             {
-                var sent = await RestarVmInAzure(item);
-                if (!sent)
-                    return null;
+                var sent = await _azureVmManagementService.RestarVmInAzure(item);
+                if (!sent.suc)
+                    throw new Exception(sent.errorMessage);
             }
             catch
             {

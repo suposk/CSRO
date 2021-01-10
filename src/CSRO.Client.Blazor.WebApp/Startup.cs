@@ -123,7 +123,8 @@ namespace CSRO.Client.Blazor.WebApp
             services.AddScoped<IVersionService, VersionService>();
             services.AddScoped<IBaseDataService<Ticket>, TicketDataService>();
             //services.AddScoped<IBaseDataService<VmTicket>, VmTicketDataService>();            
-            services.AddScoped<IVmTicketDataService, VmTicketDataService>();            
+            services.AddScoped<IVmTicketDataService, VmTicketDataService>();
+            services.AddScoped<IAzureVmManagementService, AzureVmManagementService>();
             
 
             var jano = Configuration.GetValue<string>("JanoSetting");

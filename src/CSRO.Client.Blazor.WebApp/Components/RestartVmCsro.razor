@@ -12,7 +12,7 @@
 
         @if (Success == false)
         {
-            <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+            <EditForm Model="@Model" OnValidSubmit="OnValidSubmit">
                 <DataAnnotationsValidator />
                 <MudCard>
                     <MudCardContent>
@@ -21,43 +21,43 @@
                             <MudTextField Label="Current Vm States:"
                                           Disabled="true"
                                           Class="text-warning"
-                                          @bind-Value="model.VmState" For="@(() => model.VmState)" />
+                                          @bind-Value="Model.VmState" For="@(() => Model.VmState)" />
 
                             <MudTextField Label="Id:"
                                           Disabled="true"
-                                          @bind-Value="model.Id" For="@(() => model.Id)" />
+                                          @bind-Value="Model.Id" For="@(() => Model.Id)" />
 
                             <MudTextField Label="Status:"
                                           Disabled="true"
-                                          @bind-Value="model.Status" For="@(() => model.Status)" />
+                                          @bind-Value="Model.Status" For="@(() => Model.Status)" />
                         }
 
                         <MudTextField Label="Subcription Id:"
                                       Disabled="@IsReadOnly"
-                                      @bind-Value="model.SubcriptionId" For="@(() => model.SubcriptionId)" />
+                                      @bind-Value="Model.SubcriptionId" For="@(() => Model.SubcriptionId)" />
 
                         <MudTextField Label="Resorce Group:"
                                       Disabled="@IsReadOnly"
-                                      @bind-Value="model.ResorceGroup" For="@(() => model.ResorceGroup)" />
+                                      @bind-Value="Model.ResorceGroup" For="@(() => Model.ResorceGroup)" />
 
                         <MudTextField Label="Vm Name:" HelperText="Name of Virtual Machine"
                                       Disabled="@IsReadOnly"
-                                      @bind-Value="model.VmName" For="@(() => model.VmName)" />
+                                      @bind-Value="Model.VmName" For="@(() => Model.VmName)" />
 
                         <MudTextField Label="Note:"
                                       Disabled="@IsReadOnly"
-                                      @bind-Value="model.Note" For="@(() => model.Note)" />
+                                      @bind-Value="Model.Note" For="@(() => Model.Note)" />
 
                         @if (IsReadOnly)
                         {
                             <MudTextField Label="Created By:" Disabled="true"
-                                          @bind-Value="model.CreatedBy" For="@(() => model.CreatedBy)" />
+                                          @bind-Value="Model.CreatedBy" For="@(() => Model.CreatedBy)" />
 
                             <MudTextField Label="Created At:" Disabled="true"
-                                          @bind-Value="model.CreatedAt" For="@(() => model.CreatedAt)" />
+                                          @bind-Value="Model.CreatedAt" For="@(() => Model.CreatedAt)" />
 
                             <MudTextField Label="Modified At:" Disabled="true"
-                                          @bind-Value="model.ModifiedAt" For="@(() => model.ModifiedAt)" />
+                                          @bind-Value="Model.ModifiedAt" For="@(() => Model.ModifiedAt)" />
                         }
 
                     </MudCardContent>
