@@ -12,7 +12,7 @@ namespace CSRO.Client.Services
     public class AzureVmManagementService : BaseDataService, IAzureVmManagementService
     {
 
-        const string MANAGEMENT_AZURE_SCOPE = "https://management.azure.com//.default";
+        public const string MANAGEMENT_AZURE_SCOPE = "https://management.azure.com//.default";
 
         public AzureVmManagementService(IHttpClientFactory httpClientFactory, IAuthCsroService authCsroService, IMapper mapper,
             IConfiguration configuration)
