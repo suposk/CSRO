@@ -27,7 +27,7 @@ namespace CSRO.Client.Services
             base.Init();
         }
 
-        public async Task<string> GetVmDisplayStatus(VmTicket item)
+        public async Task<(bool suc, string status)> GetVmDisplayStatus(VmTicket item)
         {
             try
             {
@@ -48,16 +48,22 @@ namespace CSRO.Client.Services
                         var last = ser.Statuses.LastOrDefault(a => a.Code.Contains("PowerState"));
                         if (last!= null)
                         {
-                            return last.DisplayStatus;
+                            return (true, last.DisplayStatus);
                         }
                     }
+                }
+                else
+                {
+                    var content = await apiData.Content.ReadAsStringAsync();
+                    var ser = JsonSerializer.Deserialize<AzureManagErrorDto>(content, _options);
+                    return (false, ser.Error.ToString());
                 }
             }
             catch (Exception ex)
             {
                 base.HandleException(ex);
             }
-            return null;
+            return (false, null);
         }
 
         private async Task<(bool suc, AzureManagErrorDto error)> RestarVmInAzure2(VmTicket item)

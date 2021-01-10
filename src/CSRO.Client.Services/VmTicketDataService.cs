@@ -50,13 +50,13 @@ namespace CSRO.Client.Services
             try
             {
                 var status = await _azureVmManagementService.GetVmDisplayStatus(item);
-                if (status != null)
+                if (status.suc)
                 {
                     var server = await GetItemByIdAsync(item.Id);
                     if (server == null)
                         return false;
 
-                    server.VmState = status;
+                    server.VmState = status.status;
                     var up = await UpdateItemAsync(server);
                     if (server.VmState.ToLower().Contains("running"))
                     {
@@ -81,7 +81,7 @@ namespace CSRO.Client.Services
             try
             {
                 var vmstatus = await _azureVmManagementService.GetVmDisplayStatus(item);
-                if (vmstatus.Contains("deallocat"))
+                if (vmstatus.suc == false || vmstatus.status.Contains("deallocat"))
                     throw new Exception($"Unable to process request: {vmstatus}");
 
                 var sent = await _azureVmManagementService.RestarVmInAzure(item);
@@ -102,7 +102,7 @@ namespace CSRO.Client.Services
                     i++;
                     await Task.Delay(2 * 1000);
                     var vmstatus = await _azureVmManagementService.GetVmDisplayStatus(item);
-                    if (vmstatus.Contains("restarting"))
+                    if (vmstatus.suc && vmstatus.status.Contains("restarting"))
                         break;
                 }                
 

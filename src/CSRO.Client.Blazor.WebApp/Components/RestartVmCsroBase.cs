@@ -154,6 +154,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
                 }
                 catch (Exception ex)
                 {
+                    IsLoading = false;
                     Logger.LogError(ex, nameof(OnValidSubmit));
 
                     var parameters = new DialogParameters();
