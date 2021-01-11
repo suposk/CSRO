@@ -10,6 +10,14 @@ using System.Threading.Tasks;
 
 namespace CSRO.Client.Services
 {
+    public interface IAzureVmManagementService
+    {
+        //Task<(bool, AzureManagErrorDto)> RestarVmInAzure2(VmTicket item);
+        Task<(bool suc, string errorMessage)> RestarVmInAzure(VmTicket item);
+        Task<(bool suc, string status)> GetVmDisplayStatus(VmTicket item);
+    }
+
+
     public class AzureVmManagementService : BaseDataService, IAzureVmManagementService
     {
 
@@ -66,6 +74,15 @@ namespace CSRO.Client.Services
             return (false, null);
         }
 
+        public async Task<(bool suc, string errorMessage)> RestarVmInAzure(VmTicket item)
+        {
+            var res = await RestarVmInAzure2(item);
+            if (res.suc)
+                return (res.suc, null);
+            else
+                return (res.suc, $"{res.error}");
+        }
+
         private async Task<(bool suc, AzureManagErrorDto error)> RestarVmInAzure2(VmTicket item)
         {
             try
@@ -96,13 +113,6 @@ namespace CSRO.Client.Services
             return (false, null);
         }
 
-        public async Task<(bool suc, string errorMessage)> RestarVmInAzure(VmTicket item)
-        {
-            var res = await RestarVmInAzure2(item);
-            if (res.suc)
-                return (res.suc, null);
-            else
-                return (res.suc, $"{res.error}");
-        }
+
     }
 }
