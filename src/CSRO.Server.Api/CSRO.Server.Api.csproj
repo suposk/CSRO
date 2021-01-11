@@ -30,6 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CSRO.Client.Core\CSRO.Client.Core.csproj" />
     <ProjectReference Include="..\CSRO.Server.Domain\CSRO.Server.Domain.csproj" />
     <ProjectReference Include="..\CSRO.Server.Entities\CSRO.Server.Entities.csproj" />
     <ProjectReference Include="..\CSRO.Server.Infrastructure\CSRO.Server.Infrastructure.csproj" />
