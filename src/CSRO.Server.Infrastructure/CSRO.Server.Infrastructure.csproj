@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CSRO.Client.Core\CSRO.Client.Core.csproj" />
+    <ProjectReference Include="..\CSRO.Server.Core\CSRO.Server.Core.csproj" />
   </ItemGroup>
 
 </Project>

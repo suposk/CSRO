@@ -6,10 +6,12 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+    <PackageReference Include="Microsoft.Identity.Web" Version="1.4.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CSRO.Client.Core\CSRO.Client.Core.csproj" />
+    <ProjectReference Include="..\CSRO.Server.Core\CSRO.Server.Core.csproj" />
+    <ProjectReference Include="..\CSRO.Server.Domain\CSRO.Server.Domain.csproj" />
     <ProjectReference Include="..\CSRO.Server.Entities\CSRO.Server.Entities.csproj" />
     <ProjectReference Include="..\CSRO.Server.Infrastructure\CSRO.Server.Infrastructure.csproj" />
   </ItemGroup>

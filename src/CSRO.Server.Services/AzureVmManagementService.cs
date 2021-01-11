@@ -1,15 +1,16 @@
-﻿using AutoMapper;
-using CSRO.Client.Services.Dtos;
-using CSRO.Client.Services.Models;
+﻿using CSRO.Server.Domain;
+using CSRO.Server.Entities.Entity;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Identity.Web;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace CSRO.Client.Services
+namespace CSRO.Server.Services
 {
     public interface IAzureVmManagementService
     {
@@ -21,15 +22,15 @@ namespace CSRO.Client.Services
 
     public class AzureVmManagementService : BaseDataService, IAzureVmManagementService
     {
-
         public AzureVmManagementService(
-            IHttpClientFactory httpClientFactory, 
-            IAuthCsroService authCsroService, 
-            IMapper mapper,
+            IHttpClientFactory httpClientFactory,
+            //IAuthCsroService authCsroService,
+            ITokenAcquisition tokenAcquisition,
+            //IMapper mapper,
             IConfiguration configuration)
-            : base(httpClientFactory, authCsroService, mapper, configuration)
+            : base(httpClientFactory, tokenAcquisition, configuration)
         {
-            ApiPart = "--";            
+            ApiPart = "--";
             //Scope = "api://ee2f0320-29c3-432a-bf84-a5d4277ce052/user_impersonation";
             Scope = Core.ConstatCsro.Scopes.MANAGEMENT_AZURE_SCOPE;
             //ClientName = "api";
@@ -57,7 +58,7 @@ namespace CSRO.Client.Services
                         //"VM running"
                         //var last = ser.Statuses.Last();
                         var last = ser.Statuses.LastOrDefault(a => a.Code.Contains("PowerState"));
-                        if (last!= null)
+                        if (last != null)
                         {
                             return (true, last.DisplayStatus);
                         }

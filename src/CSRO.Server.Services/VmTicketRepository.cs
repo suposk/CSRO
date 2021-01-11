@@ -13,25 +13,35 @@ namespace CSRO.Server.Services
 
     public class VmTicketRepository : Repository<VmTicket>, IVmTicketRepository
     {
+        private readonly IAzureVmManagementService _azureVmManagementService;
         private readonly IRepository<VmTicket> _repository;
         private AppVersionContext _context;
+        private string _userId;
 
-        public VmTicketRepository(IRepository<VmTicket> repository, AppVersionContext context, IApiIdentity apiIdentity) : base(context, apiIdentity)
+        public VmTicketRepository(
+            IAzureVmManagementService azureVmManagementService,
+            IRepository<VmTicket> repository, 
+            AppVersionContext context, 
+            IApiIdentity apiIdentity) : base(context, apiIdentity)
         {
+            _azureVmManagementService = azureVmManagementService;
             _repository = repository;
             _context = context;
+            _userId = ApiIdentity.GetUserName();
         }
 
-        public override void Add(VmTicket entity, string UserId = null)
+        public async override void Add(VmTicket entity, string UserId = null)
         {
-            base.Add(entity, UserId);
+            var vmstatus = await _azureVmManagementService.GetVmDisplayStatus(entity);
+
+            base.Add(entity, _userId);
             entity.Status = "Opened";
             entity.VmState = "Restart Started";
         }
 
         public override void Remove(VmTicket entity, string UserId = null)
         {
-            base.Remove(entity, UserId);
+            base.Remove(entity, _userId);
             entity.Status = "Closed";
         }
 
