@@ -55,7 +55,7 @@ namespace CSRO.Server.Api.Controllers
         }
 
         // GET: api/MessageDetails/5        
-        [HttpGet("{id}", Name = "GetTicket")]
+        [HttpGet("{id}", Name = nameof(GetTicket))]
         public async Task<ActionResult<TicketDto>> GetTicket(int id)
         {
             if (id < 1)
@@ -96,7 +96,7 @@ namespace CSRO.Server.Api.Controllers
                 if (await _repository.SaveChangesAsync())
                 {
                     var result = _mapper.Map<TicketDto>(repoObj);
-                    return CreatedAtRoute("GetTicket",
+                    return CreatedAtRoute(nameof(GetTicket),
                         new { id = result.Id }, result);
                 }
                 

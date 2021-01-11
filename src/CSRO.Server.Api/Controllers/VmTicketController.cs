@@ -50,20 +50,20 @@ namespace CSRO.Server.Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, nameof(Get), null);
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }
         }
 
         // GET: api/MessageDetails/5        
-        [HttpGet("{id}", Name = "GetById")]
-        public async Task<ActionResult<VmTicketDto>> GetById(int id)
+        [HttpGet("{id}", Name = nameof(GetVmTicketById))]
+        public async Task<ActionResult<VmTicketDto>> GetVmTicketById(int id)
         {
             if (id < 1)
                 return BadRequest();
                         
             try
             {
-                _logger.LogInformation(ApiLogEvents.GetItem, $"{nameof(GetById)} with {id} Started");
+                _logger.LogInformation(ApiLogEvents.GetItem, $"{nameof(GetVmTicketById)} with {id} Started");
 
                 var repoObj = await _repository.GetId(id);
                 if (repoObj == null)
@@ -75,36 +75,37 @@ namespace CSRO.Server.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, nameof(GetById), id);
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                _logger.LogError(ex, nameof(GetVmTicketById), id);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }
         }
 
         //// POST: api/MessageDetails
-        [HttpPost]
-        public async Task<ActionResult<VmTicketDto>> PostVmTicket(VmTicketDto dto)
+        [HttpPost(Name = nameof(CreateRestartTicket))]
+        public async Task<ActionResult<VmTicketDto>> CreateRestartTicket(VmTicketDto dto)
         {
             if (dto == null)
                 return BadRequest();
 
             try
             {
-                _logger.LogInformation(ApiLogEvents.InsertItem, $"{nameof(PostVmTicket)} Started");
+                _logger.LogInformation(ApiLogEvents.InsertItem, $"{nameof(CreateRestartTicket)} Started");
 
                 var repoObj = _mapper.Map<VmTicket>(dto);                
-                _repository.Add(repoObj);
+                await _repository.CreateRestartTicket(repoObj);
                 if (await _repository.SaveChangesAsync())
                 {
                     var result = _mapper.Map<VmTicketDto>(repoObj);
-                    return CreatedAtRoute("GetById",
+                    return CreatedAtRoute(nameof(GetVmTicketById),
                         new { id = result.Id }, result);
                 }
                 
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, nameof(PostVmTicket), dto);
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                _logger.LogError(ex, nameof(CreateRestartTicket), dto);
+                //return StatusCode(StatusCodes.Status500InternalServerError);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }
             return null;
         }
@@ -141,7 +142,7 @@ namespace CSRO.Server.Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, nameof(PutVmTicket), dto);
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }            
         }
 
@@ -173,7 +174,7 @@ namespace CSRO.Server.Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, nameof(DeleteVmTicket), id);
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }
             return null;
         }

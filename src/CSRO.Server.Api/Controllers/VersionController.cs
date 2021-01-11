@@ -56,7 +56,7 @@ namespace CSRO.Server.Api.Controllers
         }
 
         // GET api/<VersionController>/5
-        [HttpGet("{version}", Name = "GetVersion")]
+        [HttpGet("{version}", Name = nameof(GetVersion))]
         public async Task<ActionResult<AppVersionDto>> GetVersion(string version)
         {
             try

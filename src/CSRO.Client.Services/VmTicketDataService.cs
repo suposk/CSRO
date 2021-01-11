@@ -117,22 +117,23 @@ namespace CSRO.Client.Services
         public async Task<VmTicket> AddItemAsync(VmTicket item)
         {
 
-            try
-            {
-                var vmstatus = await _azureVmManagementService.GetVmDisplayStatus(item);
-                if (vmstatus.suc == false || vmstatus.status.Contains("deallocat"))
-                    throw new Exception($"Unable to process request: {vmstatus.status}");
+            //try
+            //{
+            //    var vmstatus = await _azureVmManagementService.GetVmDisplayStatus(item);
+            //    if (vmstatus.suc == false || vmstatus.status.Contains("deallocat"))
+            //        throw new Exception($"Unable to process request: {vmstatus.status}");
 
-                var sent = await _azureVmManagementService.RestarVmInAzure(item);
-                if (!sent.suc)
-                    throw new Exception(sent.errorMessage);
-            }
-            catch
-            {
-                throw;
-            }
+            //    var sent = await _azureVmManagementService.RestarVmInAzure(item);
+            //    if (!sent.suc)
+            //        throw new Exception(sent.errorMessage);
+            //}
+            //catch
+            //{
+            //    throw;
+            //}
 
-            string errorTxt = null;
+            //string errorTxt = null;
+
             try
             {
                 //useless try in server
@@ -161,10 +162,17 @@ namespace CSRO.Client.Services
                     var result = Mapper.Map<VmTicket>(ser);
                     return result;
                 }
+                else
+                {
+                    var content = await apiData.Content.ReadAsStringAsync();
+                    //var ser = JsonSerializer.Deserialize<AzureManagErrorDto>(content, _options);
+                    throw new Exception(content);
+                }
             }
             catch (Exception ex)
             {
                 base.HandleException(ex);
+                throw;
             }
             return null;
         }

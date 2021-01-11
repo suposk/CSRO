@@ -47,12 +47,12 @@ namespace CSRO.Server.Api.Controllers
         }
 
         // GET api/<VersionController>/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<string>> GetById(int id)
+        [HttpGet("{id}", Name = nameof(GetSquereOf))]
+        public async Task<ActionResult<string>> GetSquereOf(int id)
         {
             try
             {
-                _logger.LogInformation(ApiLogEvents.GetItem, $"{nameof(GetById)} Started");
+                _logger.LogInformation(ApiLogEvents.GetItem, $"{nameof(GetSquereOf)} Started");
                 var result = 0;
                 try
                 {
