@@ -36,13 +36,24 @@ namespace CSRO.Client.Services
             var auth = await _authenticationStateProvider.GetAuthenticationStateAsync();
             if (auth != null && auth.User.Identity.IsAuthenticated)
             {
-                var t = await _tokenAcquisition.GetAccessTokenForUserAsync(new string[] { scope });
-                return t;
+                try
+                {
+                    var t = await _tokenAcquisition.GetAccessTokenForUserAsync(new string[] { scope });
+                    return t;
+                }
+                catch (Exception ex)
+                {
+                    if (ex.InnerException?.Message != null && ex.InnerException.Message.Contains("No account or login hint was passed to the AcquireTokenSilent call"))
+                    { 
+                        SignIn();
+                        return null;
+                    }
+                    throw;
+                }
             }
             else
             {
-                //todo log in
-                _navigationManager.NavigateTo("/MicrosoftIdentity/Account/SignIn", true);
+                SignIn();
                 return null;
             }
         }
@@ -55,15 +66,31 @@ namespace CSRO.Client.Services
             var auth = await _authenticationStateProvider.GetAuthenticationStateAsync();
             if (auth != null && auth.User.Identity.IsAuthenticated)
             {
-                var t = await _tokenAcquisition.GetAccessTokenForUserAsync(scopes);
-                return t;
+                try
+                {
+                    var t = await _tokenAcquisition.GetAccessTokenForUserAsync(scopes);
+                    return t;
+                }
+                catch (Exception ex)
+                {
+                    if (ex.InnerException?.Message != null && ex.InnerException.Message.Contains("No account or login hint was passed to the AcquireTokenSilent call"))
+                    {
+                        SignIn();
+                        return null;
+                    }
+                    throw;
+                }
             }
             else
             {
-                //todo log in
-                _navigationManager.NavigateTo("/MicrosoftIdentity/Account/SignIn", true);
+                SignIn();
                 return null;
             }
+        }
+
+        private void SignIn()
+        {
+            _navigationManager.NavigateTo("/MicrosoftIdentity/Account/SignIn", true);
         }
     }
 }

@@ -61,12 +61,6 @@ namespace CSRO.Server.Services
             //entity.VmState = "Restart Started";
         }
 
-        public override void Update(VmTicket entity, string UserId = null)
-        {
-            entity.Status = "Modified";
-            base.Update(entity, _userId);
-        }
-
         public override void Remove(VmTicket entity, string UserId = null)
         {
             base.Remove(entity, _userId);

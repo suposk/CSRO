@@ -53,7 +53,7 @@ namespace CSRO.Server.Services
                 {
                     var content = await apiData.Content.ReadAsStringAsync();
                     var ser = JsonSerializer.Deserialize<AzureInstanceViewDto>(content, _options);
-                    if (ser?.Statuses.Count > 0)
+                    if (ser?.Statuses?.Count > 0)
                     {
                         //"VM running"
                         //var last = ser.Statuses.Last();
@@ -75,7 +75,7 @@ namespace CSRO.Server.Services
             {
                 base.HandleException(ex);
             }
-            return (false, null);
+            return (false, "Unable to verify Vm Status");
         }
 
         public async Task<(bool suc, string errorMessage)> RestarVmInAzure(VmTicket item)

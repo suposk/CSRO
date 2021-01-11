@@ -23,17 +23,23 @@ namespace CSRO.Server.Services
         public string GetUserName()
         {
             if (_context?.HttpContext == null)
-                return null;
+                return null;  
+
+            var defname = _context.HttpContext?.User?.Identity?.Name;            
+            if (!string.IsNullOrWhiteSpace(defname))
+                return defname;
+            
             List<string> list = new List<string>();
-            var nameId = _context.HttpContext?.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier);
+            //var nameId = _context.HttpContext?.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier);
             var email = _context.HttpContext?.User.FindFirst(c => c.Type == ClaimTypes.Email);
-            var upn = _context.HttpContext?.User.FindFirst(c => c.Type == ClaimTypes.WindowsAccountName);
+            //var upn = _context.HttpContext?.User.FindFirst(c => c.Type == ClaimTypes.WindowsAccountName);
             var userData = _context.HttpContext?.User.FindFirst(c => c.Type == ClaimTypes.UserData);
-            foreach(var item in _context.HttpContext?.User?.Claims)
-            {
-                if (item.Type.ToLower() == "name")
-                    list.Add(item.Value);
-            }
+
+            //foreach(var item in _context.HttpContext?.User?.Claims)
+            //{
+            //    if (item.Type.ToLower() == "name")
+            //        list.Add(item.Value);
+            //}
             if (list.Count == 0 && email != null && !string.IsNullOrWhiteSpace(email.Value))
                 return email.Value;
             if (list.Count > 0)
