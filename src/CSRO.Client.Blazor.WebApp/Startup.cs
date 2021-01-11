@@ -86,6 +86,10 @@ namespace CSRO.Client.Blazor.WebApp
             {
                 client.BaseAddress = new Uri(ApiEndpoint);
             });
+            services.AddHttpClient(Core.ConstatCsro.ClientNames.MANAGEMENT_AZURE_EndPoint, (client) =>
+            {
+                client.BaseAddress = new Uri(Core.ConstatCsro.ClientNames.MANAGEMENT_AZURE_EndPoint);
+            });
 
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
