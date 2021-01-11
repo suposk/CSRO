@@ -93,9 +93,10 @@ namespace CSRO.Client.Services
                             return false;
 
                         server.VmState = vmstatus.status;
-                        var up = await UpdateItemAsync(server);
                         if (server.VmState.ToLower().Contains("running"))
                         {
+                            server.Status = "Completed";
+                            var up = await UpdateItemAsync(server);
                             item = server;
                             return true;
                         }
