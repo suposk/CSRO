@@ -68,7 +68,7 @@ namespace CSRO.Server.Services
                 {
                     var content = await apiData.Content.ReadAsStringAsync();
                     var ser = JsonSerializer.Deserialize<AzureManagErrorDto>(content, _options);
-                    return (false, ser.Error.ToString());
+                    return (false, ser?.Error?.ToString());
                 }
             }
             catch (Exception ex)
@@ -107,7 +107,7 @@ namespace CSRO.Server.Services
                 {
                     var content = await apiData.Content.ReadAsStringAsync();
                     var ser = JsonSerializer.Deserialize<AzureManagErrorDto>(content, _options);
-                    return (true, ser);
+                    return (false, ser);
                 }
             }
             catch (Exception ex)
