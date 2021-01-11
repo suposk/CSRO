@@ -60,26 +60,44 @@ namespace CSRO.Client.Blazor.WebApp.Components
                         Model = server;
                         if (OperationTypeTicket == OperatioType.View)
                         {
-                            int i = 0;
-                            while (i < 10)
-                            {
-                                i++;
-                                if (Model.VmState == "Restart Started" || !string.Equals(Model.VmState, "VM running"))
-                                {
-                                    //need to create delay to update vm state after restart                                                                       
-                                    LoadingMessage = $"Current state: {Model.VmState}";
-                                    StateHasChanged();
+                            //int i = 0;
+                            //while (i < 10)
+                            //{
+                            //    i++;
+                            //    if (Model.VmState == "Restart Started" || !string.Equals(Model.VmState, "VM running"))
+                            //    {
+                            //        //need to create delay to update vm state after restart                                                                       
+                            //        LoadingMessage = $"Current state: {Model.VmState}";
+                            //        StateHasChanged();
 
-                                    await Task.Delay(10 * 1000);                                
-                                    
-                                    var running = await VmTicketDataService.VerifyRestartStatus(Model).ConfigureAwait(false);
-                                    if (running)
-                                    {
-                                        Model = await VmTicketDataService.GetItemByIdAsync(Model.Id);                                        
-                                        break;
-                                    }
+                            //        await Task.Delay(10 * 1000);                                
+
+                            //        var running = await VmTicketDataService.VerifyRestartStatus(Model).ConfigureAwait(false);
+                            //        if (running)
+                            //        {
+                            //            Model = await VmTicketDataService.GetItemByIdAsync(Model.Id);                                        
+                            //            break;
+                            //        }
+                            //    }
+                            //}
+
+                            if (Model.VmState == "Restart Started" || !string.Equals(Model.VmState, "VM running"))
+                            {
+                                //need to create delay to update vm state after restart                                                                       
+                                LoadingMessage = $"Current state: {Model.VmState}";
+                                StateHasChanged();
+
+                                var running = await VmTicketDataService.VerifyRestartStatusCallback(Model, (status)=> 
+                                {
+                                    LoadingMessage = $"Current state: {status}";
+                                    StateHasChanged();
+                                }).ConfigureAwait(false);
+                                if (running)
+                                {
+                                    Model = await VmTicketDataService.GetItemByIdAsync(Model.Id);                                    
                                 }
                             }
+
                         }
                     }
                 }

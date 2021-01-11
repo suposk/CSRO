@@ -22,6 +22,7 @@ namespace CSRO.Client.Services
         /// <param name="item"></param>
         /// <returns></returns>
         Task<bool> VerifyRestartStatus(VmTicket item);
+        Task<bool> VerifyRestartStatusCallback(VmTicket item, Action<string> callbackStatus);
     }
 
     public class VmTicketDataService : BaseDataService, IVmTicketDataService
@@ -49,14 +50,14 @@ namespace CSRO.Client.Services
             
             try
             {
-                var status = await _azureVmManagementService.GetVmDisplayStatus(item);
-                if (status.suc)
+                var vmstatus = await _azureVmManagementService.GetVmDisplayStatus(item);
+                if (vmstatus.suc)
                 {
                     var server = await GetItemByIdAsync(item.Id);
                     if (server == null)
                         return false;
 
-                    server.VmState = status.status;
+                    server.VmState = vmstatus.status;
                     var up = await UpdateItemAsync(server);
                     if (server.VmState.ToLower().Contains("running"))
                     {
@@ -65,6 +66,44 @@ namespace CSRO.Client.Services
                     }
                 }                   
                 
+            }
+            catch (Exception ex)
+            {
+                base.HandleException(ex);
+            }
+            return false;
+        }
+
+        public async Task<bool> VerifyRestartStatusCallback(VmTicket item, Action<string> callbackStatus)
+        {
+
+            try
+            {
+                var i = 1;
+                while (i < 10)
+                {
+                    i++;
+                    await Task.Delay(2 * 1000);
+
+                    var vmstatus = await _azureVmManagementService.GetVmDisplayStatus(item);
+                    if (vmstatus.suc)
+                    {
+                        var server = await GetItemByIdAsync(item.Id);
+                        if (server == null)
+                            return false;
+
+                        server.VmState = vmstatus.status;
+                        var up = await UpdateItemAsync(server);
+                        if (server.VmState.ToLower().Contains("running"))
+                        {
+                            item = server;
+                            return true;
+                        }
+                        else
+                            callbackStatus?.Invoke(vmstatus.status);
+                    }
+                }
+
             }
             catch (Exception ex)
             {
@@ -96,7 +135,7 @@ namespace CSRO.Client.Services
             string errorTxt = null;
             try
             {
-                var i = 1;
+                var i = 5;
                 while (i < 5)
                 {
                     i++;
