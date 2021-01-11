@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -25,7 +26,7 @@ namespace CSRO.Client.Services
             IConfiguration configuration)
             : base(httpClientFactory, authCsroService, mapper, configuration)
         {
-            ApiPart = "emp";            
+            ApiPart = "--";            
             //Scope = "api://ee2f0320-29c3-432a-bf84-a5d4277ce052/user_impersonation";
             Scope = Core.ConstatCsro.Scopes.MANAGEMENT_AZURE_SCOPE;
             //ClientName = "api";
