@@ -7,7 +7,7 @@
 
         @if (Success == false)
         {
-            <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+            <EditForm Model="@Model" OnValidSubmit="OnValidSubmit">
                 <DataAnnotationsValidator />
                 <MudCard>
                     <MudCardContent>
@@ -15,37 +15,37 @@
                         {
                             <MudTextField Label="Id:"
                                           Disabled="true"
-                                          @bind-Value="model.Id" For="@(() => model.Id)" />
+                                          @bind-Value="Model.Id" For="@(() => Model.Id)" />
                         }
-                        <MudCheckBox Label="On Behalf" @bind-Checked="model.IsOnBehalf"
+                        <MudCheckBox Label="On Behalf" @bind-Checked="Model.IsOnBehalf"
                                      Disabled="@IsReadOnly"
-                                     @bind-Value="model.IsOnBehalf" For="@(() => model.IsOnBehalf)" />
+                                     @bind-Value="Model.IsOnBehalf" For="@(() => Model.IsOnBehalf)" />
 
                         <MudTextField Label="Requested For:" HelperText="Name of Person"
                                       Disabled="@IsReadOnly"
-                                      @bind-Value="model.RequestedFor" For="@(() => model.RequestedFor)" />
+                                      @bind-Value="Model.RequestedFor" For="@(() => Model.RequestedFor)" />
 
-                        @if (model.IsOnBehalf)
+                        @if (Model.IsOnBehalf)
                         {
                             <MudTextField Label="Created By:" HelperText="Name of Person"
                                           Disabled="@IsReadOnly"
-                                          @bind-Value="model.CreatedBy" For="@(() => model.CreatedBy)" />
+                                          @bind-Value="Model.CreatedBy" For="@(() => Model.CreatedBy)" />
                         }
 
                         <MudTextField Label="Description:"
                                       Disabled="@IsReadOnly"
-                                      @bind-Value="model.Description" For="@(() => model.Description)" />
+                                      @bind-Value="Model.Description" For="@(() => Model.Description)" />
 
                         @if (IsReadOnly)
                         {
                             <MudTextField Label="Created By:" Disabled="true"
-                                          @bind-Value="model.CreatedBy" For="@(() => model.CreatedBy)" />
+                                          @bind-Value="Model.CreatedBy" For="@(() => Model.CreatedBy)" />
 
                             <MudTextField Label="Created At:" Disabled="true"
-                                          @bind-Value="model.CreatedAt" For="@(() => model.CreatedAt)" />
+                                          @bind-Value="Model.CreatedAt" For="@(() => Model.CreatedAt)" />
 
                             <MudTextField Label="Modified At:" Disabled="true"
-                                          @bind-Value="model.ModifiedAt" For="@(() => model.ModifiedAt)" />
+                                          @bind-Value="Model.ModifiedAt" For="@(() => Model.ModifiedAt)" />
                         }
 
                     </MudCardContent>

@@ -55,6 +55,11 @@ namespace CSRO.Server.Api
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+            services.AddHttpClient(Core.ConstatCsro.ClientNames.MANAGEMENT_AZURE_EndPoint, (client) =>
+            {
+                client.BaseAddress = new Uri(Core.ConstatCsro.ClientNames.MANAGEMENT_AZURE_EndPoint);
+            });
+
             services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)
                     .AddMicrosoftIdentityWebApi(Configuration, "AzureAd")
                         .EnableTokenAcquisitionToCallDownstreamApi()
@@ -69,6 +74,7 @@ namespace CSRO.Server.Api
             });
 
             services.AddScoped<IApiIdentity, ApiIdentity>();
+            services.AddScoped<IAzureVmManagementService, AzureVmManagementService>();
 
             #region Repositories
 

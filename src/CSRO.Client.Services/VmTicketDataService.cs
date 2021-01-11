@@ -22,14 +22,16 @@ namespace CSRO.Client.Services
         /// <param name="item"></param>
         /// <returns></returns>
         Task<bool> VerifyRestartStatus(VmTicket item);
+        Task<bool> VerifyRestartStatusCallback(VmTicket item, Action<string> callbackStatus);
     }
 
     public class VmTicketDataService : BaseDataService, IVmTicketDataService
     {
-        const string MANAGEMENT_AZURE_SCOPE = "https://management.azure.com//.default";
+        private readonly IAzureVmManagementService _azureVmManagementService;
 
-        public VmTicketDataService(IHttpClientFactory httpClientFactory, IAuthCsroService authCsroService, IMapper mapper, 
-            IConfiguration configuration)
+        public VmTicketDataService(
+            IAzureVmManagementService azureVmManagementService, 
+            IHttpClientFactory httpClientFactory, IAuthCsroService authCsroService, IMapper mapper, IConfiguration configuration)
             : base(httpClientFactory, authCsroService, mapper, configuration)
         {
             ApiPart = "api/vmticket/";
@@ -38,28 +40,32 @@ namespace CSRO.Client.Services
             ClientName = "api";
 
             base.Init();
+
+            _azureVmManagementService = azureVmManagementService;
         }
 
 
-        //custom method
-        private async Task<bool> RestarVmInAzure(VmTicket item)
+        public async Task<bool> VerifyRestartStatus(VmTicket item)
         {
+            
             try
             {
-                //1. Call azure api
-                //await base.AddAuthHeaderAsync();
-                var azureApiToken = await AuthCsroService.GetAccessTokenForUserAsync(MANAGEMENT_AZURE_SCOPE);
-                HttpClientBase.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", azureApiToken);
-
-                var url = $"https://management.azure.com/subscriptions/{item.SubcriptionId}/resourceGroups/{item.ResorceGroup}/providers/Microsoft.Compute/virtualMachines/{item.VmName}/restart?api-version=2020-06-01";
-                var apiData = await HttpClientBase.PostAsync(url, null).ConfigureAwait(false);
-
-                if (apiData.IsSuccessStatusCode)
+                var vmstatus = await _azureVmManagementService.GetVmDisplayStatus(item);
+                if (vmstatus.suc)
                 {
-                    var content = await apiData.Content.ReadAsStringAsync();
-                    if (apiData.StatusCode == System.Net.HttpStatusCode.OK || apiData.StatusCode == System.Net.HttpStatusCode.Accepted)
+                    var server = await GetItemByIdAsync(item.Id);
+                    if (server == null)
+                        return false;
+
+                    server.VmState = vmstatus.status;
+                    var up = await UpdateItemAsync(server);
+                    if (server.VmState.ToLower().Contains("running"))
+                    {
+                        item = server;
                         return true;
-                }
+                    }
+                }                   
+                
             }
             catch (Exception ex)
             {
@@ -68,43 +74,36 @@ namespace CSRO.Client.Services
             return false;
         }
 
-        public async Task<bool> VerifyRestartStatus(VmTicket item)
+        public async Task<bool> VerifyRestartStatusCallback(VmTicket item, Action<string> callbackStatus)
         {
-            
+
             try
             {
-                //1. Call azure api
-                //await base.AddAuthHeaderAsync();
-                var azureApiToken = await AuthCsroService.GetAccessTokenForUserAsync(MANAGEMENT_AZURE_SCOPE);
-                HttpClientBase.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", azureApiToken);
-
-                var url = $"https://management.azure.com/subscriptions/{item.SubcriptionId}/resourceGroups/{item.ResorceGroup}/providers/Microsoft.Compute/virtualMachines/{item.VmName}/instanceView?api-version=2020-06-01";
-                var apiData = await HttpClientBase.GetAsync(url).ConfigureAwait(false);
-
-                if (apiData.IsSuccessStatusCode)
+                var i = 1;
+                while (i < 10)
                 {
-                    var content = await apiData.Content.ReadAsStringAsync();
-                    var ser = JsonSerializer.Deserialize<AzureInstanceViewDto>(content, _options);    
-                    if (ser?.Statuses.Count > 0)
-                    {
-                        //"VM running"
-                        var last = ser.Statuses.Last();
-                        if (last.Code.Contains("PowerState"))
-                        {
-                            var server = await GetItemByIdAsync(item.Id);
-                            if (server == null)
-                                return false;
+                    i++;
+                    await Task.Delay(2 * 1000);
 
-                            server.VmState = last.DisplayStatus;
-                            var up = await UpdateItemAsync(server);
-                            if (server.VmState.ToLower().Contains("running"))
-                            {
-                                item = server;
-                                return true;
-                            }
+                    var vmstatus = await _azureVmManagementService.GetVmDisplayStatus(item);
+                    if (vmstatus.suc)
+                    {
+                        var server = await GetItemByIdAsync(item.Id);
+                        if (server == null)
+                            return false;
+
+                        server.VmState = vmstatus.status;
+                        var up = await UpdateItemAsync(server);
+                        if (server.VmState.ToLower().Contains("running"))
+                        {
+                            item = server;
+                            return true;
                         }
+                        else
+                            callbackStatus?.Invoke(vmstatus.status);
                     }
                 }
+
             }
             catch (Exception ex)
             {
@@ -118,19 +117,37 @@ namespace CSRO.Client.Services
         public async Task<VmTicket> AddItemAsync(VmTicket item)
         {
 
-            try
-            {
-                var sent = await RestarVmInAzure(item);
-                if (!sent)
-                    return null;
-            }
-            catch
-            {
-                throw;
-            }
+            //try
+            //{
+            //    var vmstatus = await _azureVmManagementService.GetVmDisplayStatus(item);
+            //    if (vmstatus.suc == false || vmstatus.status.Contains("deallocat"))
+            //        throw new Exception($"Unable to process request: {vmstatus.status}");
+
+            //    var sent = await _azureVmManagementService.RestarVmInAzure(item);
+            //    if (!sent.suc)
+            //        throw new Exception(sent.errorMessage);
+            //}
+            //catch
+            //{
+            //    throw;
+            //}
+
+            //string errorTxt = null;
 
             try
             {
+                //useless try in server
+
+                //var i = 0;
+                //while (i < 5)
+                //{
+                //    i++;
+                //    await Task.Delay(2 * 1000);
+                //    var vmstatus = await _azureVmManagementService.GetVmDisplayStatus(item);
+                //    if (vmstatus.suc && vmstatus.status.Contains("restarting"))
+                //        break;
+                //}                
+
                 await base.AddAuthHeaderAsync();
 
                 var url = $"{ApiPart}";
@@ -145,10 +162,17 @@ namespace CSRO.Client.Services
                     var result = Mapper.Map<VmTicket>(ser);
                     return result;
                 }
+                else
+                {
+                    var content = await apiData.Content.ReadAsStringAsync();
+                    //var ser = JsonSerializer.Deserialize<AzureManagErrorDto>(content, _options);
+                    throw new Exception(content);
+                }
             }
             catch (Exception ex)
             {
                 base.HandleException(ex);
+                throw;
             }
             return null;
         }

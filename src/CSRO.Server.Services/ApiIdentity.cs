@@ -22,12 +22,14 @@ namespace CSRO.Server.Services
         //}
         public string GetUserName()
         {
+            if (_context?.HttpContext == null)
+                return null;
             List<string> list = new List<string>();
             var nameId = _context.HttpContext?.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier);
             var email = _context.HttpContext?.User.FindFirst(c => c.Type == ClaimTypes.Email);
             var upn = _context.HttpContext?.User.FindFirst(c => c.Type == ClaimTypes.WindowsAccountName);
             var userData = _context.HttpContext?.User.FindFirst(c => c.Type == ClaimTypes.UserData);
-            foreach(var item in _context.HttpContext?.User.Claims)
+            foreach(var item in _context.HttpContext?.User?.Claims)
             {
                 if (item.Type.ToLower() == "name")
                     list.Add(item.Value);

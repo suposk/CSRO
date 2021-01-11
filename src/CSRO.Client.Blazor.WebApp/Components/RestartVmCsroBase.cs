@@ -31,14 +31,13 @@ namespace CSRO.Client.Blazor.WebApp.Components
         [Inject]
         public ILogger<RestartVmCsroBase> Logger { get; set; }
 
-        public VmTicket model { get; set; } = new VmTicket();
+        protected VmTicket Model { get; set; } = new VmTicket();
 
-        public bool IsLoading { get; set; }
-
-        public string LoadingMessage { get; set; }
+        protected bool IsLoading { get; set; }
+        protected string LoadingMessage { get; set; }
         protected bool Success { get; set; }
         protected bool IsReadOnly => OperationTypeTicket == OperatioType.View;
-        protected string Title => OperationTypeTicket == OperatioType.Create ? "Request Vm Restart" : $"View {model.Status} of {model.VmName}";
+        protected string Title => OperationTypeTicket == OperatioType.Create ? "Request Vm Restart" : $"View {Model.Status} of {Model.VmName}";
 
         protected async override Task OnInitializedAsync()
         {
@@ -54,33 +53,53 @@ namespace CSRO.Client.Blazor.WebApp.Components
                     IsLoading = true;
                     LoadingMessage = "Loading...";
 
-                    model.Id = int.Parse(TicketId);
-                    var server = await VmTicketDataService.GetItemByIdAsync(model.Id);
+                    Model.Id = int.Parse(TicketId);
+                    var server = await VmTicketDataService.GetItemByIdAsync(Model.Id);
                     if (server != null)
                     {
-                        model = server;
+                        Model = server;
                         if (OperationTypeTicket == OperatioType.View)
                         {
-                            int i = 0;
-                            while (i < 10)
-                            {
-                                i++;
-                                if (model.VmState == "Restart Started" || !string.Equals(model.VmState, "VM running"))
-                                {
-                                    //need to create delay to update vm state after restart                                                                       
-                                    LoadingMessage = $"Current state: {model.VmState}";
-                                    StateHasChanged();
+                            #region loop in UI, not good
+                            //int i = 0;
+                            //while (i < 10)
+                            //{
+                            //    i++;
+                            //    if (Model.VmState == "Restart Started" || !string.Equals(Model.VmState, "VM running"))
+                            //    {
+                            //        //need to create delay to update vm state after restart                                                                       
+                            //        LoadingMessage = $"Current state: {Model.VmState}";
+                            //        StateHasChanged();
 
-                                    await Task.Delay(10 * 1000);                                
-                                    
-                                    var running = await VmTicketDataService.VerifyRestartStatus(model).ConfigureAwait(false);
-                                    if (running)
-                                    {
-                                        model = await VmTicketDataService.GetItemByIdAsync(model.Id);                                        
-                                        break;
-                                    }
+                            //        await Task.Delay(10 * 1000);                                
+
+                            //        var running = await VmTicketDataService.VerifyRestartStatus(Model).ConfigureAwait(false);
+                            //        if (running)
+                            //        {
+                            //            Model = await VmTicketDataService.GetItemByIdAsync(Model.Id);                                        
+                            //            break;
+                            //        }
+                            //    }
+                            //}
+                            #endregion
+
+                            if (Model.VmState == "Restart Started" || !string.Equals(Model.VmState, "VM running"))
+                            {
+                                //need to create delay to update vm state after restart                                                                       
+                                LoadingMessage = $"Current state: {Model.VmState}";
+                                StateHasChanged();
+
+                                var running = await VmTicketDataService.VerifyRestartStatusCallback(Model, (status)=> 
+                                {
+                                    LoadingMessage = $"Current state: {status}";
+                                    StateHasChanged();
+                                }).ConfigureAwait(false);
+                                if (running)
+                                {
+                                    Model = await VmTicketDataService.GetItemByIdAsync(Model.Id);                                    
                                 }
                             }
+
                         }
                     }
                 }
@@ -88,9 +107,9 @@ namespace CSRO.Client.Blazor.WebApp.Components
                 else
                 {
                     //dubug only
-                    model.SubcriptionId = "33fb38df-688e-4ca1-8dd8-b46e26262ff8";
-                    model.ResorceGroup = "dev-VMS";
-                    model.VmName = "VmDelete";
+                    Model.SubcriptionId = "33fb38df-688e-4ca1-8dd8-b46e26262ff8";
+                    Model.ResorceGroup = "dev-VMS";
+                    Model.VmName = "VmDelete";
                 }
                 #endif
 
@@ -112,20 +131,25 @@ namespace CSRO.Client.Blazor.WebApp.Components
             {
                 try
                 {
+                    IsLoading = true;
                     if (OperationTypeTicket == OperatioType.Create)
                     {
-                        var added = await VmTicketDataService.AddItemAsync(model);
+                        LoadingMessage = "Creating request";   
+                        
+                        var added = await VmTicketDataService.AddItemAsync(Model);
                         if (added != null)
                         {
                             Success = true;
-                            model = added;
+                            Model = added;
 
-                            NavigationManager.NavigateTo($"vm/restart/view/{model.Id}");
+                            NavigationManager.NavigateTo($"vm/restart/view/{Model.Id}");
                         }
                     }
                     else if (OperationTypeTicket == OperatioType.Edit)
                     {
-                        var updated = await VmTicketDataService.UpdateItemAsync(model);
+                        LoadingMessage = "Updating request";
+
+                        var updated = await VmTicketDataService.UpdateItemAsync(Model);
                         if (updated)
                         {
                             Success = true;                            
@@ -150,7 +174,22 @@ namespace CSRO.Client.Blazor.WebApp.Components
                 }
                 catch (Exception ex)
                 {
+                    IsLoading = false;
                     Logger.LogError(ex, nameof(OnValidSubmit));
+
+                    var parameters = new DialogParameters();
+                    parameters.Add("ContentText", $"Detail error: {ex.Message}");
+                    parameters.Add("ButtonText", "Close");
+                    parameters.Add("Color", Color.Error);
+                    parameters.Add("ShowCancel", false);
+
+                    var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Small };
+                    var userSelect = DialogService.Show<DialogTemplateExample_Dialog>("Update Error", parameters, options);
+                    var result = await userSelect.Result;
+                }
+                finally
+                {
+                    IsLoading = false;
                 }
             }
         }

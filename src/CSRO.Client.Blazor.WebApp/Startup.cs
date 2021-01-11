@@ -86,6 +86,10 @@ namespace CSRO.Client.Blazor.WebApp
             {
                 client.BaseAddress = new Uri(ApiEndpoint);
             });
+            services.AddHttpClient(Core.ConstatCsro.ClientNames.MANAGEMENT_AZURE_EndPoint, (client) =>
+            {
+                client.BaseAddress = new Uri(Core.ConstatCsro.ClientNames.MANAGEMENT_AZURE_EndPoint);
+            });
 
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
@@ -123,7 +127,8 @@ namespace CSRO.Client.Blazor.WebApp
             services.AddScoped<IVersionService, VersionService>();
             services.AddScoped<IBaseDataService<Ticket>, TicketDataService>();
             //services.AddScoped<IBaseDataService<VmTicket>, VmTicketDataService>();            
-            services.AddScoped<IVmTicketDataService, VmTicketDataService>();            
+            services.AddScoped<IVmTicketDataService, VmTicketDataService>();
+            services.AddScoped<IAzureVmManagementService, AzureVmManagementService>();
             
 
             var jano = Configuration.GetValue<string>("JanoSetting");
