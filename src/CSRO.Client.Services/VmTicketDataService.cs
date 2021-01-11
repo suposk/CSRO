@@ -121,7 +121,7 @@ namespace CSRO.Client.Services
             {
                 var vmstatus = await _azureVmManagementService.GetVmDisplayStatus(item);
                 if (vmstatus.suc == false || vmstatus.status.Contains("deallocat"))
-                    throw new Exception($"Unable to process request: {vmstatus}");
+                    throw new Exception($"Unable to process request: {vmstatus.status}");
 
                 var sent = await _azureVmManagementService.RestarVmInAzure(item);
                 if (!sent.suc)
@@ -135,15 +135,17 @@ namespace CSRO.Client.Services
             string errorTxt = null;
             try
             {
-                var i = 5;
-                while (i < 5)
-                {
-                    i++;
-                    await Task.Delay(2 * 1000);
-                    var vmstatus = await _azureVmManagementService.GetVmDisplayStatus(item);
-                    if (vmstatus.suc && vmstatus.status.Contains("restarting"))
-                        break;
-                }                
+                //useless try in server
+
+                //var i = 0;
+                //while (i < 5)
+                //{
+                //    i++;
+                //    await Task.Delay(2 * 1000);
+                //    var vmstatus = await _azureVmManagementService.GetVmDisplayStatus(item);
+                //    if (vmstatus.suc && vmstatus.status.Contains("restarting"))
+                //        break;
+                //}                
 
                 await base.AddAuthHeaderAsync();
 

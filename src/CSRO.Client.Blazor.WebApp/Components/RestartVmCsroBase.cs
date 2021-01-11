@@ -60,6 +60,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
                         Model = server;
                         if (OperationTypeTicket == OperatioType.View)
                         {
+                            #region loop in UI, not good
                             //int i = 0;
                             //while (i < 10)
                             //{
@@ -80,6 +81,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
                             //        }
                             //    }
                             //}
+                            #endregion
 
                             if (Model.VmState == "Restart Started" || !string.Equals(Model.VmState, "VM running"))
                             {
