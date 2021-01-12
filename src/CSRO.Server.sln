@@ -17,6 +17,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSRO.Server.Entities", "CSR
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSRO.Server.Services", "CSRO.Server.Services\CSRO.Server.Services.csproj", "{9033E5C1-2111-4D7F-88A0-0943E9307475}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSRO.Server.Core", "CSRO.Server.Core\CSRO.Server.Core.csproj", "{249ECE48-7B36-43CF-B9A0-3F52033AC78A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,6 +45,10 @@ Global
 		{9033E5C1-2111-4D7F-88A0-0943E9307475}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9033E5C1-2111-4D7F-88A0-0943E9307475}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9033E5C1-2111-4D7F-88A0-0943E9307475}.Release|Any CPU.Build.0 = Release|Any CPU
+		{249ECE48-7B36-43CF-B9A0-3F52033AC78A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{249ECE48-7B36-43CF-B9A0-3F52033AC78A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{249ECE48-7B36-43CF-B9A0-3F52033AC78A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{249ECE48-7B36-43CF-B9A0-3F52033AC78A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -54,6 +60,7 @@ Global
 		{EF99DF60-B314-4116-A135-5C6BCF356F25} = {16E59730-A536-4874-9FB7-26F1DCD8CA4C}
 		{3C70C54D-E405-4CD7-BA88-9D9CB5CE8AB4} = {16E59730-A536-4874-9FB7-26F1DCD8CA4C}
 		{9033E5C1-2111-4D7F-88A0-0943E9307475} = {16E59730-A536-4874-9FB7-26F1DCD8CA4C}
+		{249ECE48-7B36-43CF-B9A0-3F52033AC78A} = {16E59730-A536-4874-9FB7-26F1DCD8CA4C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CA7579FF-7D13-4011-86BB-89683A0D4067}
