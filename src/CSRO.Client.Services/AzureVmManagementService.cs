@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CSRO.Client.Services
@@ -16,6 +17,8 @@ namespace CSRO.Client.Services
         //Task<(bool, AzureManagErrorDto)> RestarVmInAzure2(VmTicket item);
         Task<(bool suc, string errorMessage)> RestarVmInAzure(VmTicket item);
         Task<(bool suc, string status)> GetVmDisplayStatus(VmTicket item);
+
+        Task<bool> SubcriptionExist(string subscriptionId, CancellationToken cancelToken = default(CancellationToken));
     }
 
 
@@ -36,6 +39,47 @@ namespace CSRO.Client.Services
             ClientName = Core.ConstatCsro.ClientNames.MANAGEMENT_AZURE_EndPoint;
 
             base.Init();
+        }
+
+        public async Task<bool> SubcriptionExist(string subscriptionId, CancellationToken cancelToken = default(CancellationToken))
+        {
+            try
+            {
+                //1. Call azure api
+                await base.AddAuthHeaderAsync();
+
+                //GET https://management.azure.com/subscriptions/{subscriptionId}?api-version=2020-01-01
+                var url = $"https://management.azure.com/subscriptions/{subscriptionId}?api-version=2020-01-01";
+                var apiData = await HttpClientBase.GetAsync(url, cancelToken).ConfigureAwait(false);
+
+                if (apiData.IsSuccessStatusCode)
+                {
+                    var content = await apiData.Content.ReadAsStringAsync();
+                    return true;
+                    //var ser = JsonSerializer.Deserialize<AzureInstanceViewDto>(content, _options);
+                    //if (ser?.Statuses?.Count > 0)
+                    //{
+                    //    //"VM running"
+                    //    //var last = ser.Statuses.Last();
+                    //    var last = ser.Statuses.LastOrDefault(a => a.Code.Contains("PowerState"));
+                    //    if (last != null)
+                    //    {
+                    //        return (true, last.DisplayStatus);
+                    //    }
+                    //}
+                }
+                else
+                {
+                    var content = await apiData.Content.ReadAsStringAsync();
+                    //var ser = JsonSerializer.Deserialize<AzureManagErrorDto>(content, _options);
+                    //return (false, ser?.Error?.ToString());
+                }
+            }
+            catch (Exception ex)
+            {
+                base.HandleException(ex);
+            }
+            return false;
         }
 
         public async Task<(bool suc, string status)> GetVmDisplayStatus(VmTicket item)
@@ -85,6 +129,7 @@ namespace CSRO.Client.Services
             else
                 return (res.suc, $"{res.error}");
         }
+
 
         private async Task<(bool suc, AzureManagErrorDto error)> RestarVmInAzure2(VmTicket item)
         {
