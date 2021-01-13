@@ -14,8 +14,8 @@ namespace CSRO.Client.Services.Validation
     {
         public VmTicketValidator()
         {
-            RuleFor(p => p.VmName).
-                NotEmpty()
+            RuleFor(p => p.VmName)
+                .NotEmpty()
                 .MustAsync(ValidateVm).WithMessage("Test only, name has to contain vm letter");                
 
             RuleFor(p => p.SubcriptionId).NotEmpty();
