@@ -24,6 +24,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using CSRO.Client.Services.Models;
+using FluentValidation.AspNetCore;
 
 namespace CSRO.Client.Blazor.WebApp
 {
@@ -107,7 +108,9 @@ namespace CSRO.Client.Blazor.WebApp
             });
 
             services.AddControllersWithViews()
-                .AddMicrosoftIdentityUI();
+                .AddMicrosoftIdentityUI()
+                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Services.Validation.BaseAbstractValidator>())
+                ;
 
             services.AddAuthorization(options =>
             {

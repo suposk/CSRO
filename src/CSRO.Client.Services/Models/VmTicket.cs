@@ -6,13 +6,13 @@ namespace CSRO.Client.Services.Models
     {
         public string Note { get; set; }
 
-        [Required]
+        //using FluentValidation [Required]
         public string SubcriptionId { get; set; }
 
-        [Required]
+        //using FluentValidation [Required]
         public string ResorceGroup { get; set; }
 
-        [Required]
+        //using FluentValidation [Required]
         public string VmName { get; set; }
 
         public string Status { get; set; }
