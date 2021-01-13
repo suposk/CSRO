@@ -20,6 +20,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentValidation.AspNetCore;
 
 namespace CSRO.Server.Api
 {
@@ -67,6 +68,16 @@ namespace CSRO.Server.Api
                         .AddDistributedTokenCaches();
 
             services.AddControllers();
+            services.AddMvc(options =>
+            {
+                options.Filters.Add(new CsroValidationFilter());
+            })
+            .AddFluentValidation(options =>
+            {
+                //options.RegisterValidatorsFromAssemblyContaining<Startup>();
+                options.RegisterValidatorsFromAssemblyContaining<Domain.AbstractValidation.BaseAbstractValidator>();
+            });
+
             //services.AddControllers(options => options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
             services.AddSwaggerGen(c =>
             {
