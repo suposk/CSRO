@@ -77,11 +77,9 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
                     Model.Id = int.Parse(TicketId);
                     var server = await VmTicketDataService.GetItemByIdAsync(Model.Id);
-                    var subName = await SubcriptionService.GetSubcription(server?.SubcriptionId);
+                    var resorceGroups = await ResourceGroupervice.GetResourceGroups(server?.SubcriptionId);
+                    //var subName = await SubcriptionService.GetSubcription(server?.SubcriptionId);
                     //var rgName = await ResourceGroupervice.GetResourceGroupsIdName(server?.SubcriptionId);
-                    //var rgs = await ResourceGroupervice.GetResourceGroups(server?.SubcriptionId);
-                    //if (subName != null)
-                    //    server.
 
                     if (server != null)
                     {
