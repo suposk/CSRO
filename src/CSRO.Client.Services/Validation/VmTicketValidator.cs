@@ -12,22 +12,28 @@ namespace CSRO.Client.Services.Validation
 
     public class VmTicketValidator : AbstractValidator<VmTicket>
     {
-        public VmTicketValidator(ISubcriptionService subcriptionService )
+        public VmTicketValidator(
+            //ISubcriptionService subcriptionService 
+            )
         {
             RuleFor(p => p.VmName)
                 .NotEmpty()
                 //.MustAsync(ValidateVm).WithMessage("Test only, name has to contain vm letter")
-                ;                
+                ;
 
             RuleFor(p => p.SubcriptionId)
                 .NotEmpty()
-                .MustAsync(subcriptionService.SubcriptionExist).WithMessage("Subcription Id not found");
+                //.MustAsync(subcriptionService.SubcriptionExist).WithMessage("Subcription Id not found");
+            ;
+
+            RuleFor(p => p.SubcriptionName)
+                .NotEmpty();                
 
             RuleFor(p => p.ResorceGroup).NotEmpty();            
         }
 
         private async Task<bool> ValidateVm(string vm, CancellationToken token)
-        {
+        {            
             await Task.Delay(1 * 1000, token).ConfigureAwait(false);
             if (token.IsCancellationRequested)
                 return false;

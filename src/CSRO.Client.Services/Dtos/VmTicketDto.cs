@@ -6,6 +6,8 @@
 
         public string SubcriptionId { get; set; }
 
+        public string SubcriptionName { get; set; }
+
         public string ResorceGroup { get; set; }
 
         public string VmName { get; set; }

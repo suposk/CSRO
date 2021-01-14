@@ -51,7 +51,10 @@ namespace CSRO.Client.Blazor.WebApp.Components
                 //_SelSubscripion ??= value;
                 _SelSubscripion = value;
                 if (value != null)
-                    Model.SubcriptionId = value.Id;                
+                {
+                    Model.SubcriptionId = value.Id;
+                    Model.SubcriptionName = value.Name;
+                }
             }
         }
 

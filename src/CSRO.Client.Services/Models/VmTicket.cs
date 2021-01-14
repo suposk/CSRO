@@ -9,6 +9,8 @@ namespace CSRO.Client.Services.Models
         //using FluentValidation [Required]
         public string SubcriptionId { get; set; }
 
+        public string SubcriptionName { get; set; }
+
         //using FluentValidation [Required]
         public string ResorceGroup { get; set; }
 
