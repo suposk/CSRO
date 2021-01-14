@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CSRO.Client.Services.Dtos;
+using CSRO.Client.Services.Dtos.AzureDtos;
 using CSRO.Client.Services.Models;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,10 @@ namespace CSRO.Client.Blazor.WebApp.AutoMapperProfiles
 
             CreateMap<VmTicketDto, VmTicket>()
                 .ReverseMap();
+
+            //CreateMap<IdName, SubscriptionsDto>()
+            //    .ForMember(s => s., op => op.)
+            //    .ReverseMap();
         }
     }
 }

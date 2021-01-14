@@ -23,7 +23,10 @@ namespace CSRO.Client.Blazor.WebApp.Components
         public NavigationManager NavigationManager { get; set; }
 
         [Inject]
-        IVmTicketDataService VmTicketDataService { get; set; }
+        public IVmTicketDataService VmTicketDataService { get; set; }
+
+        [Inject]
+        public IAzureVmManagementService AzureVmManagementService { get; set; }
 
         [Inject]
         public IDialogService DialogService { get; set; }
@@ -38,6 +41,21 @@ namespace CSRO.Client.Blazor.WebApp.Components
         protected bool Success { get; set; }
         protected bool IsReadOnly => OperationTypeTicket == OperatioType.View;
         protected string Title => OperationTypeTicket == OperatioType.Create ? "Request Vm Restart" : $"View {Model.Status} of {Model.VmName}";
+        protected List<IdName> Subscripions { get; set; }
+        //protected IdName SelSubscripion { get; set; } = new IdName();
+
+        private string _SelSubscripion;
+
+        public string SelSubscripion
+        {
+            get { return _SelSubscripion; }
+            set 
+            {
+                _SelSubscripion ??= value;                
+                //_SelSubscripion = value; 
+            }
+        }
+
 
         protected async override Task OnInitializedAsync()
         {
@@ -103,15 +121,24 @@ namespace CSRO.Client.Blazor.WebApp.Components
                         }
                     }
                 }
-                #if DEBUG
+                
                 else
                 {
+                    IsLoading = true;
+                    LoadingMessage = "Loading...";
+
+                    Subscripions = await AzureVmManagementService.GetSubcriptions();
+
+
+                    #if DEBUG
                     //dubug only
-                    Model.SubcriptionId = "33fb38df-688e-4ca1-8dd8-b46e26262ff8";
+                    //Model.SubcriptionId = "33fb38df-688e-4ca1-8dd8-b46e26262ff8";
                     Model.ResorceGroup = "dev-VMS";
                     Model.VmName = "VmDelete";
+                    #endif
+
                 }
-                #endif
+
 
             }
             catch (Exception ex)
@@ -122,6 +149,18 @@ namespace CSRO.Client.Blazor.WebApp.Components
             {
                 IsLoading = false;
             }
+        }
+
+        public async Task<IEnumerable<string>> SearchSubs(string value)
+        {
+            // In real life use an asynchronous function for fetching data from an api.
+            await Task.Delay(50);
+
+            // if text is null or empty, show complete list
+            if (string.IsNullOrEmpty(value))
+                return Subscripions.Select(a => a.Name);
+
+            return Subscripions.Where(x => x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase)).Select(a => a.Name);
         }
 
         public async Task OnValidSubmit(EditContext context)
