@@ -27,7 +27,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
         public IVmTicketDataService VmTicketDataService { get; set; }
 
         [Inject]
-        public IAzureVmManagementService AzureVmManagementService { get; set; }
+        public ISubcriptionService SubcriptionService { get; set; }
 
         [Inject]
         public IDialogService DialogService { get; set; }
@@ -71,6 +71,10 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
                     Model.Id = int.Parse(TicketId);
                     var server = await VmTicketDataService.GetItemByIdAsync(Model.Id);
+                    var subName = await SubcriptionService.GetSubcription(Model?.SubcriptionId);
+                    //if (subName != null)
+                    //    server.
+
                     if (server != null)
                     {
                         Model = server;
@@ -101,7 +105,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
                 {
                     ShowLoading();
 
-                    Subscripions = await AzureVmManagementService.GetSubcriptions();
+                    Subscripions = await SubcriptionService.GetSubcriptions();                    
 
 
                     #if DEBUG

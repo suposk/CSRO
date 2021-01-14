@@ -6,9 +6,14 @@ using System.Threading.Tasks;
 
 namespace CSRO.Client.Services.Dtos.AzureDtos
 {
+    public partial class ManagedByTenant
+    {
+        public Guid TenantId { get; set; }
+    }
+
     public partial class SubscriptionsDto
     {
-        public List<Value> Value { get; set; }
+        public List<SubscriptionDto> Value { get; set; }
         public Count Count { get; set; }
     }
 
@@ -18,7 +23,7 @@ namespace CSRO.Client.Services.Dtos.AzureDtos
         public long Value { get; set; }
     }
 
-    public partial class Value
+    public partial class SubscriptionDto
     {
         public string Id { get; set; }
         public string AuthorizationSource { get; set; }

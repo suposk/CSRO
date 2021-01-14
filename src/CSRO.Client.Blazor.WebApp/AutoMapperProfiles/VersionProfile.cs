@@ -24,6 +24,9 @@ namespace CSRO.Client.Blazor.WebApp.AutoMapperProfiles
             CreateMap<VmTicketDto, VmTicket>()
                 .ReverseMap();
 
+            CreateMap<SubscriptionDto, Subscription>()
+                .ReverseMap();            
+
             //CreateMap<IdName, SubscriptionsDto>()
             //    .ForMember(s => s., op => op.)
             //    .ReverseMap();
