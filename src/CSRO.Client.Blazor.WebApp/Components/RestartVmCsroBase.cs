@@ -30,6 +30,9 @@ namespace CSRO.Client.Blazor.WebApp.Components
         public ISubcriptionService SubcriptionService { get; set; }
 
         [Inject]
+        public IResourceGroupervice ResourceGroupervice { get; set; }
+
+        [Inject]
         public IDialogService DialogService { get; set; }
 
         [Inject]
@@ -74,7 +77,9 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
                     Model.Id = int.Parse(TicketId);
                     var server = await VmTicketDataService.GetItemByIdAsync(Model.Id);
-                    var subName = await SubcriptionService.GetSubcription(Model?.SubcriptionId);
+                    var subName = await SubcriptionService.GetSubcription(server?.SubcriptionId);
+                    //var rgName = await ResourceGroupervice.GetResourceGroupsIdName(server?.SubcriptionId);
+                    //var rgs = await ResourceGroupervice.GetResourceGroups(server?.SubcriptionId);
                     //if (subName != null)
                     //    server.
 

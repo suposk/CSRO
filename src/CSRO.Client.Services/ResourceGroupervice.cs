@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using CSRO.Client.Services.Dtos;
 using CSRO.Client.Services.Dtos.AzureDtos;
 using CSRO.Client.Services.Models;
 using Microsoft.Extensions.Configuration;
@@ -12,19 +11,17 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace CSRO.Client.Services
-{    public interface ISubcriptionService
+{
+    public interface IResourceGroupervice
     {
-        Task<bool> SubcriptionExist(string subscriptionId, CancellationToken cancelToken = default);
-
-        Task<List<IdName>> GetSubcriptions(CancellationToken cancelToken = default);
-
-        Task<Subscription> GetSubcription(string subscriptionId, CancellationToken cancelToken = default);
+        Task<List<ResourceGroup>> GetResourceGroups(string subscriptionId, CancellationToken cancelToken = default);
+        Task<List<IdName>> GetResourceGroupsIdName(string subscriptionId, CancellationToken cancelToken = default);
     }
 
-    public class SubcriptionService : BaseDataService, ISubcriptionService
+    public class ResourceGroupervice : BaseDataService, IResourceGroupervice
     {
 
-        public SubcriptionService(
+        public ResourceGroupervice(
             IHttpClientFactory httpClientFactory,
             IAuthCsroService authCsroService,
             IMapper mapper,
@@ -40,25 +37,25 @@ namespace CSRO.Client.Services
             base.Init();
         }
 
-        public async Task<Subscription> GetSubcription(string subscriptionId, CancellationToken cancelToken = default)
+        public async Task<List<ResourceGroup>> GetResourceGroups(string subscriptionId, CancellationToken cancelToken = default)
         {
             try
             {
                 //1. Call azure api
                 await base.AddAuthHeaderAsync();
 
-                //GET https://management.azure.com/subscriptions/{subscriptionId}?api-version=2020-01-01
-                var url = $"https://management.azure.com/subscriptions/{subscriptionId}?api-version=2020-01-01";
+                //GET https://management.azure.com/subscriptions/{subscriptionId}/resourcegroups?api-version=2020-06-01
+                var url = $"https://management.azure.com/subscriptions/{subscriptionId}/resourcegroups?api-version=2020-06-01";
                 var apiData = await HttpClientBase.GetAsync(url, cancelToken).ConfigureAwait(false);
 
                 if (apiData.IsSuccessStatusCode)
                 {
-                    var content = await apiData.Content.ReadAsStringAsync();
-                    var ser = JsonSerializer.Deserialize<SubscriptionsDto>(content, _options);
+                    var content = await apiData.Content.ReadAsStringAsync();                    
+                    var ser = JsonSerializer.Deserialize<ResourceGroupsDto>(content, _options);
                     if (ser?.Value?.Count > 0)
-                    {                                               
-                        var first = ser.Value.FirstOrDefault();                        
-                        var result = Mapper.Map<Subscription>(first);
+                    {
+                        //exception
+                        var result = Mapper.Map<List<ResourceGroup>>(ser.Value);
                         return result;
                     }
                 }
@@ -70,27 +67,26 @@ namespace CSRO.Client.Services
             return null;
         }
 
-        public async Task<List<IdName>> GetSubcriptions(CancellationToken cancelToken = default)
+        public async Task<List<IdName>> GetResourceGroupsIdName(string subscriptionId, CancellationToken cancelToken = default)
         {
             try
             {
                 //1. Call azure api
                 await base.AddAuthHeaderAsync();
 
-                //GET https://management.azure.com/subscriptions?api-version=2020-01-01
-                var url = $"https://management.azure.com/subscriptions?api-version=2020-01-01";
+                //GET https://management.azure.com/subscriptions/{subscriptionId}/resourcegroups?api-version=2020-06-01
+                var url = $"https://management.azure.com/subscriptions/{subscriptionId}/resourcegroups?api-version=2020-06-01";
                 var apiData = await HttpClientBase.GetAsync(url, cancelToken).ConfigureAwait(false);
 
                 if (apiData.IsSuccessStatusCode)
                 {
-                    var content = await apiData.Content.ReadAsStringAsync();
-                    //var ser = JsonSerializer.Deserialize<SubscriptionsDto>(content, _options);
-                    var ser = JsonSerializer.Deserialize<SubscriptionsIdNameDto>(content, _options);
+                    var content = await apiData.Content.ReadAsStringAsync();                    
+                    var ser = JsonSerializer.Deserialize<ResourceGroupsDto>(content, _options);
                     if (ser?.Value?.Count > 0)
                     {
                         //"VM running"
                         //var last = ser.Statuses.Last();
-                        var idNameList = ser.Value.Where(a => a.State == "Enabled").Select(a => new IdName(a.SubscriptionId.ToString(), a.DisplayName)).ToList();
+                        var idNameList = ser.Value.Select(a => new IdName(a.Id, a.Name)).ToList();
                         return idNameList;
                     }
                 }
@@ -100,12 +96,6 @@ namespace CSRO.Client.Services
                 base.HandleException(ex);
             }
             return null;
-        }
-
-        public async Task<bool> SubcriptionExist(string subscriptionId, CancellationToken cancelToken = default)
-        {
-            var res = await GetSubcription(subscriptionId, cancelToken);
-            return res != null;
         }
 
     }
