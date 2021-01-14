@@ -26,7 +26,8 @@ namespace CSRO.Client.Services.Models
 
         public override string ToString()
         {
-            return $"{Name}-Id:{Id}";
+            //return $"{Name}-Id:{Id}";
+            return $"{Name}";
         }
 
         public override int GetHashCode()
