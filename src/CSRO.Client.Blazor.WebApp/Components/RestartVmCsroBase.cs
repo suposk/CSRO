@@ -44,15 +44,14 @@ namespace CSRO.Client.Blazor.WebApp.Components
         protected List<IdName> Subscripions { get; set; }
         //protected IdName SelSubscripion { get; set; } = new IdName();
 
-        private string _SelSubscripion;
-
-        public string SelSubscripion
+        private IdName _SelSubscripion;
+        public IdName SelSubscripion
         {
             get { return _SelSubscripion; }
             set 
             {
-                _SelSubscripion ??= value;                
-                //_SelSubscripion = value; 
+                _SelSubscripion ??= value;
+                Model.SubcriptionId = value.Id;                
             }
         }
 
@@ -131,10 +130,20 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
 
                     #if DEBUG
+
                     //dubug only
                     //Model.SubcriptionId = "33fb38df-688e-4ca1-8dd8-b46e26262ff8";
+                    if (Subscripions?.Count == 1)
+                    {
+                        for (int i=1; i <= 3; i++)
+                        {
+                            Subscripions.Add(new IdName(Guid.NewGuid().ToString(), $"fake sub name {i}"));
+                        }
+                    }
+
                     Model.ResorceGroup = "dev-VMS";
                     Model.VmName = "VmDelete";
+
                     #endif
 
                 }
@@ -151,16 +160,27 @@ namespace CSRO.Client.Blazor.WebApp.Components
             }
         }
 
-        public async Task<IEnumerable<string>> SearchSubs(string value)
+        //public async Task<IEnumerable<string>> SearchSubs(string value)
+        //{
+        //    // In real life use an asynchronous function for fetching data from an api.
+        //    await Task.Delay(50);
+
+        //    // if text is null or empty, show complete list
+        //    if (string.IsNullOrEmpty(value))
+        //        return Subscripions.Select(a => a.Name);
+
+        //    return Subscripions.Where(x => x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase)).Select(a => a.Name);
+        //}
+        public async Task<IEnumerable<IdName>> SearchSubs(string value)
         {
             // In real life use an asynchronous function for fetching data from an api.
             await Task.Delay(50);
 
             // if text is null or empty, show complete list
             if (string.IsNullOrEmpty(value))
-                return Subscripions.Select(a => a.Name);
+                return Subscripions;
 
-            return Subscripions.Where(x => x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase)).Select(a => a.Name);
+            return Subscripions.Where(x => x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase));
         }
 
         public async Task OnValidSubmit(EditContext context)

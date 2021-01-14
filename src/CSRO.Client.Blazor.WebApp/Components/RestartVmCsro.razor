@@ -35,7 +35,7 @@
                                   @bind-Value="Model.Status" For="@(() => Model.Status)" />
                 }
 
-                <MudAutocomplete T="string" Label="Subcription:" @bind-Value="@SelSubscripion" SearchFunc="@SearchSubs" />
+                <MudAutocomplete T="@IdName" Label="Subcription:" @bind-Value="@SelSubscripion" SearchFunc="@SearchSubs" />
 
                 <MudTextField Label="Subcription Id:"
                               Disabled="@IsReadOnly"
