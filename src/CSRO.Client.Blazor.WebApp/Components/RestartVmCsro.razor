@@ -43,9 +43,18 @@
                               Disabled="true"
                               @bind-Value="Model.SubcriptionName" For="@(() => Model.SubcriptionName)" />
 
-                <MudTextField Label="Resorce Group:"
+
+                @if (OperationTypeTicket == OperatioType.Create)
+                {
+                    <MudAutocomplete T="@ResourceGroup"
+                                     Label="Resource Group:" @bind-Value="@SelResourceGroup" SearchFunc="@SearchRgs" />
+                }
+                else
+                {
+                    <MudTextField Label="Resorce Group:"
                               Disabled="@IsReadOnly"
                               @bind-Value="Model.ResorceGroup" For="@(() => Model.ResorceGroup)" />
+                }
 
                 <MudTextField Label="Vm Name:" HelperText="Name of Virtual Machine"
                               Disabled="@IsReadOnly"

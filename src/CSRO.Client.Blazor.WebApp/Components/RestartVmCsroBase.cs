@@ -43,6 +43,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
         protected bool IsReadOnly => OperationTypeTicket == OperatioType.View;
         protected string Title => OperationTypeTicket == OperatioType.Create ? "Request Vm Restart" : $"View {Model.Status} of {Model.VmName}";
         protected List<IdName> Subscripions { get; set; }
+        protected List<ResourceGroup> ResourceGroups { get; set; }
         //protected IdName SelSubscripion { get; set; } = new IdName();
 
         private IdName _SelSubscripion;
@@ -57,14 +58,34 @@ namespace CSRO.Client.Blazor.WebApp.Components
                 {
                     Model.SubcriptionId = value.Id;
                     Model.SubcriptionName = value.Name;
+                    LoadRg(value.Id);
                 }
             }
         }
 
+        private ResourceGroup _SelResourceGroup;
+
+        public ResourceGroup SelResourceGroup
+        {
+            get { return _SelResourceGroup; }
+            set 
+            {
+                _SelResourceGroup = value; 
+                if (value != null)
+                {
+                    Model.ResorceGroup = value.Name;
+                }
+            }
+        }
 
         protected async override Task OnInitializedAsync()
         {
             await Load();
+        }
+
+        async Task LoadRg(string subcriptionId)
+        {
+            ResourceGroups = await ResourceGroupervice.GetResourceGroups(subcriptionId);
         }
 
         private async Task Load()
@@ -77,7 +98,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
                     Model.Id = int.Parse(TicketId);
                     var server = await VmTicketDataService.GetItemByIdAsync(Model.Id);
-                    var resorceGroups = await ResourceGroupervice.GetResourceGroups(server?.SubcriptionId);
+                    await LoadRg(server?.SubcriptionId);
                     //var subName = await SubcriptionService.GetSubcription(server?.SubcriptionId);
                     //var rgName = await ResourceGroupervice.GetResourceGroupsIdName(server?.SubcriptionId);
 
@@ -126,7 +147,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
                         }
                     }
 
-                    Model.ResorceGroup = "dev-VMS";
+                    //Model.ResorceGroup = "dev-VMS";
                     Model.VmName = "VmDelete";
 
                     #endif
@@ -154,7 +175,19 @@ namespace CSRO.Client.Blazor.WebApp.Components
             if (string.IsNullOrEmpty(value))
                 return Subscripions;
 
-            return Subscripions.Where(x => x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+            return Subscripions == null ? null : Subscripions.Where(x => x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+        }
+
+        public async Task<IEnumerable<ResourceGroup>> SearchRgs(string value)
+        {
+            // In real life use an asynchronous function for fetching data from an api.
+            await Task.Delay(50);
+
+            // if text is null or empty, show complete list
+            if (string.IsNullOrEmpty(value))
+                return ResourceGroups;
+
+            return ResourceGroups == null ? null : ResourceGroups.Where(x => x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase));
         }
 
         public async Task OnValidSubmit(EditContext context)

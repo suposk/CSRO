@@ -13,6 +13,11 @@ namespace CSRO.Client.Services.Models
         public string Type { get; set; }
         public string Location { get; set; }
         public PropertiesDto Properties { get; set; }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 
     public class PropertiesDto
