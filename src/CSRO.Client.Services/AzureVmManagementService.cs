@@ -18,7 +18,7 @@ namespace CSRO.Client.Services
         Task<(bool suc, string errorMessage)> RestarVmInAzure(VmTicket item);
         Task<(bool suc, string status)> GetVmDisplayStatus(VmTicket item);
 
-        Task<bool> SubcriptionExist(string subscriptionId, CancellationToken cancelToken = default(CancellationToken));
+        Task<bool> SubcriptionExist(string subscriptionId, CancellationToken cancelToken = default);
     }
 
 
@@ -41,7 +41,7 @@ namespace CSRO.Client.Services
             base.Init();
         }
 
-        public async Task<bool> SubcriptionExist(string subscriptionId, CancellationToken cancelToken = default(CancellationToken))
+        public async Task<bool> SubcriptionExist(string subscriptionId, CancellationToken cancelToken = default)
         {
             try
             {
