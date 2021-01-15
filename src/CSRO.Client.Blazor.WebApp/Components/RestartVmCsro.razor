@@ -14,14 +14,14 @@
 
         @if (Success == false)
         {
-        <EditForm Model="@Model" OnValidSubmit="OnValidSubmit">
+    <EditForm Model="@Model" OnValidSubmit="OnValidSubmit">
         @*<DataAnnotationsValidator />*@
         <FluentValidationValidator />
         <MudCard>
             <MudCardContent>
                 @if (OperationTypeTicket != OperatioType.Create)
                 {
-                    <MudTextField Label="Current Vm States:"
+                    <MudTextField Label="Last Vm States:"
                                   Disabled="true"
                                   Class="text-warning"
                                   @bind-Value="Model.VmState" For="@(() => Model.VmState)" />
@@ -34,30 +34,45 @@
                                   Disabled="true"
                                   @bind-Value="Model.Status" For="@(() => Model.Status)" />
 
-                }
-                else
-                {
-                    <MudAutocomplete T="@IdName" Label="Subcription:" @bind-Value="@SelSubscripion" SearchFunc="@SearchSubs" />
-                }
-                <MudTextField Label="Subcription Name:"
-                              Disabled="true"
-                              @bind-Value="Model.SubcriptionName" For="@(() => Model.SubcriptionName)" />
+                    <MudTextField Label="Subcription Name:"
+                                  Disabled="true"
+                                  @bind-Value="Model.SubcriptionName" For="@(() => Model.SubcriptionName)" />
 
-
-                @if (OperationTypeTicket == OperatioType.Create)
-                {
-                    <MudAutocomplete T="@ResourceGroup"
-                                     Label="Resource Group:" @bind-Value="@SelResourceGroup" SearchFunc="@SearchRgs" />
-                }
-                else
-                {
                     <MudTextField Label="Resorce Group:"
-                              Disabled="@IsReadOnly"
-                              @bind-Value="Model.ResorceGroup" For="@(() => Model.ResorceGroup)" />
+                                  Disabled="true"
+                                  @bind-Value="Model.ResorceGroup" For="@(() => Model.ResorceGroup)" />
+
+                }
+                else
+                {
+                    <MudAutocomplete ResetValueOnEmptyText="true"
+                                     T="@IdName"
+                                     Label="Select Subcription:"
+                                     For="@(() => Model.SubscripionIdName)"
+                                     ValueChanged="(e) => OnChangeCategory(e)"
+                                     SearchFunc="@SearchSubs" />
+
+                    @*
+                    Value="@(new IdName { Name = Model.SubcriptionName })"
+                    For="@(() => new IdName { Id = Model.Id.ToString(), Name = Model.SubcriptionName })"
+                    For="@(() => SelSubscripion)"
+                    <MudSelectItem Value="@(new Pizza() { Name="Cardinale"})" />
+                    *@
+
+                    <MudSelect T="@string"
+                               Disabled="@IsRgDisabled"
+                               Label="Resource Group:"
+                               @bind-Value="Model.ResorceGroup"
+                               For="@(() => Model.ResorceGroup)">
+                        @foreach (var rg in ResourceGroups)
+                        {
+                            <MudSelectItem T="string" Value="@rg">@rg</MudSelectItem>
+                        }
+                    </MudSelect>
                 }
 
                 <MudTextField Label="Vm Name:" HelperText="Name of Virtual Machine"
-                              Disabled="@IsReadOnly"
+                              Disabled="@IsVmDisabled"
                               @bind-Value="Model.VmName" For="@(() => Model.VmName)" />
 
                 <MudTextField Label="Note:"
@@ -84,14 +99,15 @@
                 </MudCardActions>
             }
         </MudCard>
-        @if (!IsReadOnly)
+        @if (OperationTypeTicket == OperatioType.Create)
         {
             <MudText Typo="Typo.body2" Align="Align.Center" Class="my-4">
                 Fill out the form correctly to see the success message.
             </MudText>
 
             <MudExpansionPanels>
-                <MudExpansionPanel Text="Show Validation Summary">
+                <MudExpansionPanel IsExpanded="true"
+                                   Text="Show Validation Summary">
                     @if (Success)
                     {
                         <MudText Color="Color.Success">Success</MudText> }

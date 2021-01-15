@@ -17,10 +17,10 @@ namespace CSRO.Client.Services.Dtos.AzureDtos
         public string Name { get; set; }
         public string Type { get; set; }
         public string Location { get; set; }
-        public Properties Properties { get; set; }
+        public PropertiesDto Properties { get; set; }
     }
 
-    public class Properties
+    public class PropertiesDto
     {
         public string ProvisioningState { get; set; }
     }

@@ -84,8 +84,10 @@ namespace CSRO.Server.Api
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "CSRO.Server.Api", Version = "v1" });
             });
 
-            services.AddScoped<IApiIdentity, ApiIdentity>();
-            services.AddScoped<IAzureVmManagementService, AzureVmManagementService>();
+            services.AddScoped<IApiIdentity, ApiIdentity>();            
+            services.AddTransient<IAzureVmManagementService, AzureVmManagementService>();
+            services.AddTransient<ISubcriptionService, SubcriptionService>();
+            services.AddTransient<IResourceGroupervice, ResourceGroupervice>();
 
             #region Repositories
 

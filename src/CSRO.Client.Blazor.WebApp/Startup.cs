@@ -109,8 +109,11 @@ namespace CSRO.Client.Blazor.WebApp
 
             services.AddControllersWithViews()
                 .AddMicrosoftIdentityUI()
-                .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Services.Validation.BaseAbstractValidator>())
-                ;
+                .AddFluentValidation(fv =>
+                {
+                    fv.ImplicitlyValidateChildProperties = true;
+                    fv.RegisterValidatorsFromAssemblyContaining<Services.Validation.BaseAbstractValidator>();
+                });
 
             services.AddAuthorization(options =>
             {

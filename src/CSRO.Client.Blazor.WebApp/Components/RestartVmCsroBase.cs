@@ -42,41 +42,10 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
         protected bool IsReadOnly => OperationTypeTicket == OperatioType.View;
         protected string Title => OperationTypeTicket == OperatioType.Create ? "Request Vm Restart" : $"View {Model.Status} of {Model.VmName}";
-        protected List<IdName> Subscripions { get; set; }
-        protected List<ResourceGroup> ResourceGroups { get; set; }
-        //protected IdName SelSubscripion { get; set; } = new IdName();
-
-        private IdName _SelSubscripion;
-        public IdName SelSubscripion
-        {
-            get { return _SelSubscripion; }
-            set 
-            {
-                //_SelSubscripion ??= value;
-                _SelSubscripion = value;
-                if (value != null)
-                {
-                    Model.SubcriptionId = value.Id;
-                    Model.SubcriptionName = value.Name;
-                    LoadRg(value.Id);
-                }
-            }
-        }
-
-        private ResourceGroup _SelResourceGroup;
-
-        public ResourceGroup SelResourceGroup
-        {
-            get { return _SelResourceGroup; }
-            set 
-            {
-                _SelResourceGroup = value; 
-                if (value != null)
-                {
-                    Model.ResorceGroup = value.Name;
-                }
-            }
-        }
+        protected List<IdName> Subscripions { get; set; }        
+        protected List<string> ResourceGroups { get; set; } = new List<string>();        
+        protected bool IsRgDisabled => ResourceGroups?.Count == 0;
+        protected bool IsVmDisabled => OperationTypeTicket != OperatioType.Create || IsRgDisabled || string.IsNullOrWhiteSpace(Model?.ResorceGroup);
 
         protected async override Task OnInitializedAsync()
         {
@@ -85,7 +54,26 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
         async Task LoadRg(string subcriptionId)
         {
-            ResourceGroups = await ResourceGroupervice.GetResourceGroups(subcriptionId);
+            ResourceGroups.Clear();
+            var rgs = await ResourceGroupervice.GetResourceGroups(subcriptionId);
+            if (rgs != null)
+            {
+                ResourceGroups.AddRange(rgs.Select(a => a.Name));
+                StateHasChanged();
+            }
+        }
+
+        public async Task OnChangeCategory(IdName value)
+        {
+            if (value != null)
+            {
+                Model.SubcriptionId = value.Id;
+                Model.SubcriptionName = value.Name;
+
+                ShowLoading();
+                await LoadRg(value.Id);
+                HideLoading();
+            }
         }
 
         private async Task Load()
@@ -131,9 +119,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
                 else
                 {
                     ShowLoading();
-
                     Subscripions = await SubcriptionService.GetSubcriptions();                    
-
 
                     #if DEBUG
 
@@ -146,15 +132,12 @@ namespace CSRO.Client.Blazor.WebApp.Components
                             Subscripions.Add(new IdName(Guid.NewGuid().ToString(), $"fake sub name {i}"));
                         }
                     }
-
                     //Model.ResorceGroup = "dev-VMS";
-                    Model.VmName = "VmDelete";
+                    //Model.VmName = "VmDelete";
 
                     #endif
 
                 }
-
-
             }
             catch (Exception ex)
             {
@@ -176,18 +159,6 @@ namespace CSRO.Client.Blazor.WebApp.Components
                 return Subscripions;
 
             return Subscripions == null ? null : Subscripions.Where(x => x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase));
-        }
-
-        public async Task<IEnumerable<ResourceGroup>> SearchRgs(string value)
-        {
-            // In real life use an asynchronous function for fetching data from an api.
-            await Task.Delay(50);
-
-            // if text is null or empty, show complete list
-            if (string.IsNullOrEmpty(value))
-                return ResourceGroups;
-
-            return ResourceGroups == null ? null : ResourceGroups.Where(x => x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase));
         }
 
         public async Task OnValidSubmit(EditContext context)

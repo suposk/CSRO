@@ -1,18 +1,20 @@
 ﻿using AutoMapper;
-using CSRO.Client.Services.Dtos;
-using CSRO.Client.Services.Dtos.AzureDtos;
-using CSRO.Client.Services.Models;
+using CSRO.Server.Domain;
+using CSRO.Server.Domain.AzureDtos;
+using CSRO.Server.Entities.Entity;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Identity.Web;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CSRO.Client.Services
-{   
+namespace CSRO.Server.Services
+{
     public interface ISubcriptionService
     {
         Task<bool> SubcriptionExist(string subscriptionId, CancellationToken cancelToken = default);
@@ -27,10 +29,11 @@ namespace CSRO.Client.Services
 
         public SubcriptionService(
             IHttpClientFactory httpClientFactory,
-            IAuthCsroService authCsroService,
+            //IAuthCsroService authCsroService,
+            ITokenAcquisition tokenAcquisition,
             IMapper mapper,
             IConfiguration configuration)
-            : base(httpClientFactory, authCsroService, mapper, configuration)
+            : base(httpClientFactory, tokenAcquisition, configuration)
         {
             ApiPart = "--";
             //Scope = "api://ee2f0320-29c3-432a-bf84-a5d4277ce052/user_impersonation";
@@ -39,7 +42,11 @@ namespace CSRO.Client.Services
             ClientName = Core.ConstatCsro.ClientNames.MANAGEMENT_AZURE_EndPoint;
 
             base.Init();
+
+            Mapper = mapper;
         }
+
+        public IMapper Mapper { get; }
 
         public async Task<Subscription> GetSubcription(string subscriptionId, CancellationToken cancelToken = default)
         {
@@ -57,8 +64,8 @@ namespace CSRO.Client.Services
                     var content = await apiData.Content.ReadAsStringAsync();
                     var ser = JsonSerializer.Deserialize<SubscriptionsDto>(content, _options);
                     if (ser?.Value?.Count > 0)
-                    {                                               
-                        var first = ser.Value.FirstOrDefault();                        
+                    {
+                        var first = ser.Value.FirstOrDefault();
                         var result = Mapper.Map<Subscription>(first);
                         return result;
                     }
@@ -110,5 +117,4 @@ namespace CSRO.Client.Services
         }
 
     }
-
 }

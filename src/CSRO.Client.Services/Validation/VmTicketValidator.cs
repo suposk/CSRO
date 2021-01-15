@@ -16,20 +16,20 @@ namespace CSRO.Client.Services.Validation
             //ISubcriptionService subcriptionService 
             )
         {
+            RuleFor(p => p.SubscripionIdName.Name)
+                .NotEmpty().WithMessage("Subscripion must be selected");
+
+            RuleFor(p => p.ResorceGroup).NotEmpty();
+
             RuleFor(p => p.VmName)
                 .NotEmpty()
                 //.MustAsync(ValidateVm).WithMessage("Test only, name has to contain vm letter")
                 ;
 
-            RuleFor(p => p.SubcriptionId)
-                .NotEmpty()
-                //.MustAsync(subcriptionService.SubcriptionExist).WithMessage("Subcription Id not found");
-            ;
-
-            RuleFor(p => p.SubcriptionName)
-                .NotEmpty();                
-
-            RuleFor(p => p.ResorceGroup).NotEmpty();            
+            //RuleFor(p => p.SubcriptionId)
+            //    .NotEmpty()
+            //    //.MustAsync(subcriptionService.SubcriptionExist).WithMessage("Subcription Id not found");
+            //;                       
         }
 
         private async Task<bool> ValidateVm(string vm, CancellationToken token)
