@@ -48,7 +48,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
         protected bool IsVmDisabled => OperationTypeTicket != OperatioType.Create || IsRgDisabled || string.IsNullOrWhiteSpace(Model?.ResorceGroup);
 
         protected async override Task OnInitializedAsync()
-        {
+        {            
             await Load();
         }
 
@@ -82,7 +82,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
             {                
                 if (OperationTypeTicket != OperatioType.Create)
                 {
-                    ShowLoading();
+                    ShowLoading();                    
 
                     Model.Id = int.Parse(TicketId);
                     var server = await VmTicketDataService.GetItemByIdAsync(Model.Id);

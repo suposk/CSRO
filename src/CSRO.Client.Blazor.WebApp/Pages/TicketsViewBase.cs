@@ -1,4 +1,5 @@
-﻿using CSRO.Client.Blazor.WebApp.Components;
+﻿using CSRO.Client.Blazor.UI;
+using CSRO.Client.Blazor.WebApp.Components;
 using CSRO.Client.Services;
 using CSRO.Client.Services.Models;
 using Microsoft.AspNetCore.Components;
@@ -13,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace CSRO.Client.Blazor.WebApp.Pages
 {
-    public class TicketsViewBase : ComponentBase
+    public class TicketsViewBase : CsroComponentBase
     {
         [Inject]
         public NavigationManager NavigationManager { get; set; }
@@ -37,6 +38,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages
 
             try
             {
+                ShowLoading();                
                 Tickets = null;
                 Tickets = await TicketDataService.GetItemsAsync();
             }
@@ -44,6 +46,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages
             {
                 Logger.LogError(ex, nameof(OnInitializedAsync));
             }
+            HideLoading();
         }
 
         public async Task DeleteTicketAsync(Ticket ticket)
