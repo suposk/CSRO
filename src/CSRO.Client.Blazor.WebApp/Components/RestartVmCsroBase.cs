@@ -36,6 +36,9 @@ namespace CSRO.Client.Blazor.WebApp.Components
         public IDialogService DialogService { get; set; }
 
         [Inject]
+        public ILocationsService LocationsService { get; set; }
+
+        [Inject]
         public ILogger<RestartVmCsroBase> Logger { get; set; }
 
         protected VmTicket Model { get; set; } = new VmTicket();
@@ -79,7 +82,9 @@ namespace CSRO.Client.Blazor.WebApp.Components
         private async Task Load()
         {
             try
-            {                
+            {
+                //var loc = await LocationsService.GetLocations();
+
                 if (OperationTypeTicket != OperatioType.Create)
                 {
                     ShowLoading();                    
