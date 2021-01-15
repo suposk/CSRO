@@ -1,4 +1,5 @@
-﻿using CSRO.Client.Services;
+﻿using CSRO.Client.Blazor.UI;
+using CSRO.Client.Services;
 using CSRO.Client.Services.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
@@ -11,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace CSRO.Client.Blazor.WebApp.Components
 {
-    public class RestartVmCsroBase : ComponentBase
+    public class RestartVmCsroBase : CsroComponentBase
     {
         [Parameter]
         public string TicketId { get; set; }
@@ -23,7 +24,13 @@ namespace CSRO.Client.Blazor.WebApp.Components
         public NavigationManager NavigationManager { get; set; }
 
         [Inject]
-        IVmTicketDataService VmTicketDataService { get; set; }
+        public IVmTicketDataService VmTicketDataService { get; set; }
+
+        [Inject]
+        public ISubcriptionService SubcriptionService { get; set; }
+
+        [Inject]
+        public IResourceGroupervice ResourceGroupervice { get; set; }
 
         [Inject]
         public IDialogService DialogService { get; set; }
@@ -33,15 +40,40 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
         protected VmTicket Model { get; set; } = new VmTicket();
 
-        protected bool IsLoading { get; set; }
-        protected string LoadingMessage { get; set; }
-        protected bool Success { get; set; }
         protected bool IsReadOnly => OperationTypeTicket == OperatioType.View;
         protected string Title => OperationTypeTicket == OperatioType.Create ? "Request Vm Restart" : $"View {Model.Status} of {Model.VmName}";
+        protected List<IdName> Subscripions { get; set; }        
+        protected List<string> ResourceGroups { get; set; } = new List<string>();        
+        protected bool IsRgDisabled => ResourceGroups?.Count == 0;
+        protected bool IsVmDisabled => OperationTypeTicket != OperatioType.Create || IsRgDisabled || string.IsNullOrWhiteSpace(Model?.ResorceGroup);
 
         protected async override Task OnInitializedAsync()
         {
             await Load();
+        }
+
+        async Task LoadRg(string subcriptionId)
+        {
+            ResourceGroups.Clear();
+            var rgs = await ResourceGroupervice.GetResourceGroups(subcriptionId);
+            if (rgs != null)
+            {
+                ResourceGroups.AddRange(rgs.Select(a => a.Name));
+                StateHasChanged();
+            }
+        }
+
+        public async Task OnChangeCategory(IdName value)
+        {
+            if (value != null)
+            {
+                Model.SubcriptionId = value.Id;
+                Model.SubcriptionName = value.Name;
+
+                ShowLoading();
+                await LoadRg(value.Id);
+                HideLoading();
+            }
         }
 
         private async Task Load()
@@ -50,39 +82,19 @@ namespace CSRO.Client.Blazor.WebApp.Components
             {                
                 if (OperationTypeTicket != OperatioType.Create)
                 {
-                    IsLoading = true;
-                    LoadingMessage = "Loading...";
+                    ShowLoading();
 
                     Model.Id = int.Parse(TicketId);
                     var server = await VmTicketDataService.GetItemByIdAsync(Model.Id);
+                    await LoadRg(server?.SubcriptionId);
+                    //var subName = await SubcriptionService.GetSubcription(server?.SubcriptionId);
+                    //var rgName = await ResourceGroupervice.GetResourceGroupsIdName(server?.SubcriptionId);
+
                     if (server != null)
                     {
                         Model = server;
                         if (OperationTypeTicket == OperatioType.View)
                         {
-                            #region loop in UI, not good
-                            //int i = 0;
-                            //while (i < 10)
-                            //{
-                            //    i++;
-                            //    if (Model.VmState == "Restart Started" || !string.Equals(Model.VmState, "VM running"))
-                            //    {
-                            //        //need to create delay to update vm state after restart                                                                       
-                            //        LoadingMessage = $"Current state: {Model.VmState}";
-                            //        StateHasChanged();
-
-                            //        await Task.Delay(10 * 1000);                                
-
-                            //        var running = await VmTicketDataService.VerifyRestartStatus(Model).ConfigureAwait(false);
-                            //        if (running)
-                            //        {
-                            //            Model = await VmTicketDataService.GetItemByIdAsync(Model.Id);                                        
-                            //            break;
-                            //        }
-                            //    }
-                            //}
-                            #endregion
-
                             if (Model.VmState == "Restart Started" || !string.Equals(Model.VmState, "VM running"))
                             {
                                 //need to create delay to update vm state after restart                                                                       
@@ -103,16 +115,29 @@ namespace CSRO.Client.Blazor.WebApp.Components
                         }
                     }
                 }
-                #if DEBUG
+                
                 else
                 {
-                    //dubug only
-                    Model.SubcriptionId = "33fb38df-688e-4ca1-8dd8-b46e26262ff8";
-                    Model.ResorceGroup = "dev-VMS";
-                    Model.VmName = "VmDelete";
-                }
-                #endif
+                    ShowLoading();
+                    Subscripions = await SubcriptionService.GetSubcriptions();                    
 
+                    #if DEBUG
+
+                    //dubug only
+                    //Model.SubcriptionId = "33fb38df-688e-4ca1-8dd8-b46e26262ff8";
+                    if (Subscripions?.Count == 1)
+                    {
+                        for (int i=1; i <= 3; i++)
+                        {
+                            Subscripions.Add(new IdName(Guid.NewGuid().ToString(), $"fake sub name {i}"));
+                        }
+                    }
+                    //Model.ResorceGroup = "dev-VMS";
+                    //Model.VmName = "VmDelete";
+
+                    #endif
+
+                }
             }
             catch (Exception ex)
             {
@@ -120,8 +145,20 @@ namespace CSRO.Client.Blazor.WebApp.Components
             }
             finally
             {
-                IsLoading = false;
+                HideLoading();
             }
+        }
+
+        public async Task<IEnumerable<IdName>> SearchSubs(string value)
+        {
+            // In real life use an asynchronous function for fetching data from an api.
+            await Task.Delay(50);
+
+            // if text is null or empty, show complete list
+            if (string.IsNullOrEmpty(value))
+                return Subscripions;
+
+            return Subscripions == null ? null : Subscripions.Where(x => x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase));
         }
 
         public async Task OnValidSubmit(EditContext context)
@@ -130,11 +167,10 @@ namespace CSRO.Client.Blazor.WebApp.Components
             if (valid)
             {
                 try
-                {
-                    IsLoading = true;
+                {                    
                     if (OperationTypeTicket == OperatioType.Create)
                     {
-                        LoadingMessage = "Creating request";   
+                        ShowLoading("Creating request");   
                         
                         var added = await VmTicketDataService.AddItemAsync(Model);
                         if (added != null)
@@ -147,7 +183,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
                     }
                     else if (OperationTypeTicket == OperatioType.Edit)
                     {
-                        LoadingMessage = "Updating request";
+                        ShowLoading("Updating request");
 
                         var updated = await VmTicketDataService.UpdateItemAsync(Model);
                         if (updated)
@@ -173,8 +209,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
                     StateHasChanged();
                 }
                 catch (Exception ex)
-                {
-                    IsLoading = false;
+                {                    
                     Logger.LogError(ex, nameof(OnValidSubmit));
 
                     var parameters = new DialogParameters();
@@ -189,7 +224,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
                 }
                 finally
                 {
-                    IsLoading = false;
+                    HideLoading();
                 }
             }
         }

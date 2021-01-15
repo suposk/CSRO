@@ -24,6 +24,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using CSRO.Client.Services.Models;
+using FluentValidation.AspNetCore;
 
 namespace CSRO.Client.Blazor.WebApp
 {
@@ -107,7 +108,12 @@ namespace CSRO.Client.Blazor.WebApp
             });
 
             services.AddControllersWithViews()
-                .AddMicrosoftIdentityUI();
+                .AddMicrosoftIdentityUI()
+                .AddFluentValidation(fv =>
+                {
+                    fv.ImplicitlyValidateChildProperties = true;
+                    fv.RegisterValidatorsFromAssemblyContaining<Services.Validation.BaseAbstractValidator>();
+                });
 
             services.AddAuthorization(options =>
             {
@@ -128,8 +134,9 @@ namespace CSRO.Client.Blazor.WebApp
             services.AddScoped<IBaseDataService<Ticket>, TicketDataService>();
             //services.AddScoped<IBaseDataService<VmTicket>, VmTicketDataService>();            
             services.AddScoped<IVmTicketDataService, VmTicketDataService>();
-            services.AddScoped<IAzureVmManagementService, AzureVmManagementService>();
-            
+            services.AddTransient<IAzureVmManagementService, AzureVmManagementService>();
+            services.AddTransient<ISubcriptionService, SubcriptionService>();
+            services.AddTransient<IResourceGroupervice, ResourceGroupervice>();
 
             var jano = Configuration.GetValue<string>("JanoSetting");
             Console.WriteLine($"Configuration JanoSetting: {jano}");

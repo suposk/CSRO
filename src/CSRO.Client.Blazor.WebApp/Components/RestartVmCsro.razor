@@ -1,5 +1,7 @@
 ﻿@inherits RestartVmCsroBase
 @using CSRO.Client.Services.Models
+@using CSRO.Client.Services.Validation
+@using Blazored.FluentValidation
 
 <MudContainer>
     <div style="max-width: 50%" class="m-4">
@@ -12,83 +14,113 @@
 
         @if (Success == false)
         {
-            <EditForm Model="@Model" OnValidSubmit="OnValidSubmit">
-                <DataAnnotationsValidator />
-                <MudCard>
-                    <MudCardContent>
-                        @if (OperationTypeTicket != OperatioType.Create)
-                        {
-                            <MudTextField Label="Current Vm States:"
-                                          Disabled="true"
-                                          Class="text-warning"
-                                          @bind-Value="Model.VmState" For="@(() => Model.VmState)" />
-
-                            <MudTextField Label="Id:"
-                                          Disabled="true"
-                                          @bind-Value="Model.Id" For="@(() => Model.Id)" />
-
-                            <MudTextField Label="Status:"
-                                          Disabled="true"
-                                          @bind-Value="Model.Status" For="@(() => Model.Status)" />
-                        }
-
-                        <MudTextField Label="Subcription Id:"
-                                      Disabled="@IsReadOnly"
-                                      @bind-Value="Model.SubcriptionId" For="@(() => Model.SubcriptionId)" />
-
-                        <MudTextField Label="Resorce Group:"
-                                      Disabled="@IsReadOnly"
-                                      @bind-Value="Model.ResorceGroup" For="@(() => Model.ResorceGroup)" />
-
-                        <MudTextField Label="Vm Name:" HelperText="Name of Virtual Machine"
-                                      Disabled="@IsReadOnly"
-                                      @bind-Value="Model.VmName" For="@(() => Model.VmName)" />
-
-                        <MudTextField Label="Note:"
-                                      Disabled="@IsReadOnly"
-                                      @bind-Value="Model.Note" For="@(() => Model.Note)" />
-
-                        @if (IsReadOnly)
-                        {
-                            <MudTextField Label="Created By:" Disabled="true"
-                                          @bind-Value="Model.CreatedBy" For="@(() => Model.CreatedBy)" />
-
-                            <MudTextField Label="Created At:" Disabled="true"
-                                          @bind-Value="Model.CreatedAt" For="@(() => Model.CreatedAt)" />
-
-                            <MudTextField Label="Modified At:" Disabled="true"
-                                          @bind-Value="Model.ModifiedAt" For="@(() => Model.ModifiedAt)" />
-                        }
-
-                    </MudCardContent>
-                    @if (!IsReadOnly)
-                    {
-                        <MudCardActions>
-                            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Submit</MudButton>
-                        </MudCardActions>
-                    }
-                </MudCard>
-                @if (!IsReadOnly)
+    <EditForm Model="@Model" OnValidSubmit="OnValidSubmit">
+        @*<DataAnnotationsValidator />*@
+        <FluentValidationValidator />
+        <MudCard>
+            <MudCardContent>
+                @if (OperationTypeTicket != OperatioType.Create)
                 {
-                    <MudText Typo="Typo.body2" Align="Align.Center" Class="my-4">
-                        Fill out the form correctly to see the success message.
-                    </MudText>
+                    <MudTextField Label="Last Vm States:"
+                                  Disabled="true"
+                                  Class="text-warning"
+                                  @bind-Value="Model.VmState" For="@(() => Model.VmState)" />
 
-                    <MudExpansionPanels>
-                        <MudExpansionPanel Text="Show Validation Summary">
-                            @if (Success)
-                            {
-                                <MudText Color="Color.Success">Success</MudText> }
-                            else
-                            {
-                                <MudText Color="@Color.Error">
-                                    <ValidationSummary />
-                                </MudText>
-                            }
-                        </MudExpansionPanel>
-                    </MudExpansionPanels>
+                    <MudTextField Label="Id:"
+                                  Disabled="true"
+                                  @bind-Value="Model.Id" For="@(() => Model.Id)" />
+
+                    <MudTextField Label="Status:"
+                                  Disabled="true"
+                                  @bind-Value="Model.Status" For="@(() => Model.Status)" />
+
+                    <MudTextField Label="Subcription Name:"
+                                  Disabled="true"
+                                  @bind-Value="Model.SubcriptionName" For="@(() => Model.SubcriptionName)" />
+
+                    <MudTextField Label="Resorce Group:"
+                                  Disabled="true"
+                                  @bind-Value="Model.ResorceGroup" For="@(() => Model.ResorceGroup)" />
+
                 }
-            </EditForm>
+                else
+                {
+                    <MudAutocomplete ResetValueOnEmptyText="true"
+                                     T="@IdName"
+                                     Label="Select Subcription:"
+                                     For="@(() => Model.SubscripionIdName)"
+                                     ValueChanged="(e) => OnChangeCategory(e)"
+                                     SearchFunc="@SearchSubs" />
+
+                    @*
+                    Value="@(new IdName { Name = Model.SubcriptionName })"
+                    For="@(() => new IdName { Id = Model.Id.ToString(), Name = Model.SubcriptionName })"
+                    For="@(() => SelSubscripion)"
+                    <MudSelectItem Value="@(new Pizza() { Name="Cardinale"})" />
+                    *@
+
+                    <MudSelect T="@string"
+                               Disabled="@IsRgDisabled"
+                               Label="Resource Group:"
+                               @bind-Value="Model.ResorceGroup"
+                               For="@(() => Model.ResorceGroup)">
+                        @foreach (var rg in ResourceGroups)
+                        {
+                            <MudSelectItem T="string" Value="@rg">@rg</MudSelectItem>
+                        }
+                    </MudSelect>
+                }
+
+                <MudTextField Label="Vm Name:" HelperText="Name of Virtual Machine"
+                              Disabled="@IsVmDisabled"
+                              @bind-Value="Model.VmName" For="@(() => Model.VmName)" />
+
+                <MudTextField Label="Note:"
+                              Disabled="@IsReadOnly"
+                              @bind-Value="Model.Note" For="@(() => Model.Note)" />
+
+                @if (IsReadOnly)
+                {
+                    <MudTextField Label="Created By:" Disabled="true"
+                                  @bind-Value="Model.CreatedBy" For="@(() => Model.CreatedBy)" />
+
+                    <MudTextField Label="Created At:" Disabled="true"
+                                  @bind-Value="Model.CreatedAt" For="@(() => Model.CreatedAt)" />
+
+                    <MudTextField Label="Modified At:" Disabled="true"
+                                  @bind-Value="Model.ModifiedAt" For="@(() => Model.ModifiedAt)" />
+                }
+
+            </MudCardContent>
+            @if (!IsReadOnly)
+            {
+                <MudCardActions>
+                    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Submit</MudButton>
+                </MudCardActions>
+            }
+        </MudCard>
+        @if (OperationTypeTicket == OperatioType.Create)
+        {
+            <MudText Typo="Typo.body2" Align="Align.Center" Class="my-4">
+                Fill out the form correctly to see the success message.
+            </MudText>
+
+            <MudExpansionPanels>
+                <MudExpansionPanel IsExpanded="true"
+                                   Text="Show Validation Summary">
+                    @if (Success)
+                    {
+                        <MudText Color="Color.Success">Success</MudText> }
+                    else
+                    {
+                        <MudText Color="@Color.Error">
+                            <ValidationSummary />
+                        </MudText>
+                    }
+                </MudExpansionPanel>
+            </MudExpansionPanels>
+        }
+    </EditForm>
         }
         else
         {
