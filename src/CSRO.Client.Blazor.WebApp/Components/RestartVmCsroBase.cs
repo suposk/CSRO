@@ -66,7 +66,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
             }
         }
 
-        public async Task OnChangeCategory(IdName value)
+        public async Task OnSubscriptionChanged(IdName value)
         {
             if (value != null)
             {

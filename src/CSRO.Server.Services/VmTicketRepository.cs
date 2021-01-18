@@ -44,7 +44,7 @@ namespace CSRO.Server.Services
                 if (vmstatus.suc == false || vmstatus.status.Contains("deallocat"))
                     throw new Exception($"Unable to process request: {vmstatus.status}");
 
-                var sent = await _azureVmManagementService.RestarVmInAzure(entity);
+                var sent = await _azureVmManagementService.RestarVmInAzure(entity).ConfigureAwait(false);
                 if (!sent.suc)
                     throw new Exception(sent.errorMessage);
 
@@ -59,12 +59,12 @@ namespace CSRO.Server.Services
             return entity;
         }
 
-        public async override void Add(VmTicket entity, string UserId = null)
+        public override void Add(VmTicket entity, string UserId = null)
         {
-            await CreateRestartTicket(entity);
-            //base.Add(entity, _userId);
-            //entity.Status = "Opened";
-            //entity.VmState = "Restart Started";
+            //await CreateRestartTicket(entity);
+            base.Add(entity, _userId);
+            entity.Status = "Opened";
+            entity.VmState = "Restart Started";
         }
 
         public override void Remove(VmTicket entity, string UserId = null)
@@ -72,13 +72,5 @@ namespace CSRO.Server.Services
             base.Remove(entity, _userId);
             entity.Status = "Closed";
         }
-
-        //public override Task<List<VmTicket>> GetList()
-        //{
-        //    //return base.GetList();
-        //    //var exist = await _repository.GetFilter(a => a.VersionFull == version);
-        //    //var q = _context.AppVersions.Where(e => !_context.AppVersions.Any(e2 => e2.VersionValue > e.VersionValue));
-        //    return _repository.GetListFilter(a => a.IsDeleted != true);
-        //}
     }
 }

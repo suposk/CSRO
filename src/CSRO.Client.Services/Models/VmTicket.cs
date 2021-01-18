@@ -2,6 +2,44 @@
 
 namespace CSRO.Client.Services.Models
 {
+
+    //public class VmTicket : ModelBase
+    //{
+    //    public VmTicket()
+    //    {
+    //        _SubscripionIdName = new IdName();
+    //    }
+
+    //    public string Note { get; set; }
+
+    //    public string SubcriptionId { get; set; }
+
+    //    public string SubcriptionName { get; set; }
+
+    //    public string ResorceGroup { get; set; }
+
+    //    //using FluentValidation [Required]
+    //    public string VmName { get; set; }
+
+    //    public string Status { get; set; }
+
+    //    public string VmState { get; set; }
+
+    //    private IdName _SubscripionIdName;
+
+    //    public IdName SubscripionIdName
+    //    {
+    //        get { return _SubscripionIdName; }
+    //        set 
+    //        {
+    //            _SubscripionIdName = value;
+    //            SubcriptionId = value.Id;
+    //            SubcriptionName = value.Name;
+    //        }
+    //    }
+
+    //}
+
     public class VmTicket : ModelBase
     {
         public VmTicket()
@@ -22,16 +60,16 @@ namespace CSRO.Client.Services.Models
         public string SubcriptionName
         {
             get { return _SubcriptionName; }
-            set { _SubcriptionName = value;  _SubscripionIdName.Name = value; }
+            set { _SubcriptionName = value; _SubscripionIdName.Name = value; }
         }
 
 
         public string Note { get; set; }
-        
+
         //public string SubcriptionId { get; set; }
 
         //public string SubcriptionName { get; set; }
-        
+
         public string ResorceGroup { get; set; }
 
         //using FluentValidation [Required]

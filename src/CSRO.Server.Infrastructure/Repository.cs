@@ -72,7 +72,7 @@ namespace CSRO.Server.Infrastructure
 
         public virtual async Task<TModel> GetId(int id)
         {
-            return await DatabaseContext.Set<TModel>().FindAsync(id);
+            return await DatabaseContext.Set<TModel>().FindAsync(id).ConfigureAwait(false);
         }
 
         public virtual Task<List<TModel>> GetListFilter(Expression<Func<TModel, bool>> expression)
@@ -97,7 +97,7 @@ namespace CSRO.Server.Infrastructure
             //return await DatabaseContext.SaveChangesAsync() >= 0;
             try
             {
-                var saved = await DatabaseContext.SaveChangesAsync() >= 0;
+                var saved = await DatabaseContext.SaveChangesAsync().ConfigureAwait(false) >= 0;
                 return saved;
                 // move on
             }
