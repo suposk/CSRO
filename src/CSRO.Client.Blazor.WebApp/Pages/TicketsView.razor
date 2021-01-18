@@ -3,9 +3,15 @@
 @using CSRO.Client.Services.Models;
 
 
-<MudContainer MaxWidth="MaxWidth.Large" Class="mt-6">
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-6">
     <MudText Typo="Typo.h4" GutterBottom="true">Tickes count: @Tickets?.Count</MudText>
-    <MudText Class="mb-8">List of Available.....</MudText>
+    <MudTooltip Text="Add New" Delayed="1">
+        <MudGrid>
+            <MudItem>
+                <MudIconButton Link="/ticketcreate" Icon="@Icons.Material.Add">Reuest restart</MudIconButton>
+            </MudItem>
+        </MudGrid>
+    </MudTooltip>
     @if (Tickets == null)
     {
         <MudGrid>
