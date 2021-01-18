@@ -5,13 +5,6 @@
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-6">
     <MudText Typo="Typo.h4" GutterBottom="true">Vm Tickes count: @Tickets?.Count</MudText>
-    <MudTooltip Text="Add New" Delayed="1">
-        <MudGrid>
-            <MudItem>
-                <MudIconButton Link="/vm/restart" Icon="@Icons.Material.Add">Reuest restart</MudIconButton>
-            </MudItem>
-        </MudGrid>
-    </MudTooltip>
     @if (Tickets == null)
     {
         <MudGrid>
@@ -25,6 +18,13 @@
     }
     else
     {
+        <MudTooltip Text="Add New" Delayed="1">
+            <MudGrid>
+                <MudItem>
+                    <MudIconButton Link="/vm/restart" Icon="@Icons.Material.Add">Reuest restart</MudIconButton>
+                </MudItem>
+            </MudGrid>
+        </MudTooltip>
         <MudTable Items="Tickets" Hover="true" SortLabel="Sort By" Elevation="0">
             <HeaderContent>
                 <MudTh><MudTableSortLabel SortBy="new Func<VmTicket, object>(x=>x.Id)">Id</MudTableSortLabel></MudTh>

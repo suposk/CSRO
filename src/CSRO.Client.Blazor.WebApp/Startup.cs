@@ -25,6 +25,9 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using CSRO.Client.Services.Models;
 using FluentValidation.AspNetCore;
+using System.Net.Http;
+using System.Net;
+using CSRO.Client.Core.Helpers;
 
 namespace CSRO.Client.Blazor.WebApp
 {
@@ -86,11 +89,36 @@ namespace CSRO.Client.Blazor.WebApp
             services.AddHttpClient("api", (client) =>
             {
                 client.BaseAddress = new Uri(ApiEndpoint);
-            });
+                client.DefaultRequestHeaders.Add("Accept", "application/json");
+            }).ConfigurePrimaryHttpMessageHandler(() => 
+            {
+                return new HttpClientHandler()
+                {
+                    AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip | DecompressionMethods.Brotli,
+                    UseCookies = false
+                };
+            })
+            .SetHandlerLifetime(TimeSpan.FromMinutes(5))
+            .AddPolicyHandler(PollyHelper.GetRetryPolicy())
+            .AddPolicyHandler(PollyHelper.GetRetryPolicy());
+            ;
+
             services.AddHttpClient(Core.ConstatCsro.ClientNames.MANAGEMENT_AZURE_EndPoint, (client) =>
             {
                 client.BaseAddress = new Uri(Core.ConstatCsro.ClientNames.MANAGEMENT_AZURE_EndPoint);
-            });
+                client.DefaultRequestHeaders.Add("Accept", "application/json");
+            }).ConfigurePrimaryHttpMessageHandler(() =>
+            {
+                return new HttpClientHandler()
+                {
+                    AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip | DecompressionMethods.Brotli,
+                    UseCookies = false
+                };
+            })
+            .SetHandlerLifetime(TimeSpan.FromMinutes(5))
+            .AddPolicyHandler(PollyHelper.GetRetryPolicy())
+            .AddPolicyHandler(PollyHelper.GetRetryPolicy());
+            ;
 
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))

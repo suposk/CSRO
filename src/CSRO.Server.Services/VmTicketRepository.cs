@@ -30,6 +30,12 @@ namespace CSRO.Server.Services
             _context = context;
             _userId = ApiIdentity.GetUserName();
         }
+
+        public override Task<List<VmTicket>> GetList()
+        {
+            return _repository.GetListFilter(a => a.IsDeleted != true);
+        }
+
         public async Task<VmTicket> CreateRestartTicket(VmTicket entity)
         {            
             try
