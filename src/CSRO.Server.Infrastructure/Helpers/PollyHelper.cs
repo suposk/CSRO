@@ -11,31 +11,31 @@ namespace CSRO.Server.Infrastructure.Helpers
 {
     public static class PollyHelper
     {
-        public static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
+        public static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy(int retryCount = 1)
         {
             return HttpPolicyExtensions
                 .HandleTransientHttpError()
                 .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
-                .WaitAndRetryAsync(3, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
+                .WaitAndRetryAsync(retryCount, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
         }
 
-        public static IAsyncPolicy<HttpResponseMessage> GetRetryPolicyJitter()
+        public static IAsyncPolicy<HttpResponseMessage> GetRetryPolicyJitter(int retryCount = 1)
         {
             Random jitterer = new Random();
             var retryWithJitterPolicy = HttpPolicyExtensions
                 .HandleTransientHttpError()
                 .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
-                .WaitAndRetryAsync(3,    // exponential back-off plus some jitter
+                .WaitAndRetryAsync(retryCount,    // exponential back-off plus some jitter
                     retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))
                                   + TimeSpan.FromMilliseconds(jitterer.Next(0, 100)));
             return retryWithJitterPolicy;
         }
 
-        public static IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy()
+        public static IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy(int retryCount = 1)
         {
             return HttpPolicyExtensions
                 .HandleTransientHttpError()
-                .CircuitBreakerAsync(3, TimeSpan.FromMinutes(2));
+                .CircuitBreakerAsync(retryCount, TimeSpan.FromMinutes(2));
         }
     }
 }
