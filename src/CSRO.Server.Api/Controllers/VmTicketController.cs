@@ -43,7 +43,7 @@ namespace CSRO.Server.Api.Controllers
             {
                 _logger.LogInformation(ApiLogEvents.GetAllItems, $"{nameof(Get)} Started");
 
-                var all = await _repository.GetList();
+                var all = await _repository.GetList().ConfigureAwait(false);
                 var result = _mapper.Map<List<VmTicketDto>>(all);
                 return result;
             }
@@ -65,7 +65,7 @@ namespace CSRO.Server.Api.Controllers
             {
                 _logger.LogInformation(ApiLogEvents.GetItem, $"{nameof(GetVmTicketById)} with {id} Started");
 
-                var repoObj = await _repository.GetId(id);
+                var repoObj = await _repository.GetId(id).ConfigureAwait(false);
                 if (repoObj == null)
                     return NotFound();
 
@@ -92,7 +92,7 @@ namespace CSRO.Server.Api.Controllers
                 _logger.LogInformation(ApiLogEvents.InsertItem, $"{nameof(CreateRestartTicket)} Started");
 
                 var repoObj = _mapper.Map<VmTicket>(dto);                
-                await _repository.CreateRestartTicket(repoObj);
+                await _repository.CreateRestartTicket(repoObj).ConfigureAwait(false);
                 if (await _repository.SaveChangesAsync())
                 {
                     var result = _mapper.Map<VmTicketDto>(repoObj);
@@ -121,7 +121,7 @@ namespace CSRO.Server.Api.Controllers
             {
                 _logger.LogInformation(ApiLogEvents.UpdateItem, $"{nameof(PutVmTicket)} Started");
 
-                var repoObj = await _repository.GetId(dto.Id);
+                var repoObj = await _repository.GetId(dto.Id).ConfigureAwait(false);
                 if (repoObj == null)
                 {
                     _logger.LogWarning(ApiLogEvents.UpdateItemNotFound, $"{nameof(PutVmTicket)} not found");
@@ -157,7 +157,7 @@ namespace CSRO.Server.Api.Controllers
             {
                 _logger.LogInformation(ApiLogEvents.DeleteItem, $"{nameof(DeleteVmTicket)} Started");
 
-                var repoObj = await _repository.GetId(id);
+                var repoObj = await _repository.GetId(id).ConfigureAwait(false);
                 if (repoObj == null)
                 {
                     _logger.LogWarning(ApiLogEvents.DeleteItemNotFound, $"{nameof(DeleteVmTicket)} not found");

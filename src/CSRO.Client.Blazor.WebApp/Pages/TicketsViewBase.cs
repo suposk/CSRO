@@ -1,4 +1,6 @@
-﻿using CSRO.Client.Blazor.WebApp.Components;
+﻿using CSRO.Client.Blazor.UI;
+using CSRO.Client.Blazor.UI.Services;
+using CSRO.Client.Blazor.WebApp.Components;
 using CSRO.Client.Services;
 using CSRO.Client.Services.Models;
 using Microsoft.AspNetCore.Components;
@@ -13,13 +15,13 @@ using System.Threading.Tasks;
 
 namespace CSRO.Client.Blazor.WebApp.Pages
 {
-    public class TicketsViewBase : ComponentBase
+    public class TicketsViewBase : CsroComponentBase
     {
         [Inject]
         public NavigationManager NavigationManager { get; set; }
 
         [Inject]
-        public IDialogService DialogService { get; set; }
+        public ICsroDialogService CsroDialogService { get; set; }
 
         [Inject]
         IBaseDataService<Ticket> TicketDataService { get; set; }
@@ -37,6 +39,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages
 
             try
             {
+                ShowLoading();                
                 Tickets = null;
                 Tickets = await TicketDataService.GetItemsAsync();
             }
@@ -44,19 +47,13 @@ namespace CSRO.Client.Blazor.WebApp.Pages
             {
                 Logger.LogError(ex, nameof(OnInitializedAsync));
             }
+            HideLoading();
         }
 
         public async Task DeleteTicketAsync(Ticket ticket)
         {
-            var parameters = new DialogParameters();
-            parameters.Add("ContentText", $"Do you really want to delete these record {ticket.Id}-{ticket.Description}?");
-            parameters.Add("ButtonText", "Delete");
-            parameters.Add("Color", Color.Error);
-
-            var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Small };
-            var userSelect = DialogService.Show<DialogTemplateExample_Dialog>("Delete Ticket", parameters, options);
-            var result = await userSelect.Result;
-            if (!result.Cancelled)
+            var ok = await CsroDialogService.ShowDialog("Delete Ticket", $"Do you really want to delete these record Id: {ticket.Id}?", "Delete");
+            if (ok)
             {
                 var res = await TicketDataService.DeleteItemAsync(ticket.Id);
                 if (res)

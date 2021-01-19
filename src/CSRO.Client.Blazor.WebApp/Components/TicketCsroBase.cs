@@ -1,4 +1,5 @@
-﻿using CSRO.Client.Services;
+﻿using CSRO.Client.Blazor.UI.Services;
+using CSRO.Client.Services;
 using CSRO.Client.Services.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
@@ -26,7 +27,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
         IBaseDataService<Ticket> TicketDataService { get; set; }
 
         [Inject]
-        public IDialogService DialogService { get; set; }
+        public ICsroDialogService CsroDialogService { get; set; }
 
         [Inject]
         public ILogger<TicketCsroBase> Logger { get; set; }
@@ -86,18 +87,9 @@ namespace CSRO.Client.Blazor.WebApp.Components
                         }
                         else
                         {
-                            var parameters = new DialogParameters();
-                            parameters.Add("ContentText", $"Conflic Detected, Please refresh and try again");
-                            parameters.Add("ButtonText", "Refresh");
-                            parameters.Add("Color", Color.Error);
-
-                            var options = new DialogOptions() { CloseButton = false, MaxWidth = MaxWidth.Small };
-                            var userSelect = DialogService.Show<DialogTemplateExample_Dialog>("Update Error", parameters, options);
-                            var result = await userSelect.Result;
-                            if (!result.Cancelled)
-                            {
+                            var ok = await CsroDialogService.ShowWarning("Update Error", $"Conflic Detected, Please refresh and try again", "Refresh");
+                            if (ok)
                                 await Load();
-                            }
                         }
                     }
                     StateHasChanged();

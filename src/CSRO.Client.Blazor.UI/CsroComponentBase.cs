@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace CSRO.Client.Blazor.UI
@@ -14,9 +13,9 @@ namespace CSRO.Client.Blazor.UI
 
         protected bool IsLoading { get; set; }
         protected string LoadingMessage { get; set; } = LOADING_MESSAGE;
-        protected bool Success { get; set; }        
+        protected bool Success { get; set; }
 
-        public virtual void ShowLoading(string loadingMessage = LOADING_MESSAGE) 
+        public virtual void ShowLoading(string loadingMessage = LOADING_MESSAGE)
         {
             IsLoading = true;
             LoadingMessage = loadingMessage;
@@ -27,5 +26,4 @@ namespace CSRO.Client.Blazor.UI
             IsLoading = false;
         }
     }
-
 }

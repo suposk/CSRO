@@ -4,14 +4,27 @@
 
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-6">
-    <MudText Typo="Typo.h4" GutterBottom="true">Tickes count: @Tickets?.Count</MudText>
-    <MudText Class="mb-8">List of Available.....</MudText>
+    <MudText Typo="Typo.h4" GutterBottom="true">Vm Tickes count: @Tickets?.Count</MudText>
     @if (Tickets == null)
     {
-        <MudText>Loading...</MudText>
-        <MudProgressCircular Color="Color.Default" Indeterminate="true" /> }
+        <MudGrid>
+            <MudItem>
+                <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+            </MudItem>
+            <MudItem>
+                <MudText>@LoadingMessage</MudText>
+            </MudItem>
+        </MudGrid>
+    }
     else
     {
+        <MudTooltip Text="Add New" Delayed="1">
+            <MudGrid>
+                <MudItem>
+                    <MudIconButton Link="/vm/restart" Icon="@Icons.Material.Add">Reuest restart</MudIconButton>
+                </MudItem>
+            </MudGrid>
+        </MudTooltip>
         <MudTable Items="Tickets" Hover="true" SortLabel="Sort By" Elevation="0">
             <HeaderContent>
                 <MudTh><MudTableSortLabel SortBy="new Func<VmTicket, object>(x=>x.Id)">Id</MudTableSortLabel></MudTh>
@@ -19,7 +32,7 @@
                 <MudTh><MudTableSortLabel SortBy="new Func<VmTicket, object>(x=>x.CreatedBy)">Created By</MudTableSortLabel></MudTh>
                 <MudTh><MudTableSortLabel SortBy="new Func<VmTicket, object>(x=>x.VmName)">Vm Name</MudTableSortLabel></MudTh>
                 @*<MudTh><MudTableSortLabel SortBy="new Func<VmTicket, object>(x=>x.SubcriptionId)">Subcription Id</MudTableSortLabel></MudTh>
-                <MudTh><MudTableSortLabel SortBy="new Func<VmTicket, object>(x=>x.ResorceGroup)">Resorce Group</MudTableSortLabel></MudTh>*@
+                    <MudTh><MudTableSortLabel SortBy="new Func<VmTicket, object>(x=>x.ResorceGroup)">Resorce Group</MudTableSortLabel></MudTh>*@
                 <MudTh><MudTableSortLabel SortBy="new Func<VmTicket, object>(x=>x.Note)">Note</MudTableSortLabel></MudTh>
                 <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<VmTicket, object>(x=>x.CreatedAt)">Created At</MudTableSortLabel></MudTh>
                 <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<VmTicket, object>(x=>x.ModifiedAt)">ModifiedAt At</MudTableSortLabel></MudTh>
@@ -30,7 +43,7 @@
                 <MudTd DataLabel="Created By">@context.CreatedBy</MudTd>
                 <MudTd DataLabel="Vm Name">@context.VmName</MudTd>
                 @*<MudTd DataLabel="Subcription Id">@context.SubcriptionId</MudTd>
-                <MudTd DataLabel="Resorce Group">@context.ResorceGroup</MudTd>*@
+                    <MudTd DataLabel="Resorce Group">@context.ResorceGroup</MudTd>*@
                 <MudTd DataLabel="Note">@context.Note</MudTd>
                 <MudTd DataLabel="Created At">@context.CreatedAt</MudTd>
                 <MudTd DataLabel="Modified At">@context.ModifiedAt</MudTd>
@@ -46,17 +59,17 @@
                     </MudTooltip>
                 </MudPaper>
                 @*<div>
-            <div class="d-inline pa-2">
-                <MudTooltip Text="Edit" Delayed="1">
-                    <MudNavLink Href="@($"ticketedit/{context.Id}")" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Edit"></MudNavLink>
-                </MudTooltip>
-            </div>
-            <div class="d-inline pa-2">
-                <MudTooltip Text="Details">
-                    <MudNavLink Href="@($"ticketedit/{context.Id}")" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Info"></MudNavLink>
-                </MudTooltip>
-            </div>
-        </div>*@
+                        <div class="d-inline pa-2">
+                            <MudTooltip Text="Edit" Delayed="1">
+                                <MudNavLink Href="@($"ticketedit/{context.Id}")" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Edit"></MudNavLink>
+                            </MudTooltip>
+                        </div>
+                        <div class="d-inline pa-2">
+                            <MudTooltip Text="Details">
+                                <MudNavLink Href="@($"ticketedit/{context.Id}")" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Info"></MudNavLink>
+                            </MudTooltip>
+                        </div>
+                    </div>*@
             </RowTemplate>
             <PagerContent>
                 <MudTablePager PageSizeOptions="new int[]{10, 20, 50}" />

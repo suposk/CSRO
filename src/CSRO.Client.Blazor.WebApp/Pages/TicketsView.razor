@@ -3,24 +3,37 @@
 @using CSRO.Client.Services.Models;
 
 
-<MudContainer MaxWidth="MaxWidth.Large" Class="mt-6">
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-6">
     <MudText Typo="Typo.h4" GutterBottom="true">Tickes count: @Tickets?.Count</MudText>
-    <MudText Class="mb-8">List of Available.....</MudText>
     @if (Tickets == null)
     {
-        <MudText>Loading...</MudText>
-        <MudProgressCircular Color="Color.Default" Indeterminate="true" /> }
+        <MudGrid>
+            <MudItem>
+                <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+            </MudItem>
+            <MudItem>
+                <MudText>@LoadingMessage</MudText>
+            </MudItem>
+        </MudGrid>
+    }
     else
     {
+        <MudTooltip Text="Add New" Delayed="1">
+            <MudGrid>
+                <MudItem>
+                    <MudIconButton Link="/ticketcreate" Icon="@Icons.Material.Add">Reuest restart</MudIconButton>
+                </MudItem>
+            </MudGrid>
+        </MudTooltip>
         <MudTable Items="Tickets" Hover="true" SortLabel="Sort By" Elevation="0">
             <HeaderContent>
-                <MudTh><MudTableSortLabel SortBy="new Func<Ticket, object>(x=>x.Id)">Id</MudTableSortLabel></MudTh>
-                <MudTh><MudTableSortLabel SortBy="new Func<Ticket, object>(x=>x.RequestedFor)">Requested For</MudTableSortLabel></MudTh>
-                <MudTh><MudTableSortLabel SortBy="new Func<Ticket, object>(x=>x.CreatedBy)">Created By</MudTableSortLabel></MudTh>
-                <MudTh><MudTableSortLabel SortBy="new Func<Ticket, object>(x=>x.IsOnBehalf)">Is OnBehalf</MudTableSortLabel></MudTh>
-                <MudTh><MudTableSortLabel SortBy="new Func<Ticket, object>(x=>x.Description)">Description</MudTableSortLabel></MudTh>
-                <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Ticket, object>(x=>x.CreatedAt)">Created At</MudTableSortLabel></MudTh>
-                <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Ticket, object>(x=>x.ModifiedAt)">ModifiedAt At</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<Ticket, object>(x => x.Id)">Id</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<Ticket, object>(x => x.RequestedFor)">Requested For</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<Ticket, object>(x => x.CreatedBy)">Created By</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<Ticket, object>(x => x.IsOnBehalf)">Is OnBehalf</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<Ticket, object>(x => x.Description)">Description</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Ticket, object>(x => x.CreatedAt)">Created At</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Ticket, object>(x => x.ModifiedAt)">ModifiedAt At</MudTableSortLabel></MudTh>
             </HeaderContent>
             <RowTemplate>
                 <MudTd DataLabel="Id">@context.Id</MudTd>
@@ -42,20 +55,20 @@
                     </MudTooltip>
                 </MudPaper>
                 @*<div>
-            <div class="d-inline pa-2">
-                <MudTooltip Text="Edit" Delayed="1">
-                    <MudNavLink Href="@($"ticketedit/{context.Id}")" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Edit"></MudNavLink>
-                </MudTooltip>
-            </div>
-            <div class="d-inline pa-2">
-                <MudTooltip Text="Details">
-                    <MudNavLink Href="@($"ticketedit/{context.Id}")" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Info"></MudNavLink>
-                </MudTooltip>
-            </div>
-        </div>*@
+                        <div class="d-inline pa-2">
+                            <MudTooltip Text="Edit" Delayed="1">
+                                <MudNavLink Href="@($"ticketedit/{context.Id}")" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Edit"></MudNavLink>
+                            </MudTooltip>
+                        </div>
+                        <div class="d-inline pa-2">
+                            <MudTooltip Text="Details">
+                                <MudNavLink Href="@($"ticketedit/{context.Id}")" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Info"></MudNavLink>
+                            </MudTooltip>
+                        </div>
+                    </div>*@
             </RowTemplate>
             <PagerContent>
-                <MudTablePager PageSizeOptions="new int[]{10, 20, 50}" />
+                <MudTablePager PageSizeOptions="new int[] { 10, 20, 50 }" />
             </PagerContent>
         </MudTable>
     }

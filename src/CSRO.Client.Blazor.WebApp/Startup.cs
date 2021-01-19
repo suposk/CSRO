@@ -25,6 +25,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using CSRO.Client.Services.Models;
 using FluentValidation.AspNetCore;
+using System.Net.Http;
+using System.Net;
+using CSRO.Client.Core.Helpers;
+using CSRO.Client.Blazor.UI.Services;
 
 namespace CSRO.Client.Blazor.WebApp
 {
@@ -86,11 +90,36 @@ namespace CSRO.Client.Blazor.WebApp
             services.AddHttpClient("api", (client) =>
             {
                 client.BaseAddress = new Uri(ApiEndpoint);
-            });
+                client.DefaultRequestHeaders.Add("Accept", "application/json");
+            }).ConfigurePrimaryHttpMessageHandler(() => 
+            {
+                return new HttpClientHandler()
+                {
+                    AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip | DecompressionMethods.Brotli,
+                    UseCookies = false
+                };
+            })
+            .SetHandlerLifetime(TimeSpan.FromMinutes(5))
+            .AddPolicyHandler(PollyHelper.GetRetryPolicy())
+            .AddPolicyHandler(PollyHelper.GetRetryPolicy());
+            ;
+
             services.AddHttpClient(Core.ConstatCsro.ClientNames.MANAGEMENT_AZURE_EndPoint, (client) =>
             {
                 client.BaseAddress = new Uri(Core.ConstatCsro.ClientNames.MANAGEMENT_AZURE_EndPoint);
-            });
+                client.DefaultRequestHeaders.Add("Accept", "application/json");
+            }).ConfigurePrimaryHttpMessageHandler(() =>
+            {
+                return new HttpClientHandler()
+                {
+                    AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip | DecompressionMethods.Brotli,
+                    UseCookies = false
+                };
+            })
+            .SetHandlerLifetime(TimeSpan.FromMinutes(5))
+            .AddPolicyHandler(PollyHelper.GetRetryPolicy())
+            .AddPolicyHandler(PollyHelper.GetRetryPolicy());
+            ;
 
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
@@ -119,7 +148,7 @@ namespace CSRO.Client.Blazor.WebApp
             {
                 // By default, all incoming requests will be authorized according to the default policy
                 //Will automatical sign in user
-                //options.FallbackPolicy = options.DefaultPolicy;
+                options.FallbackPolicy = options.DefaultPolicy;
             });
 
             services.AddRazorPages();
@@ -137,6 +166,12 @@ namespace CSRO.Client.Blazor.WebApp
             services.AddTransient<IAzureVmManagementService, AzureVmManagementService>();
             services.AddTransient<ISubcriptionService, SubcriptionService>();
             services.AddTransient<IResourceGroupervice, ResourceGroupervice>();
+
+            //UI component for dialods
+            services.AddTransient<ICsroDialogService, CsroDialogService>();
+
+            services.AddSingleton<ILocationsService, LocationsService>();
+            
 
             var jano = Configuration.GetValue<string>("JanoSetting");
             Console.WriteLine($"Configuration JanoSetting: {jano}");

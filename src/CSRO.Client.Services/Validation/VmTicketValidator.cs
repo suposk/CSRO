@@ -9,6 +9,14 @@ using System.Threading.Tasks;
 
 namespace CSRO.Client.Services.Validation
 {
+    public class SubscripionIdNameValidator : AbstractValidator<IdName>
+    {
+        public SubscripionIdNameValidator()
+        {
+            RuleFor(p => p.Name).NotEmpty()
+                .WithMessage("Subscripion must be selected");
+        }
+    }
 
     public class VmTicketValidator : AbstractValidator<VmTicket>
     {
@@ -16,8 +24,10 @@ namespace CSRO.Client.Services.Validation
             //ISubcriptionService subcriptionService 
             )
         {
-            RuleFor(p => p.SubscripionIdName.Name)
-                .NotEmpty().WithMessage("Subscripion must be selected");
+            //RuleFor(p => p.SubcriptionName)
+            //    .NotEmpty().WithMessage("Subscripion must be selected");
+
+            RuleFor(p => p.SubscripionIdName).SetValidator(new SubscripionIdNameValidator());
 
             RuleFor(p => p.ResorceGroup).NotEmpty();
 
