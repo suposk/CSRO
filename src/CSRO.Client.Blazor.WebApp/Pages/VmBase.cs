@@ -1,4 +1,5 @@
 ﻿using CSRO.Client.Blazor.UI;
+using CSRO.Client.Blazor.UI.Services;
 using CSRO.Client.Blazor.WebApp.Components;
 using CSRO.Client.Services;
 using CSRO.Client.Services.Models;
@@ -20,7 +21,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages
         public NavigationManager NavigationManager { get; set; }
 
         [Inject]
-        public IDialogService DialogService { get; set; }
+        public ICsroDialogService CsroDialogService { get; set; }
 
         [Inject]
         IVmTicketDataService VmTicketDataService { get; set; }
@@ -52,15 +53,8 @@ namespace CSRO.Client.Blazor.WebApp.Pages
 
         public async Task DeleteTicketAsync(VmTicket ticket)
         {
-            var parameters = new DialogParameters();
-            parameters.Add("ContentText", $"Do you really want to delete these record {ticket.Id}?");
-            parameters.Add("ButtonText", "Delete");
-            parameters.Add("Color", Color.Error);
-
-            var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Small };
-            var userSelect = DialogService.Show<DialogTemplateExample_Dialog>("Delete VmTicket", parameters, options);
-            var result = await userSelect.Result;
-            if (!result.Cancelled)
+            var ok = await CsroDialogService.ShowDialog("Delete Vm Ticket", $"Do you really want to delete these record Id: {ticket.Id}?", "Delete");
+            if (ok)
             {
                 var res = await VmTicketDataService.DeleteItemAsync(ticket.Id);
                 if (res)
