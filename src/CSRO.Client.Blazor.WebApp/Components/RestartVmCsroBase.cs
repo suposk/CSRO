@@ -1,4 +1,5 @@
 ﻿using CSRO.Client.Blazor.UI;
+using CSRO.Client.Blazor.UI.Services;
 using CSRO.Client.Services;
 using CSRO.Client.Services.Models;
 using Microsoft.AspNetCore.Components;
@@ -33,7 +34,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
         public IResourceGroupervice ResourceGroupervice { get; set; }
 
         [Inject]
-        public IDialogService DialogService { get; set; }
+        public ICsroDialogService CsroDialogService { get; set; }
 
         [Inject]
         public ILocationsService LocationsService { get; set; }
@@ -193,22 +194,14 @@ namespace CSRO.Client.Blazor.WebApp.Components
                         var updated = await VmTicketDataService.UpdateItemAsync(Model);
                         if (updated)
                         {
-                            Success = true;                            
+                            Success = true;
+                            //throw new Exception("Fake Test exception");
                         }
                         else
                         {
-                            var parameters = new DialogParameters();
-                            parameters.Add("ContentText", $"Conflic Detected, Please refresh and try again");
-                            parameters.Add("ButtonText", "Refresh");
-                            parameters.Add("Color", Color.Error);
-
-                            var options = new DialogOptions() { CloseButton = false, MaxWidth = MaxWidth.Small };
-                            var userSelect = DialogService.Show<DialogTemplateExample_Dialog>("Update Error", parameters, options);
-                            var result = await userSelect.Result;
-                            if (!result.Cancelled)
-                            {
+                            var ok = await CsroDialogService.ShowWarning("Update Error", $"Conflic Detected, Please refresh and try again", "Refresh");
+                            if (ok)
                                 await Load();
-                            }
                         }
                     }
                     StateHasChanged();
@@ -216,16 +209,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
                 catch (Exception ex)
                 {                    
                     Logger.LogError(ex, nameof(OnValidSubmit));
-
-                    var parameters = new DialogParameters();
-                    parameters.Add("ContentText", $"Detail error: {ex.Message}");
-                    parameters.Add("ButtonText", "Close");
-                    parameters.Add("Color", Color.Error);
-                    parameters.Add("ShowCancel", false);
-
-                    var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.Small };
-                    var userSelect = DialogService.Show<DialogTemplateExample_Dialog>("Update Error", parameters, options);
-                    var result = await userSelect.Result;
+                    await CsroDialogService.ShowError("Error", $"Detail error: {ex.Message}");
                 }
                 finally
                 {

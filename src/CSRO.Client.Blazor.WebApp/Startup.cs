@@ -28,6 +28,7 @@ using FluentValidation.AspNetCore;
 using System.Net.Http;
 using System.Net;
 using CSRO.Client.Core.Helpers;
+using CSRO.Client.Blazor.UI.Services;
 
 namespace CSRO.Client.Blazor.WebApp
 {
@@ -147,7 +148,7 @@ namespace CSRO.Client.Blazor.WebApp
             {
                 // By default, all incoming requests will be authorized according to the default policy
                 //Will automatical sign in user
-                //options.FallbackPolicy = options.DefaultPolicy;
+                options.FallbackPolicy = options.DefaultPolicy;
             });
 
             services.AddRazorPages();
@@ -165,7 +166,12 @@ namespace CSRO.Client.Blazor.WebApp
             services.AddTransient<IAzureVmManagementService, AzureVmManagementService>();
             services.AddTransient<ISubcriptionService, SubcriptionService>();
             services.AddTransient<IResourceGroupervice, ResourceGroupervice>();
+
+            //UI component for dialods
+            services.AddTransient<ICsroDialogService, CsroDialogService>();
+
             services.AddSingleton<ILocationsService, LocationsService>();
+            
 
             var jano = Configuration.GetValue<string>("JanoSetting");
             Console.WriteLine($"Configuration JanoSetting: {jano}");
