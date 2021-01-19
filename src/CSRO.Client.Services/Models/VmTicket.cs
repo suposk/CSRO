@@ -18,7 +18,6 @@ namespace CSRO.Client.Services.Models
 
     //    public string ResorceGroup { get; set; }
 
-    //    //using FluentValidation [Required]
     //    public string VmName { get; set; }
 
     //    public string Status { get; set; }
@@ -48,7 +47,6 @@ namespace CSRO.Client.Services.Models
         }
 
         private string _SubcriptionId;
-
         public string SubcriptionId
         {
             get { return _SubcriptionId; }
@@ -56,7 +54,6 @@ namespace CSRO.Client.Services.Models
         }
 
         private string _SubcriptionName;
-
         public string SubcriptionName
         {
             get { return _SubcriptionName; }
