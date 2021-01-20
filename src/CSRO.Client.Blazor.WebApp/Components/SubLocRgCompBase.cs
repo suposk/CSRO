@@ -54,8 +54,9 @@ namespace CSRO.Client.Blazor.WebApp.Components
         protected List<IdName> Locations { get; set; } = new List<IdName>();
         protected List<string> ResourceGroups { get; set; } = new List<string>();
 
-        protected bool IsRgDisabled => ResourceGroups?.Count == 0;
+        
         protected bool IsLocDisabled => string.IsNullOrWhiteSpace(Model?.SubcriptionId) || Locations?.Count == 0;
+        protected bool IsRgDisabled => ResourceGroups?.Count == 0;
 
         protected async override Task OnInitializedAsync()
         {

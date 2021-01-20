@@ -30,7 +30,9 @@
         //public string Location { get; set; }        
 
         public ResourceGroup ResourceGroup { get; set; }
-        
+
+        public string Location => ResourceGroup?.Location;
+
         public IdName ResourceGroupIdName => new IdName { Id = ResourceGroup.Location, Name = ResourceGroup.Name };
 
     }

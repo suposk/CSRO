@@ -4,7 +4,7 @@
 @using Blazored.FluentValidation
 
 <MudContainer>
-    <div style="max-width: 50%" class="m-4">
+    <div>
         <MudText Typo="Typo.h4" GutterBottom="true">@Title</MudText>
         @if (IsLoading)
         {
@@ -54,7 +54,8 @@
                                        Disabled="@IsLocDisabled"
                                        Label="Select Location"
                                        ValueChanged="(e) => OnLocationChanged(e)"
-                                       For="@(() => Model.ResourceGroupIdName)">
+                                       @*For="@(() => new IdName { Name = Model.ResourceGroup.Location })"*@
+                                       >
                                 @foreach (var loc in Locations)
                                 {
                                     <MudSelectItem T="IdName" Value="@loc">@loc</MudSelectItem>
