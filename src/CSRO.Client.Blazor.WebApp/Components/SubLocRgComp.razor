@@ -81,6 +81,7 @@
                                     {
                                         <MudButton ButtonType="ButtonType.Button"
                                                    Size="Size.Small"
+                                                   Disabled="@IsNewRgDisabled"
                                                    Color="Color.Info"
                                                    OnClick="@(() => Model.IsNewRg = !Model.IsNewRg)">
                                             Cancel
@@ -94,6 +95,7 @@
                                     {
                                         <MudButton ButtonType="ButtonType.Button"
                                                    Size="Size.Small"
+                                                   Disabled="@IsNewRgDisabled"
                                                    Color="Color.Info"
                                                    OnClick="@(() => Model.IsNewRg = !Model.IsNewRg)">
                                             Create new

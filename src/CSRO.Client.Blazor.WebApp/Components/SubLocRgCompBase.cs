@@ -63,7 +63,8 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
         
         protected bool IsLocDisabled => string.IsNullOrWhiteSpace(Model?.SubcriptionId) || Locations?.Count == 0;
-        protected bool IsRgDisabled => ResourceGroups?.Count == 0;        
+        protected bool IsRgDisabled => IsLocDisabled | ResourceGroups?.Count == 0;
+        protected bool IsNewRgDisabled => IsLocDisabled | string.IsNullOrWhiteSpace(Model.Location);
 
         protected async override Task OnInitializedAsync()
         {
@@ -119,11 +120,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
             {
                 //var loc = await LocationsService.GetLocations();
 
-                if (OperationTypeTicket != OperatioType.Create)
-                {
-
-                }
-                else
+                if (OperationTypeTicket == OperatioType.Create)
                 {
                     ShowLoading();
                     Subscripions?.Clear();
@@ -144,6 +141,10 @@ namespace CSRO.Client.Blazor.WebApp.Components
                     //Model.VmName = "VmDelete";
 
 #endif
+                }
+                else
+                {
+
 
                 }
             }
@@ -178,11 +179,12 @@ namespace CSRO.Client.Blazor.WebApp.Components
                 {
                     if (OperationTypeTicket == OperatioType.Create)
                     {
-                        ShowLoading("Creating request");
+                        ShowLoading("Creating Resorce Group");
 
                         var added = await ResourceGroupervice.CreateRgAsync(Model);
                         if (added != null)
                         {
+                            //TODO fix workaround
                             string copyAdded = added.ResourceGroup.Name;
                             await Task.Delay(1 * 1000);
                             ResourceGroups.Add(copyAdded);
