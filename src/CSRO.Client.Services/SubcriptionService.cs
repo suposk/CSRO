@@ -20,6 +20,7 @@ namespace CSRO.Client.Services
         Task<List<IdName>> GetSubcriptions(CancellationToken cancelToken = default);
 
         Task<Subscription> GetSubcription(string subscriptionId, CancellationToken cancelToken = default);
+        Task<List<IdName>> GetTags(string subscriptionId, CancellationToken cancelToken = default);
     }
 
     public class SubcriptionService : BaseDataService, ISubcriptionService
@@ -94,6 +95,38 @@ namespace CSRO.Client.Services
                         var idNameList = ser.Value.Where(a => a.State == "Enabled").Select(a => new IdName(a.SubscriptionId.ToString(), a.DisplayName)).ToList();
                         return idNameList;
                     }
+                }
+            }
+            catch (Exception ex)
+            {
+                base.HandleException(ex);
+            }
+            return null;
+        }
+
+        public async Task<List<IdName>> GetTags(string subscriptionId, CancellationToken cancelToken = default)
+        {
+            try
+            {
+                //1. Call azure api
+                await base.AddAuthHeaderAsync();
+
+                //GET https://management.azure.com/subscriptions/{subscriptionId}/tagNames?api-version=2020-06-01
+                var url = $"https://management.azure.com/subscriptions/{subscriptionId}/tagNames?api-version=2020-06-01";
+                var apiData = await HttpClientBase.GetAsync(url, cancelToken).ConfigureAwait(false);
+
+                if (apiData.IsSuccessStatusCode)
+                {
+                    var content = await apiData.Content.ReadAsStringAsync();
+                    //var ser = JsonSerializer.Deserialize<SubscriptionsDto>(content, _options);
+                    //var ser = JsonSerializer.Deserialize<SubscriptionsIdNameDto>(content, _options);
+                    //if (ser?.Value?.Count > 0)
+                    //{
+                    //    //"VM running"
+                    //    //var last = ser.Statuses.Last();
+                    //    var idNameList = ser.Value.Where(a => a.State == "Enabled").Select(a => new IdName(a.SubscriptionId.ToString(), a.DisplayName)).ToList();
+                    //    return idNameList;
+                    //}
                 }
             }
             catch (Exception ex)
