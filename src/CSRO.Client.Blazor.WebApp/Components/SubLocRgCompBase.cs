@@ -186,7 +186,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
                         {
                             //TODO fix workaround
                             string copyAdded = added.ResourceGroup.Name;
-                            await Task.Delay(1 * 1000);
+                            await Task.Delay(1 * 100);
                             ResourceGroups.Add(copyAdded);
                             Model.ResourceGroup.Name = ResourceGroups.FirstOrDefault();
                             StateHasChanged();
