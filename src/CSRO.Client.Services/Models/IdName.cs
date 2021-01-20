@@ -23,12 +23,11 @@ namespace CSRO.Client.Services.Models
             Name = name;
         }
 
-        public override string ToString()
-        {
-            //return $"{Name}-Id:{Id}";
-            return $"{Name}";
-        }
+        public override string ToString() => $"{Name}";
 
+        /// <summary>
+        /// Works in some case, need to relay on ToString
+        /// </summary>
         public Func<IdName, string> IdNameConverter = p => p?.Name;
 
         #region GetHashCode and Equals
