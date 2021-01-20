@@ -89,6 +89,7 @@ namespace CSRO.Client.Blazor.WebApp
             string ApiEndpoint = Configuration.GetValue<string>("ApiEndpoint");
             services.AddHttpClient("api", (client) =>
             {
+                client.Timeout = TimeSpan.FromMinutes(Core.ConstatCsro.ClientNames.API_TimeOut_Mins);
                 client.BaseAddress = new Uri(ApiEndpoint);
                 client.DefaultRequestHeaders.Add("Accept", "application/json");
             }).ConfigurePrimaryHttpMessageHandler(() => 
@@ -106,8 +107,9 @@ namespace CSRO.Client.Blazor.WebApp
 
             services.AddHttpClient(Core.ConstatCsro.ClientNames.MANAGEMENT_AZURE_EndPoint, (client) =>
             {
+                client.Timeout = TimeSpan.FromMinutes(Core.ConstatCsro.ClientNames.MANAGEMENT_TimeOut_Mins);
                 client.BaseAddress = new Uri(Core.ConstatCsro.ClientNames.MANAGEMENT_AZURE_EndPoint);
-                client.DefaultRequestHeaders.Add("Accept", "application/json");
+                client.DefaultRequestHeaders.Add("Accept", "application/json");                
             }).ConfigurePrimaryHttpMessageHandler(() =>
             {
                 return new HttpClientHandler()

@@ -33,20 +33,19 @@
 
 
                             @*<MudTextField Label="Subcription Name:"
-                                          Disabled="true"
-                                          @bind-Value="Model.SubcriptionName" For="@(() => Model.SubcriptionName)" />
+                          Disabled="true"
+                          @bind-Value="Model.SubcriptionName" For="@(() => Model.SubcriptionName)" />
 
-                            <MudTextField Label="Resorce Group:"
-                                          Disabled="true"
-                                          @bind-Value="Model.ResourceGroup.Name" For="@(() => Model.ResourceGroup.Name)" />*@
+            <MudTextField Label="Resorce Group:"
+                          Disabled="true"
+                          @bind-Value="Model.ResourceGroup.Name" For="@(() => Model.ResourceGroup.Name)" />*@
 
                         }
                         else
                         {
                             <MudAutocomplete ResetValueOnEmptyText="true"
-                                             T="@IdName"         
-                                             
-                                             Label="Subcription:"                                             
+                                             T="@IdName"
+                                             Label="Subcription:"
                                              ToStringFunc="@Model.SubscripionIdName.IdNameConverter"
                                              ValueChanged="(e) => OnSubscriptionChanged(e)"
                                              For="@(() => Model.SubscripionIdName)"
@@ -55,10 +54,9 @@
                             <MudSelect T="@IdName"
                                        Disabled="@IsLocDisabled"
                                        Label="Location"
-                                       ToStringFunc="@Model.LocationIdName.IdNameConverter"                                       
-                                       ValueChanged="(e) => OnLocationChanged(e)"                                       
-                                       For="@(() => Model.LocationIdName)"
-                                       >
+                                       ToStringFunc="@Model.LocationIdName.IdNameConverter"
+                                       ValueChanged="(e) => OnLocationChanged(e)"
+                                       For="@(() => Model.LocationIdName)">
                                 @foreach (var loc in Locations)
                                 {
                                     <MudSelectItem T="IdName" Value="@loc">@loc</MudSelectItem>
@@ -67,16 +65,42 @@
 
                             <MudSelect T="@string"
                                        Disabled="@IsRgDisabled"
-                                       OffsetY="true"                                       
+                                       OffsetY="true"
                                        Label="Resource Group:"
                                        @bind-Value="Model.ResourceGroup.Name"
-                                       For="@(() => Model.ResourceGroup.Name)"
-                                       >
+                                       For="@(() => Model.ResourceGroup.Name)">
                                 @foreach (var rg in ResourceGroups)
                                 {
                                     <MudSelectItem T="string" Value="@rg">@rg</MudSelectItem>
                                 }
                             </MudSelect>
+
+                            <div style="max-width: 30%" class="mt-4">
+                                <MudPaper>
+                                    @if (Model.IsNewRg)
+                                    {
+                                        <MudButton ButtonType="ButtonType.Button"
+                                                   Size="Size.Small"
+                                                   Color="Color.Info"
+                                                   OnClick="@(() => Model.IsNewRg = !Model.IsNewRg)">
+                                            Cancel
+                                        </MudButton>
+
+                                        <MudTextField Label="New Name" Disabled="@(!Model.IsNewRg)"
+                                                      @bind-Value="Model.NewRgName"
+                                                      For="@(() => Model.NewRgName)" />
+                                    }
+                                    else
+                                    {
+                                        <MudButton ButtonType="ButtonType.Button"
+                                                   Size="Size.Small"
+                                                   Color="Color.Info"
+                                                   OnClick="@(() => Model.IsNewRg = !Model.IsNewRg)">
+                                            Create new
+                                        </MudButton>
+                                    }
+                                </MudPaper>
+                            </div>
                         }
 
                         @if (IsReadOnly)
@@ -92,7 +116,10 @@
                     @if (!IsReadOnly)
                     {
                         <MudCardActions>
-                            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Submit</MudButton>
+                            @if (Model.IsNewRg)
+                            {
+                                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Create</MudButton>
+                            }
                         </MudCardActions>
                     }
                 </MudCard>

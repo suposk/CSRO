@@ -12,6 +12,9 @@ namespace CSRO.Client.Services.Models
             _LocationIdName = new IdName();            
         }
 
+        public bool IsNewRg { get; set; }
+        public string NewRgName { get; set; }
+
         private string _SubcriptionId;
         public string SubcriptionId
         {
@@ -31,7 +34,7 @@ namespace CSRO.Client.Services.Models
         IdName _SubscripionIdName;
         public IdName SubscripionIdName => _SubscripionIdName;
 
-        public ResourceGroup ResourceGroup { get; private set; }
+        public ResourceGroup ResourceGroup { get; set; }
         public string Location => ResourceGroup?.Location;
 
         IdName _LocationIdName;

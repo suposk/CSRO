@@ -14,7 +14,9 @@ namespace CSRO.Client.Services.Validation
         public ResourceGroupValidator()
         {
             RuleFor(p => p.Name).NotEmpty()
-                .WithMessage("Resource Group must be selected");
+                .WithMessage("Resource Group must be selected")
+                //.Matches(@"^[-\w\._\(\)]+$").WithMessage("Invalid Characters")
+                ;
 
             RuleFor(p => p.Location).NotEmpty()
                 .WithMessage("Location must be selected");
@@ -30,6 +32,7 @@ namespace CSRO.Client.Services.Validation
 
             RuleFor(p => p.Name).NotEmpty()
                 .WithMessage("Location Val must be selected");
+
         }
     }
 
@@ -39,10 +42,20 @@ namespace CSRO.Client.Services.Validation
             //ISubcriptionService subcriptionService 
             )
         {
+            RuleFor(p => p.SubscripionIdName).SetValidator(new SubscripionIdNameValidator());                       
 
-            RuleFor(p => p.SubscripionIdName).SetValidator(new SubscripionIdNameValidator());
+            When(p => p.IsNewRg, () => 
+            {
+                RuleFor(p => p.NewRgName)
+                    .NotEmpty().WithMessage("Resource Group must be entered")
+                    .Matches(@"^[-\w\._\(\)]+$").WithMessage("Resource group names only allow alphanumeric characters, periods, underscores, hyphens and parenthesis and cannot end in a period.");
 
-            RuleFor(p => p.ResourceGroup).SetValidator(new ResourceGroupValidator());
+                RuleFor(p => p.Location).NotEmpty()
+                .WithMessage("Location must be selected");
+            }).Otherwise(() => 
+            {
+                RuleFor(p => p.ResourceGroup).SetValidator(new ResourceGroupValidator());
+            });
 
             //RuleFor(p => p.LocationIdName).SetValidator(new LocationIdNameValidator());
 

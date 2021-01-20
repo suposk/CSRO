@@ -7,8 +7,10 @@ using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.Logging;
 using MudBlazor;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace CSRO.Client.Blazor.WebApp.Components
@@ -178,14 +180,18 @@ namespace CSRO.Client.Blazor.WebApp.Components
                     {
                         ShowLoading("Creating request");
 
-                        //var added = await VmTicketDataService.AddItemAsync(Model);
-                        //if (added != null)
-                        //{
-                        //    Success = true;
-                        //    Model = added;
-
-                        //    NavigationManager.NavigateTo($"vm/restart/view/{Model.Id}");
-                        //}
+                        var added = await ResourceGroupervice.CreateRgAsync(Model);
+                        if (added != null)
+                        {
+                            string copyAdded = added.ResourceGroup.Name;
+                            await Task.Delay(1 * 1000);
+                            ResourceGroups.Add(copyAdded);
+                            Model.ResourceGroup.Name = ResourceGroups.FirstOrDefault();
+                            StateHasChanged();
+                            await Task.Delay(1 * 10);                            
+                            Model.ResourceGroup.Name = copyAdded;
+                            await Task.Delay(1 * 10);
+                        }
                     }
                     //else if (OperationTypeTicket == OperatioType.Edit)
                     //{
@@ -204,7 +210,9 @@ namespace CSRO.Client.Blazor.WebApp.Components
                     //            await Load();
                     //    }
                     //}
-                    StateHasChanged();
+
+                    UI.Helpers.EditFormExtensions.ClearValidationMessages(context);
+                    StateHasChanged();                    
                 }
                 catch (Exception ex)
                 {
