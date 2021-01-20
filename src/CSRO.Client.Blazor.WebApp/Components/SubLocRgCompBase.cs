@@ -89,7 +89,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
                 Model.LocationIdName = value;
 
                 ShowLoading();
-                await LoadRg(Model.SubcriptionId);
+                await LoadRg(Model.SubcriptionId, value.Id);
                 HideLoading();
             }
         }
@@ -100,10 +100,10 @@ namespace CSRO.Client.Blazor.WebApp.Components
                 Locations = await LocationsService.GetLocations();
         }
 
-        async Task LoadRg(string subcriptionId)
+        async Task LoadRg(string subcriptionId, string location)
         {
             ResourceGroups?.Clear();
-            var rgs = await ResourceGroupervice.GetResourceGroups(subcriptionId);
+            var rgs = await ResourceGroupervice.GetResourceGroups(subcriptionId, location);
             if (rgs != null)
             {
                 ResourceGroups.AddRange(rgs.Select(a => a.Name));                

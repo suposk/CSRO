@@ -30,6 +30,9 @@ namespace CSRO.Client.Blazor.WebApp.AutoMapperProfiles
             CreateMap<PropertiesDto, Models.Properties>()
                 .ReverseMap();
 
+            CreateMap<TagDto, Models.Tag>()
+                .ReverseMap();
+
             CreateMap<ResourceGroupDto, Models.ResourceGroup>()
                 .ReverseMap();
             

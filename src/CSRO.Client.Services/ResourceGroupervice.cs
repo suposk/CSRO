@@ -15,6 +15,7 @@ namespace CSRO.Client.Services
     public interface IResourceGroupervice
     {
         Task<List<ResourceGroup>> GetResourceGroups(string subscriptionId, CancellationToken cancelToken = default);
+        Task<List<ResourceGroup>> GetResourceGroups(string subscriptionId, string location, CancellationToken cancelToken = default);
         Task<List<IdName>> GetResourceGroupsIdName(string subscriptionId, CancellationToken cancelToken = default);
     }
 
@@ -57,6 +58,40 @@ namespace CSRO.Client.Services
                         //exception
                         var result = Mapper.Map<List<ResourceGroup>>(ser.Value);
                         return result;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                base.HandleException(ex);
+            }
+            return null;
+        }
+
+        public async Task<List<ResourceGroup>> GetResourceGroups(string subscriptionId, string location, CancellationToken cancelToken = default)
+        {
+            try
+            {
+                //1. Call azure api
+                await base.AddAuthHeaderAsync();
+
+                //GET https://management.azure.com/subscriptions/{subscriptionId}/resourcegroups?api-version=2020-06-01
+                var url = $"https://management.azure.com/subscriptions/{subscriptionId}/resourcegroups?api-version=2020-06-01";
+                var apiData = await HttpClientBase.GetAsync(url, cancelToken).ConfigureAwait(false);
+
+                if (apiData.IsSuccessStatusCode)
+                {
+                    var content = await apiData.Content.ReadAsStringAsync();
+                    var ser = JsonSerializer.Deserialize<ResourceGroupsDto>(content, _options);
+                    if (ser?.Value?.Count > 0)
+                    {
+                        //exception
+                        var result = Mapper.Map<List<ResourceGroup>>(ser.Value);
+                        if (result?.Count > 0)
+                        {
+                            var list = result.Where(a => a.Location == location);
+                            return list.ToList();
+                        }                        
                     }
                 }
             }
