@@ -14,6 +14,8 @@ namespace CSRO.Client.Blazor.WebApp.Components
 {
     public class TicketCsroBase : ComponentBase
     {
+        #region Params and Injects
+
         [Parameter]
         public string TicketId { get; set; }
 
@@ -32,6 +34,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
         [Inject]
         public ILogger<TicketCsroBase> Logger { get; set; }
 
+        #endregion
 
         public Ticket Model { get; set; } = new Ticket();
 

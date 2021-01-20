@@ -1,11 +1,15 @@
-﻿namespace CSRO.Client.Services.Models
+﻿using System;
+
+namespace CSRO.Client.Services.Models
 {
     public class ResourceGroupModel : ModelBase
     {
         public ResourceGroupModel()
         {
-            _SubscripionIdName = new IdName();
             ResourceGroup = new ResourceGroup();
+
+            _SubscripionIdName = new IdName();
+            _LocationIdName = new IdName();            
         }
 
         private string _SubcriptionId;
@@ -22,18 +26,23 @@
             set { _SubcriptionName = value; _SubscripionIdName.Name = value; }
         }
 
+        //public string SubcriptionId { get; set; }
+
         IdName _SubscripionIdName;
         public IdName SubscripionIdName => _SubscripionIdName;
 
-
-        //public string ResorceGroup { get; set; }                
-        //public string Location { get; set; }        
-
-        public ResourceGroup ResourceGroup { get; set; }
-
+        public ResourceGroup ResourceGroup { get; private set; }
         public string Location => ResourceGroup?.Location;
 
-        public IdName ResourceGroupIdName => new IdName { Id = ResourceGroup.Location, Name = ResourceGroup.Name };
-
+        IdName _LocationIdName;
+        public IdName LocationIdName
+        {
+            get => _LocationIdName;
+            set 
+            {
+                _LocationIdName = value;
+                ResourceGroup.Location = value.Id;
+            }
+        }        
     }
 }

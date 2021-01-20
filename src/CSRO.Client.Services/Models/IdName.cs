@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,7 +17,6 @@ namespace CSRO.Client.Services.Models
 
         }
 
-
         public IdName(string id, string name)
         {
             Id = id;
@@ -28,6 +28,10 @@ namespace CSRO.Client.Services.Models
             //return $"{Name}-Id:{Id}";
             return $"{Name}";
         }
+
+        public Func<IdName, string> IdNameConverter = p => p?.Name;
+
+        #region GetHashCode and Equals
 
         public override int GetHashCode()
         {
@@ -49,5 +53,7 @@ namespace CSRO.Client.Services.Models
 
         public static bool operator ==(IdName lhs, IdName rhs) { return Equals(lhs, rhs); }
         public static bool operator !=(IdName lhs, IdName rhs) { return !Equals(lhs, rhs); }
+
+        #endregion
     }
 }

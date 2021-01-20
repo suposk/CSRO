@@ -17,6 +17,8 @@ namespace CSRO.Client.Blazor.WebApp.Pages
 {
     public class VmBase : CsroComponentBase
     {
+        #region Params and Injects
+
         [Inject]
         public NavigationManager NavigationManager { get; set; }
 
@@ -29,6 +31,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages
         [Inject]
         public ILogger<VmBase> Logger { get; set; }
 
+        #endregion
 
         public VmTicket model { get; set; } = new VmTicket();
         

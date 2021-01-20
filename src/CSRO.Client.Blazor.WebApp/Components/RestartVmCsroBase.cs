@@ -15,6 +15,8 @@ namespace CSRO.Client.Blazor.WebApp.Components
 {
     public class RestartVmCsroBase : CsroComponentBase
     {
+        #region Params and Injects
+
         [Parameter]
         public string TicketId { get; set; }
 
@@ -41,6 +43,8 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
         [Inject]
         public ILogger<RestartVmCsroBase> Logger { get; set; }
+
+        #endregion
 
         protected VmTicket Model { get; set; } = new VmTicket();
 

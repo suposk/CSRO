@@ -32,29 +32,32 @@
                                           @bind-Value="Model.Id" For="@(() => Model.Id)" />
 
 
-                            <MudTextField Label="Subcription Name:"
+                            @*<MudTextField Label="Subcription Name:"
                                           Disabled="true"
                                           @bind-Value="Model.SubcriptionName" For="@(() => Model.SubcriptionName)" />
 
                             <MudTextField Label="Resorce Group:"
                                           Disabled="true"
-                                          @bind-Value="Model.ResourceGroup.Name" For="@(() => Model.ResourceGroup.Name)" />
+                                          @bind-Value="Model.ResourceGroup.Name" For="@(() => Model.ResourceGroup.Name)" />*@
 
                         }
                         else
                         {
                             <MudAutocomplete ResetValueOnEmptyText="true"
-                                             T="@IdName"                                             
-                                             Label="Select Subcription:"
-                                             For="@(() => Model.SubscripionIdName)"
+                                             T="@IdName"         
+                                             
+                                             Label="Subcription:"                                             
+                                             ToStringFunc="@Model.SubscripionIdName.IdNameConverter"
                                              ValueChanged="(e) => OnSubscriptionChanged(e)"
+                                             For="@(() => Model.SubscripionIdName)"
                                              SearchFunc="@SearchSubs" />
 
                             <MudSelect T="@IdName"
                                        Disabled="@IsLocDisabled"
-                                       Label="Select Location"
-                                       ValueChanged="(e) => OnLocationChanged(e)"
-                                       @*For="@(() => new IdName { Name = Model.ResourceGroup.Location })"*@
+                                       Label="Location"
+                                       ToStringFunc="@Model.LocationIdName.IdNameConverter"                                       
+                                       ValueChanged="(e) => OnLocationChanged(e)"                                       
+                                       For="@(() => Model.LocationIdName)"
                                        >
                                 @foreach (var loc in Locations)
                                 {
@@ -62,18 +65,13 @@
                                 }
                             </MudSelect>
 
-                            @*
-            Value="@(new IdName { Name = Model.SubcriptionName })"
-            For="@(() => new IdName { Id = Model.Id.ToString(), Name = Model.SubcriptionName })"
-            For="@(() => SelSubscripion)"
-            <MudSelectItem Value="@(new Pizza() { Name="Cardinale"})" />
-                            *@
-
                             <MudSelect T="@string"
                                        Disabled="@IsRgDisabled"
+                                       OffsetY="true"                                       
                                        Label="Resource Group:"
                                        @bind-Value="Model.ResourceGroup.Name"
-                                       For="@(() => Model.ResourceGroup.Name)">
+                                       For="@(() => Model.ResourceGroup.Name)"
+                                       >
                                 @foreach (var rg in ResourceGroups)
                                 {
                                     <MudSelectItem T="string" Value="@rg">@rg</MudSelectItem>

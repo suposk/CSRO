@@ -21,18 +21,33 @@ namespace CSRO.Client.Services.Validation
         }
     }
 
+    public class LocationIdNameValidator : AbstractValidator<IdName>
+    {
+        public LocationIdNameValidator()
+        {
+            RuleFor(p => p.Id).NotEmpty()
+                .WithMessage("Location Val must be selected");
+
+            RuleFor(p => p.Name).NotEmpty()
+                .WithMessage("Location Val must be selected");
+        }
+    }
+
     public class ResourceGroupModelValidator : AbstractValidator<ResourceGroupModel>
     {
         public ResourceGroupModelValidator(
             //ISubcriptionService subcriptionService 
             )
         {
-            //RuleFor(p => p.SubcriptionName)
-            //    .NotEmpty().WithMessage("Subscripion must be selected");
 
             RuleFor(p => p.SubscripionIdName).SetValidator(new SubscripionIdNameValidator());
 
-            RuleFor(p => p.ResourceGroup).SetValidator(new ResourceGroupValidator());                   
+            RuleFor(p => p.ResourceGroup).SetValidator(new ResourceGroupValidator());
+
+            //RuleFor(p => p.LocationIdName).SetValidator(new LocationIdNameValidator());
+
+            //RuleFor(p => p.Location)
+            //    .NotEmpty().WithMessage("Location WRAPPER must be selected");
         }
     }
 }

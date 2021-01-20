@@ -15,6 +15,9 @@ namespace CSRO.Client.Blazor.WebApp.Components
 { 
     public class SubLocRgCompBase : CsroComponentBase
     {
+
+        #region Params and Injects
+
         [Parameter]
         public string TicketId { get; set; }
 
@@ -42,6 +45,8 @@ namespace CSRO.Client.Blazor.WebApp.Components
         [Inject]
         public ILogger<SubLocRgCompBase> Logger { get; set; }
 
+        #endregion
+
         protected ResourceGroupModel Model { get; set; } = new ResourceGroupModel();
 
         protected bool IsReadOnly => OperationTypeTicket == OperatioType.View;
@@ -56,7 +61,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
         
         protected bool IsLocDisabled => string.IsNullOrWhiteSpace(Model?.SubcriptionId) || Locations?.Count == 0;
-        protected bool IsRgDisabled => ResourceGroups?.Count == 0;
+        protected bool IsRgDisabled => ResourceGroups?.Count == 0;        
 
         protected async override Task OnInitializedAsync()
         {
@@ -80,8 +85,8 @@ namespace CSRO.Client.Blazor.WebApp.Components
         {
             if (value != null)
             {
-                Model.ResourceGroup.Location = value.Id;
-                Model.ResourceGroup.Name = value.Name;
+                //Model.ResourceGroup.Location = value.Id;                
+                Model.LocationIdName = value;
 
                 ShowLoading();
                 await LoadRg(Model.SubcriptionId);
@@ -215,7 +220,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
         public void GoBack()
         {
-            NavigationManager.NavigateTo("vm");
+            NavigationManager.NavigateTo("/");
         }
 
     }
