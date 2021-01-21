@@ -21,7 +21,7 @@
         <EditForm Model="@Model" OnValidSubmit="OnValidSubmit">
             @if (IsValidationEnabled)
             {
-                <DataAnnotationsValidator />
+                <FluentValidationValidator />
             }
             <MudCard>
                 <MudCardContent>

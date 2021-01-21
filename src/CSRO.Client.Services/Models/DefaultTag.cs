@@ -7,13 +7,13 @@ namespace CSRO.Client.Services.Models
     /// </summary>
     public class DefaultTag
     {
-        [Required]
+        //[Required]
         public string opEnvironment { get; set; }
 
-        [Required]
+        //[Required]
         public string cmdbRerence { get; set; }
 
-        [Required]
+        //[Required]
         public string billingReference { get; set; }
     }
 }

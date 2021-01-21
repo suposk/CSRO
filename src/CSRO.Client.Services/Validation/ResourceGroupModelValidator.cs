@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace CSRO.Client.Services.Validation
 {
+
     public class ResourceGroupValidator : AbstractValidator<ResourceGroup>
     {
         public ResourceGroupValidator()
@@ -20,19 +21,6 @@ namespace CSRO.Client.Services.Validation
 
             RuleFor(p => p.Location).NotEmpty()
                 .WithMessage("Location must be selected");
-        }
-    }
-
-    public class LocationIdNameValidator : AbstractValidator<IdName>
-    {
-        public LocationIdNameValidator()
-        {
-            RuleFor(p => p.Id).NotEmpty()
-                .WithMessage("Location Val must be selected");
-
-            RuleFor(p => p.Name).NotEmpty()
-                .WithMessage("Location Val must be selected");
-
         }
     }
 

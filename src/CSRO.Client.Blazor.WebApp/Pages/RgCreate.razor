@@ -11,7 +11,9 @@
                 </SubLocRgComp>
 
                 <div class="mt-2">
-                    <TagsComp SubcriptionId="@SubcriptionId">
+                    <TagsComp SubcriptionId="@SubcriptionId"
+                              IsValidationEnabled="@IsTagValidationEnabled"
+                              >
 
                     </TagsComp>
                 </div>
@@ -32,9 +34,13 @@
     [Parameter]
     public string SubcriptionId { get; set; }
 
+    [Parameter]
+    public bool IsTagValidationEnabled { get; set; }
+
     private void SubcriptionIdChangedHandler(string subId)
     {
         SubcriptionId = subId;
+        IsTagValidationEnabled = true;
     }
 
 }
