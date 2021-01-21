@@ -18,8 +18,11 @@ namespace CSRO.Client.Blazor.WebApp.Components
         #region Params and Injects
 
         [Parameter]
-        public string TicketId { get; set; }
+        public bool IsValidationEnabled { get; set; }
 
+        /// <summary>
+        /// Passed via callback
+        /// </summary>
         [Parameter]
         public string SubcriptionId { get; set; }
 
@@ -44,21 +47,14 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
         protected string Title => "Select Tags";
 
-        //protected string Title => "Hosting Settings";               
-
-
-        //protected bool IsLocDisabled => string.IsNullOrWhiteSpace(Model?.SubcriptionId) || Locations?.Count == 0;
-        //protected bool IsRgDisabled => IsLocDisabled | ResourceGroups?.Count == 0;
-        //protected bool IsNewRgDisabled => IsLocDisabled | string.IsNullOrWhiteSpace(Model.Location);
-
-        protected async override Task OnInitializedAsync()
-        {
-            //await Load();
-        }
+        //protected async override Task OnInitializedAsync()
+        //{
+        //    await Load();
+        //}
 
         protected async override Task OnParametersSetAsync()
         {
-            base.OnParametersSetAsync();
+            await base.OnParametersSetAsync();
             await Load();
         }
 
@@ -165,6 +161,9 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
         public async Task OnValidSubmit(EditContext context)
         {
+            if (!IsValidationEnabled)
+                return;             
+
             var valid = context.Validate();
             if (valid)
             {

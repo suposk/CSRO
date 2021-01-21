@@ -18,58 +18,61 @@
             </MudGrid>
         }
 
-          <EditForm Model="@Model" OnValidSubmit="OnValidSubmit">
-                <FluentValidationValidator />
-                <MudCard>
-                    <MudCardContent>
-                        <MudAutocomplete ResetValueOnEmptyText="true"
-                                         T="string"
-                                         Label=@(nameof(Model.billingReference))
-                                         ValueChanged="(e) => OnbillingReferenceChanged(e)"
-                                         For="@(() => Model.billingReference)"
-                                         SearchFunc="@SearchBilling" />
+        <EditForm Model="@Model" OnValidSubmit="OnValidSubmit">
+            @if (IsValidationEnabled)
+            {
+                <DataAnnotationsValidator />
+            }
+            <MudCard>
+                <MudCardContent>
+                    <MudAutocomplete ResetValueOnEmptyText="true"
+                                     T="string"
+                                     Label=@(nameof(Model.billingReference))
+                                     ValueChanged="(e) => OnbillingReferenceChanged(e)"
+                                     For="@(() => Model.billingReference)"
+                                     SearchFunc="@SearchBilling" />
 
-                        <MudAutocomplete ResetValueOnEmptyText="true"
-                                         T="string"
-                                         Label=@(nameof(Model.opEnvironment))
-                                         ValueChanged="(e) => OnopEnvironmentChanged(e)"
-                                         For="@(() => Model.opEnvironment)"
-                                         SearchFunc="@SearchOpEnv" />
+                    <MudAutocomplete ResetValueOnEmptyText="true"
+                                     T="string"
+                                     Label=@(nameof(Model.opEnvironment))
+                                     ValueChanged="(e) => OnopEnvironmentChanged(e)"
+                                     For="@(() => Model.opEnvironment)"
+                                     SearchFunc="@SearchOpEnv" />
 
-                        <MudAutocomplete ResetValueOnEmptyText="true"
-                                         T="string"
-                                         Label=@(nameof(Model.cmdbRerence))
-                                         ValueChanged="(e) => OncmdbRerenceChanged(e)"
-                                         For="@(() => Model.cmdbRerence)"
-                                         SearchFunc="@SearchCmbdRef" />
+                    <MudAutocomplete ResetValueOnEmptyText="true"
+                                     T="string"
+                                     Label=@(nameof(Model.cmdbRerence))
+                                     ValueChanged="(e) => OncmdbRerenceChanged(e)"
+                                     For="@(() => Model.cmdbRerence)"
+                                     SearchFunc="@SearchCmbdRef" />
 
-                    </MudCardContent>                                      
+                </MudCardContent>
 
 
-                </MudCard>
-                @*@if (OperationTypeTicket == OperatioType.Create)
-                {
-                    <MudText Typo="Typo.body2" Align="Align.Center" Class="my-4">
-                        Fill out the form correctly to see the success message.
-                    </MudText>
+            </MudCard>
+            @if (IsValidationEnabled)
+            {
+                <MudText Typo="Typo.body2" Align="Align.Center" Class="my-4">
+                    Fill out the form correctly to see the success message.
+                </MudText>
 
-                    <MudExpansionPanels>
-                        <MudExpansionPanel IsExpanded="true"
-                                           Text="Show Validation Summary">
-                            @if (Success)
-                            {
-                                <MudText Color="Color.Success">Success</MudText> }
-                            else
-                            {
-                                <MudText Color="@Color.Error">
-                                    <ValidationSummary />
-                                </MudText>
-                            }
-                        </MudExpansionPanel>
-                    </MudExpansionPanels>
-                    <MudButton Class="mt-4" OnClick="GoBack" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary">Go Back</MudButton>
-                }*@
-            </EditForm>
+                <MudExpansionPanels>
+                    <MudExpansionPanel IsExpanded="true"
+                                       Text="Show Validation Summary">
+                        @if (Success)
+                        {
+                            @*<MudText Color="Color.Success">Success</MudText>*@
+                        }
+                        else
+                        {
+                            <MudText Color="@Color.Error">
+                                <ValidationSummary />
+                            </MudText>
+                        }
+                    </MudExpansionPanel>
+                </MudExpansionPanels>
+            }
+        </EditForm>
         
     </div>
 </MudContainer>

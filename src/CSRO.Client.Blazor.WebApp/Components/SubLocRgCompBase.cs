@@ -23,7 +23,10 @@ namespace CSRO.Client.Blazor.WebApp.Components
         [Parameter]
         public OperatioType OperationTypeTicket { get; set; }
 
-        [Parameter]
+        /// <summary>
+        /// Tags compenents example depands on sub Id
+        /// </summary>
+        [Parameter]        
         public EventCallback<string> SubcriptionIdChanged { get; set; }
 
         [Inject]
@@ -76,10 +79,11 @@ namespace CSRO.Client.Blazor.WebApp.Components
             if (value != null)
             {
                 Model.SubcriptionId = value.Id;
-                Model.SubcriptionName = value.Name;
-                SubcriptionIdChanged.InvokeAsync(Model.SubcriptionId);
+                Model.SubcriptionName = value.Name;                
 
                 ShowLoading();
+
+                await SubcriptionIdChanged.InvokeAsync(Model.SubcriptionId);
                 await LoadLocations();
                 //var tags = await SubcriptionService.GetTags(Model.SubcriptionId);
                 //var defaulTags = await SubcriptionService.GetDefualtTags(Model.SubcriptionId);
