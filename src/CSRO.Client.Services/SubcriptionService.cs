@@ -125,7 +125,8 @@ namespace CSRO.Client.Services
                         var result = new List<TagNameWithValueList>();
                         foreach (var item in ser.Value)
                         {
-                            result.Add(new TagNameWithValueList { TagName = item.TagName, Values = item.Values.Select(a => a.TagValue).ToList()});
+                            //result.Add(new TagNameWithValueList { TagName = item.TagName, Values = item.Values.Select(a => a.TagValue).ToList()});
+                            result.Add(new TagNameWithValueList { TagName = item.TagName.Trim(), Values = item.Values.Where(a => !string.IsNullOrWhiteSpace(a.TagValue)).Select(a => a.TagValue).ToList() });
                         }
                         return result;
                     }
