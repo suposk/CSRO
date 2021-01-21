@@ -5,9 +5,16 @@
     <MudGrid class="mt-6">
         <MudItem xs="6">
             <MudPaper>
-                <SubLocRgComp OperationTypeTicket="@OperatioType.Create">
+                <SubLocRgComp OperationTypeTicket="@OperatioType.Create" 
+                              SubcriptionIdChanged="SubcriptionIdChangedHandler">
 
                 </SubLocRgComp>
+
+                <div class="mt-2">
+                    <TagsComp SubcriptionId="@SubcriptionId">
+
+                    </TagsComp>
+                </div>
             </MudPaper>
         </MudItem>
         <MudItem xs="6">
@@ -21,5 +28,13 @@
 </div>
 
 @code {
+
+    [Parameter]
+    public string SubcriptionId { get; set; }
+
+    private void SubcriptionIdChangedHandler(string subId)
+    {
+        SubcriptionId = subId;
+    }
 
 }

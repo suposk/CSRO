@@ -23,11 +23,14 @@ namespace CSRO.Client.Blazor.WebApp.Components
         [Parameter]
         public OperatioType OperationTypeTicket { get; set; }
 
+        [Parameter]
+        public EventCallback<string> SubcriptionIdChanged { get; set; }
+
         [Inject]
         public NavigationManager NavigationManager { get; set; }
 
-        [Inject]
-        public IVmTicketDataService VmTicketDataService { get; set; }
+        //[Inject]
+        //public IVmTicketDataService VmTicketDataService { get; set; }
 
         [Inject]
         public ISubcriptionService SubcriptionService { get; set; }
@@ -68,12 +71,13 @@ namespace CSRO.Client.Blazor.WebApp.Components
             await Load();
         }
 
-        public async Task OnSubscriptionChanged(IdName value)
+        public async Task OnSubscriptionValueChanged(IdName value)
         {
             if (value != null)
             {
                 Model.SubcriptionId = value.Id;
                 Model.SubcriptionName = value.Name;
+                SubcriptionIdChanged.InvokeAsync(Model.SubcriptionId);
 
                 ShowLoading();
                 await LoadLocations();

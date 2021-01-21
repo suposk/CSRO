@@ -11,8 +11,8 @@ namespace CSRO.Client.Services.Models
             BillingReferenceList = new List<string>();
         }
 
-        public List<string> OpEnvironmentList { get; set; }
-        public List<string> CmdbRerenceList { get; set; }
         public List<string> BillingReferenceList { get; set; }
+        public List<string> OpEnvironmentList { get; set; }
+        public List<string> CmdbRerenceList { get; set; }        
     }
 }

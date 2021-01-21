@@ -1,0 +1,193 @@
+﻿using CSRO.Client.Blazor.UI;
+using CSRO.Client.Blazor.UI.Services;
+using CSRO.Client.Services;
+using CSRO.Client.Services.Models;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace CSRO.Client.Blazor.WebApp.Components
+{
+    public class TagsCompBase : CsroComponentBase
+    {
+
+        #region Params and Injects
+
+        [Parameter]
+        public string TicketId { get; set; }
+
+        [Parameter]
+        public string SubcriptionId { get; set; }
+
+        [Inject]
+        public NavigationManager NavigationManager { get; set; }
+
+        [Inject]
+        public ISubcriptionService SubcriptionService { get; set; }
+
+        [Inject]
+        public ICsroDialogService CsroDialogService { get; set; }
+
+        [Inject]
+        public ILogger<TagsCompBase> Logger { get; set; }
+
+        #endregion
+
+        protected DefaultTag Model { get; set; } = new DefaultTag();
+        protected DefaultTags Tags { get; set; } = new DefaultTags();
+
+        protected bool IsReadOnly => false;
+
+        protected string Title => "Select Tags";
+
+        //protected string Title => "Hosting Settings";               
+
+
+        //protected bool IsLocDisabled => string.IsNullOrWhiteSpace(Model?.SubcriptionId) || Locations?.Count == 0;
+        //protected bool IsRgDisabled => IsLocDisabled | ResourceGroups?.Count == 0;
+        //protected bool IsNewRgDisabled => IsLocDisabled | string.IsNullOrWhiteSpace(Model.Location);
+
+        protected async override Task OnInitializedAsync()
+        {
+            //await Load();
+        }
+
+        protected async override Task OnParametersSetAsync()
+        {
+            base.OnParametersSetAsync();
+            await Load();
+        }
+
+        private async Task Load()
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(SubcriptionId))
+                    return;
+
+                ShowLoading();
+                Tags = await SubcriptionService.GetDefualtTags(SubcriptionId);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, nameof(OnInitializedAsync));
+            }
+            finally
+            {
+                HideLoading();
+            }
+        }
+
+        public void OnbillingReferenceChanged(string value)
+        {
+            if (value != null)
+            {
+                Model.billingReference = value;
+            }
+        }
+
+        public void OnopEnvironmentChanged(string value)
+        {
+            if (value != null)
+            {
+                Model.opEnvironment = value;
+            }
+        }
+
+        public void OncmdbRerenceChanged(string value)
+        {
+            if (value != null)
+            {
+                Model.cmdbRerence = value;
+            }
+        }
+
+        //public async Task OnValueChanged(string sender, string value)
+        //{
+        //    if (sender != null && value != null)
+        //    {
+        //        switch(sender)
+        //        {
+        //            case nameof(Model.billingReference):                    
+        //                Model.billingReference = value;
+        //                break;
+        //            case nameof(Model.cmdbRerence):
+        //                Model.cmdbRerence = value;
+        //                break;
+        //            case nameof(Model.opEnvironment):
+        //                Model.opEnvironment = value;
+        //                break;
+        //        }
+                
+        //    }
+        //}
+
+
+        public async Task<IEnumerable<string>> SearchBilling(string value)
+        {
+            // In real life use an asynchronous function for fetching data from an api.
+            await Task.Delay(50);
+
+            // if text is null or empty, show complete list
+            if (string.IsNullOrEmpty(value))
+                return Tags.BillingReferenceList;
+
+            return Tags.BillingReferenceList == null ? null : Tags.BillingReferenceList.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+        }
+
+        public async Task<IEnumerable<string>> SearchOpEnv(string value)
+        {
+            // In real life use an asynchronous function for fetching data from an api.
+            await Task.Delay(50);
+
+            // if text is null or empty, show complete list
+            if (string.IsNullOrEmpty(value))
+                return Tags.OpEnvironmentList;
+
+            return Tags.OpEnvironmentList == null ? null : Tags.OpEnvironmentList.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+        }
+
+        public async Task<IEnumerable<string>> SearchCmbdRef(string value)
+        {
+            // In real life use an asynchronous function for fetching data from an api.
+            await Task.Delay(50);
+
+            // if text is null or empty, show complete list
+            if (string.IsNullOrEmpty(value))
+                return Tags.CmdbRerenceList;
+
+            return Tags.CmdbRerenceList == null ? null : Tags.CmdbRerenceList.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+        }
+
+        public async Task OnValidSubmit(EditContext context)
+        {
+            var valid = context.Validate();
+            if (valid)
+            {
+                try
+                {
+
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError(ex, nameof(OnValidSubmit));
+                    await CsroDialogService.ShowError("Error", $"Detail error: {ex.Message}");
+                }
+                finally
+                {
+                    HideLoading();
+                }
+            }
+        }
+
+        public void GoBack()
+        {
+            NavigationManager.NavigateTo("/");
+        }
+
+    }
+}
