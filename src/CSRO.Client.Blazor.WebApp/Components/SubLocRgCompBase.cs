@@ -53,9 +53,9 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
         protected bool IsReadOnly => OperationTypeTicket == OperatioType.View;
 
-        //protected string Title => OperationTypeTicket == OperatioType.Create ? "Request Vm Restart" : $"View {Model.Status} of {Model.VmName}";
+        protected string Title => OperationTypeTicket == OperatioType.Create ? "Select or Create Resource Group" : $"Select Resource Group";
 
-        protected string Title => "Hosting Settings";
+        //protected string Title => "Hosting Settings";
 
         protected List<IdName> Subscripions { get; set; } = new List<IdName>();
         protected List<IdName> Locations { get; set; } = new List<IdName>();
@@ -119,36 +119,26 @@ namespace CSRO.Client.Blazor.WebApp.Components
         private async Task Load()
         {
             try
-            {
-                //var loc = await LocationsService.GetLocations();
-
-                if (OperationTypeTicket == OperatioType.Create)
-                {
-                    ShowLoading();
-                    Subscripions?.Clear();
-                    Subscripions = await SubcriptionService.GetSubcriptions();
+            {                
+                ShowLoading();
+                Subscripions?.Clear();
+                Subscripions = await SubcriptionService.GetSubcriptions();
 
 #if DEBUG
 
-                    //dubug only
-                    //Model.SubcriptionId = "33fb38df-688e-4ca1-8dd8-b46e26262ff8";
-                    if (Subscripions?.Count == 1)
+                //dubug only
+                //Model.SubcriptionId = "33fb38df-688e-4ca1-8dd8-b46e26262ff8";
+                if (Subscripions?.Count == 1)
+                {
+                    for (int i = 1; i <= 3; i++)
                     {
-                        for (int i = 1; i <= 3; i++)
-                        {
-                            Subscripions.Add(new IdName(Guid.NewGuid().ToString(), $"fake sub name {i}"));
-                        }
+                        Subscripions.Add(new IdName(Guid.NewGuid().ToString(), $"fake sub name {i}"));
                     }
-                    //Model.ResorceGroup = "dev-VMS";
-                    //Model.VmName = "VmDelete";
+                }
+                //Model.ResorceGroup = "dev-VMS";
+                //Model.VmName = "VmDelete";
 
 #endif
-                }
-                else
-                {
-
-
-                }
             }
             catch (Exception ex)
             {
@@ -195,10 +185,12 @@ namespace CSRO.Client.Blazor.WebApp.Components
                             await Task.Delay(1 * 10);                            
                             Model.ResourceGroup.Name = copyAdded;
                             await Task.Delay(1 * 10);
+
+                            UI.Helpers.EditFormExtensions.ClearValidationMessages(context);
+                            StateHasChanged();
                         }
                     }
-                    UI.Helpers.EditFormExtensions.ClearValidationMessages(context);
-                    StateHasChanged();                    
+           
                 }
                 catch (Exception ex)
                 {

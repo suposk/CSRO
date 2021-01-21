@@ -5,7 +5,7 @@
 
 <MudContainer>
     <div>
-        <MudText Typo="Typo.h4" GutterBottom="true">@Title</MudText>
+        <MudText Typo="Typo.h5" Class="mt-2" GutterBottom="true">@Title</MudText>
         @if (IsLoading)
         {
             <MudGrid>
@@ -20,61 +20,44 @@
 
         @if (Success == false)
         {
-            <EditForm Model="@Model" OnValidSubmit="OnValidSubmit">
-                @*<DataAnnotationsValidator />*@
+            <EditForm Model="@Model" OnValidSubmit="OnValidSubmit">                
                 <FluentValidationValidator />
                 <MudCard>
                     <MudCardContent>
-                        @if (OperationTypeTicket != OperatioType.Create)
+                        <MudAutocomplete ResetValueOnEmptyText="true"
+                                         T="@IdName"
+                                         Label="Subcription:"
+                                         ToStringFunc="@Model.SubscripionIdName.IdNameConverter"
+                                         ValueChanged="(e) => OnSubscriptionChanged(e)"
+                                         For="@(() => Model.SubscripionIdName)"
+                                         SearchFunc="@SearchSubs" />
+
+                        <MudSelect T="@IdName"
+                                   Disabled="@IsLocDisabled"
+                                   Label="Location"
+                                   ToStringFunc="@Model.LocationIdName.IdNameConverter"
+                                   ValueChanged="(e) => OnLocationChanged(e)"
+                                   For="@(() => Model.LocationIdName)">
+                            @foreach (var loc in Locations)
+                            {
+                                <MudSelectItem T="IdName" Value="@loc">@loc</MudSelectItem>
+                            }
+                        </MudSelect>
+
+                        <MudSelect T="@string"
+                                   Disabled="@IsRgDisabled"
+                                   OffsetY="true"
+                                   Label="Resource Group:"
+                                   @bind-Value="Model.ResourceGroup.Name"
+                                   For="@(() => Model.ResourceGroup.Name)">
+                            @foreach (var rg in ResourceGroups)
+                            {
+                                <MudSelectItem T="string" Value="@rg">@rg</MudSelectItem>
+                            }
+                        </MudSelect>
+
+                        @if (OperationTypeTicket == OperatioType.Create)
                         {
-                            <MudTextField Label="Id:"
-                                          Disabled="true"
-                                          @bind-Value="Model.Id" For="@(() => Model.Id)" />
-
-
-                            @*<MudTextField Label="Subcription Name:"
-                          Disabled="true"
-                          @bind-Value="Model.SubcriptionName" For="@(() => Model.SubcriptionName)" />
-
-            <MudTextField Label="Resorce Group:"
-                          Disabled="true"
-                          @bind-Value="Model.ResourceGroup.Name" For="@(() => Model.ResourceGroup.Name)" />*@
-
-                        }
-                        else
-                        {
-                            <MudAutocomplete ResetValueOnEmptyText="true"
-                                             T="@IdName"
-                                             Label="Subcription:"
-                                             ToStringFunc="@Model.SubscripionIdName.IdNameConverter"
-                                             ValueChanged="(e) => OnSubscriptionChanged(e)"
-                                             For="@(() => Model.SubscripionIdName)"
-                                             SearchFunc="@SearchSubs" />
-
-                            <MudSelect T="@IdName"
-                                       Disabled="@IsLocDisabled"
-                                       Label="Location"
-                                       ToStringFunc="@Model.LocationIdName.IdNameConverter"
-                                       ValueChanged="(e) => OnLocationChanged(e)"
-                                       For="@(() => Model.LocationIdName)">
-                                @foreach (var loc in Locations)
-                                {
-                                    <MudSelectItem T="IdName" Value="@loc">@loc</MudSelectItem>
-                                }
-                            </MudSelect>
-
-                            <MudSelect T="@string"
-                                       Disabled="@IsRgDisabled"
-                                       OffsetY="true"
-                                       Label="Resource Group:"
-                                       @bind-Value="Model.ResourceGroup.Name"
-                                       For="@(() => Model.ResourceGroup.Name)">
-                                @foreach (var rg in ResourceGroups)
-                                {
-                                    <MudSelectItem T="string" Value="@rg">@rg</MudSelectItem>
-                                }
-                            </MudSelect>
-
                             <div style="max-width: 30%" class="mt-4">
                                 <MudPaper>
                                     <MudButton ButtonType="ButtonType.Button"
@@ -96,18 +79,8 @@
                                 </MudPaper>
                             </div>
                         }
-
-                        @if (IsReadOnly)
-                        {
-                            <MudTextField Label="Created By:" Disabled="true"
-                                          @bind-Value="Model.CreatedBy" For="@(() => Model.CreatedBy)" />
-
-                            <MudTextField Label="Created At:" Disabled="true"
-                                          @bind-Value="Model.CreatedAt" For="@(() => Model.CreatedAt)" />
-                        }
-
                     </MudCardContent>
-                    @if (!IsReadOnly)
+                    @if (OperationTypeTicket == OperatioType.Create)
                     {
                         <MudCardActions>
                             @if (Model.IsNewRg)
