@@ -1,16 +1,25 @@
 ﻿@page "/rg/Create"
 @using CSRO.Client.Services.Models
 
-<div class="mt-6">
-    <SubLocRgComp OperationTypeTicket="@OperatioType.Create">
+<div class="m-1">
+    <MudGrid class="mt-6">
+        <MudItem xs="6">
+            <MudPaper>
+                <SubLocRgComp OperationTypeTicket="@OperatioType.Create">
 
-    </SubLocRgComp>
+                </SubLocRgComp>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="6">
+            <MudPaper>
+                <SubLocRgComp OperationTypeTicket="@OperatioType.View">
 
-    <SubLocRgComp OperationTypeTicket="@OperatioType.View">
-
-    </SubLocRgComp>
-
+                </SubLocRgComp>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
 </div>
+
 @code {
 
 }
