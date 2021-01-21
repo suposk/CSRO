@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace CSRO.Client.Blazor.WebApp.Components
 {
-    public class SubLocRgCompBase : CsroComponentBase
+    public class SubLocRgCompBase : CsroComponentBase, IDisposable
     {
 
         #region Params and Injects
@@ -29,11 +29,11 @@ namespace CSRO.Client.Blazor.WebApp.Components
         [Parameter]        
         public EventCallback<string> SubcriptionIdChanged { get; set; }
 
+        [Parameter]
+        public DefaultTag OnTagSelectedEventParam { get; set; }
+
         [Inject]
         public NavigationManager NavigationManager { get; set; }
-
-        //[Inject]
-        //public IVmTicketDataService VmTicketDataService { get; set; }
 
         [Inject]
         public ISubcriptionService SubcriptionService { get; set; }
@@ -71,7 +71,18 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
         protected async override Task OnInitializedAsync()
         {
-            await Load();
+            await Load();         
+        }
+
+        public void Dispose()
+        {
+            Logger.LogDebug($"Dispose called on {nameof(SubLocRgCompBase)}");
+        }
+
+        protected async override Task OnParametersSetAsync()
+        {
+            await base.OnParametersSetAsync();
+            Model.ResourceGroup.Tags = OnTagSelectedEventParam;
         }
 
         public async Task OnSubscriptionValueChanged(IdName value)
@@ -213,6 +224,5 @@ namespace CSRO.Client.Blazor.WebApp.Components
         {
             NavigationManager.NavigateTo("/");
         }
-
     }
 }

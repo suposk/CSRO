@@ -26,6 +26,9 @@ namespace CSRO.Client.Blazor.WebApp.Components
         [Parameter]
         public string SubcriptionId { get; set; }
 
+        [Parameter] 
+        public EventCallback<DefaultTag> OnTagSelectedEvent { get; set; }
+
         [Inject]
         public NavigationManager NavigationManager { get; set; }
 
@@ -78,27 +81,30 @@ namespace CSRO.Client.Blazor.WebApp.Components
             }
         }
 
-        public void OnbillingReferenceChanged(string value)
+        public async Task OnbillingReferenceChanged(string value)
         {
             if (value != null)
             {
                 Model.billingReference = value;
+                await OnTagSelectedEvent.InvokeAsync(Model);
             }
         }
 
-        public void OnopEnvironmentChanged(string value)
+        public async Task OnopEnvironmentChanged(string value)
         {
             if (value != null)
             {
                 Model.opEnvironment = value;
+                await OnTagSelectedEvent.InvokeAsync(Model);
             }
         }
 
-        public void OncmdbRerenceChanged(string value)
+        public async Task OncmdbRerenceChanged(string value)
         {
             if (value != null)
             {
                 Model.cmdbRerence = value;
+                await OnTagSelectedEvent.InvokeAsync(Model);
             }
         }
 
@@ -125,6 +131,9 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
         public async Task<IEnumerable<string>> SearchBilling(string value)
         {
+            if (Tags == null)
+                return null;
+
             // In real life use an asynchronous function for fetching data from an api.
             await Task.Delay(50);
 
@@ -137,6 +146,9 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
         public async Task<IEnumerable<string>> SearchOpEnv(string value)
         {
+            if (Tags == null)
+                return null;
+
             // In real life use an asynchronous function for fetching data from an api.
             await Task.Delay(50);
 
@@ -149,6 +161,9 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
         public async Task<IEnumerable<string>> SearchCmbdRef(string value)
         {
+            if (Tags == null)
+                return null;
+
             // In real life use an asynchronous function for fetching data from an api.
             await Task.Delay(50);
 
@@ -158,7 +173,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
             return Tags.CmdbRerenceList == null ? null : Tags.CmdbRerenceList.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
         }
-
+                
         public async Task OnValidSubmit(EditContext context)
         {
             if (!IsValidationEnabled)
@@ -169,7 +184,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
             {
                 try
                 {
-
+                    await OnTagSelectedEvent.InvokeAsync(Model);
                 }
                 catch (Exception ex)
                 {

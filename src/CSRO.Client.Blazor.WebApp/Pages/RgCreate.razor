@@ -5,15 +5,16 @@
     <MudGrid class="mt-6">
         <MudItem xs="6">
             <MudPaper>
-                <SubLocRgComp OperationTypeTicket="@OperatioType.Create" 
-                              SubcriptionIdChanged="SubcriptionIdChangedHandler">
+                <SubLocRgComp OperationTypeTicket="OperatioType.Create"
+                              OnTagSelectedEventParam="@OnTagSelectedEventParam"                              
+                              SubcriptionIdChanged="@SubcriptionIdChangedHandler">
 
                 </SubLocRgComp>
 
                 <div class="mt-2">
                     <TagsComp SubcriptionId="@SubcriptionId"
                               IsValidationEnabled="@IsTagValidationEnabled"
-                              >
+                              OnTagSelectedEvent="@OnParentTagSelectedEventHandler">
 
                     </TagsComp>
                 </div>
@@ -21,7 +22,7 @@
         </MudItem>
         <MudItem xs="6">
             <MudPaper>
-                <SubLocRgComp OperationTypeTicket="@OperatioType.View">
+                <SubLocRgComp OperationTypeTicket="OperatioType.View">
 
                 </SubLocRgComp>
             </MudPaper>
@@ -34,6 +35,8 @@
     [Parameter]
     public string SubcriptionId { get; set; }
 
+    public DefaultTag OnTagSelectedEventParam { get; set; }
+        
     [Parameter]
     public bool IsTagValidationEnabled { get; set; }
 
@@ -41,6 +44,11 @@
     {
         SubcriptionId = subId;
         IsTagValidationEnabled = true;
+    }
+
+    private void OnParentTagSelectedEventHandler(DefaultTag defaultTag)
+    {
+        OnTagSelectedEventParam = defaultTag;              
     }
 
 }

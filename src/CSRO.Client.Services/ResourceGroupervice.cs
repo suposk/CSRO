@@ -47,7 +47,8 @@ namespace CSRO.Client.Services
                 await base.AddAuthHeaderAsync();
 
                 var add = Mapper.Map<ResourceGroupDto>(item.ResourceGroup);                
-                add.Location = item.Location;                                                              
+                add.Location = item.Location;
+                add.Name = null;
                                 
                 //string add = $"{{\"location\": \"{item.Location}\"}}"; //not working
                 //var add = new CreateRgDto { Location = item.Location };
