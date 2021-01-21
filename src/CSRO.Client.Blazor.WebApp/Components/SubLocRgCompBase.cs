@@ -80,7 +80,8 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
                 ShowLoading();
                 await LoadLocations();
-                var tags = await SubcriptionService.GetTags(Model.SubcriptionId);
+                //var tags = await SubcriptionService.GetTags(Model.SubcriptionId);
+                //var defaulTags = await SubcriptionService.GetDefualtTags(Model.SubcriptionId);
                 HideLoading();
             }
         }

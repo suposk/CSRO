@@ -20,7 +20,8 @@ namespace CSRO.Client.Services
         Task<List<IdName>> GetSubcriptions(CancellationToken cancelToken = default);
 
         Task<Subscription> GetSubcription(string subscriptionId, CancellationToken cancelToken = default);
-        Task<List<IdName>> GetTags(string subscriptionId, CancellationToken cancelToken = default);
+        Task<List<TagNameWithValueList>> GetTags(string subscriptionId, CancellationToken cancelToken = default);
+        Task<DefaultTags> GetDefualtTags(string subscriptionId, CancellationToken cancelToken = default);
     }
 
     public class SubcriptionService : BaseDataService, ISubcriptionService
@@ -104,7 +105,7 @@ namespace CSRO.Client.Services
             return null;
         }
 
-        public async Task<List<IdName>> GetTags(string subscriptionId, CancellationToken cancelToken = default)
+        public async Task<List<TagNameWithValueList>> GetTags(string subscriptionId, CancellationToken cancelToken = default)
         {
             try
             {
@@ -118,20 +119,47 @@ namespace CSRO.Client.Services
                 if (apiData.IsSuccessStatusCode)
                 {
                     var content = await apiData.Content.ReadAsStringAsync();
-                    //var ser = JsonSerializer.Deserialize<SubscriptionsDto>(content, _options);
-                    //var ser = JsonSerializer.Deserialize<SubscriptionsIdNameDto>(content, _options);
-                    //if (ser?.Value?.Count > 0)
-                    //{
-                    //    //"VM running"
-                    //    //var last = ser.Statuses.Last();
-                    //    var idNameList = ser.Value.Where(a => a.State == "Enabled").Select(a => new IdName(a.SubscriptionId.ToString(), a.DisplayName)).ToList();
-                    //    return idNameList;
-                    //}
+                    var ser = JsonSerializer.Deserialize<TagsDto>(content, _options);
+                    if (ser?.Value?.Count > 0)
+                    {
+                        var result = new List<TagNameWithValueList>();
+                        foreach (var item in ser.Value)
+                        {
+                            result.Add(new TagNameWithValueList { TagName = item.TagName, Values = item.Values.Select(a => a.TagValue).ToList()});
+                        }
+                        return result;
+                    }
                 }
             }
             catch (Exception ex)
             {
                 base.HandleException(ex);
+            }
+            return null;
+        }
+
+        public async Task<DefaultTags> GetDefualtTags(string subscriptionId, CancellationToken cancelToken = default)
+        {
+            var tags = await GetTags(subscriptionId, cancelToken).ConfigureAwait(false);
+            if (tags?.Count > 0)
+            {
+                var result = new DefaultTags();
+                foreach(var item in tags)
+                {
+                    switch(item.TagName)
+                    {
+                        case nameof(DefaultTag.billingReference):
+                            result.BillingReferenceList.AddRange(item.Values);
+                            break;
+                        case nameof(DefaultTag.cmdbRerence):
+                            result.CmdbRerenceList.AddRange(item.Values);
+                            break;
+                        case nameof(DefaultTag.opEnvironment):
+                            result.OpEnvironmentList.AddRange(item.Values);
+                            break;
+                    }
+                }
+                return result;
             }
             return null;
         }

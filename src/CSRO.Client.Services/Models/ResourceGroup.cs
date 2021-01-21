@@ -16,7 +16,7 @@ namespace CSRO.Client.Services.Models
         public string Location { get; set; }
         public Properties Properties { get; set; }
 
-        public Tag Tags { get; set; }
+        public DefaultTag Tags { get; set; }
 
         public override string ToString()
         {
