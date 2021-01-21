@@ -197,24 +197,6 @@ namespace CSRO.Client.Blazor.WebApp.Components
                             await Task.Delay(1 * 10);
                         }
                     }
-                    //else if (OperationTypeTicket == OperatioType.Edit)
-                    //{
-                    //    ShowLoading("Updating request");
-
-                    //    var updated = await VmTicketDataService.UpdateItemAsync(Model);
-                    //    if (updated)
-                    //    {
-                    //        Success = true;
-                    //        //throw new Exception("Fake Test exception");
-                    //    }
-                    //    else
-                    //    {
-                    //        var ok = await CsroDialogService.ShowWarning("Update Error", $"Conflic Detected, Please refresh and try again", "Refresh");
-                    //        if (ok)
-                    //            await Load();
-                    //    }
-                    //}
-
                     UI.Helpers.EditFormExtensions.ClearValidationMessages(context);
                     StateHasChanged();                    
                 }
