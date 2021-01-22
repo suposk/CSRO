@@ -25,26 +25,56 @@
             }
             <MudCard>
                 <MudCardContent>
-                    <MudAutocomplete ResetValueOnEmptyText="true"
-                                     T="string"
-                                     Label=@(nameof(Model.billingReference))
-                                     ValueChanged="(e) => OnbillingReferenceChanged(e)"
-                                     For="@(() => Model.billingReference)"
-                                     SearchFunc="@SearchBilling" />
+                    @if (Tags.BillingReferenceList?.Count > 0)
+                    {
+                        <MudAutocomplete ResetValueOnEmptyText="true"
+                                         T="string"
+                                         Label=@(nameof(Model.billingReference))
+                                         ValueChanged="(e) => OnbillingReferenceChanged(e)"
+                                         For="@(() => Model.billingReference)"
+                                         SearchFunc="@SearchBilling" />
+                    }
+                    else
+                    {
 
-                    <MudAutocomplete ResetValueOnEmptyText="true"
-                                     T="string"
-                                     Label=@(nameof(Model.opEnvironment))
-                                     ValueChanged="(e) => OnopEnvironmentChanged(e)"
-                                     For="@(() => Model.opEnvironment)"
-                                     SearchFunc="@SearchOpEnv" />
+                        <MudTextField Label=@(nameof(Model.billingReference))
+                                      @bind-Value="Model.billingReference"
+                                      For="@(() => Model.billingReference)" />
+                    }
 
-                    <MudAutocomplete ResetValueOnEmptyText="true"
-                                     T="string"
-                                     Label=@(nameof(Model.cmdbReference))
-                                     ValueChanged="(e) => OncmdbReferenceChanged(e)"
-                                     For="@(() => Model.cmdbReference)"
-                                     SearchFunc="@SearchCmbdRef" />
+                    @if (Tags.OpEnvironmentList?.Count > 0)
+                    {
+                        <MudAutocomplete ResetValueOnEmptyText="true"
+                                         T="string"
+                                         Label=@(nameof(Model.opEnvironment))
+                                         ValueChanged="(e) => OnopEnvironmentChanged(e)"
+                                         For="@(() => Model.opEnvironment)"
+                                         SearchFunc="@SearchOpEnv" />
+                    }
+                    else
+                    {
+
+                        <MudTextField Label=@(nameof(Model.opEnvironment))
+                                      @bind-Value="Model.opEnvironment"
+                                      For="@(() => Model.opEnvironment)" />
+                    }
+
+                    @if (Tags.CmdbRerenceList?.Count > 0)
+                    {
+                        <MudAutocomplete ResetValueOnEmptyText="true"
+                                         T="string"
+                                         Label=@(nameof(Model.cmdbReference))
+                                         ValueChanged="(e) => OncmdbReferenceChanged(e)"
+                                         For="@(() => Model.cmdbReference)"
+                                         SearchFunc="@SearchCmbdRef" />
+                    }
+                    else
+                    {
+
+                        <MudTextField Label=@(nameof(Model.cmdbReference))
+                                      @bind-Value="Model.cmdbReference"
+                                      For="@(() => Model.cmdbReference)" />
+                    }
 
                 </MudCardContent>
 
