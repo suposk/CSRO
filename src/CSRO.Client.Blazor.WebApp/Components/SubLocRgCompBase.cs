@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace CSRO.Client.Blazor.WebApp.Components
 {
-    public class SubLocRgCompBase : CsroComponentBase, IDisposable
+    public class SubLocRgCompBase : CsroComponentBase
     {
 
         #region Params and Injects
@@ -52,6 +52,8 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
         #endregion
 
+        protected EditContext editContext { get; private set; }
+
         protected ResourceGroupModel Model { get; set; } = new ResourceGroupModel();
 
         protected bool IsReadOnly => OperationTypeTicket == OperatioType.View;
@@ -71,18 +73,28 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
         protected async override Task OnInitializedAsync()
         {
+            editContext ??= new EditContext(Model);
             await Load();         
         }
 
-        public void Dispose()
-        {
-            Logger.LogDebug($"Dispose called on {nameof(SubLocRgCompBase)}");
-        }
+        //protected async override Task OnParametersSetAsync()
+        //{
+        //    await base.OnParametersSetAsync();
+        //    Model.ResourceGroup.Tags = OnTagSelectedEventParam;
+        //    editContext?.Validate();
+        //}
 
-        protected async override Task OnParametersSetAsync()
+        protected override void OnParametersSet()
         {
-            await base.OnParametersSetAsync();
+            base.OnParametersSet();
             Model.ResourceGroup.Tags = OnTagSelectedEventParam;
+            if (ShouldValidate())
+                editContext?.Validate();
+
+            bool ShouldValidate()
+            {
+                return !IsLocDisabled && !string.IsNullOrWhiteSpace(Model.Location);
+            }
         }
 
         public async Task OnSubscriptionValueChanged(IdName value)
@@ -178,9 +190,9 @@ namespace CSRO.Client.Blazor.WebApp.Components
             return Subscripions == null ? null : Subscripions.Where(x => x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase));
         }
 
-        public async Task OnValidSubmit(EditContext context)
+        public async Task OnSubmitHandler()
         {
-            var valid = context.Validate();
+            var valid = editContext.Validate();
             if (valid)
             {
                 try
@@ -202,7 +214,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
                             Model.ResourceGroup.Name = copyAdded;
                             await Task.Delay(1 * 10);
 
-                            UI.Helpers.EditFormExtensions.ClearValidationMessages(context);
+                            UI.Helpers.EditFormExtensions.ClearValidationMessages(editContext);
                             StateHasChanged();
                         }
                     }
@@ -210,7 +222,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError(ex, nameof(OnValidSubmit));
+                    Logger.LogError(ex, nameof(OnSubmitHandler));
                     await CsroDialogService.ShowError("Error", $"Detail error: {ex.Message}");
                 }
                 finally
