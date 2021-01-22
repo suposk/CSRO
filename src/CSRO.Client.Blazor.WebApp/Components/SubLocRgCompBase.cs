@@ -87,7 +87,9 @@ namespace CSRO.Client.Blazor.WebApp.Components
         protected override void OnParametersSet()
         {
             base.OnParametersSet();
-            Model.ResourceGroup.Tags = OnTagSelectedEventParam;
+            if (OnTagSelectedEventParam != null)
+                Model.ResourceGroup.Tags = OnTagSelectedEventParam;
+
             if (ShouldValidate())
                 editContext?.Validate();
 
