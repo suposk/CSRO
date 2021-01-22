@@ -23,7 +23,6 @@ namespace CSRO.Client.Services
 
     public class ResourceGroupervice : BaseDataService, IResourceGroupervice
     {
-
         public ResourceGroupervice(
             IHttpClientFactory httpClientFactory,
             IAuthCsroService authCsroService,

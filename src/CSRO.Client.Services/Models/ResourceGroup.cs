@@ -10,6 +10,11 @@ namespace CSRO.Client.Services.Models
     {
         public const string ResourceGroupType = "Microsoft.Resources/resourceGroups";
 
+        public ResourceGroup()
+        {
+            Tags = new DefaultTag();
+        }
+
         public string Id { get; set; }
         public string Name { get; set; }
         public string Type { get; set; }

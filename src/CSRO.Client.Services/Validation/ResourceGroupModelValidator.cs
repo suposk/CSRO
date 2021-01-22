@@ -15,12 +15,19 @@ namespace CSRO.Client.Services.Validation
         public ResourceGroupValidator()
         {
             RuleFor(p => p.Name).NotEmpty()
-                .WithMessage("Resource Group must be selected")
-                //.Matches(@"^[-\w\._\(\)]+$").WithMessage("Invalid Characters")
+                .WithMessage("Resource Group must be selected")                
                 ;
 
             RuleFor(p => p.Location).NotEmpty()
                 .WithMessage("Location must be selected");
+        }
+    }
+
+    public class CreateResourceGroupValidator : AbstractValidator<ResourceGroup>
+    {
+        public CreateResourceGroupValidator()
+        {
+            RuleFor(p => p.Tags).SetValidator(new DefaultTagValidator());
         }
     }
 
@@ -40,6 +47,8 @@ namespace CSRO.Client.Services.Validation
 
                 RuleFor(p => p.Location).NotEmpty()
                 .WithMessage("Location must be selected");
+
+                RuleFor(p => p.ResourceGroup).SetValidator(new CreateResourceGroupValidator());
             }).Otherwise(() => 
             {
                 RuleFor(p => p.ResourceGroup).SetValidator(new ResourceGroupValidator());
