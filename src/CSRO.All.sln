@@ -32,7 +32,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSRO.Client.Core", "CSRO.Cl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSRO.Server.Core", "CSRO.Server.Core\CSRO.Server.Core.csproj", "{50115512-8EF8-4CC7-B7AB-9EE7A33830B4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSRO.Client.Blazor.UI", "CSRO.Client.Blazor.UI\CSRO.Client.Blazor.UI.csproj", "{062EDF44-796B-4F58-8EBA-0A5E19CBDA7B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSRO.Client.Blazor.UI", "CSRO.Client.Blazor.UI\CSRO.Client.Blazor.UI.csproj", "{062EDF44-796B-4F58-8EBA-0A5E19CBDA7B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -5,7 +5,6 @@ using CSRO.Client.Services.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.Logging;
-using MudBlazor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +14,8 @@ namespace CSRO.Client.Blazor.WebApp.Components
 {
     public class RestartVmCsroBase : CsroComponentBase
     {
+        #region Params and Injects
+
         [Parameter]
         public string TicketId { get; set; }
 
@@ -41,6 +42,8 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
         [Inject]
         public ILogger<RestartVmCsroBase> Logger { get; set; }
+
+        #endregion
 
         protected VmTicket Model { get; set; } = new VmTicket();
 

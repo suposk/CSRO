@@ -1,0 +1,54 @@
+﻿@page "/rg/Create"
+@using CSRO.Client.Services.Models
+
+<div class="m-1">
+    <MudGrid class="mt-6">
+        <MudItem xs="6">
+            <MudPaper>
+                <SubLocRgComp OperationTypeTicket="OperatioType.Create"
+                              OnTagSelectedEventParam="@OnTagSelectedEventParam"                              
+                              SubcriptionIdChanged="@SubcriptionIdChangedHandler">
+
+                </SubLocRgComp>
+
+                <div class="mt-2">
+                    <TagsComp SubcriptionId="@SubcriptionId"
+                              IsValidationEnabled="@IsTagValidationEnabled"
+                              OnTagSelectedEvent="@OnParentTagSelectedEventHandler">
+
+                    </TagsComp>
+                </div>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="6">
+            <MudPaper>
+                <SubLocRgComp OperationTypeTicket="OperatioType.View">
+
+                </SubLocRgComp>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</div>
+
+@code {
+
+    [Parameter]
+    public string SubcriptionId { get; set; }
+
+    public DefaultTag OnTagSelectedEventParam { get; set; }
+        
+    [Parameter]
+    public bool IsTagValidationEnabled { get; set; }
+
+    private void SubcriptionIdChangedHandler(string subId)
+    {
+        SubcriptionId = subId;
+        IsTagValidationEnabled = true;
+    }
+
+    private void OnParentTagSelectedEventHandler(DefaultTag defaultTag)
+    {
+        OnTagSelectedEventParam = defaultTag;              
+    }
+
+}

@@ -1,0 +1,78 @@
+﻿@inherits TagsCompBase
+@using CSRO.Client.Services.Models
+@using CSRO.Client.Services.Validation
+@using Blazored.FluentValidation
+
+<MudContainer>
+    <div>
+        <MudText Typo="Typo.h5" Class="mt-2" GutterBottom="true">@Title</MudText>
+        @if (IsLoading)
+        {
+            <MudGrid>
+                <MudItem>
+                    <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+                </MudItem>
+                <MudItem>
+                    <MudText>@LoadingMessage</MudText>
+                </MudItem>
+            </MudGrid>
+        }
+
+        <EditForm Model="@Model" OnValidSubmit="OnValidSubmit">
+            @if (IsValidationEnabled)
+            {
+                <FluentValidationValidator />
+            }
+            <MudCard>
+                <MudCardContent>
+                    <MudAutocomplete ResetValueOnEmptyText="true"
+                                     T="string"
+                                     Label=@(nameof(Model.billingReference))
+                                     ValueChanged="(e) => OnbillingReferenceChanged(e)"
+                                     For="@(() => Model.billingReference)"
+                                     SearchFunc="@SearchBilling" />
+
+                    <MudAutocomplete ResetValueOnEmptyText="true"
+                                     T="string"
+                                     Label=@(nameof(Model.opEnvironment))
+                                     ValueChanged="(e) => OnopEnvironmentChanged(e)"
+                                     For="@(() => Model.opEnvironment)"
+                                     SearchFunc="@SearchOpEnv" />
+
+                    <MudAutocomplete ResetValueOnEmptyText="true"
+                                     T="string"
+                                     Label=@(nameof(Model.cmdbRerence))
+                                     ValueChanged="(e) => OncmdbRerenceChanged(e)"
+                                     For="@(() => Model.cmdbRerence)"
+                                     SearchFunc="@SearchCmbdRef" />
+
+                </MudCardContent>
+
+
+            </MudCard>
+            <!--@if (IsValidationEnabled)
+            {
+                <MudText Typo="Typo.body2" Align="Align.Center" Class="my-4">
+                    Fill out the form correctly to see the success message.
+                </MudText>
+
+                <MudExpansionPanels>
+                    <MudExpansionPanel IsExpanded="true"
+                                       Text="Show Validation Summary">
+                        @if (Success)
+                        {-->
+                            @*<MudText Color="Color.Success">Success</MudText>*@
+                        <!--}
+                        else
+                        {
+                            <MudText Color="@Color.Error">
+                                <ValidationSummary />
+                            </MudText>
+                        }
+                    </MudExpansionPanel>
+                </MudExpansionPanels>
+            }-->
+        </EditForm>
+        
+    </div>
+</MudContainer>

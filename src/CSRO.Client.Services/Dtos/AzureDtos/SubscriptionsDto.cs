@@ -14,14 +14,14 @@ namespace CSRO.Client.Services.Dtos.AzureDtos
     public partial class SubscriptionsDto
     {
         public List<SubscriptionDto> Value { get; set; }
-        public Count Count { get; set; }
+        //public TagDtoCount Count { get; set; }
     }
 
-    public partial class Count
-    {
-        public string Type { get; set; }
-        public long Value { get; set; }
-    }
+    //public partial class TagDtoCount
+    //{
+    //    public string Type { get; set; }
+    //    public long Value { get; set; }
+    //}
 
     public partial class SubscriptionDto
     {

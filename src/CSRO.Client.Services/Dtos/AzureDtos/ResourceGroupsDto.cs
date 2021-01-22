@@ -18,6 +18,7 @@ namespace CSRO.Client.Services.Dtos.AzureDtos
         public string Type { get; set; }
         public string Location { get; set; }
         public PropertiesDto Properties { get; set; }
+        public TagDto Tags { get; set; }
     }
 
     public class PropertiesDto

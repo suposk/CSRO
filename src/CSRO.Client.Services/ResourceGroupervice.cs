@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,13 +15,14 @@ namespace CSRO.Client.Services
 {
     public interface IResourceGroupervice
     {
+        Task<ResourceGroupModel> CreateRgAsync(ResourceGroupModel item, CancellationToken cancelToken = default);
         Task<List<ResourceGroup>> GetResourceGroups(string subscriptionId, CancellationToken cancelToken = default);
+        Task<List<ResourceGroup>> GetResourceGroups(string subscriptionId, string location, CancellationToken cancelToken = default);
         Task<List<IdName>> GetResourceGroupsIdName(string subscriptionId, CancellationToken cancelToken = default);
     }
 
     public class ResourceGroupervice : BaseDataService, IResourceGroupervice
     {
-
         public ResourceGroupervice(
             IHttpClientFactory httpClientFactory,
             IAuthCsroService authCsroService,
@@ -35,6 +37,48 @@ namespace CSRO.Client.Services
             ClientName = Core.ConstatCsro.ClientNames.MANAGEMENT_AZURE_EndPoint;
 
             base.Init();
+        }
+
+        public async Task<ResourceGroupModel> CreateRgAsync(ResourceGroupModel item, CancellationToken cancelToken = default)
+        {
+            try
+            {
+                await base.AddAuthHeaderAsync();
+
+                var add = Mapper.Map<ResourceGroupDto>(item.ResourceGroup);                
+                add.Location = item.Location;
+                add.Name = null;
+                                
+                //string add = $"{{\"location\": \"{item.Location}\"}}"; //not working
+                //var add = new CreateRgDto { Location = item.Location };
+                var httpcontent = new StringContent(JsonSerializer.Serialize(add, _options), Encoding.UTF8, "application/json");
+
+                //PUT https://management.azure.com/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}?api-version=2020-06-01
+                var url = $"https://management.azure.com/subscriptions/{item.SubcriptionId}/resourcegroups/{item.NewRgName}?api-version=2020-06-01";
+                var apiData = await HttpClientBase.PutAsync(url, httpcontent, cancelToken).ConfigureAwait(false);
+
+                //var url = $"POST https://management.azure.com/subscriptions/{item.SubcriptionId}/resourcegroups/?api-version=2020-06-01";
+                //var apiData = await HttpClientBase.PostAsync(url, httpcontent, cancelToken).ConfigureAwait(false);
+
+                if (apiData.IsSuccessStatusCode)
+                {
+                    var content = await apiData.Content.ReadAsStringAsync();
+                    var ser = JsonSerializer.Deserialize<ResourceGroupDto>(content, _options);
+                    var result = Mapper.Map<ResourceGroup>(ser);
+                    item.ResourceGroup = result;
+                    item.IsNewRg = false;
+                    item.NewRgName = null;
+                    return item;
+
+                    //var model = Mapper.Map<ResourceGroupModel>(result);
+                    //return model;
+                }
+            }
+            catch (Exception ex)
+            {
+                base.HandleException(ex);
+            }
+            return null;
         }
 
         public async Task<List<ResourceGroup>> GetResourceGroups(string subscriptionId, CancellationToken cancelToken = default)
@@ -57,6 +101,40 @@ namespace CSRO.Client.Services
                         //exception
                         var result = Mapper.Map<List<ResourceGroup>>(ser.Value);
                         return result;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                base.HandleException(ex);
+            }
+            return null;
+        }
+
+        public async Task<List<ResourceGroup>> GetResourceGroups(string subscriptionId, string location, CancellationToken cancelToken = default)
+        {
+            try
+            {
+                //1. Call azure api
+                await base.AddAuthHeaderAsync();
+
+                //GET https://management.azure.com/subscriptions/{subscriptionId}/resourcegroups?api-version=2020-06-01
+                var url = $"https://management.azure.com/subscriptions/{subscriptionId}/resourcegroups?api-version=2020-06-01";
+                var apiData = await HttpClientBase.GetAsync(url, cancelToken).ConfigureAwait(false);
+
+                if (apiData.IsSuccessStatusCode)
+                {
+                    var content = await apiData.Content.ReadAsStringAsync();
+                    var ser = JsonSerializer.Deserialize<ResourceGroupsDto>(content, _options);
+                    if (ser?.Value?.Count > 0)
+                    {
+                        //exception
+                        var result = Mapper.Map<List<ResourceGroup>>(ser.Value);
+                        if (result?.Count > 0)
+                        {
+                            var list = result.Where(a => a.Location == location).ToList();
+                            return list;
+                        }                        
                     }
                 }
             }
