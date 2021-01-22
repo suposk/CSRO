@@ -152,7 +152,7 @@ namespace CSRO.Client.Services
                         case nameof(DefaultTag.billingReference):
                             result.BillingReferenceList.AddRange(item.Values);
                             break;
-                        case nameof(DefaultTag.cmdbRerence):
+                        case nameof(DefaultTag.cmdbReference):
                             result.CmdbRerenceList.AddRange(item.Values);
                             break;
                         case nameof(DefaultTag.opEnvironment):

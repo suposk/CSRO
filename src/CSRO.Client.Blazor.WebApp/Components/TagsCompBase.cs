@@ -99,11 +99,11 @@ namespace CSRO.Client.Blazor.WebApp.Components
             }
         }
 
-        public async Task OncmdbRerenceChanged(string value)
+        public async Task OncmdbReferenceChanged(string value)
         {
             if (value != null)
             {
-                Model.cmdbRerence = value;
+                Model.cmdbReference = value;
                 await OnTagSelectedEvent.InvokeAsync(Model);
             }
         }
@@ -117,8 +117,8 @@ namespace CSRO.Client.Blazor.WebApp.Components
         //            case nameof(Model.billingReference):                    
         //                Model.billingReference = value;
         //                break;
-        //            case nameof(Model.cmdbRerence):
-        //                Model.cmdbRerence = value;
+        //            case nameof(Model.cmdbReference):
+        //                Model.cmdbReference = value;
         //                break;
         //            case nameof(Model.opEnvironment):
         //                Model.opEnvironment = value;
