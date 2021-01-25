@@ -59,7 +59,8 @@ namespace CSRO.Client.Services
                             var net = new Network 
                             {
                                 Location = item.Location, 
-                                VirtualNetwork = item.Name,
+                                VirtualNetwork = item.Name,                                
+                                Subnets = new List<string>(item.Properties.Subnets.Select(a => a.Name)),
                             };
                             var rg = Core.Helpers.GetValueHelper.GetVal(item.Id, "resourceGroups");
                             net.NetworkResourceGroup = rg;

@@ -49,6 +49,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
         protected IdName _previosLocationIdName;
         protected DefaultNetwork Model { get; set; } = new DefaultNetwork();
         protected Networks Networks { get; set; } = new Networks();
+        List<Network> _networksList;
 
         protected bool IsNetRgDisabled => string.IsNullOrWhiteSpace(SubcriptionId) | string.IsNullOrWhiteSpace(LocationIdName?.Id) | Networks.NetworkResourceGroupList?.Count == 0;
         protected bool IsVNetDisabled => IsNetRgDisabled | (Networks.VirtualNetworkList?.Count == 0);
@@ -84,19 +85,12 @@ namespace CSRO.Client.Blazor.WebApp.Components
                 ShowLoading();
                 Model = new DefaultNetwork();
 
-                var res = await NetworkService.GetNetworks(SubcriptionId, LocationIdName.Id);
-                if (res == null)
+                _networksList = await NetworkService.GetNetworks(SubcriptionId, LocationIdName.Id);
+                Networks = new Networks();
+                foreach (var item in _networksList)
                 {
-                    Networks = new Networks();
-                }
-                else
-                {
-                    foreach (var item in res)
-                    {
-
-                    }
-                }
-
+                    _networksList.ForEach(a => Networks.NetworkResourceGroupList.Add( a.NetworkResourceGroup));
+                }              
             }
             catch (Exception ex)
             {
@@ -114,6 +108,9 @@ namespace CSRO.Client.Blazor.WebApp.Components
             {
                 Model.NetworkResourceGroup = value;
                 await OnNetworkSelectedEvent.InvokeAsync(Model);
+                var vnets = _networksList.Where(a => a.NetworkResourceGroup == value).Select(a => a.VirtualNetwork);
+                if (vnets != null)
+                    Networks.VirtualNetworkList.AddRange(vnets);
             }
         }
 
@@ -123,6 +120,9 @@ namespace CSRO.Client.Blazor.WebApp.Components
             {
                 Model.VirtualNetwork = value;
                 await OnNetworkSelectedEvent.InvokeAsync(Model);
+                var subnets = _networksList.FirstOrDefault(a => a.VirtualNetwork == value);
+                if (subnets != null)
+                    Networks.SubnetList.AddRange(subnets.Subnets);
             }
         }
 
