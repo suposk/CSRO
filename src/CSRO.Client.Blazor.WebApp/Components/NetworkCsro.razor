@@ -43,6 +43,7 @@
                 {
 
                     <MudTextField Label=@(nameof(Model.NetworkResourceGroup))
+                                  Disabled="@IsNetRgDisabled"
                                   @bind-Value="Model.NetworkResourceGroup"
                                   For="@(() => Model.NetworkResourceGroup)" />
                 }
@@ -65,6 +66,7 @@
                 {
 
                     <MudTextField Label=@(nameof(Model.VirtualNetwork))
+                                  Disabled="@IsVNetDisabled"
                                   @bind-Value="Model.VirtualNetwork"
                                   For="@(() => Model.VirtualNetwork)" />
                 }
@@ -87,6 +89,7 @@
                 {
 
                     <MudTextField Label=@(nameof(Model.Subnet))
+                                  Disabled="@IsSubnetDisabled"
                                   @bind-Value="Model.Subnet"
                                   For="@(() => Model.Subnet)" />
                 }
