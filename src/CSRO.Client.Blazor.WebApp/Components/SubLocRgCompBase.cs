@@ -30,6 +30,9 @@ namespace CSRO.Client.Blazor.WebApp.Components
         public EventCallback<string> SubcriptionIdChanged { get; set; }
 
         [Parameter]
+        public EventCallback<IdName> LocationIdNameChanged { get; set; }
+
+        [Parameter]
         public DefaultTag OnTagSelectedEventParam { get; set; }
 
         [Inject]
@@ -39,7 +42,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
         public ISubcriptionService SubcriptionService { get; set; }
 
         [Inject]
-        public IResourceGroupervice ResourceGroupervice { get; set; }
+        public IResourceGroupService ResourceGroupervice { get; set; }
 
         [Inject]
         public ICsroDialogService CsroDialogService { get; set; }
@@ -126,6 +129,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
                 Model.LocationIdName = value;
 
                 ShowLoading();
+                await LocationIdNameChanged.InvokeAsync(value);
                 await LoadRg(Model.SubcriptionId, value.Id);
                 HideLoading();
             }

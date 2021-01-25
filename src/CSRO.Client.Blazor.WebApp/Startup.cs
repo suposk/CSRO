@@ -167,7 +167,8 @@ namespace CSRO.Client.Blazor.WebApp
             services.AddScoped<IVmTicketDataService, VmTicketDataService>();
             services.AddTransient<IAzureVmManagementService, AzureVmManagementService>();
             services.AddTransient<ISubcriptionService, SubcriptionService>();
-            services.AddTransient<IResourceGroupervice, ResourceGroupervice>();
+            services.AddTransient<IResourceGroupService, ResourceGroupService>();
+            services.AddTransient<INetworkService, NetworkService>();
 
             //UI component for dialods
             services.AddTransient<ICsroDialogService, CsroDialogService>();

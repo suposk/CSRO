@@ -32,7 +32,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
         public ISubcriptionService SubcriptionService { get; set; }
 
         [Inject]
-        public IResourceGroupervice ResourceGroupervice { get; set; }
+        public IResourceGroupService ResourceGroupervice { get; set; }
 
         [Inject]
         public ICsroDialogService CsroDialogService { get; set; }

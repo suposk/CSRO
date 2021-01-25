@@ -1,0 +1,74 @@
+﻿@page "/vm/Create"
+@using CSRO.Client.Services.Models
+
+<div class="m-1">
+    <MudGrid class="mt-6">
+        <MudItem xs="4">
+            <MudPaper>
+                <SubLocRgComp OperationTypeTicket="OperatioType.Create"
+                              OnTagSelectedEventParam="@OnTagSelectedEventParam"
+                              IsprivilegedMembersVisible="@IsprivilegedMembersVisible"
+                              SubcriptionIdChanged="@SubcriptionIdChangedHandler" 
+                              LocationIdNameChanged="LocationIdNameChangedHandler"
+                              >
+
+                </SubLocRgComp>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="4">
+            <MudPaper>
+                <TagsComp SubcriptionId="@SubcriptionId"
+                          IsprivilegedMembersVisible="@IsprivilegedMembersVisible"
+                          IsValidationEnabled="@IsTagValidationEnabled"
+                          OnTagSelectedEvent="@OnParentTagSelectedEventHandler">
+
+                </TagsComp>
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="4">
+            <MudPaper>
+                <NetworkCsro SubcriptionId="@SubcriptionId"    
+                             LocationIdName="@LocationIdName"
+                          IsValidationEnabled="@IsTagValidationEnabled"
+                          >
+                </NetworkCsro>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</div>
+
+@code {
+
+    [Parameter]
+    public string SubcriptionId { get; set; }
+
+    [Parameter]
+    public IdName LocationIdName { get; set; }
+
+
+    [Parameter]
+    public bool IsprivilegedMembersVisible { get; set; } = false;
+
+    public DefaultTag OnTagSelectedEventParam { get; set; }
+
+    [Parameter]
+    public bool IsTagValidationEnabled { get; set; }
+
+    private void SubcriptionIdChangedHandler(string subId)
+    {
+        SubcriptionId = subId;
+        IsTagValidationEnabled = true;
+    }
+
+    private void LocationIdNameChangedHandler(IdName value)
+    {
+        LocationIdName = value;
+    }
+
+    private void OnParentTagSelectedEventHandler(DefaultTag defaultTag)
+    {
+        OnTagSelectedEventParam = defaultTag;
+    }
+
+}

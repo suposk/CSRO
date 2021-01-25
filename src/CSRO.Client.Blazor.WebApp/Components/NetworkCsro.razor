@@ -1,0 +1,122 @@
+﻿@inherits NetworkCsroBase
+@using CSRO.Client.Services.Models
+@using CSRO.Client.Services.Validation
+@using Blazored.FluentValidation
+
+<MudContainer>
+    <div>
+        <MudText Typo="Typo.h5" Class="mt-2" GutterBottom="true">@Title</MudText>
+        @if (IsLoading)
+        {
+            <MudGrid>
+                <MudItem>
+                    <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+                </MudItem>
+                <MudItem>
+                    <MudText Align="Align.Center">@LoadingMessage</MudText>
+                </MudItem>
+            </MudGrid>
+        }
+
+    <EditForm Model="@Model" OnValidSubmit="OnValidSubmit">
+        @if (IsValidationEnabled)
+        {
+            <FluentValidationValidator />
+        }
+        <MudCard>
+            <MudCardContent>
+                @if (Networks.NetworkResourceGroupList?.Count > 0)
+                {
+                    <MudSelect T="@string"
+                               Disabled="@IsNetRgDisabled"
+                               OffsetY="true"
+                               Label=@(nameof(Model.NetworkResourceGroup))
+                               ValueChanged="(e) => OnNetworkResourceGroupChanged(e)"
+                               For="@(() => Model.NetworkResourceGroup)">
+                        @foreach (var item in Networks.NetworkResourceGroupList)
+                        {
+                            <MudSelectItem T="string" Value="@item">@item</MudSelectItem>
+                        }
+                    </MudSelect>
+                }
+                else
+                {
+
+                    <MudTextField Label=@(nameof(Model.NetworkResourceGroup))
+                                  @bind-Value="Model.NetworkResourceGroup"
+                                  For="@(() => Model.NetworkResourceGroup)" />
+                }
+
+                @if (Networks.VirtualNetworkList?.Count > 0)
+                {
+                    <MudSelect T="@string"
+                               Disabled="@IsVNetDisabled"
+                               OffsetY="true"
+                               Label=@(nameof(Model.VirtualNetwork))
+                               ValueChanged="(e) => OnVirtualNetworkChanged(e)"
+                               For="@(() => Model.VirtualNetwork)">
+                        @foreach (var item in Networks.VirtualNetworkList)
+                        {
+                            <MudSelectItem T="string" Value="@item">@item</MudSelectItem>
+                        }
+                    </MudSelect>
+                }
+                else
+                {
+
+                    <MudTextField Label=@(nameof(Model.VirtualNetwork))
+                                  @bind-Value="Model.VirtualNetwork"
+                                  For="@(() => Model.VirtualNetwork)" />
+                }
+
+                @if (Networks.SubnetList?.Count > 0)
+                {
+                    <MudSelect T="@string"
+                               Disabled="@IsSubnetDisabled"
+                               OffsetY="true"
+                               Label=@(nameof(Model.Subnet))
+                               ValueChanged="(e) => OnSubnetChanged(e)"
+                               For="@(() => Model.Subnet)">
+                        @foreach (var item in Networks.SubnetList)
+                        {
+                            <MudSelectItem T="string" Value="@item">@item</MudSelectItem>
+                        }
+                    </MudSelect>
+                }
+                else
+                {
+
+                    <MudTextField Label=@(nameof(Model.Subnet))
+                                  @bind-Value="Model.Subnet"
+                                  For="@(() => Model.Subnet)" />
+                }
+
+            </MudCardContent>
+
+        </MudCard>
+
+        @*@if (IsValidationEnabled)
+        {
+            <MudText Typo="Typo.body2" Align="Align.Center" Class="my-4">
+                Fill out the form correctly to see the success message.
+            </MudText>
+
+            <MudExpansionPanels>
+                <MudExpansionPanel IsExpanded="true"
+                                   Text="Show Validation Summary">
+                    <MudText Color="@Color.Error">
+                        <ValidationSummary />
+                    </MudText>
+
+                </MudExpansionPanel>
+            </MudExpansionPanels>
+        }*@
+
+    </EditForm>
+
+    </div>
+</MudContainer>
+
+@code {
+
+}
