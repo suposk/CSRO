@@ -18,7 +18,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
         #region Params and Injects
 
         [Parameter]
-        public string TicketId { get; set; }
+        public bool IsprivilegedMembersVisible { get; set; }
 
         [Parameter]
         public OperatioType OperationTypeTicket { get; set; }
@@ -89,6 +89,8 @@ namespace CSRO.Client.Blazor.WebApp.Components
             base.OnParametersSet();
             if (OnTagSelectedEventParam != null)
                 Model.ResourceGroup.Tags = OnTagSelectedEventParam;
+            if (IsprivilegedMembersVisible)
+                Model.ResourceGroup.IsPrivMembersRequired = true;
 
             if (ShouldValidate())
                 editContext?.Validate();

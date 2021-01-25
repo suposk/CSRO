@@ -76,6 +76,13 @@
                                       For="@(() => Model.cmdbReference)" />
                     }
 
+                    @if (IsprivilegedMembersVisible)
+                    {
+                        <MudTextField Label=@(nameof(Model.privilegedMembers))
+                                      @bind-Value="Model.privilegedMembers"
+                                      For="@(() => Model.privilegedMembers)" />
+                    }
+
                 </MudCardContent>
 
 

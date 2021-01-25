@@ -6,13 +6,15 @@
         <MudItem xs="6">
             <MudPaper>
                 <SubLocRgComp OperationTypeTicket="OperatioType.Create"
-                              OnTagSelectedEventParam="@OnTagSelectedEventParam"                              
+                              OnTagSelectedEventParam="@OnTagSelectedEventParam"      
+                              IsprivilegedMembersVisible="@IsprivilegedMembersVisible"
                               SubcriptionIdChanged="@SubcriptionIdChangedHandler">
 
                 </SubLocRgComp>
 
                 <div class="mt-2">
                     <TagsComp SubcriptionId="@SubcriptionId"
+                              IsprivilegedMembersVisible="@IsprivilegedMembersVisible"
                               IsValidationEnabled="@IsTagValidationEnabled"
                               OnTagSelectedEvent="@OnParentTagSelectedEventHandler">
 
@@ -35,8 +37,11 @@
     [Parameter]
     public string SubcriptionId { get; set; }
 
+    [Parameter]
+    public bool IsprivilegedMembersVisible { get; set; } = false;
+
     public DefaultTag OnTagSelectedEventParam { get; set; }
-        
+
     [Parameter]
     public bool IsTagValidationEnabled { get; set; }
 
@@ -48,7 +53,7 @@
 
     private void OnParentTagSelectedEventHandler(DefaultTag defaultTag)
     {
-        OnTagSelectedEventParam = defaultTag;              
+        OnTagSelectedEventParam = defaultTag;
     }
 
 }

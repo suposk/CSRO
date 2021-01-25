@@ -15,5 +15,7 @@ namespace CSRO.Client.Services.Models
         public string cmdbReference { get; set; }
                 
         public string billingReference { get; set; }
+
+        public string privilegedMembers { get; set; }
     }
 }

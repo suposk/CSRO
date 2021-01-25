@@ -26,6 +26,9 @@ namespace CSRO.Client.Blazor.WebApp.Components
         [Parameter]
         public string SubcriptionId { get; set; }
 
+        [Parameter]
+        public bool IsprivilegedMembersVisible { get; set; }
+
         [Parameter] 
         public EventCallback<DefaultTag> OnTagSelectedEvent { get; set; }
 

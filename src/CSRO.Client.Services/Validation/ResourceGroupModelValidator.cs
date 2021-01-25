@@ -27,7 +27,13 @@ namespace CSRO.Client.Services.Validation
     {
         public CreateResourceGroupValidator()
         {
-            RuleFor(p => p.Tags).SetValidator(new DefaultTagValidator());
+            When(p => p.IsPrivMembersRequired, () => 
+            {
+                RuleFor(p => p.Tags).SetValidator(new PrivMembersTagValidator());
+            }).Otherwise(()=> 
+            {
+                RuleFor(p => p.Tags).SetValidator(new DefaultTagValidator());
+            });            
         }
     }
 
