@@ -87,7 +87,8 @@
 
 
             </MudCard>
-            <!--@if (IsValidationEnabled)
+
+            @*@if (IsValidationEnabled)
             {
                 <MudText Typo="Typo.body2" Align="Align.Center" Class="my-4">
                     Fill out the form correctly to see the success message.
@@ -96,19 +97,13 @@
                 <MudExpansionPanels>
                     <MudExpansionPanel IsExpanded="true"
                                        Text="Show Validation Summary">
-                        @if (Success)
-                        {-->
-                            @*<MudText Color="Color.Success">Success</MudText>*@
-                        <!--}
-                        else
-                        {
-                            <MudText Color="@Color.Error">
-                                <ValidationSummary />
-                            </MudText>
-                        }
+                        <MudText Color="@Color.Error">
+                            <ValidationSummary />
+                        </MudText>
+
                     </MudExpansionPanel>
                 </MudExpansionPanels>
-            }-->
+            }*@
         </EditForm>
         
     </div>
