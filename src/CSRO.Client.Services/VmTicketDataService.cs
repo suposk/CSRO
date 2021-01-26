@@ -27,10 +27,10 @@ namespace CSRO.Client.Services
 
     public class VmTicketDataService : BaseDataService, IVmTicketDataService
     {
-        private readonly IAzureVmManagementService _azureVmManagementService;
+        private readonly IVmService _vmManagementService;
 
         public VmTicketDataService(
-            IAzureVmManagementService azureVmManagementService, 
+            IVmService vmManagementService, 
             IHttpClientFactory httpClientFactory, IAuthCsroService authCsroService, IMapper mapper, IConfiguration configuration)
             : base(httpClientFactory, authCsroService, mapper, configuration)
         {
@@ -41,7 +41,7 @@ namespace CSRO.Client.Services
 
             base.Init();
 
-            _azureVmManagementService = azureVmManagementService;
+            _vmManagementService = vmManagementService;
         }
 
 
@@ -50,7 +50,7 @@ namespace CSRO.Client.Services
             
             try
             {
-                var vmstatus = await _azureVmManagementService.GetVmDisplayStatus(item);
+                var vmstatus = await _vmManagementService.GetVmDisplayStatus(item);
                 if (vmstatus.suc)
                 {
                     var server = await GetItemByIdAsync(item.Id);
@@ -85,7 +85,7 @@ namespace CSRO.Client.Services
                     i++;
                     await Task.Delay(2 * 1000);
 
-                    var vmstatus = await _azureVmManagementService.GetVmDisplayStatus(item);
+                    var vmstatus = await _vmManagementService.GetVmDisplayStatus(item);
                     if (vmstatus.suc)
                     {
                         var server = await GetItemByIdAsync(item.Id);

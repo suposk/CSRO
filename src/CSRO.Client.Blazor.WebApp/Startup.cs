@@ -165,7 +165,7 @@ namespace CSRO.Client.Blazor.WebApp
             services.AddScoped<IBaseDataService<Ticket>, TicketDataService>();
             //services.AddScoped<IBaseDataService<VmTicket>, VmTicketDataService>();            
             services.AddScoped<IVmTicketDataService, VmTicketDataService>();
-            services.AddTransient<IAzureVmManagementService, AzureVmManagementService>();
+            services.AddTransient<IVmService, VmService>();
             services.AddTransient<ISubcriptionService, SubcriptionService>();
             services.AddTransient<IResourceGroupService, ResourceGroupService>();
             services.AddTransient<INetworkService, NetworkService>();

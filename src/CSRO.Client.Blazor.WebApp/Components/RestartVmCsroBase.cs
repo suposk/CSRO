@@ -29,6 +29,9 @@ namespace CSRO.Client.Blazor.WebApp.Components
         public IVmTicketDataService VmTicketDataService { get; set; }
 
         [Inject]
+        public IVmService VmService { get; set; }
+
+        [Inject]
         public ISubcriptionService SubcriptionService { get; set; }
 
         [Inject]
@@ -50,7 +53,9 @@ namespace CSRO.Client.Blazor.WebApp.Components
         protected bool IsReadOnly => OperationTypeTicket == OperatioType.View;
         protected string Title => OperationTypeTicket == OperatioType.Create ? "Request Vm Restart" : $"View {Model.Status} of {Model.VmName}";
         protected List<IdName> Subscripions { get; set; }        
-        protected List<string> ResourceGroups { get; set; } = new List<string>();        
+        protected List<string> ResourceGroups { get; set; } = new List<string>();
+        protected List<string> Vms { get; set; } = new List<string>();
+
         protected bool IsRgDisabled => ResourceGroups?.Count == 0;
         protected bool IsVmDisabled => OperationTypeTicket != OperatioType.Create || IsRgDisabled || string.IsNullOrWhiteSpace(Model?.ResorceGroup);
 
@@ -79,6 +84,18 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
                 ShowLoading();
                 await LoadRg(value.Id);
+                HideLoading();
+            }
+        }
+
+        public async Task OnRgChanged(string value)
+        {
+            if (value != null)
+            {
+                Model.ResorceGroup = value;
+                ShowLoading();
+                var vms = await VmService.GetVmNames(Model.SubcriptionId, Model.ResorceGroup);
+                Vms = vms ?? new List<string>();
                 HideLoading();
             }
         }
