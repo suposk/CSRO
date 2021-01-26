@@ -9,24 +9,16 @@
                               OnTagSelectedEventParam="@OnTagSelectedEventParam"      
                               IsprivilegedMembersVisible="@IsprivilegedMembersVisible"
                               SubcriptionIdChanged="@SubcriptionIdChangedHandler">
-
                 </SubLocRgComp>
-
-                <div class="mt-2">
-                    <TagsComp SubcriptionId="@SubcriptionId"
-                              IsprivilegedMembersVisible="@IsprivilegedMembersVisible"
-                              IsValidationEnabled="@IsTagValidationEnabled"
-                              OnTagSelectedEvent="@OnParentTagSelectedEventHandler">
-
-                    </TagsComp>
-                </div>
             </MudPaper>
         </MudItem>
         <MudItem xs="6">
-            <MudPaper>
-                <SubLocRgComp OperationTypeTicket="OperatioType.View">
-
-                </SubLocRgComp>
+            <MudPaper>                
+                <TagsComp SubcriptionId="@SubcriptionId"
+                            IsprivilegedMembersVisible="@IsprivilegedMembersVisible"
+                            IsValidationEnabled="@IsTagValidationEnabled"
+                            OnTagSelectedEvent="@OnParentTagSelectedEventHandler">
+                </TagsComp>                
             </MudPaper>
         </MudItem>
     </MudGrid>

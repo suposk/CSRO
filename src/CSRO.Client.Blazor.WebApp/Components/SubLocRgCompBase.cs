@@ -61,7 +61,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
         protected bool IsReadOnly => OperationTypeTicket == OperatioType.View;
 
-        protected string Title => OperationTypeTicket == OperatioType.Create ? "Select or Create Resource Group" : $"Select Resource Group";
+        protected string Title => OperationTypeTicket == OperatioType.Create ? "Select and Create Resource Group" : $"Select Resource Group";
 
         //protected string Title => "Hosting Settings";
 
