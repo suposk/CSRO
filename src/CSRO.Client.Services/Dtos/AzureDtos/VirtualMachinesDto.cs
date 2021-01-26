@@ -21,6 +21,7 @@ namespace CSRO.Client.Services.Dtos.AzureDtos
         public IdentityDto Identity { get; set; }
         public VmPropertiesDto Properties { get; set; }
         //public List<long> Zones { get; set; }
+        public List<string> Zones { get; set; }
     }
 
     public class IdentityDto
