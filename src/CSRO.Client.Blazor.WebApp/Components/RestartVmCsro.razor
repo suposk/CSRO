@@ -4,7 +4,7 @@
 @using Blazored.FluentValidation
 
 <MudContainer>
-    <div style="max-width: 50%" class="m-4">
+    <div>
         <MudText Typo="Typo.h4" GutterBottom="true">@Title</MudText>
         @if (IsLoading)
         {
@@ -67,8 +67,8 @@
 
                             <MudSelect T="@string"
                                        Disabled="@IsRgDisabled"
-                                       Label="Resource Group:"
-                                       @bind-Value="Model.ResorceGroup"
+                                       Label="Select Resource Group:"                                       
+                                       ValueChanged="(e) => OnRgChanged(e)"
                                        For="@(() => Model.ResorceGroup)">
                                 @foreach (var rg in ResourceGroups)
                                 {
@@ -77,9 +77,29 @@
                             </MudSelect>
                         }
 
-                        <MudTextField Label="Vm Name:" HelperText="Name of Virtual Machine"
-                                      Disabled="@IsVmDisabled"
-                                      @bind-Value="Model.VmName" For="@(() => Model.VmName)" />
+                        @if (Vms.Count > 0)
+                        {
+                            <MudSelect T="@string"
+                                          Label="Select Vm Name:"
+                                          Disabled="@IsVmDisabled"
+                                          @bind-Value="Model.VmName"
+                                          For="@(() => Model.VmName)"
+                                       >
+                                @foreach (var item in Vms)
+                                {
+                                    <MudSelectItem T="string" Value="@item">@item</MudSelectItem>
+                                }
+                            </MudSelect>
+                        }
+                        else
+                        {
+                            <MudTextField 
+                                          Label="Vm Name:" HelperText="Name of Virtual Machine"
+                                          Disabled="@IsVmDisabled"
+                                          @bind-Value="Model.VmName"
+                                          For="@(() => Model.VmName)"
+                                          />
+                        }
 
                         <MudTextField Label="Note:"
                                       Disabled="@IsReadOnly"
