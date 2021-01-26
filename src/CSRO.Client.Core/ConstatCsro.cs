@@ -17,6 +17,7 @@ namespace CSRO.Client.Core
         public static class Scopes 
         {
             public const string MANAGEMENT_AZURE_SCOPE = "https://management.azure.com//.default";
+            //added comment in suposk
         }
     }
 }
