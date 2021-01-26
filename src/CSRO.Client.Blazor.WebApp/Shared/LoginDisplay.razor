@@ -14,17 +14,26 @@
 
 <div>
     @if (_isAuthenticated)
-    {        
-        <MudText Class="m-1">@_name</MudText>    
-        <MudNavLink
-                    Class="m-1"
-                    Href="MicrosoftIdentity/Account/SignOut" 
+    {
+        @*<MudText Class="m-1">@_name</MudText>
+        <MudNavLink Class="m-1"
+                    Href="MicrosoftIdentity/Account/SignOut"
                     Target="_blank"
-                    Match="NavLinkMatch.Prefix">Log out</MudNavLink>
+                    Match="NavLinkMatch.Prefix">Log out</MudNavLink>*@
+        <MudGrid>
+            <MudItem>
+                <MudText Class="p-2">@_name</MudText>
+            </MudItem>
+            <MudItem>
+                <MudNavLink Class="m-1"
+                            Href="MicrosoftIdentity/Account/SignOut"                                                       
+                            Match="NavLinkMatch.Prefix">Log out</MudNavLink>
+            </MudItem>
+        </MudGrid>
     }
     else
-    {                
-        <MudNavLink Href="MicrosoftIdentity/Account/SignIn" Match="NavLinkMatch.Prefix" Target="_blank">Log in</MudNavLink>                    
+    {
+        <MudNavLink Href="MicrosoftIdentity/Account/SignIn" Match="NavLinkMatch.Prefix" Target="_blank">Log in</MudNavLink>
     }
 </div>
 

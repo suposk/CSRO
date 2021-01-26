@@ -18,7 +18,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
         #region Params and Injects
 
         [Parameter]
-        public string TicketId { get; set; }
+        public bool IsprivilegedMembersVisible { get; set; }
 
         [Parameter]
         public OperatioType OperationTypeTicket { get; set; }
@@ -30,6 +30,9 @@ namespace CSRO.Client.Blazor.WebApp.Components
         public EventCallback<string> SubcriptionIdChanged { get; set; }
 
         [Parameter]
+        public EventCallback<IdName> LocationIdNameChanged { get; set; }
+
+        [Parameter]
         public DefaultTag OnTagSelectedEventParam { get; set; }
 
         [Inject]
@@ -39,7 +42,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
         public ISubcriptionService SubcriptionService { get; set; }
 
         [Inject]
-        public IResourceGroupervice ResourceGroupervice { get; set; }
+        public IResourceGroupService ResourceGroupervice { get; set; }
 
         [Inject]
         public ICsroDialogService CsroDialogService { get; set; }
@@ -58,7 +61,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
         protected bool IsReadOnly => OperationTypeTicket == OperatioType.View;
 
-        protected string Title => OperationTypeTicket == OperatioType.Create ? "Select or Create Resource Group" : $"Select Resource Group";
+        protected string Title => OperationTypeTicket == OperatioType.Create ? "Select and Create Resource Group" : $"Select Resource Group";
 
         //protected string Title => "Hosting Settings";
 
@@ -89,6 +92,8 @@ namespace CSRO.Client.Blazor.WebApp.Components
             base.OnParametersSet();
             if (OnTagSelectedEventParam != null)
                 Model.ResourceGroup.Tags = OnTagSelectedEventParam;
+            if (IsprivilegedMembersVisible)
+                Model.ResourceGroup.IsPrivMembersRequired = true;
 
             if (ShouldValidate())
                 editContext?.Validate();
@@ -124,6 +129,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
                 Model.LocationIdName = value;
 
                 ShowLoading();
+                await LocationIdNameChanged.InvokeAsync(value);
                 await LoadRg(Model.SubcriptionId, value.Id);
                 HideLoading();
             }

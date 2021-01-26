@@ -8,7 +8,7 @@ namespace CSRO.Client.Services.Validation
         public DefaultTagValidator()
         {
             RuleFor(p => p.billingReference).NotEmpty();
-            RuleFor(p => p.cmdbRerence).NotEmpty();
+            RuleFor(p => p.cmdbReference).NotEmpty();
             RuleFor(p => p.opEnvironment).NotEmpty();
         }
     }

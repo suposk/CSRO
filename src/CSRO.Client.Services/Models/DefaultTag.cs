@@ -8,9 +8,14 @@ namespace CSRO.Client.Services.Models
     public class DefaultTag
     {
         public string opEnvironment { get; set; }
-                
-        public string cmdbRerence { get; set; }
+
+        /// <summary>
+        /// bug it was cmdbRerence, not cmdbReference
+        /// </summary>
+        public string cmdbReference { get; set; }
                 
         public string billingReference { get; set; }
+
+        public string privilegedMembers { get; set; }
     }
 }

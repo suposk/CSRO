@@ -13,7 +13,7 @@ namespace CSRO.Client.Services.Models
         }
 
         public bool IsNewRg { get; set; }
-        public string NewRgName { get; set; }
+        public string NewRgName { get; set; }        
 
         private string _SubcriptionId;
         public string SubcriptionId

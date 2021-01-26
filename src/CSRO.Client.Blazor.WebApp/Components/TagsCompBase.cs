@@ -26,6 +26,9 @@ namespace CSRO.Client.Blazor.WebApp.Components
         [Parameter]
         public string SubcriptionId { get; set; }
 
+        [Parameter]
+        public bool IsprivilegedMembersVisible { get; set; }
+
         [Parameter] 
         public EventCallback<DefaultTag> OnTagSelectedEvent { get; set; }
 
@@ -42,7 +45,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
         public ILogger<TagsCompBase> Logger { get; set; }
 
         #endregion
-
+        protected string _previosSubcriptionId;
         protected DefaultTag Model { get; set; } = new DefaultTag();
         protected DefaultTags Tags { get; set; } = new DefaultTags();
 
@@ -58,18 +61,24 @@ namespace CSRO.Client.Blazor.WebApp.Components
         protected async override Task OnParametersSetAsync()
         {
             await base.OnParametersSetAsync();
-            await Load();
+            if (string.IsNullOrWhiteSpace(SubcriptionId) || string.Equals(SubcriptionId, _previosSubcriptionId))
+                return;
+            else
+            {
+                _previosSubcriptionId = SubcriptionId;
+                await Load();
+            }
         }
 
         private async Task Load()
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(SubcriptionId))
-                    return;
-
                 ShowLoading();
-                Tags = await SubcriptionService.GetDefualtTags(SubcriptionId);
+                Model = new DefaultTag();
+                
+                var tags = await SubcriptionService.GetDefualtTags(SubcriptionId);
+                Tags = tags ?? new DefaultTags();
             }
             catch (Exception ex)
             {
@@ -99,11 +108,11 @@ namespace CSRO.Client.Blazor.WebApp.Components
             }
         }
 
-        public async Task OncmdbRerenceChanged(string value)
+        public async Task OncmdbReferenceChanged(string value)
         {
             if (value != null)
             {
-                Model.cmdbRerence = value;
+                Model.cmdbReference = value;
                 await OnTagSelectedEvent.InvokeAsync(Model);
             }
         }
@@ -117,8 +126,8 @@ namespace CSRO.Client.Blazor.WebApp.Components
         //            case nameof(Model.billingReference):                    
         //                Model.billingReference = value;
         //                break;
-        //            case nameof(Model.cmdbRerence):
-        //                Model.cmdbRerence = value;
+        //            case nameof(Model.cmdbReference):
+        //                Model.cmdbReference = value;
         //                break;
         //            case nameof(Model.opEnvironment):
         //                Model.opEnvironment = value;

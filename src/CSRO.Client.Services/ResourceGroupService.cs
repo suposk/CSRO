@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace CSRO.Client.Services
 {
-    public interface IResourceGroupervice
+    public interface IResourceGroupService
     {
         Task<ResourceGroupModel> CreateRgAsync(ResourceGroupModel item, CancellationToken cancelToken = default);
         Task<List<ResourceGroup>> GetResourceGroups(string subscriptionId, CancellationToken cancelToken = default);
@@ -21,9 +21,9 @@ namespace CSRO.Client.Services
         Task<List<IdName>> GetResourceGroupsIdName(string subscriptionId, CancellationToken cancelToken = default);
     }
 
-    public class ResourceGroupervice : BaseDataService, IResourceGroupervice
+    public class ResourceGroupService : BaseDataService, IResourceGroupService
     {
-        public ResourceGroupervice(
+        public ResourceGroupService(
             IHttpClientFactory httpClientFactory,
             IAuthCsroService authCsroService,
             IMapper mapper,

@@ -1,0 +1,27 @@
+﻿@page "/rg/Select"
+@using CSRO.Client.Services.Models
+
+
+<div class="mt-1 mb-2">
+    <MudPaper>
+        <SubLocRgComp OperationTypeTicket="OperatioType.View">
+
+        </SubLocRgComp>
+    </MudPaper>            
+</div>
+
+@code {
+
+    [Parameter]
+    public string SubcriptionId { get; set; }
+
+    [Parameter]
+    public bool IsprivilegedMembersVisible { get; set; } = false;
+
+
+    private void SubcriptionIdChangedHandler(string subId)
+    {
+        SubcriptionId = subId;        
+    }
+
+}

@@ -1,27 +1,35 @@
 ﻿<MudNavMenu Class="mudblazor-navmenu">
     <div class="docs-nav-fader"></div>
-    <MudNavGroup Title="Self Service" Icon="@Icons.Material.Shop" Expanded="true" ExpandIcon="@Icons.Material.ExpandMore" Style="margin-top: 4px;">
+    <MudNavGroup Title="Easy Sample" Icon="@Icons.Material.Satellite" Expanded="true" ExpandIcon="@Icons.Material.ExpandMore" Style="margin-top: 4px;">
 
         <MudNavLink Href="/ticketcreate" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Add">Create Sample Ticket</MudNavLink>
         <MudNavLink Href="/ticketsview" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.List">Sample Tickets</MudNavLink>
+    </MudNavGroup>
 
+    <MudNavGroup Title="Virtual Machine" Icon="@Icons.Material.Computer" Expanded="true" ExpandIcon="@Icons.Material.ExpandMore" Style="margin-top: 4px;">
+        <MudNavLink Href="/vm/Create" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Add">Create Vm</MudNavLink>
         <MudNavLink Href="/vm/restart" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Refresh">Wm Restart</MudNavLink>
-        <MudNavLink Href="/vm" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Computer">Wm Tickets</MudNavLink>
-        
-        <MudNavLink Href="/rg/Create" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Add">Resource Group</MudNavLink>
+        <MudNavLink Href="/vm" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.ListAlt">Wm Tickets</MudNavLink>
+    </MudNavGroup>
 
+    <MudNavGroup Title="Resource Group" Icon="@Icons.Material.Shop" Expanded="true" ExpandIcon="@Icons.Material.ExpandMore" Style="margin-top: 4px;">
+        <MudNavLink Href="/rg/Create" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Add">Create Resource Group</MudNavLink>
+        <MudNavLink Href="/rg/Select" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.SelectAll">Select Resource Group</MudNavLink>        
+    </MudNavGroup>
+
+    <MudNavGroup Title="Other" Icon="@Icons.Material.Nature" Expanded="true" ExpandIcon="@Icons.Material.ExpandMore" Style="margin-top: 4px;">
         <MudNavLink Href="/appversion" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.FileCopy">App Version</MudNavLink>
     </MudNavGroup>
 
-    <MudNavGroup Title="Mud Views" Icon="@Icons.Custom.MudBlazor" Expanded="false" ExpandIcon="@Icons.Material.ExpandMore" Style="margin-top: 4px;">
-        <MudNavLink Href="/mcounter" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Add">Mud Counter</MudNavLink>
-        <MudNavLink Href="/mfetchdata" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.List">Mud Fetch data</MudNavLink>
-    </MudNavGroup>
+    @*<MudNavGroup Title="Mud Views" Icon="@Icons.Custom.MudBlazor" Expanded="false" ExpandIcon="@Icons.Material.ExpandMore" Style="margin-top: 4px;">
+            <MudNavLink Href="/mcounter" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Add">Mud Counter</MudNavLink>
+            <MudNavLink Href="/mfetchdata" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.List">Mud Fetch data</MudNavLink>
+        </MudNavGroup>
 
-    <MudNavGroup Title="Default Views" Icon="@Icons.Material.Insights" Expanded="false" ExpandIcon="@Icons.Material.ExpandMore" Style="margin-top: 4px;">
-        <MudNavLink Href="/counter" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Add">Counter</MudNavLink>
-        <MudNavLink Href="/fetchdata" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.List">Fetch data</MudNavLink>
-    </MudNavGroup>
+        <MudNavGroup Title="Default Views" Icon="@Icons.Material.Insights" Expanded="false" ExpandIcon="@Icons.Material.ExpandMore" Style="margin-top: 4px;">
+            <MudNavLink Href="/counter" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Add">Counter</MudNavLink>
+            <MudNavLink Href="/fetchdata" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.List">Fetch data</MudNavLink>
+        </MudNavGroup>*@
 
 </MudNavMenu>
 <div class="docs-nav-filler"></div>
