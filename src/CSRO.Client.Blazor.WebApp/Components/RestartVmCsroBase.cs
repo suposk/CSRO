@@ -44,6 +44,9 @@ namespace CSRO.Client.Blazor.WebApp.Components
         public ILocationsService LocationsService { get; set; }
 
         [Inject]
+        public IAzureSdkService  AzureSdkService { get; set; }
+
+        [Inject]
         public ILogger<RestartVmCsroBase> Logger { get; set; }
 
         #endregion
@@ -96,6 +99,8 @@ namespace CSRO.Client.Blazor.WebApp.Components
                 ShowLoading();
                 var vms = await VmService.GetVmNames(Model.SubcriptionId, Model.ResorceGroup);
                 Vms = vms ?? new List<string>();
+
+
                 HideLoading();
             }
         }
@@ -193,7 +198,9 @@ namespace CSRO.Client.Blazor.WebApp.Components
             if (valid)
             {
                 try
-                {                    
+                {
+                    var testData = await AzureSdkService.TryGetData(Model.SubcriptionId, Model.ResorceGroup, Model.VmName);
+
                     if (OperationTypeTicket == OperatioType.Create)
                     {
                         ShowLoading("Creating request");   
