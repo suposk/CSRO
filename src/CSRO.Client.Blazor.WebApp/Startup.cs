@@ -170,8 +170,13 @@ namespace CSRO.Client.Blazor.WebApp
             services.AddTransient<IResourceGroupService, ResourceGroupService>();
             services.AddTransient<INetworkService, NetworkService>();
 
+            services.AddTransient<IAzureSdkService, AzureSdkService>();
+            services.AddTransient<ICsroTokenCredentialProvider, CsroTokenCredentialProvider>();
+
             //UI component for dialods
             services.AddTransient<ICsroDialogService, CsroDialogService>();
+
+
 
             services.AddSingleton<ILocationsService, LocationsService>();
             
