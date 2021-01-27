@@ -4,6 +4,7 @@ using Azure.ResourceManager.Compute;
 using Azure.ResourceManager.Compute.Models;
 using Azure.ResourceManager.Network;
 using Azure.ResourceManager.Resources;
+using Azure.ResourceManager.Resources.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,7 +47,7 @@ namespace CSRO.Client.Services
                 var availabilitySetsClient = computeClient.AvailabilitySets;
                 var virtualMachinesClient = computeClient.VirtualMachines;
                 var resourceGroupClient = resourcesClient.ResourceGroups;
-
+                
                 var list = new List<object>();
 
                 result = await virtualMachinesClient.InstanceViewAsync(resourceGroupName, vmName);
@@ -58,6 +59,14 @@ namespace CSRO.Client.Services
                 {
                     list.Add(result.Value.Statuses);
                 }
+
+                AsyncPageable<Subscription> subs = resourcesClient.Subscriptions.ListAsync();
+                await foreach(var sub in subs)
+                {
+                    list.Add(sub);
+                    
+                }
+
                 return list;
             }
             catch (Exception ex)

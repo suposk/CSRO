@@ -150,7 +150,8 @@ namespace CSRO.Client.Blazor.WebApp.Components
                 else
                 {
                     ShowLoading();
-                    Subscripions = await SubcriptionService.GetSubcriptions();                    
+                    Subscripions = await SubcriptionService.GetSubcriptions();
+                    Subscripions = Subscripions ?? new List<IdName>();
 
                     #if DEBUG
 
@@ -200,6 +201,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
                 try
                 {
                     var testData = await AzureSdkService.TryGetData(Model.SubcriptionId, Model.ResorceGroup, Model.VmName);
+                    return;
 
                     if (OperationTypeTicket == OperatioType.Create)
                     {
