@@ -2,7 +2,7 @@
 using Azure.Core;
 using Azure.ResourceManager.Resources;
 using Azure.ResourceManager.Resources.Models;
-using CSRO.Client.Core.Models;
+using CSRO.Common.AzureSdkServices.Models;
 using System;
 using System.Collections.Generic;
 using System.Threading;
@@ -12,7 +12,7 @@ namespace CSRO.Common.AzureSdkServices
 {
     public interface ISubscriptionSdkService
     {
-        Task<List<IdName>> GetAllSubcriptions(string subscriptionId = null, CancellationToken cancelToken = default);
+        Task<List<IdNameSdk>> GetAllSubcriptions(string subscriptionId = null, CancellationToken cancelToken = default);
     }
 
     public class SubscriptionSdkService : ISubscriptionSdkService
@@ -26,19 +26,19 @@ namespace CSRO.Common.AzureSdkServices
             _tokenCredential = _csroTokenCredentialProvider.GetCredential();
         }
 
-        public async Task<List<IdName>> GetAllSubcriptions(string subscriptionId = null, CancellationToken cancelToken = default)
+        public async Task<List<IdNameSdk>> GetAllSubcriptions(string subscriptionId = null, CancellationToken cancelToken = default)
         {
             try
             {
                 subscriptionId = subscriptionId ?? "33fb38df-688e-4ca1-8dd8-b46e26262ff8";
                 var resourcesClient = new ResourcesManagementClient(subscriptionId, _tokenCredential);                
                 var resourceGroupClient = resourcesClient.ResourceGroups;
-                var result = new List<IdName>();
+                var result = new List<IdNameSdk>();
 
                 AsyncPageable<Subscription> subs = resourcesClient.Subscriptions.ListAsync();
                 await foreach (var sub in subs)
                 {
-                    result.Add(new IdName { Id = sub.SubscriptionId, Name = sub.DisplayName });
+                    result.Add(new IdNameSdk { Id = sub.SubscriptionId, Name = sub.DisplayName });
                 }
                 return result;
             }

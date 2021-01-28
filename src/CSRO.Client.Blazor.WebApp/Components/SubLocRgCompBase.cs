@@ -3,6 +3,8 @@ using CSRO.Client.Blazor.UI.Services;
 using CSRO.Client.Core.Models;
 using CSRO.Client.Services;
 using CSRO.Client.Services.Models;
+using CSRO.Common.AzureSdkServices;
+using CSRO.Common.AzureSdkServices.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.Logging;
@@ -40,7 +42,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
         public NavigationManager NavigationManager { get; set; }
 
         [Inject]
-        public ISubcriptionService SubcriptionService { get; set; }
+        public ISubscriptionSdkService SubcriptionSdkService { get; set; }
 
         [Inject]
         public IResourceGroupService ResourceGroupervice { get; set; }
@@ -66,7 +68,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
         //protected string Title => "Hosting Settings";
 
-        protected List<IdName> Subscripions { get; set; } = new List<IdName>();
+        protected List<IdNameSdk> Subscripions { get; set; } = new List<IdNameSdk>();
         protected List<IdName> Locations { get; set; } = new List<IdName>();
         protected List<string> ResourceGroups { get; set; } = new List<string>();
 
@@ -105,7 +107,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
             }
         }
 
-        public async Task OnSubscriptionValueChanged(IdName value)
+        public async Task OnSubscriptionValueChanged(IdNameSdk value)
         {
             if (value != null)
             {
@@ -159,8 +161,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
             {                
                 ShowLoading();
                 Subscripions?.Clear();
-                Subscripions = await SubcriptionService.GetSubcriptions();
-
+                Subscripions = await SubcriptionSdkService.GetAllSubcriptions();
 #if DEBUG
 
                 //dubug only
@@ -169,7 +170,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
                 {
                     for (int i = 1; i <= 3; i++)
                     {
-                        Subscripions.Add(new IdName(Guid.NewGuid().ToString(), $"fake sub name {i}"));
+                        Subscripions.Add(new IdNameSdk(Guid.NewGuid().ToString(), $"fake sub name {i}"));
                     }
                 }
                 //Model.ResorceGroup = "dev-VMS";
@@ -187,7 +188,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
             }
         }
 
-        public async Task<IEnumerable<IdName>> SearchSubs(string value)
+        public async Task<IEnumerable<IdNameSdk>> SearchSubs(string value)
         {
             // In real life use an asynchronous function for fetching data from an api.
             await Task.Delay(50);

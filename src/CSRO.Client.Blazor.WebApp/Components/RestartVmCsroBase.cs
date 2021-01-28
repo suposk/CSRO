@@ -4,6 +4,7 @@ using CSRO.Client.Core.Models;
 using CSRO.Client.Services;
 using CSRO.Client.Services.Models;
 using CSRO.Common.AzureSdkServices;
+using CSRO.Common.AzureSdkServices.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.Logging;
@@ -57,7 +58,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
         protected bool IsReadOnly => OperationTypeTicket == OperatioType.View;
         protected string Title => OperationTypeTicket == OperatioType.Create ? "Request Vm Restart" : $"View {Model.Status} of {Model.VmName}";
-        protected List<IdName> Subscripions { get; set; }        
+        protected List<IdNameSdk> Subscripions { get; set; }        
         protected List<string> ResourceGroups { get; set; } = new List<string>();
         protected List<string> Vms { get; set; } = new List<string>();
 
@@ -80,7 +81,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
             }
         }
 
-        public async Task OnSubscriptionChanged(IdName value)
+        public async Task OnSubscriptionChanged(IdNameSdk value)
         {
             if (value != null)
             {
@@ -153,7 +154,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
                 {
                     ShowLoading();
                     Subscripions = await SubcriptionSdkService.GetAllSubcriptions();
-                    Subscripions = Subscripions ?? new List<IdName>();
+                    Subscripions = Subscripions ?? new List<IdNameSdk>();
 
                     #if DEBUG
 
@@ -163,7 +164,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
                     {
                         for (int i=1; i <= 3; i++)
                         {
-                            Subscripions.Add(new IdName(Guid.NewGuid().ToString(), $"fake sub name {i}"));
+                            Subscripions.Add(new IdNameSdk(Guid.NewGuid().ToString(), $"fake sub name {i}"));
                         }
                     }
                     //Model.ResorceGroup = "dev-VMS";
@@ -183,7 +184,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
             }
         }
 
-        public async Task<IEnumerable<IdName>> SearchSubs(string value)
+        public async Task<IEnumerable<IdNameSdk>> SearchSubs(string value)
         {
             // In real life use an asynchronous function for fetching data from an api.
             await Task.Delay(50);

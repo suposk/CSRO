@@ -1,5 +1,6 @@
 ﻿@inherits SubLocRgCompBase
 @using CSRO.Client.Services.Models
+@using CSRO.Common.AzureSdkServices.Models;
 @using CSRO.Client.Services.Validation
 @using Blazored.FluentValidation
 
@@ -20,101 +21,100 @@
 
         @if (Success == false)
         {
-    <EditForm EditContext="@editContext" OnSubmit="OnSubmitHandler">
-        <FluentValidationValidator />
-        <MudCard>
-            <MudCardContent>
-                <MudAutocomplete ResetValueOnEmptyText="true"
-                                 T="@IdName"
-                                 Label="Subcription:"
-                                 ToStringFunc="@Model.SubscripionIdName.IdNameConverter"
-                                 ValueChanged="(e) => OnSubscriptionValueChanged(e)"
-                                 For="@(() => Model.SubscripionIdName)"
-                                 SearchFunc="@SearchSubs" />
+            <EditForm EditContext="@editContext" OnSubmit="OnSubmitHandler">
+                <FluentValidationValidator />
+                <MudCard>
+                    <MudCardContent>
+                        <MudAutocomplete ResetValueOnEmptyText="true"
+                                         T="@IdNameSdk"
+                                         Label="Subcription:"
+                                         ValueChanged="(e) => OnSubscriptionValueChanged(e)"
+                                         For="@(() => Model.SubscripionIdName)"
+                                         SearchFunc="@SearchSubs" />
 
-                <MudSelect T="@IdName"
-                           Disabled="@IsLocDisabled"
-                           Label="Location"
-                           ToStringFunc="@Model.LocationIdName.IdNameConverter"
-                           ValueChanged="(e) => OnLocationChanged(e)"
-                           For="@(() => Model.LocationIdName)">
-                    @foreach (var loc in Locations)
+                        <MudSelect T="@IdName"
+                                   Disabled="@IsLocDisabled"
+                                   Label="Location"
+                                   ToStringFunc="@Model.LocationIdName.IdNameConverter"
+                                   ValueChanged="(e) => OnLocationChanged(e)"
+                                   For="@(() => Model.LocationIdName)">
+                            @foreach (var loc in Locations)
+                            {
+                                <MudSelectItem T="IdName" Value="@loc">@loc</MudSelectItem>
+                            }
+                        </MudSelect>
+
+                        <MudSelect T="@string"
+                                   Disabled="@IsRgDisabled"
+                                   OffsetY="true"
+                                   Label="Resource Group:"
+                                   @bind-Value="Model.ResourceGroup.Name"
+                                   For="@(() => Model.ResourceGroup.Name)">
+                            @foreach (var rg in ResourceGroups)
+                            {
+                                <MudSelectItem T="string" Value="@rg">@rg</MudSelectItem>
+                            }
+                        </MudSelect>
+
+                        @if (OperationTypeTicket == OperatioType.Create)
+                        {
+                            <div style="max-width: 50%" class="mt-4">
+                                <MudButton ButtonType="ButtonType.Button"
+                                           Size="Size.Small"
+                                           Disabled="@IsNewRgDisabled"
+                                           Color="Color.Info"
+                                           OnClick="@(() => Model.IsNewRg = !Model.IsNewRg)">
+                                    @(Model.IsNewRg == false ? "Create new" : "Cancel")
+                                </MudButton>
+
+                                @if (Model.IsNewRg)
+                                {
+
+
+                                    <MudTextField Label="New Name" Disabled="@(!Model.IsNewRg)"
+                                                  @bind-Value="Model.NewRgName"
+                                                  For="@(() => Model.NewRgName)" />
+                                }
+                            </div>
+                        }
+                    </MudCardContent>
+                    @if (OperationTypeTicket == OperatioType.Create)
                     {
-                        <MudSelectItem T="IdName" Value="@loc">@loc</MudSelectItem>
+                        <MudCardActions>
+                            @if (Model.IsNewRg)
+                            {
+                                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Create</MudButton>
+                            }
+                        </MudCardActions>
                     }
-                </MudSelect>
-
-                <MudSelect T="@string"
-                           Disabled="@IsRgDisabled"
-                           OffsetY="true"
-                           Label="Resource Group:"
-                           @bind-Value="Model.ResourceGroup.Name"
-                           For="@(() => Model.ResourceGroup.Name)">
-                    @foreach (var rg in ResourceGroups)
-                    {
-                        <MudSelectItem T="string" Value="@rg">@rg</MudSelectItem>
-                    }
-                </MudSelect>
-
+                </MudCard>
                 @if (OperationTypeTicket == OperatioType.Create)
                 {
-                    <div style="max-width: 50%" class="mt-4">
-                        <MudButton ButtonType="ButtonType.Button"
-                                   Size="Size.Small"
-                                   Disabled="@IsNewRgDisabled"
-                                   Color="Color.Info"
-                                   OnClick="@(() => Model.IsNewRg = !Model.IsNewRg)">
-                            @(Model.IsNewRg == false ? "Create new" : "Cancel")
-                        </MudButton>
+                    <MudText Typo="Typo.body2" Align="Align.Center" Class="my-4">
+                        Fill out the form correctly to see the success message.
+                    </MudText>
 
-                        @if (Model.IsNewRg)
-                        {
-
-
-                            <MudTextField Label="New Name" Disabled="@(!Model.IsNewRg)"
-                                          @bind-Value="Model.NewRgName"
-                                          For="@(() => Model.NewRgName)" />
-                        }
-                    </div>
+                    <MudExpansionPanels>
+                        <MudExpansionPanel IsExpanded="true"
+                                           Text="Show Validation Summary">
+                            @if (Success)
+                            {
+                                <MudText Color="Color.Success">Success</MudText> }
+                            else
+                            {
+                                <MudText Color="@Color.Error">
+                                    <ValidationSummary />
+                                </MudText>
+                            }
+                        </MudExpansionPanel>
+                    </MudExpansionPanels>
+                    <MudButton Class="mt-4" OnClick="GoBack" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary">Go Back</MudButton>
                 }
-            </MudCardContent>
-            @if (OperationTypeTicket == OperatioType.Create)
-            {
-                <MudCardActions>
-                    @if (Model.IsNewRg)
-                    {
-                        <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Create</MudButton>
-                    }
-                </MudCardActions>
-            }
-        </MudCard>
-        @if (OperationTypeTicket == OperatioType.Create)
-        {
-            <MudText Typo="Typo.body2" Align="Align.Center" Class="my-4">
-                Fill out the form correctly to see the success message.
-            </MudText>
-
-            <MudExpansionPanels>
-                <MudExpansionPanel IsExpanded="true"
-                                   Text="Show Validation Summary">
-                    @if (Success)
-                    {
-                        <MudText Color="Color.Success">Success</MudText> }
-                    else
-                    {
-                        <MudText Color="@Color.Error">
-                            <ValidationSummary />
-                        </MudText>
-                    }
-                </MudExpansionPanel>
-            </MudExpansionPanels>
-            <MudButton Class="mt-4" OnClick="GoBack" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary">Go Back</MudButton>
-        }
-    </EditForm>
+            </EditForm>
         }
         else
         {
             <MudText Color="Color.Success" Typo="Typo.h4">Success</MudText>
-        }        
+        }
     </div>
 </MudContainer>
