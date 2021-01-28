@@ -16,7 +16,7 @@ namespace CSRO.Client.Services
 {
     public interface IAzureSdkService
     {
-        Task<List<Models.IdName>> GetAllSubcriptions(string subscriptionId);
+        Task<List<Models.IdName>> GetAllSubcriptions(string subscriptionId, CancellationToken cancelToken = default);
         Task<List<object>> TryGetData(string subscriptionId, string resourceGroupName, string vmName);
     }
 
@@ -83,7 +83,7 @@ namespace CSRO.Client.Services
             return null;
         }
 
-        public async Task<List<Models.IdName>> GetAllSubcriptions(string subscriptionId)
+        public async Task<List<Models.IdName>> GetAllSubcriptions(string subscriptionId, CancellationToken cancelToken = default)
         {            
             try
             {
