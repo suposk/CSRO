@@ -158,28 +158,28 @@ namespace CSRO.Client.Blazor.WebApp
                 .AddMicrosoftIdentityConsentHandler();
 
             services.AddScoped<IAuthCsroService, AuthCsroService>();
-
-            services.AddSingleton<WeatherForecastService>();
-            //services.AddSingleton<ISampleService, SampleService>();
+                        
             services.AddScoped<IVersionService, VersionService>();
             services.AddScoped<IBaseDataService<Ticket>, TicketDataService>();
             //services.AddScoped<IBaseDataService<VmTicket>, VmTicketDataService>();            
             services.AddScoped<IVmTicketDataService, VmTicketDataService>();
+
             services.AddTransient<IVmService, VmService>();
             services.AddTransient<ISubcriptionService, SubcriptionService>();
             services.AddTransient<IResourceGroupService, ResourceGroupService>();
             services.AddTransient<INetworkService, NetworkService>();
-
             services.AddTransient<IAzureSdkService, AzureSdkService>();
-            services.AddTransient<ICsroTokenCredentialProvider, CsroTokenCredentialProvider>();
+
+            services.AddSingleton<ILocationsService, LocationsService>();
 
             //UI component for dialods
             services.AddTransient<ICsroDialogService, CsroDialogService>();
 
+            //services.AddSingleton<WeatherForecastService>();
 
+            //services.AddTransient<ICsroTokenCredentialProvider, CsroTokenCredentialProvider>(); //for work            
+            services.AddTransient<ICsroTokenCredentialProvider, ChainnedCsroTokenCredentialProvider>(); //for personal
 
-            services.AddSingleton<ILocationsService, LocationsService>();
-            
 
             var jano = Configuration.GetValue<string>("JanoSetting");
             Console.WriteLine($"Configuration JanoSetting: {jano}");
