@@ -1,4 +1,4 @@
-﻿using CSRO.Client.Services.Models;
+﻿using CSRO.Client.Core.Models;
 using Microsoft.Azure.Management.ResourceManager.Fluent.Core;
 using System;
 using System.Collections.Generic;

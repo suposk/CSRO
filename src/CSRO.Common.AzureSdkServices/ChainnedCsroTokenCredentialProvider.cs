@@ -2,31 +2,22 @@
 using Azure.Identity;
 using Microsoft.Extensions.Configuration;
 
-namespace CSRO.Client.Services
+namespace CSRO.Common.AzureSdkServices
 {
-    public interface ICsroTokenCredentialProvider
-    {
-        TokenCredential GetCredential();
-    }
-
     /// <summary>
-    /// Wokrs in Some Tenanant
+    /// Works in Personal tenatnt.  ManagedIdentityCredential and ClientSecretCredential
     /// </summary>
-    public class CsroTokenCredentialProvider : ICsroTokenCredentialProvider
+    public class ChainnedCsroTokenCredentialProvider : ICsroTokenCredentialProvider
     {
-        private readonly IConfiguration _configuration;
-        private readonly DefaultAzureCredential _tokenCredential;
+        private readonly IConfiguration _configuration;        
 
-        public CsroTokenCredentialProvider(IConfiguration configuration)
+        public ChainnedCsroTokenCredentialProvider(IConfiguration configuration)
         {
-            _configuration = configuration;
-            _tokenCredential = new DefaultAzureCredential(includeInteractiveCredentials:true);
+            _configuration = configuration;            
         }
 
         public TokenCredential GetCredential()
-        {
-            return _tokenCredential;
-
+        {            
             // Bind the configuration section to an instance of AzureAdAuthenticationOptions
             var azureAdOptions = _configuration.GetSection(nameof(AzureAd)).Get<AzureAd>();
 

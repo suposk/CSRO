@@ -9,22 +9,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
-namespace CSRO.Client.Services
+namespace CSRO.Common.AzureSdkServices
 {
-    public interface IAzureSdkService
-    {
-        Task<List<Models.IdName>> GetAllSubcriptions(string subscriptionId, CancellationToken cancelToken = default);
-        Task<List<object>> TryGetData(string subscriptionId, string resourceGroupName, string vmName);
-    }
-
-    public class AzureSdkService : IAzureSdkService
+    public class VmSdkService : IVmSdkService
     {
         private readonly ICsroTokenCredentialProvider _csroTokenCredentialProvider;
 
-        public AzureSdkService(ICsroTokenCredentialProvider csroTokenCredentialProvider)
+        public VmSdkService(ICsroTokenCredentialProvider csroTokenCredentialProvider)
         {
             _csroTokenCredentialProvider = csroTokenCredentialProvider;
         }
@@ -52,7 +45,7 @@ namespace CSRO.Client.Services
                 ////var publicIpAddressClient = networkClient.PublicIPAddressses;
                 //var publicIpAddressClient = networkClient.PublicIPAddresses;
                 //var resourceGroupClient = resourcesClient.ResourceGroups;
-                
+
                 var list = new List<object>();
 
                 if (!string.IsNullOrWhiteSpace(resourceGroupName) && !string.IsNullOrWhiteSpace(vmName))
@@ -61,7 +54,7 @@ namespace CSRO.Client.Services
                     var resp = result.GetRawResponse();
                     list.Add(result);
                 }
-                
+
                 AsyncPageable<VirtualMachine> vmPages = virtualMachinesClient.ListAllAsync();
                 await foreach (VirtualMachine item in vmPages)
                 {
@@ -69,9 +62,9 @@ namespace CSRO.Client.Services
                 }
 
                 AsyncPageable<Subscription> subs = resourcesClient.Subscriptions.ListAsync();
-                await foreach(var sub in subs)
+                await foreach (var sub in subs)
                 {
-                    list.Add(sub);                    
+                    list.Add(sub);
                 }
 
                 return list;
@@ -81,32 +74,6 @@ namespace CSRO.Client.Services
 
             }
             return null;
-        }
-
-        public async Task<List<Models.IdName>> GetAllSubcriptions(string subscriptionId, CancellationToken cancelToken = default)
-        {            
-            try
-            {
-                TokenCredential tokenCredential = _csroTokenCredentialProvider.GetCredential();
-                var resourcesClient = new ResourcesManagementClient(subscriptionId, tokenCredential);
-                var resourceGroupClient = resourcesClient.ResourceGroups;                
-                var result = new List<Models.IdName>();
-
-                AsyncPageable<Subscription> subs = resourcesClient.Subscriptions.ListAsync();
-                await foreach (var sub in subs)
-                {
-                    result.Add(new Models.IdName { Id = sub.SubscriptionId, Name = sub.DisplayName });
-                }
-                return result;
-            }
-            catch (Exception ex)
-            {
-
-            }
-            return null;
-        }
+        }        
     }
-
-
-
 }

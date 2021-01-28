@@ -29,6 +29,8 @@ using System.Net.Http;
 using System.Net;
 using CSRO.Client.Core.Helpers;
 using CSRO.Client.Blazor.UI.Services;
+using CSRO.Common.AzureSdkServices;
+using CSRO.Client.Core;
 
 namespace CSRO.Client.Blazor.WebApp
 {
@@ -89,7 +91,7 @@ namespace CSRO.Client.Blazor.WebApp
             string ApiEndpoint = Configuration.GetValue<string>("ApiEndpoint");
             services.AddHttpClient("api", (client) =>
             {
-                client.Timeout = TimeSpan.FromMinutes(Core.ConstatCsro.ClientNames.API_TimeOut_Mins);
+                client.Timeout = TimeSpan.FromMinutes(ConstatCsro.ClientNames.API_TimeOut_Mins);
                 client.BaseAddress = new Uri(ApiEndpoint);
                 client.DefaultRequestHeaders.Add("Accept", "application/json");
             }).ConfigurePrimaryHttpMessageHandler(() => 
@@ -105,10 +107,10 @@ namespace CSRO.Client.Blazor.WebApp
             .AddPolicyHandler(PollyHelper.GetRetryPolicy());
             ;
 
-            services.AddHttpClient(Core.ConstatCsro.ClientNames.MANAGEMENT_AZURE_EndPoint, (client) =>
+            services.AddHttpClient(ConstatCsro.ClientNames.MANAGEMENT_AZURE_EndPoint, (client) =>
             {
-                client.Timeout = TimeSpan.FromMinutes(Core.ConstatCsro.ClientNames.MANAGEMENT_TimeOut_Mins);
-                client.BaseAddress = new Uri(Core.ConstatCsro.ClientNames.MANAGEMENT_AZURE_EndPoint);
+                client.Timeout = TimeSpan.FromMinutes(ConstatCsro.ClientNames.MANAGEMENT_TimeOut_Mins);
+                client.BaseAddress = new Uri(ConstatCsro.ClientNames.MANAGEMENT_AZURE_EndPoint);
                 client.DefaultRequestHeaders.Add("Accept", "application/json");                
             }).ConfigurePrimaryHttpMessageHandler(() =>
             {
@@ -168,9 +170,11 @@ namespace CSRO.Client.Blazor.WebApp
             services.AddTransient<ISubcriptionService, SubcriptionService>();
             services.AddTransient<IResourceGroupService, ResourceGroupService>();
             services.AddTransient<INetworkService, NetworkService>();
-            services.AddTransient<IAzureSdkService, AzureSdkService>();
-
             services.AddSingleton<ILocationsService, LocationsService>();
+
+            //SDK services
+            services.AddTransient<IVmSdkService, VmSdkService>();
+            services.AddTransient<ISubscriptionSdkService, SubscriptionSdkService>();            
 
             //UI component for dialods
             services.AddTransient<ICsroDialogService, CsroDialogService>();

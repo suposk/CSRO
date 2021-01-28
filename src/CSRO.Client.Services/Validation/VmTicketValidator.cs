@@ -1,4 +1,5 @@
-﻿using CSRO.Client.Services.Models;
+﻿using CSRO.Client.Core.Models;
+using CSRO.Client.Services.Models;
 using FluentValidation;
 using System;
 using System.Collections.Generic;

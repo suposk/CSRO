@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using CSRO.Client.Core.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace CSRO.Client.Services.Models
 {

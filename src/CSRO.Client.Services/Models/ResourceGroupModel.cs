@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CSRO.Client.Core.Models;
+using System;
 
 namespace CSRO.Client.Services.Models
 {

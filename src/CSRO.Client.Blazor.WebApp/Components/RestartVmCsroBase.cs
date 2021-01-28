@@ -1,7 +1,9 @@
 ﻿using CSRO.Client.Blazor.UI;
 using CSRO.Client.Blazor.UI.Services;
+using CSRO.Client.Core.Models;
 using CSRO.Client.Services;
 using CSRO.Client.Services.Models;
+using CSRO.Common.AzureSdkServices;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.Logging;
@@ -32,7 +34,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
         public IVmService VmService { get; set; }
 
         [Inject]
-        public ISubcriptionService SubcriptionService { get; set; }
+        public ISubscriptionSdkService SubcriptionSdkService { get; set; }
 
         [Inject]
         public IResourceGroupService ResourceGroupervice { get; set; }
@@ -44,7 +46,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
         public ILocationsService LocationsService { get; set; }
 
         [Inject]
-        public IAzureSdkService  AzureSdkService { get; set; }
+        public IVmSdkService  AzureSdkService { get; set; }
 
         [Inject]
         public ILogger<RestartVmCsroBase> Logger { get; set; }
@@ -150,7 +152,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
                 else
                 {
                     ShowLoading();
-                    Subscripions = await SubcriptionService.GetSubcriptions();
+                    Subscripions = await SubcriptionSdkService.GetAllSubcriptions();
                     Subscripions = Subscripions ?? new List<IdName>();
 
                     #if DEBUG

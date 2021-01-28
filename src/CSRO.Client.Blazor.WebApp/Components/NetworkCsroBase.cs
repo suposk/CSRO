@@ -1,5 +1,6 @@
 ﻿using CSRO.Client.Blazor.UI;
 using CSRO.Client.Blazor.UI.Services;
+using CSRO.Client.Core.Models;
 using CSRO.Client.Services;
 using CSRO.Client.Services.Models;
 using Microsoft.AspNetCore.Components;

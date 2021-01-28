@@ -1,4 +1,4 @@
-﻿using CSRO.Client.Services.Models;
+﻿using CSRO.Client.Core.Models;
 using FluentValidation;
 
 namespace CSRO.Client.Services.Validation
