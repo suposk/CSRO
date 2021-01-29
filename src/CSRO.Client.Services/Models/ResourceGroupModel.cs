@@ -1,4 +1,6 @@
-﻿using System;
+﻿using CSRO.Client.Core.Models;
+using CSRO.Common.AzureSdkServices.Models;
+using System;
 
 namespace CSRO.Client.Services.Models
 {
@@ -8,7 +10,7 @@ namespace CSRO.Client.Services.Models
         {
             ResourceGroup = new ResourceGroup();
 
-            _SubscripionIdName = new IdName();
+            _SubscripionIdName = new IdNameSdk();
             _LocationIdName = new IdName();            
         }
 
@@ -31,8 +33,8 @@ namespace CSRO.Client.Services.Models
 
         //public string SubcriptionId { get; set; }
 
-        IdName _SubscripionIdName;
-        public IdName SubscripionIdName => _SubscripionIdName;
+        IdNameSdk _SubscripionIdName;
+        public IdNameSdk SubscripionIdName => _SubscripionIdName;
 
         public ResourceGroup ResourceGroup { get; set; }
         public string Location => ResourceGroup?.Location;

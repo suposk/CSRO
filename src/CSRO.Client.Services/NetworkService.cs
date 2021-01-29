@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CSRO.Client.Core;
 using CSRO.Client.Services.Dtos.AzureDtos;
 using CSRO.Client.Services.Models;
 using Microsoft.Extensions.Configuration;
@@ -29,9 +30,9 @@ namespace CSRO.Client.Services
         {
             ApiPart = "--";
             //Scope = "api://ee2f0320-29c3-432a-bf84-a5d4277ce052/user_impersonation";
-            Scope = Core.ConstatCsro.Scopes.MANAGEMENT_AZURE_SCOPE;
+            Scope = ConstatCsro.Scopes.MANAGEMENT_AZURE_SCOPE;
             //ClientName = "api";
-            ClientName = Core.ConstatCsro.ClientNames.MANAGEMENT_AZURE_EndPoint;
+            ClientName = ConstatCsro.ClientNames.MANAGEMENT_AZURE_EndPoint;
 
             base.Init();
         }

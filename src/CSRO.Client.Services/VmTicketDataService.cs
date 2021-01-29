@@ -22,7 +22,8 @@ namespace CSRO.Client.Services
         /// <param name="item"></param>
         /// <returns></returns>
         Task<bool> VerifyRestartStatus(VmTicket item);
-        Task<bool> VerifyRestartStatusCallback(VmTicket item, Action<string> callbackStatus);
+        Task<bool> VerifyRestartStatusCallback(VmTicket item, Action<string> callbackStatus);        
+        Task<VmTicket> RebootVmAndWaitForConfirmation(VmTicket item);
     }
 
     public class VmTicketDataService : BaseDataService, IVmTicketDataService
@@ -113,6 +114,38 @@ namespace CSRO.Client.Services
             return false;
         }
 
+        public async Task<VmTicket> RebootVmAndWaitForConfirmation(VmTicket item)
+        {
+            try
+            {     
+                await base.AddAuthHeaderAsync();
+
+                var url = $"{ApiPart}RebootVmAndWaitForConfirmation";
+                var add = Mapper.Map<VmTicketDto>(item);
+                var httpcontent = new StringContent(JsonSerializer.Serialize(add, _options), Encoding.UTF8, "application/json");
+                var apiData = await HttpClientBase.PostAsync(url, httpcontent).ConfigureAwait(false);
+
+                if (apiData.IsSuccessStatusCode)
+                {
+                    var content = await apiData.Content.ReadAsStringAsync();
+                    var ser = JsonSerializer.Deserialize<VmTicketDto>(content, _options);
+                    var result = Mapper.Map<VmTicket>(ser);
+                    return result;
+                }
+                else
+                {
+                    var content = await apiData.Content.ReadAsStringAsync();
+                    //var ser = JsonSerializer.Deserialize<AzureManagErrorDto>(content, _options);
+                    throw new Exception(content);
+                }
+            }
+            catch (Exception ex)
+            {
+                base.HandleException(ex);
+                throw;
+            }            
+        }
+
         // generic methods
 
         public async Task<VmTicket> AddItemAsync(VmTicket item)
@@ -151,7 +184,7 @@ namespace CSRO.Client.Services
 
                 await base.AddAuthHeaderAsync();
 
-                var url = $"{ApiPart}";
+                var url = $"{ApiPart}CreateRestartTicket";
                 var add = Mapper.Map<VmTicketDto>(item);
                 var httpcontent = new StringContent(JsonSerializer.Serialize(add, _options), Encoding.UTF8, "application/json");
                 var apiData = await HttpClientBase.PostAsync(url, httpcontent).ConfigureAwait(false);
@@ -174,8 +207,7 @@ namespace CSRO.Client.Services
             {
                 base.HandleException(ex);
                 throw;
-            }
-            return null;
+            }            
         }
 
         public async Task<bool> UpdateItemAsync(VmTicket item)

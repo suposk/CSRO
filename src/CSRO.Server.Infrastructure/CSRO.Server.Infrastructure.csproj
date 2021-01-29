@@ -25,4 +25,8 @@
     <ProjectReference Include="..\CSRO.Server.Core\CSRO.Server.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Helpers\" />
+  </ItemGroup>
+
 </Project>

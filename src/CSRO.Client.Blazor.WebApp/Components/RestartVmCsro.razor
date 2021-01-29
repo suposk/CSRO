@@ -1,5 +1,6 @@
 ﻿@inherits RestartVmCsroBase
 @using CSRO.Client.Services.Models
+@using CSRO.Common.AzureSdkServices.Models;
 @using CSRO.Client.Services.Validation
 @using Blazored.FluentValidation
 
@@ -52,22 +53,22 @@
                         else
                         {
                             <MudAutocomplete ResetValueOnEmptyText="true"
-                                             T="@IdName"
+                                             T="@IdNameSdk"
                                              Label="Select Subcription:"
                                              For="@(() => Model.SubscripionIdName)"
                                              ValueChanged="(e) => OnSubscriptionChanged(e)"
                                              SearchFunc="@SearchSubs" />
 
                             @*
-                            Value="@(new IdName { Name = Model.SubcriptionName })"
-                            For="@(() => new IdName { Id = Model.Id.ToString(), Name = Model.SubcriptionName })"
-                            For="@(() => SelSubscripion)"
-                            <MudSelectItem Value="@(new Pizza() { Name="Cardinale"})" />
+                                Value="@(new IdName { Name = Model.SubcriptionName })"
+                                For="@(() => new IdName { Id = Model.Id.ToString(), Name = Model.SubcriptionName })"
+                                For="@(() => SelSubscripion)"
+                                <MudSelectItem Value="@(new Pizza() { Name="Cardinale"})" />
                             *@
 
                             <MudSelect T="@string"
                                        Disabled="@IsRgDisabled"
-                                       Label="Select Resource Group:"                                       
+                                       Label="Select Resource Group:"
                                        ValueChanged="(e) => OnRgChanged(e)"
                                        For="@(() => Model.ResorceGroup)">
                                 @foreach (var rg in ResourceGroups)
@@ -80,11 +81,10 @@
                         @if (Vms.Count > 0)
                         {
                             <MudSelect T="@string"
-                                          Label="Select Vm Name:"
-                                          Disabled="@IsVmDisabled"
-                                          @bind-Value="Model.VmName"
-                                          For="@(() => Model.VmName)"
-                                       >
+                                       Label="Select Vm Name:"
+                                       Disabled="@IsVmDisabled"
+                                       @bind-Value="Model.VmName"
+                                       For="@(() => Model.VmName)">
                                 @foreach (var item in Vms)
                                 {
                                     <MudSelectItem T="string" Value="@item">@item</MudSelectItem>
@@ -93,12 +93,10 @@
                         }
                         else
                         {
-                            <MudTextField 
-                                          Label="Vm Name:" HelperText="Name of Virtual Machine"
+                            <MudTextField Label="Vm Name:" HelperText="Name of Virtual Machine"
                                           Disabled="@IsVmDisabled"
                                           @bind-Value="Model.VmName"
-                                          For="@(() => Model.VmName)"
-                                          />
+                                          For="@(() => Model.VmName)" />
                         }
 
                         <MudTextField Label="Note:"

@@ -23,7 +23,8 @@ using System.Threading.Tasks;
 using FluentValidation.AspNetCore;
 using System.Net.Http;
 using System.Net;
-using CSRO.Server.Infrastructure.Helpers;
+using CSRO.Server.Core.Helpers;
+using CSRO.Common.AzureSdkServices;
 
 namespace CSRO.Server.Api
 {
@@ -104,6 +105,15 @@ namespace CSRO.Server.Api
             services.AddTransient<IAzureVmManagementService, AzureVmManagementService>();
             services.AddTransient<ISubcriptionService, SubcriptionService>();
             services.AddTransient<IResourceGroupervice, ResourceGroupervice>();
+
+            #region SDK services      
+
+            services.AddTransient<IVmSdkService, VmSdkService>();
+            services.AddTransient<ISubscriptionSdkService, SubscriptionSdkService>();
+            //services.AddTransient<ICsroTokenCredentialProvider, CsroTokenCredentialProvider>(); //for work            
+            services.AddTransient<ICsroTokenCredentialProvider, ChainnedCsroTokenCredentialProvider>(); //for personal            
+
+            #endregion
 
             #region Repositories
 

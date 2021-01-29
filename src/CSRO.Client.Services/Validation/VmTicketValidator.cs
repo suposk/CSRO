@@ -1,4 +1,6 @@
-﻿using CSRO.Client.Services.Models;
+﻿using CSRO.Client.Core.Models;
+using CSRO.Client.Services.Models;
+using CSRO.Common.AzureSdkServices.Models;
 using FluentValidation;
 using System;
 using System.Collections.Generic;
@@ -9,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace CSRO.Client.Services.Validation
 {
-    public class SubscripionIdNameValidator : AbstractValidator<IdName>
+    public class SubscripionIdNameValidator : AbstractValidator<IdNameSdk>
     {
         public SubscripionIdNameValidator()
         {

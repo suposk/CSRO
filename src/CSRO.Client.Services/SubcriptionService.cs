@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using CSRO.Client.Core;
+using CSRO.Client.Core.Models;
 using CSRO.Client.Services.Dtos;
 using CSRO.Client.Services.Dtos.AzureDtos;
 using CSRO.Client.Services.Models;
@@ -12,7 +14,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace CSRO.Client.Services
-{   
+{
     public interface ISubcriptionService
     {
         Task<bool> SubcriptionExist(string subscriptionId, CancellationToken cancelToken = default);
@@ -26,21 +28,24 @@ namespace CSRO.Client.Services
 
     public class SubcriptionService : BaseDataService, ISubcriptionService
     {
+        //private readonly IAzureSdkService _azureSdkService;
 
         public SubcriptionService(
             IHttpClientFactory httpClientFactory,
             IAuthCsroService authCsroService,
             IMapper mapper,
+            //IAzureSdkService azureSdkService,
             IConfiguration configuration)
             : base(httpClientFactory, authCsroService, mapper, configuration)
         {
+            //_azureSdkService = azureSdkService;
             ApiPart = "--";
             //Scope = "api://ee2f0320-29c3-432a-bf84-a5d4277ce052/user_impersonation";
-            Scope = Core.ConstatCsro.Scopes.MANAGEMENT_AZURE_SCOPE;
+            Scope = ConstatCsro.Scopes.MANAGEMENT_AZURE_SCOPE;
             //ClientName = "api";
-            ClientName = Core.ConstatCsro.ClientNames.MANAGEMENT_AZURE_EndPoint;
+            ClientName = ConstatCsro.ClientNames.MANAGEMENT_AZURE_EndPoint;
 
-            base.Init();
+            base.Init();            
         }
 
         public async Task<Subscription> GetSubcription(string subscriptionId, CancellationToken cancelToken = default)
@@ -77,6 +82,12 @@ namespace CSRO.Client.Services
         {
             try
             {
+                //var subId = "33fb38df-688e-4ca1-8dd8-b46e26262ff8";
+                //////var data = await _azureSdkService?.TryGetData(subId, null, null);                
+                //var sdkSubs = await _azureSdkService?.GetAllSubcriptions(subId, cancelToken);
+                //if (sdkSubs?.Count > 0)
+                //    return sdkSubs;
+
                 //1. Call azure api
                 await base.AddAuthHeaderAsync();
 
