@@ -47,7 +47,8 @@ namespace CSRO.Client.Services
             {
                 await base.AddAuthHeaderAsync();
 
-                var add = Mapper.Map<ResourceGroupCreateDto>(item.ResourceGroup);                                                
+                var add = Mapper.Map<ResourceGroupCreateDto>(item.ResourceGroup);
+                add.Name = null;
                 var httpcontent = new StringContent(JsonSerializer.Serialize(add, _options), Encoding.UTF8, "application/json");
 
                 //PUT https://management.azure.com/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}?api-version=2020-06-01
@@ -67,12 +68,17 @@ namespace CSRO.Client.Services
                     //var model = Mapper.Map<ResourceGroupModel>(result);
                     //return model;
                 }
+                else
+                {
+                    var content = await apiData.Content.ReadAsStringAsync();
+                    throw new Exception(content);
+                }
             }
             catch (Exception ex)
             {
                 base.HandleException(ex);
-            }
-            return null;
+                throw;
+            }            
         }
 
         public async Task<List<ResourceGroup>> GetResourceGroups(string subscriptionId, CancellationToken cancelToken = default)
