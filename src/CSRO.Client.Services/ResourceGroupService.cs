@@ -47,20 +47,12 @@ namespace CSRO.Client.Services
             {
                 await base.AddAuthHeaderAsync();
 
-                var add = Mapper.Map<ResourceGroupDto>(item.ResourceGroup);                
-                add.Location = item.Location;
-                add.Name = null;
-                                
-                //string add = $"{{\"location\": \"{item.Location}\"}}"; //not working
-                //var add = new CreateRgDto { Location = item.Location };
+                var add = Mapper.Map<ResourceGroupCreateDto>(item.ResourceGroup);                                                
                 var httpcontent = new StringContent(JsonSerializer.Serialize(add, _options), Encoding.UTF8, "application/json");
 
                 //PUT https://management.azure.com/subscriptions/{subscriptionId}/resourcegroups/{resourceGroupName}?api-version=2020-06-01
                 var url = $"https://management.azure.com/subscriptions/{item.SubcriptionId}/resourcegroups/{item.NewRgName}?api-version=2020-06-01";
                 var apiData = await HttpClientBase.PutAsync(url, httpcontent, cancelToken).ConfigureAwait(false);
-
-                //var url = $"POST https://management.azure.com/subscriptions/{item.SubcriptionId}/resourcegroups/?api-version=2020-06-01";
-                //var apiData = await HttpClientBase.PostAsync(url, httpcontent, cancelToken).ConfigureAwait(false);
 
                 if (apiData.IsSuccessStatusCode)
                 {

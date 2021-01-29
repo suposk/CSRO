@@ -34,12 +34,22 @@ namespace CSRO.Client.Blazor.WebApp.AutoMapperProfiles
             CreateMap<PropertiesDto, Models.Properties>()
                 .ReverseMap();
 
+            CreateMap<CreateRgTagDto, Models.DefaultTag>()
+                .ForMember(s => s.privilegedMembers, op => op.Ignore())
+                .ReverseMap();
+
             CreateMap<TagDto, Models.DefaultTag>()
                 .ReverseMap();
 
             CreateMap<ResourceGroupDto, Models.ResourceGroup>()
                 //.ForMember(s => s.CurrentUnits, op => op.Ignore())
                 .ReverseMap();
+
+            CreateMap<ResourceGroupCreateDto, Models.ResourceGroup>()
+                .ForMember(s => s.IsPrivMembersRequired, op => op.Ignore())
+                //.ForMember(s => s.Tags.privilegedMembers, op => op.Ignore())
+                .ReverseMap();
+
 
             //CreateMap<Models.ResourceGroup, Models.ResourceGroupModel>()
             //    .ForMember(s => s.ResourceGroup, op => op.MapFrom(ss => ss))
