@@ -30,7 +30,7 @@ namespace CSRO.Common.AzureSdkServices
         {
             try
             {
-                subscriptionId = subscriptionId ?? "33fb38df-688e-4ca1-8dd8-b46e26262ff8";
+                subscriptionId = subscriptionId ?? ConstantsCommon.DEFAULT_SubscriptionId;
                 var resourcesClient = new ResourcesManagementClient(subscriptionId, _tokenCredential);                
                 var resourceGroupClient = resourcesClient.ResourceGroups;
                 var result = new List<IdNameSdk>();
