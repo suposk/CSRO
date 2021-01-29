@@ -82,6 +82,7 @@ namespace CSRO.Server.Api.Controllers
 
         //// POST: api/MessageDetails
         [HttpPost(Name = nameof(CreateRestartTicket))]
+        [Route("[action]")]
         public async Task<ActionResult<VmTicketDto>> CreateRestartTicket(VmTicketDto dto)
         {
             if (dto == null)
@@ -91,7 +92,7 @@ namespace CSRO.Server.Api.Controllers
             {
                 _logger.LogInformation(ApiLogEvents.InsertItem, $"{nameof(CreateRestartTicket)} Started");
 
-                var repoObj = _mapper.Map<VmTicket>(dto);                
+                var repoObj = _mapper.Map<VmTicket>(dto);
                 await _repository.CreateRestartTicket(repoObj).ConfigureAwait(false);
                 if (await _repository.SaveChangesAsync())
                 {
@@ -99,15 +100,47 @@ namespace CSRO.Server.Api.Controllers
                     return CreatedAtRoute(nameof(GetVmTicketById),
                         new { id = result.Id }, result);
                 }
-                
+                else
+                    return null;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, nameof(CreateRestartTicket), dto);
                 //return StatusCode(StatusCodes.Status500InternalServerError);
                 return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
+            }               
+        }
+
+        //// POST: api/MessageDetails
+        [HttpPost(Name = nameof(RebootVmAndWaitForConfirmation))]
+        [Route("[action]")]
+        public async Task<ActionResult<VmTicketDto>> RebootVmAndWaitForConfirmation(VmTicketDto dto)
+        {
+            if (dto == null)
+                return BadRequest();
+
+            try
+            {
+                _logger.LogInformation(ApiLogEvents.InsertItem, $"{nameof(RebootVmAndWaitForConfirmation)} Started");
+
+                var repoObj = _mapper.Map<VmTicket>(dto);
+                var res = await _repository.RebootVmAndWaitForConfirmation(repoObj).ConfigureAwait(false);
+                if (res.success)
+                {
+                    var result = _mapper.Map<VmTicketDto>(repoObj);
+                    return CreatedAtRoute(nameof(GetVmTicketById),
+                        new { id = result.Id }, result);
+                }
+                else
+                    return BadRequest(res.errorMessage);
+
             }
-            return null;
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, nameof(RebootVmAndWaitForConfirmation), dto);
+                //return StatusCode(StatusCodes.Status500InternalServerError);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
+            }
         }
 
         // PUT: api/Churchs/5

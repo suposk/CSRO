@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CSRO.Server.Core
+namespace CSRO.Server.Core.Helpers
 {
     public static class GetValueHelper 
     {

@@ -11,7 +11,7 @@ namespace CSRO.Client.Core.Helpers
 {
     public static class PollyHelper
     {
-        public const int DEFAULT_Retry_Count = 2;
+        public const int DEFAULT_Retry_Count = 1;
 
         public static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy(int retryCount = DEFAULT_Retry_Count)
         {

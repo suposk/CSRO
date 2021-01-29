@@ -172,18 +172,18 @@ namespace CSRO.Client.Blazor.WebApp
             services.AddTransient<INetworkService, NetworkService>();
             services.AddSingleton<ILocationsService, LocationsService>();
 
-            //SDK services
+            #region SDK services      
+            
             services.AddTransient<IVmSdkService, VmSdkService>();
-            services.AddTransient<ISubscriptionSdkService, SubscriptionSdkService>();            
+            services.AddTransient<ISubscriptionSdkService, SubscriptionSdkService>();
+            //services.AddTransient<ICsroTokenCredentialProvider, CsroTokenCredentialProvider>(); //for work            
+            services.AddTransient<ICsroTokenCredentialProvider, ChainnedCsroTokenCredentialProvider>(); //for personal            
+
+            #endregion
 
             //UI component for dialods
             services.AddTransient<ICsroDialogService, CsroDialogService>();
-
             //services.AddSingleton<WeatherForecastService>();
-
-            //services.AddTransient<ICsroTokenCredentialProvider, CsroTokenCredentialProvider>(); //for work            
-            services.AddTransient<ICsroTokenCredentialProvider, ChainnedCsroTokenCredentialProvider>(); //for personal
-
 
             var jano = Configuration.GetValue<string>("JanoSetting");
             Console.WriteLine($"Configuration JanoSetting: {jano}");
