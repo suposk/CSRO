@@ -209,9 +209,10 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
                     if (OperationTypeTicket == OperatioType.Create)
                     {
-                        ShowLoading("Creating request");   
-                        
-                        var added = await VmTicketDataService.AddItemAsync(Model);
+                        ShowLoading("Creating request");
+
+                        //var added = await VmTicketDataService.AddItemAsync(Model);
+                        var added = await VmTicketDataService.RebootVmAndWaitForConfirmation(Model);
                         if (added != null)
                         {
                             Success = true;

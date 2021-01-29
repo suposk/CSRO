@@ -143,8 +143,7 @@ namespace CSRO.Client.Services
             {
                 base.HandleException(ex);
                 throw;
-            }
-            return null;
+            }            
         }
 
         // generic methods
