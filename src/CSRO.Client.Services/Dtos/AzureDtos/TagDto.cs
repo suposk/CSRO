@@ -2,9 +2,13 @@
 {
     public class TagDto
     {
-        public string OpEnvironment { get; set; }
-        public string CmdbRerence { get; set; }
-        public string BillingReference { get; set; }
-        public string PrivilegedMembers { get; set; }
+        public string opEnvironment { get; set; }
+
+        /// <summary>
+        /// bug it was cmdbRerence, not cmdbReference
+        /// </summary>
+        public string cmdbReference { get; set; }
+        public string billingReference { get; set; }
+        public string privilegedMembers { get; set; }
     }
 }

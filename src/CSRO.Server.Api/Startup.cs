@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 using FluentValidation.AspNetCore;
 using System.Net.Http;
 using System.Net;
-using CSRO.Server.Infrastructure.Helpers;
+using CSRO.Server.Core.Helpers;
 
 namespace CSRO.Server.Api
 {

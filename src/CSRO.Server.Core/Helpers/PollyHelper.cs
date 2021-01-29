@@ -7,11 +7,15 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CSRO.Server.Infrastructure.Helpers
-{
+namespace CSRO.Server.Core.Helpers
+{   
+
     public static class PollyHelper
     {
-        public static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy(int retryCount = 1)
+
+        public const int DEFAULT_Retry_Count = 2;
+
+        public static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy(int retryCount = DEFAULT_Retry_Count)
         {
             return HttpPolicyExtensions
                 .HandleTransientHttpError()
@@ -19,7 +23,7 @@ namespace CSRO.Server.Infrastructure.Helpers
                 .WaitAndRetryAsync(retryCount, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
         }
 
-        public static IAsyncPolicy<HttpResponseMessage> GetRetryPolicyJitter(int retryCount = 1)
+        public static IAsyncPolicy<HttpResponseMessage> GetRetryPolicyJitter(int retryCount = DEFAULT_Retry_Count)
         {
             Random jitterer = new Random();
             var retryWithJitterPolicy = HttpPolicyExtensions
@@ -31,7 +35,7 @@ namespace CSRO.Server.Infrastructure.Helpers
             return retryWithJitterPolicy;
         }
 
-        public static IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy(int retryCount = 1)
+        public static IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy(int retryCount = DEFAULT_Retry_Count)
         {
             return HttpPolicyExtensions
                 .HandleTransientHttpError()
