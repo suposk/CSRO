@@ -75,14 +75,19 @@ namespace CSRO.Server.Services
                 await SaveChangesAsync();
                 
                 var res = await _vmSdkService.RebootVmAndWaitForConfirmation(entity.SubcriptionId, entity.ResorceGroup, entity.VmName).ConfigureAwait(false);
+                //update
+                base.Update(entity, _userId);                                
                 if (res.success)
-                {
-                    //update
-                    base.Add(entity, _userId);
+                {                    
                     entity.Status = "Completed";
                     entity.VmState = res.status;
-                    await SaveChangesAsync();
                 }
+                else
+                {
+                    entity.Status = "Rejected";
+                    entity.VmState = res.errorMessage;
+                }
+                await SaveChangesAsync();
                 return (res.success, res.errorMessage);                
             }
             catch(Exception ex)
