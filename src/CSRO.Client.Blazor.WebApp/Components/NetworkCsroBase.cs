@@ -88,11 +88,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
                 _networksList = await NetworkService.GetNetworks(SubcriptionId, LocationIdName.Id);
                 Networks = new Networks();
-                if (_networksList != null)
-                {
-                    foreach (var item in _networksList)
-                        _networksList.ForEach(a => Networks.NetworkResourceGroupList.Add(a.NetworkResourceGroup));                    
-                }                
+                _networksList?.ForEach(a => Networks.NetworkResourceGroupList.Add(a.NetworkResourceGroup));
             }
             catch (Exception ex)
             {
