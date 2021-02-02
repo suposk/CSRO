@@ -16,12 +16,6 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "Api Production": {
-      "commandName": "Project",
-      "launchUrl": "swagger",
-      "dotnetRunMessages": "true",
-      "applicationUrl": "https://localhost:6001;http://localhost:6000"
-    },
     "Api localhost": {
       "commandName": "Project",
       "launchUrl": "swagger",
@@ -31,11 +25,11 @@
       "dotnetRunMessages": "true",
       "applicationUrl": "https://localhost:6001;http://localhost:6000"
     },
-    "Api Staging": {
+    "Api Production": {
       "commandName": "Project",
       "launchUrl": "swagger",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Staging"
+        "ASPNETCORE_ENVIRONMENT": "Production"
       },
       "dotnetRunMessages": "true",
       "applicationUrl": "https://localhost:6001;http://localhost:6000"
