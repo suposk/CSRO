@@ -25,17 +25,22 @@ using System.Net.Http;
 using System.Net;
 using CSRO.Server.Core.Helpers;
 using CSRO.Common.AzureSdkServices;
+using Microsoft.Azure.Services.AppAuthentication;
+using Microsoft.Azure.KeyVault;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
 namespace CSRO.Server.Api
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
+            _env = env;
         }
 
         public IConfiguration Configuration { get; }
+        private readonly IWebHostEnvironment _env;
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -46,7 +51,7 @@ namespace CSRO.Server.Api
             //    cacheOptions.DatabaseName = Configuration["CosmosCache:DatabaseName"];
             //    cacheOptions.ClientBuilder = new CosmosClientBuilder(Configuration["CosmosCache:ConnectionString"]);
             //    cacheOptions.CreateIfNotExists = true;
-            //});
+            //});                                    
 
             services.AddDistributedSqlServerCache(options =>
             {
@@ -57,6 +62,42 @@ namespace CSRO.Server.Api
                 //def is 2 minutes
                 options.DefaultSlidingExpiration = TimeSpan.FromMinutes(30);
             });
+
+            string ClientSecret = null;
+            var SqlConnString = Configuration.GetConnectionString("SqlConnString");
+            var TokenCacheDbConnStr = Configuration.GetConnectionString("TokenCacheDbConnStr");
+
+            bool UseKeyVault = Configuration.GetValue<bool>("UseKeyVault");            
+            var VaultName = Configuration.GetValue<string>("CsroVaultNeuDev");            
+            var azureServiceTokenProvider = new AzureServiceTokenProvider();
+            var keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
+
+            if (UseKeyVault)
+            {
+                try
+                {
+                    ClientSecret = keyVaultClient.GetSecretAsync(VaultName, "ClientSecretApi").Result.Value;
+
+                    var SqlConnStringVault = keyVaultClient.GetSecretAsync(VaultName, "SqlConnStringVault").Result.Value;
+                    SqlConnString = SqlConnStringVault;
+                    var TokenCacheDbConnStrVault = keyVaultClient.GetSecretAsync(VaultName, "TokenCacheDbConnStrVault").Result.Value;
+                    TokenCacheDbConnStr = TokenCacheDbConnStrVault;
+                }
+                catch (Exception ex)
+                {
+                }
+            }
+            else
+            {
+                if (_env.IsDevelopment())
+                {
+                    ;
+                }
+                else if (_env.IsStaging())
+                {
+                    ;
+                }
+            }
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
@@ -83,6 +124,15 @@ namespace CSRO.Server.Api
                         .EnableTokenAcquisitionToCallDownstreamApi()
                         //.AddInMemoryTokenCaches();
                         .AddDistributedTokenCaches();
+
+            //services.Configure<MicrosoftIdentityOptions>(options =>
+            //{
+            //    options.ResponseType = OpenIdConnectResponseType.Code;
+
+            //    if (UseKeyVault)
+            //        options.ClientSecret = ClientSecret;
+
+            //});
 
             services.AddControllers();
             services.AddMvc(options =>
@@ -156,8 +206,10 @@ namespace CSRO.Server.Api
                 //sql Lite                
                 //options.UseSqlite(Configuration.GetConnectionString("SqlLiteConnString"));
 
+
                 //sql Server
-                options.UseSqlServer(Configuration.GetConnectionString("SqlConnString"));
+                //options.UseSqlServer(Configuration.GetConnectionString("SqlConnString"));
+                options.UseSqlServer(SqlConnString);
             });
 
             services.AddDbContext<TokenCacheContext>(options =>
@@ -165,9 +217,9 @@ namespace CSRO.Server.Api
                 //sql Lite                
                 //options.UseSqlite(Configuration.GetConnectionString("SqlLiteConnString"));
 
-                //test
                 //sql Server
-                options.UseSqlServer(Configuration.GetConnectionString("TokenCacheDbConnStr"));
+                //options.UseSqlServer(Configuration.GetConnectionString("TokenCacheDbConnStr"));
+                options.UseSqlServer(TokenCacheDbConnStr);
             });
 
             #endregion

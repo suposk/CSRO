@@ -36,12 +36,14 @@ namespace CSRO.Client.Blazor.WebApp
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
+            _env = env;
         }
 
         public IConfiguration Configuration { get; }
+        private readonly IWebHostEnvironment _env;
 
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
@@ -65,11 +67,20 @@ namespace CSRO.Client.Blazor.WebApp
                 options.DefaultSlidingExpiration = TimeSpan.FromMinutes(30);
             });
 
-            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            if (_env.IsDevelopment())
+            {
+                ;
+            }
+            else if (_env.IsStaging())
+            {
+                ;
+            }
+
+            string ClientSecret = null;
+            var TokenCacheDbConnStr = Configuration.GetConnectionString("TokenCacheDbConnStr");
 
             bool UseKeyVault = Configuration.GetValue<bool>("UseKeyVault");
-            var VaultName = Configuration.GetValue<string>("VaultName");
-            string clientSecret = null;
+            var VaultName = Configuration.GetValue<string>("CsroVaultNeuDev");
             var azureServiceTokenProvider = new AzureServiceTokenProvider();
             var keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
 
@@ -77,17 +88,28 @@ namespace CSRO.Client.Blazor.WebApp
             {
                 try
                 {
-                    var janoSetting = keyVaultClient.GetSecretAsync(VaultName, "JanoSetting").Result.Value;
-                    Console.WriteLine($"JanoSetting from Vault: {janoSetting}");
+                    ClientSecret = keyVaultClient.GetSecretAsync(VaultName, "ClientSecretWebApp").Result.Value;                    
 
-                    clientSecret = keyVaultClient.GetSecretAsync(VaultName, "ClientSecret").Result.Value;
-                    Console.WriteLine($"ClientSecret first 3 char from Vault: {clientSecret?.Substring(startIndex: 0, length: 3)}");
+                    var TokenCacheDbConnStrVault = keyVaultClient.GetSecretAsync(VaultName, "TokenCacheDbConnStrVault").Result.Value;
+                    TokenCacheDbConnStr = TokenCacheDbConnStrVault;
                 }
                 catch (Exception ex)
                 {
                 }
             }
+            else
+            {
+                if (_env.IsDevelopment())
+                {
+                    ;
+                }
+                else if (_env.IsStaging())
+                {
+                    ;
+                }
+            }
 
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             string ApiEndpoint = Configuration.GetValue<string>("ApiEndpoint");
             services.AddHttpClient("api", (client) =>
             {
@@ -136,7 +158,7 @@ namespace CSRO.Client.Blazor.WebApp
                 options.ResponseType = OpenIdConnectResponseType.Code;
 
                 if (UseKeyVault)
-                    options.ClientSecret = clientSecret;
+                    options.ClientSecret = ClientSecret;
 
             });
 
