@@ -9,17 +9,17 @@ namespace CSRO.Common.AzureSdkServices
     /// </summary>
     public class ChainnedCsroTokenCredentialProvider : ICsroTokenCredentialProvider
     {
-        private readonly IConfiguration _configuration;        
+        private readonly AzureAd _azureAd;
 
-        public ChainnedCsroTokenCredentialProvider(IConfiguration configuration)
+        public ChainnedCsroTokenCredentialProvider(AzureAd azureAd)
         {
-            _configuration = configuration;            
+            _azureAd = azureAd;
         }
 
         public TokenCredential GetCredential()
-        {            
+        {
             // Bind the configuration section to an instance of AzureAdAuthenticationOptions
-            var azureAdOptions = _configuration.GetSection(nameof(AzureAd)).Get<AzureAd>();
+            var azureAdOptions = _azureAd;
 
             // If all three values are present, use both the Managed Identity and client secret credentials
             if (!string.IsNullOrEmpty(azureAdOptions.TenantId) &&

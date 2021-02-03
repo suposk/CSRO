@@ -90,7 +90,8 @@ namespace CSRO.Client.Blazor.WebApp
                     var azureServiceTokenProvider = new AzureServiceTokenProvider();
                     var keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
 
-                    ClientSecret = keyVaultClient.GetSecretAsync(VaultName, ClientSecretVaultName).Result.Value;                    
+                    ClientSecret = keyVaultClient.GetSecretAsync(VaultName, ClientSecretVaultName).Result.Value;
+                    azureAdOptions.ClientSecret = ClientSecret;
                     var TokenCacheDbConnStrVault = keyVaultClient.GetSecretAsync(VaultName, "TokenCacheDbConnStrVault").Result.Value;
                     TokenCacheDbConnStr = TokenCacheDbConnStrVault;                    
                 }
@@ -241,8 +242,15 @@ namespace CSRO.Client.Blazor.WebApp
             services.AddTransient<ISubscriptionSdkService, SubscriptionSdkService>();
                         
             bool UseChainTokenCredential = Configuration.GetValue<bool>("UseChainTokenCredential");
-            if (UseChainTokenCredential)
-                services.AddTransient<ICsroTokenCredentialProvider, ChainnedCsroTokenCredentialProvider>(); //for personal            
+            if (UseChainTokenCredential)           
+            {
+                //services.AddTransient<ICsroTokenCredentialProvider, ChainnedCsroTokenCredentialProvider>(); //for personal 
+                services.AddTransient<ICsroTokenCredentialProvider, ChainnedCsroTokenCredentialProvider>((op) => 
+                {
+                    var pr = new ChainnedCsroTokenCredentialProvider(azureAdOptions);
+                    return pr;
+                }); //for personal 
+            }
             else
                 services.AddTransient<ICsroTokenCredentialProvider, CsroTokenCredentialProvider>(); //for work                        
 
@@ -251,12 +259,6 @@ namespace CSRO.Client.Blazor.WebApp
             //UI component for dialods
             services.AddTransient<ICsroDialogService, CsroDialogService>();
             //services.AddSingleton<WeatherForecastService>();
-
-            var hellosettings = Configuration.GetValue<string>("HelloSetting");            
-            LogSecretVariableValueStartValue("HelloSetting", hellosettings);
-
-            var sec = Configuration.GetValue<string>("AzureAd:ClientSecret");            
-            LogSecretVariableValueStartValue("AzureAd:ClientSecret", sec);
 
             services.AddMudBlazorDialog();
             services.AddMudBlazorSnackbar();
