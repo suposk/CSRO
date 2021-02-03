@@ -88,6 +88,9 @@ namespace CSRO.Client.Blazor.WebApp.Pages
 
                         var VaultName = Configuration.GetValue<string>("CsroVaultNeuDev");
                         SettingModels.Add(new SettingModel { Name = "CsroVaultNeuDev", Value = VaultName.ReplaceWithStars(15), Type = "Config" });
+                                                
+                        bool UseChainTokenCredential = Configuration.GetValue<bool>("UseChainTokenCredential");
+                        SettingModels.Add(new SettingModel { Name = nameof(UseChainTokenCredential), Value = UseChainTokenCredential.ToString(), Type = "Config" });
 
                         if (UseKeyVault)
                         {

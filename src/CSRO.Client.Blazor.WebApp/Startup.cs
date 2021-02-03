@@ -239,8 +239,12 @@ namespace CSRO.Client.Blazor.WebApp
             
             services.AddTransient<IVmSdkService, VmSdkService>();
             services.AddTransient<ISubscriptionSdkService, SubscriptionSdkService>();
-            //services.AddTransient<ICsroTokenCredentialProvider, CsroTokenCredentialProvider>(); //for work            
-            services.AddTransient<ICsroTokenCredentialProvider, ChainnedCsroTokenCredentialProvider>(); //for personal            
+                        
+            bool UseChainTokenCredential = Configuration.GetValue<bool>("UseChainTokenCredential");
+            if (UseChainTokenCredential)
+                services.AddTransient<ICsroTokenCredentialProvider, ChainnedCsroTokenCredentialProvider>(); //for personal            
+            else
+                services.AddTransient<ICsroTokenCredentialProvider, CsroTokenCredentialProvider>(); //for work                        
 
             #endregion
 
