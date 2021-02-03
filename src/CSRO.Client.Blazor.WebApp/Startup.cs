@@ -75,6 +75,8 @@ namespace CSRO.Client.Blazor.WebApp
                 ;
             }
 
+            var azureAdOptions = Configuration.GetSection(nameof(AzureAd)).Get<AzureAd>();
+
             string ClientSecret = null;
             string TokenCacheDbConnStr = Configuration.GetConnectionString("TokenCacheDbConnStr");
             const string ClientSecretVaultName = "ClientSecretWebApp";
@@ -166,18 +168,18 @@ namespace CSRO.Client.Blazor.WebApp
                     {
                         LogSecretVariableValueStartValue("ClientSecret", ClientSecret);
 
-                        options.Instance = Configuration.GetValue<string>("AzureAd:Instance");
-                        options.Domain = Configuration.GetValue<string>("AzureAd:Domain");
-                        options.TenantId = Configuration.GetValue<string>("AzureAd:TenantId");
-                        options.ClientId = Configuration.GetValue<string>("AzureAd:ClientId");
+                        options.Instance = azureAdOptions.Instance;
+                        options.Domain = azureAdOptions.Domain;
+                        options.TenantId = azureAdOptions.TenantId;
+                        options.ClientId = azureAdOptions.ClientId;
                         options.ClientSecret = ClientSecret;
-                        options.CallbackPath = Configuration.GetValue<string>("AzureAd:CallbackPath");
-                        options.SignedOutCallbackPath = Configuration.GetValue<string>("AzureAd:SignedOutCallbackPath");
+                        options.CallbackPath = azureAdOptions.CallbackPath;
+                        options.SignedOutCallbackPath = azureAdOptions.SignedOutCallbackPath;
                     }).EnableTokenAcquisitionToCallDownstreamApi(confidentialClientApplicationOptions =>
                     {
-                        confidentialClientApplicationOptions.Instance = Configuration.GetValue<string>("AzureAd:Instance");
-                        confidentialClientApplicationOptions.TenantId = Configuration.GetValue<string>("AzureAd:TenantId");
-                        confidentialClientApplicationOptions.ClientId = Configuration.GetValue<string>("AzureAd:ClientId");
+                        confidentialClientApplicationOptions.Instance = azureAdOptions.Instance;
+                        confidentialClientApplicationOptions.TenantId = azureAdOptions.TenantId;
+                        confidentialClientApplicationOptions.ClientId = azureAdOptions.ClientId;
                         confidentialClientApplicationOptions.ClientSecret = ClientSecret;
                     })
                     .AddInMemoryTokenCaches();
