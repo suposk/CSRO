@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using CSRO.Client.Core.Helpers;
 
 namespace CSRO.Client.Blazor.WebApp.Pages
 {
@@ -54,7 +55,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages
             {
                 ShowLoading();
                 CanView = false;
-                SettingModels.Clear();
+                SettingModels.Clear();                
                 
                 var auth = await AuthenticationStateProvider.GetAuthenticationStateAsync();
                 if (auth != null && auth.User.Identity.IsAuthenticated)
@@ -72,21 +73,21 @@ namespace CSRO.Client.Blazor.WebApp.Pages
                                 var set = new SettingModel { Type = "AzureAd", Name = item.Key };
                                 //var val = item.Value.GetValue(item);                                
                                 var val = item.Value.GetValue(azureAdOptions);
-                                set.Value = val?.ToString();
+                                set.Value = val?.ToString().ReplaceWithStars();
                                 SettingModels.Add(set);
                             }                            
                             //SettingModels.Add(new SettingModel { Name = "AzureAd", Value = "", Type = "" });
                         }
                         string ClientSecret = null;
                         string TokenCacheDbConnStr = Configuration.GetConnectionString("TokenCacheDbConnStr");                        
-                        SettingModels.Add(new SettingModel { Name = nameof(TokenCacheDbConnStr), Value = TokenCacheDbConnStr, Type = "Config" });
+                        SettingModels.Add(new SettingModel { Name = nameof(TokenCacheDbConnStr), Value = TokenCacheDbConnStr.ReplaceWithStars(), Type = "Config" });
                         const string ClientSecretVaultName = "ClientSecretWebApp";
 
                         bool UseKeyVault = Configuration.GetValue<bool>("UseKeyVault");
                         SettingModels.Add(new SettingModel { Name = nameof(UseKeyVault), Value = UseKeyVault.ToString(), Type = "Config" });
 
                         var VaultName = Configuration.GetValue<string>("CsroVaultNeuDev");
-                        SettingModels.Add(new SettingModel { Name = "CsroVaultNeuDev", Value = VaultName, Type = "Config" });
+                        SettingModels.Add(new SettingModel { Name = "CsroVaultNeuDev", Value = VaultName.ReplaceWithStars(15), Type = "Config" });
 
                         if (UseKeyVault)
                         {
@@ -99,12 +100,12 @@ namespace CSRO.Client.Blazor.WebApp.Pages
 
                                 var s1 = await keyVaultClient.GetSecretAsync(VaultName, ClientSecretVaultName);
                                 ClientSecret = s1.Value;
-                                SettingModels.Add(new SettingModel { Name = nameof(ClientSecret), Value = ClientSecret, Type = "KeuVault" });
+                                SettingModels.Add(new SettingModel { Name = nameof(ClientSecret), Value = ClientSecret.ReplaceWithStars(), Type = "KeuVault" });
 
                                 var s2 = await keyVaultClient.GetSecretAsync(VaultName, "TokenCacheDbConnStrVault");
                                 var TokenCacheDbConnStrVault = s2.Value;
                                 TokenCacheDbConnStr = TokenCacheDbConnStrVault;
-                                SettingModels.Add(new SettingModel { Name = nameof(TokenCacheDbConnStr), Value = TokenCacheDbConnStr, Type = "KeuVault" });
+                                SettingModels.Add(new SettingModel { Name = nameof(TokenCacheDbConnStr), Value = TokenCacheDbConnStr.ReplaceWithStars(), Type = "KeuVault" });
                             }
                             catch (Exception ex)
                             {
