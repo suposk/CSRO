@@ -162,8 +162,8 @@ namespace CSRO.Client.Blazor.WebApp
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
                 .EnableTokenAcquisitionToCallDownstreamApi()
-                        //.AddInMemoryTokenCaches();
-                        .AddDistributedTokenCaches();
+                        .AddInMemoryTokenCaches();
+                        //.AddDistributedTokenCaches();
 
             services.Configure<MicrosoftIdentityOptions>(options =>
             {
