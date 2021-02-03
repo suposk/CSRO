@@ -42,14 +42,16 @@ namespace CSRO.Client.Blazor.WebApp
                     bool UseKeyVault = builtConfig.GetValue<bool>("UseKeyVault");
                     if (UseKeyVault)
                     {
-                        var vaultName = builtConfig["CsroVaultNeuDev"];
-                        var azureServiceTokenProvider = new AzureServiceTokenProvider();
-                        var keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
+                        //not needed 
 
-                        config.AddAzureKeyVault(
-                            vaultName,
-                            keyVaultClient,
-                            new DefaultKeyVaultSecretManager());
+                        //var vaultName = builtConfig["CsroVaultNeuDev"];
+                        //var azureServiceTokenProvider = new AzureServiceTokenProvider();
+                        //var keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
+
+                        //config.AddAzureKeyVault(
+                        //    vaultName,
+                        //    keyVaultClient,
+                        //    new DefaultKeyVaultSecretManager());
                     }
                 });
     }
