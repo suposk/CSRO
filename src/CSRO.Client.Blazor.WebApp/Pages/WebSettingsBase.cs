@@ -78,13 +78,16 @@ namespace CSRO.Client.Blazor.WebApp.Pages
                             }                            
                             //SettingModels.Add(new SettingModel { Name = "AzureAd", Value = "", Type = "" });
                         }
-                        string ClientSecret = null;
-                        string TokenCacheDbConnStr = Configuration.GetConnectionString("TokenCacheDbConnStr");                        
-                        SettingModels.Add(new SettingModel { Name = nameof(TokenCacheDbConnStr), Value = TokenCacheDbConnStr.ReplaceWithStars(), Type = "Config" });
-                        const string ClientSecretVaultName = "ClientSecretWebApp";
 
                         bool UseKeyVault = Configuration.GetValue<bool>("UseKeyVault");
                         SettingModels.Add(new SettingModel { Name = nameof(UseKeyVault), Value = UseKeyVault.ToString(), Type = "Config" });
+
+                        string ClientSecret = null;
+                        string TokenCacheDbConnStr = Configuration.GetConnectionString("TokenCacheDbConnStr");                        
+                        SettingModels.Add(new SettingModel { Name = nameof(TokenCacheDbConnStr), Value = TokenCacheDbConnStr.ReplaceWithStars(), Type = "Config" });
+
+                        string ClientSecretVaultName = Configuration.GetValue<string>("ClientSecretVaultName");
+                        SettingModels.Add(new SettingModel { Name = nameof(ClientSecretVaultName), Value = ClientSecretVaultName, Type = "Config" });
 
                         var VaultName = Configuration.GetValue<string>("CsroVaultNeuDev");
                         SettingModels.Add(new SettingModel { Name = "CsroVaultNeuDev", Value = VaultName.ReplaceWithStars(15), Type = "Config" });

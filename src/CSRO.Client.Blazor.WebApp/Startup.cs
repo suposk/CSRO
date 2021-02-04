@@ -1,8 +1,7 @@
 using AutoMapper;
 using CSRO.Client.Blazor.WebApp.Data;
 using CSRO.Client.Services;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Builder;
+        using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -15,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using MudBlazor;
 using MudBlazor.Services;
@@ -37,10 +37,8 @@ namespace CSRO.Client.Blazor.WebApp
 {
     public class Startup
     {
-        public Startup
-            (
-            IConfiguration configuration,
-            //IHostBuilder hostBuilder,
+        public Startup(
+            IConfiguration configuration,            
             IWebHostEnvironment env)
         {
             Configuration = configuration;            
@@ -56,15 +54,13 @@ namespace CSRO.Client.Blazor.WebApp
         }
 
         public IConfiguration Configuration { get; }
-
         private readonly ILogger _logger;
         private readonly IWebHostEnvironment _env;
 
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
-        {
-            
+        {           
 
             if (_env.IsDevelopment())
             {
@@ -79,7 +75,7 @@ namespace CSRO.Client.Blazor.WebApp
 
             string ClientSecret = null;
             string TokenCacheDbConnStr = Configuration.GetConnectionString("TokenCacheDbConnStr");
-            const string ClientSecretVaultName = "ClientSecretWebApp";
+            string ClientSecretVaultName = Configuration.GetValue<string>("ClientSecretVaultName");
 
             bool UseKeyVault = Configuration.GetValue<bool>("UseKeyVault");
             if (UseKeyVault)
@@ -164,6 +160,7 @@ namespace CSRO.Client.Blazor.WebApp
 
             if (UseKeyVault)
             {
+                //only for client
                 services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                     .AddMicrosoftIdentityWebApp((options) =>
                     {
@@ -188,11 +185,12 @@ namespace CSRO.Client.Blazor.WebApp
             }
             else
             {
+                //only for client
                 services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                     .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
                     .EnableTokenAcquisitionToCallDownstreamApi()
-                    .AddInMemoryTokenCaches();
-                    //.AddDistributedTokenCaches();
+                    //.AddInMemoryTokenCaches();
+                    .AddDistributedTokenCaches();
             }
 
             services.Configure<MicrosoftIdentityOptions>(options =>
