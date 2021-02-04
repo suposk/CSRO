@@ -92,6 +92,7 @@ namespace CSRO.Server.Api
                 }
                 catch (Exception ex)
                 {
+                    _logger?.LogError("Error reading Keyvalut", ex);
                 }
             }
             else
@@ -149,20 +150,47 @@ namespace CSRO.Server.Api
             .AddPolicyHandler(PollyHelper.GetRetryPolicy());
             ;
 
-            services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)
-                    .AddMicrosoftIdentityWebApi(Configuration, "AzureAd")
-                        .EnableTokenAcquisitionToCallDownstreamApi()
-                        //.AddInMemoryTokenCaches();
-                        .AddDistributedTokenCaches();
 
-            //services.Configure<MicrosoftIdentityOptions>(options =>
-            //{
-            //    options.ResponseType = OpenIdConnectResponseType.Code;
+            if (UseKeyVault)
+            {
+                services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)
+                    .AddMicrosoftIdentityWebApp((options) =>
+                    {
+                        LogSecretVariableValueStartValue("ClientSecret", ClientSecret);
 
-            //    if (UseKeyVault)
-            //        options.ClientSecret = ClientSecret;
-
-            //});
+                        options.Instance = azureAdOptions.Instance;
+                        options.Domain = azureAdOptions.Domain;
+                        options.TenantId = azureAdOptions.TenantId;
+                        options.ClientId = azureAdOptions.ClientId;
+                        options.ClientSecret = ClientSecret;
+                        options.CallbackPath = azureAdOptions.CallbackPath;
+                        options.SignedOutCallbackPath = azureAdOptions.SignedOutCallbackPath;
+                    }).EnableTokenAcquisitionToCallDownstreamApi(confidentialClientApplicationOptions =>
+                    {
+                        confidentialClientApplicationOptions.Instance = azureAdOptions.Instance;
+                        confidentialClientApplicationOptions.TenantId = azureAdOptions.TenantId;
+                        confidentialClientApplicationOptions.ClientId = azureAdOptions.ClientId;
+                        confidentialClientApplicationOptions.ClientSecret = ClientSecret;
+                    })
+                    .AddInMemoryTokenCaches();
+                //.AddDistributedTokenCaches();
+            }
+            else
+            {
+                services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)
+                        .AddMicrosoftIdentityWebApi(Configuration, "AzureAd")
+                            .EnableTokenAcquisitionToCallDownstreamApi()
+                            //.AddInMemoryTokenCaches();
+                            .AddDistributedTokenCaches();
+            }
+            services.Configure<MicrosoftIdentityOptions>(options =>
+            {
+                options.ResponseType = OpenIdConnectResponseType.Code;
+                if (UseKeyVault && !string.IsNullOrWhiteSpace(ClientSecret))
+                    options.ClientSecret = ClientSecret;
+                if (UseKeyVault)
+                    LogSecretVariableValueStartValue(ClientSecretVaultName, ClientSecret);
+            });
 
             services.AddControllers();
             services.AddMvc(options =>

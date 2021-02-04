@@ -94,6 +94,7 @@ namespace CSRO.Client.Blazor.WebApp
                 }
                 catch (Exception ex)
                 {
+                    _logger?.LogError("Error reading Keyvalut", ex);
                 }
             }
 
