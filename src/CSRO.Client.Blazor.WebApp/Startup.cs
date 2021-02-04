@@ -88,6 +88,7 @@ namespace CSRO.Client.Blazor.WebApp
 
                     ClientSecret = keyVaultClient.GetSecretAsync(VaultName, ClientSecretVaultName).Result.Value;
                     azureAdOptions.ClientSecret = ClientSecret;
+                    Configuration["AzureAd:ClientSecret"] = ClientSecret;
 
                     var TokenCacheDbConnStrVault = keyVaultClient.GetSecretAsync(VaultName, "TokenCacheDbConnStrVault").Result.Value;
                     TokenCacheDbConnStr = TokenCacheDbConnStrVault;                    
@@ -160,41 +161,13 @@ namespace CSRO.Client.Blazor.WebApp
             .AddPolicyHandler(PollyHelper.GetRetryPolicy());
             ;
 
-            if (UseKeyVault)
-            {
-                //only for client
-                services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-                    .AddMicrosoftIdentityWebApp((options) =>
-                    {
-                        LogSecretVariableValueStartValue("ClientSecret", ClientSecret);
-
-                        options.Instance = azureAdOptions.Instance;
-                        options.Domain = azureAdOptions.Domain;
-                        options.TenantId = azureAdOptions.TenantId;
-                        options.ClientId = azureAdOptions.ClientId;
-                        options.ClientSecret = azureAdOptions.ClientSecret;
-                        options.CallbackPath = azureAdOptions.CallbackPath;
-                        options.SignedOutCallbackPath = azureAdOptions.SignedOutCallbackPath;
-                    }).EnableTokenAcquisitionToCallDownstreamApi(confidentialClientApplicationOptions =>
-                    {
-                        confidentialClientApplicationOptions.Instance = azureAdOptions.Instance;
-                        confidentialClientApplicationOptions.TenantId = azureAdOptions.TenantId;
-                        confidentialClientApplicationOptions.ClientId = azureAdOptions.ClientId;
-                        confidentialClientApplicationOptions.ClientSecret = azureAdOptions.ClientSecret;
-                    })
-                    .AddInMemoryTokenCaches();
-                    //.AddDistributedTokenCaches();
-            }
-            else
-            {
-                //only for client
-                services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-                    .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
-                    .EnableTokenAcquisitionToCallDownstreamApi()
-                    //.AddInMemoryTokenCaches();
-                    .AddDistributedTokenCaches();
-            }
-
+            //only for client
+            services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+                .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
+                .EnableTokenAcquisitionToCallDownstreamApi()
+                //.AddInMemoryTokenCaches();
+                .AddDistributedTokenCaches();
+            
             services.Configure<MicrosoftIdentityOptions>(options =>
             {
                 options.ResponseType = OpenIdConnectResponseType.Code;
