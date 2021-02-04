@@ -45,6 +45,9 @@ namespace CSRO.Client.Blazor.WebApp.Components
         public ISubscriptionSdkService SubcriptionSdkService { get; set; }
 
         [Inject]
+        public ISubcriptionService SubcriptionService { get; set; }
+
+        [Inject]
         public IResourceGroupService ResourceGroupervice { get; set; }
 
         [Inject]
@@ -162,6 +165,18 @@ namespace CSRO.Client.Blazor.WebApp.Components
                 ShowLoading();
                 Subscripions?.Clear();
                 Subscripions = await SubcriptionSdkService.GetAllSubcriptions();
+                if (Subscripions == null || Subscripions.Count == 0)
+                {
+                    var other = await SubcriptionService.GetSubcriptions();
+                    if (other?.Count > 0)
+                    {
+                        await CsroDialogService.ShowWarning("Info", "sdk method found no subs");
+                        List<IdNameSdk> list = new List<IdNameSdk>();
+                        other.ForEach(a => list.Add(new IdNameSdk { Id = a.Id, Name = a.Name }));
+                        Subscripions = list;
+                    }
+                }
+
 #if DEBUG
 
                 //dubug only

@@ -33,58 +33,67 @@ namespace CSRO.Server.Api
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration, IWebHostEnvironment env)
+        public Startup(
+            IConfiguration configuration,
+            IWebHostEnvironment env)
         {
             Configuration = configuration;
             _env = env;
+            using var loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.SetMinimumLevel(LogLevel.Information);
+                builder.AddConsole();
+                builder.AddEventSourceLogger();
+            });
+            _logger = loggerFactory.CreateLogger("Startup");
+            _logger.LogInformation("Created Startup _logger");
         }
 
         public IConfiguration Configuration { get; }
+        private readonly ILogger _logger;
         private readonly IWebHostEnvironment _env;
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddCosmosCache((CosmosCacheOptions cacheOptions) =>
-            //{
-            //    cacheOptions.ContainerName = Configuration["CosmosCache:ContainerName"];
-            //    cacheOptions.DatabaseName = Configuration["CosmosCache:DatabaseName"];
-            //    cacheOptions.ClientBuilder = new CosmosClientBuilder(Configuration["CosmosCache:ConnectionString"]);
-            //    cacheOptions.CreateIfNotExists = true;
-            //});                                    
-
-            services.AddDistributedSqlServerCache(options =>
+            if (_env.IsDevelopment())
             {
-                options.ConnectionString = Configuration.GetConnectionString("TokenCacheDbConnStr");
-                options.SchemaName = "dbo";
-                options.TableName = "TokenCache";
+                ;
+            }
+            else if (_env.IsStaging())
+            {
+                ;
+            }
 
-                //def is 2 minutes
-                options.DefaultSlidingExpiration = TimeSpan.FromMinutes(30);
-            });
+            var azureAdOptions = Configuration.GetSection(nameof(AzureAd)).Get<AzureAd>();
 
             string ClientSecret = null;
-            var SqlConnString = Configuration.GetConnectionString("SqlConnString");
-            var TokenCacheDbConnStr = Configuration.GetConnectionString("TokenCacheDbConnStr");
+            string SqlConnString = Configuration.GetConnectionString("SqlConnString");
+            string TokenCacheDbConnStr = Configuration.GetConnectionString("TokenCacheDbConnStr");
+            string ClientSecretVaultName = Configuration.GetValue<string>("ClientSecretVaultName");
 
             bool UseKeyVault = Configuration.GetValue<bool>("UseKeyVault");            
-            var VaultName = Configuration.GetValue<string>("CsroVaultNeuDev");            
-            var azureServiceTokenProvider = new AzureServiceTokenProvider();
-            var keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
-
             if (UseKeyVault)
             {
                 try
                 {
-                    ClientSecret = keyVaultClient.GetSecretAsync(VaultName, "ClientSecretApi").Result.Value;
+                    var VaultName = Configuration.GetValue<string>("CsroVaultNeuDev");
+                    var azureServiceTokenProvider = new AzureServiceTokenProvider();
+                    var keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
+
+                    ClientSecret = keyVaultClient.GetSecretAsync(VaultName, ClientSecretVaultName).Result.Value;
+                    azureAdOptions.ClientSecret = ClientSecret;
+                    Configuration["AzureAd:ClientSecret"] = ClientSecret;
 
                     var SqlConnStringVault = keyVaultClient.GetSecretAsync(VaultName, "SqlConnStringVault").Result.Value;
                     SqlConnString = SqlConnStringVault;
+
                     var TokenCacheDbConnStrVault = keyVaultClient.GetSecretAsync(VaultName, "TokenCacheDbConnStrVault").Result.Value;
                     TokenCacheDbConnStr = TokenCacheDbConnStrVault;
                 }
                 catch (Exception ex)
                 {
+                    _logger?.LogError("Error reading Keyvalut", ex);
                 }
             }
             else
@@ -98,6 +107,29 @@ namespace CSRO.Server.Api
                     ;
                 }
             }
+
+            #region Distributed Token Caches
+
+            //services.AddCosmosCache((CosmosCacheOptions cacheOptions) =>
+            //{
+            //    cacheOptions.ContainerName = Configuration["CosmosCache:ContainerName"];
+            //    cacheOptions.DatabaseName = Configuration["CosmosCache:DatabaseName"];
+            //    cacheOptions.ClientBuilder = new CosmosClientBuilder(Configuration["CosmosCache:ConnectionString"]);
+            //    cacheOptions.CreateIfNotExists = true;
+            //});
+
+            services.AddDistributedSqlServerCache(options =>
+            {
+                LogSecretVariableValueStartValue(nameof(TokenCacheDbConnStr), TokenCacheDbConnStr);
+
+                options.ConnectionString = TokenCacheDbConnStr;
+                options.SchemaName = "dbo";
+                options.TableName = "TokenCache";
+
+                //def is 2 minutes
+                options.DefaultSlidingExpiration = TimeSpan.FromMinutes(30);
+            });
+            #endregion
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
@@ -120,18 +152,18 @@ namespace CSRO.Server.Api
             ;
 
             services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)
-                    .AddMicrosoftIdentityWebApi(Configuration, "AzureAd")
-                        .EnableTokenAcquisitionToCallDownstreamApi()
-                        //.AddInMemoryTokenCaches();
-                        .AddDistributedTokenCaches();
+                .AddMicrosoftIdentityWebApi(Configuration, "AzureAd")
+                .EnableTokenAcquisitionToCallDownstreamApi()
+                //.AddInMemoryTokenCaches();
+                .AddDistributedTokenCaches();            
 
             //services.Configure<MicrosoftIdentityOptions>(options =>
             //{
             //    options.ResponseType = OpenIdConnectResponseType.Code;
-
+            //    if (UseKeyVault && !string.IsNullOrWhiteSpace(azureAdOptions.ClientSecret))
+            //        options.ClientSecret = azureAdOptions.ClientSecret;
             //    if (UseKeyVault)
-            //        options.ClientSecret = ClientSecret;
-
+            //        LogSecretVariableValueStartValue(ClientSecretVaultName, azureAdOptions.ClientSecret);
             //});
 
             services.AddControllers();
@@ -160,8 +192,19 @@ namespace CSRO.Server.Api
 
             services.AddTransient<IVmSdkService, VmSdkService>();
             services.AddTransient<ISubscriptionSdkService, SubscriptionSdkService>();
-            //services.AddTransient<ICsroTokenCredentialProvider, CsroTokenCredentialProvider>(); //for work            
-            services.AddTransient<ICsroTokenCredentialProvider, ChainnedCsroTokenCredentialProvider>(); //for personal            
+
+            bool UseChainTokenCredential = Configuration.GetValue<bool>("UseChainTokenCredential");
+            if (UseChainTokenCredential)
+            {
+                //services.AddTransient<ICsroTokenCredentialProvider, ChainnedCsroTokenCredentialProvider>(); //for personal 
+                services.AddTransient<ICsroTokenCredentialProvider, ChainnedCsroTokenCredentialProvider>((op) =>
+                {
+                    var pr = new ChainnedCsroTokenCredentialProvider(azureAdOptions);
+                    return pr;
+                }); //for personal 
+            }
+            else
+                services.AddTransient<ICsroTokenCredentialProvider, CsroTokenCredentialProvider>(); //for work                        
 
             #endregion
 
@@ -246,6 +289,28 @@ namespace CSRO.Server.Api
             {
                 endpoints.MapControllers();
             });
+        }
+
+        const int lengthToLog = 6;
+        private void LogSecretVariableValueStartValue(string variable, string value)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(value))
+                {
+                    Console.WriteLine($"{nameof(LogSecretVariableValueStartValue)}Console Error->{variable} is null");
+                    _logger.LogError($"{nameof(LogSecretVariableValueStartValue)}->{variable} is null");
+                }
+                else
+                {
+                    Console.WriteLine($"{nameof(LogSecretVariableValueStartValue)}Console->{variable} = {value.Substring(startIndex: 0, length: lengthToLog)}");
+                    _logger.LogWarning($"{nameof(LogSecretVariableValueStartValue)}->{variable} = {value.Substring(startIndex: 0, length: lengthToLog)}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger?.LogError($"jano exception in {nameof(LogSecretVariableValueStartValue)}", ex);
+            }
         }
     }
 }
