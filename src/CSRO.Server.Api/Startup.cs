@@ -162,7 +162,7 @@ namespace CSRO.Server.Api
                         options.Domain = azureAdOptions.Domain;
                         options.TenantId = azureAdOptions.TenantId;
                         options.ClientId = azureAdOptions.ClientId;
-                        options.ClientSecret = ClientSecret;
+                        options.ClientSecret = azureAdOptions.ClientSecret;
                         options.CallbackPath = azureAdOptions.CallbackPath;
                         options.SignedOutCallbackPath = azureAdOptions.SignedOutCallbackPath;
                     }).EnableTokenAcquisitionToCallDownstreamApi(confidentialClientApplicationOptions =>
@@ -170,7 +170,7 @@ namespace CSRO.Server.Api
                         confidentialClientApplicationOptions.Instance = azureAdOptions.Instance;
                         confidentialClientApplicationOptions.TenantId = azureAdOptions.TenantId;
                         confidentialClientApplicationOptions.ClientId = azureAdOptions.ClientId;
-                        confidentialClientApplicationOptions.ClientSecret = ClientSecret;
+                        confidentialClientApplicationOptions.ClientSecret = azureAdOptions.ClientSecret;
                     })
                     .AddInMemoryTokenCaches();
                 //.AddDistributedTokenCaches();
@@ -183,13 +183,14 @@ namespace CSRO.Server.Api
                             //.AddInMemoryTokenCaches();
                             .AddDistributedTokenCaches();
             }
+
             services.Configure<MicrosoftIdentityOptions>(options =>
             {
                 options.ResponseType = OpenIdConnectResponseType.Code;
-                if (UseKeyVault && !string.IsNullOrWhiteSpace(ClientSecret))
-                    options.ClientSecret = ClientSecret;
+                if (UseKeyVault && !string.IsNullOrWhiteSpace(azureAdOptions.ClientSecret))
+                    options.ClientSecret = azureAdOptions.ClientSecret;
                 if (UseKeyVault)
-                    LogSecretVariableValueStartValue(ClientSecretVaultName, ClientSecret);
+                    LogSecretVariableValueStartValue(ClientSecretVaultName, azureAdOptions.ClientSecret);
             });
 
             services.AddControllers();
