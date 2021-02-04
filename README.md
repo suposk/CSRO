@@ -1,5 +1,9 @@
 # CSRO
 
+Link:
+https://csro-api-dev.azurewebsites.net/
+
+
 Verify all appids match with current ubs in portal
 Using sql server change
 
