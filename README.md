@@ -1,7 +1,8 @@
 # CSRO
 
-Link:
-https://csro-api-dev.azurewebsites.net/
+
+web link: https://csro-webapp-dev.azurewebsites.net/
+api Link: https://csro-api-dev.azurewebsites.net/
 
 
 Verify all appids match with current ubs in portal
