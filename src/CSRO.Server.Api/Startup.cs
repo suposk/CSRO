@@ -45,6 +45,18 @@ namespace CSRO.Server.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            if (_env.IsDevelopment())
+            {
+                ;
+            }
+            else if (_env.IsStaging())
+            {
+                ;
+            }
+
+            var azureAdOptions = Configuration.GetSection(nameof(AzureAd)).Get<AzureAd>();
+
+
             //services.AddCosmosCache((CosmosCacheOptions cacheOptions) =>
             //{
             //    cacheOptions.ContainerName = Configuration["CosmosCache:ContainerName"];
@@ -160,8 +172,19 @@ namespace CSRO.Server.Api
 
             services.AddTransient<IVmSdkService, VmSdkService>();
             services.AddTransient<ISubscriptionSdkService, SubscriptionSdkService>();
-            //services.AddTransient<ICsroTokenCredentialProvider, CsroTokenCredentialProvider>(); //for work            
-            services.AddTransient<ICsroTokenCredentialProvider, ChainnedCsroTokenCredentialProvider>(); //for personal            
+
+            bool UseChainTokenCredential = Configuration.GetValue<bool>("UseChainTokenCredential");
+            if (UseChainTokenCredential)
+            {
+                //services.AddTransient<ICsroTokenCredentialProvider, ChainnedCsroTokenCredentialProvider>(); //for personal 
+                services.AddTransient<ICsroTokenCredentialProvider, ChainnedCsroTokenCredentialProvider>((op) =>
+                {
+                    var pr = new ChainnedCsroTokenCredentialProvider(azureAdOptions);
+                    return pr;
+                }); //for personal 
+            }
+            else
+                services.AddTransient<ICsroTokenCredentialProvider, CsroTokenCredentialProvider>(); //for work                        
 
             #endregion
 
