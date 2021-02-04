@@ -81,8 +81,7 @@ namespace CSRO.Server.Api.Controllers
         }
 
         //// POST: api/MessageDetails
-        [HttpPost(Name = nameof(CreateRestartTicket))]
-        [Route("[action]")]
+        [HttpPost, Route(nameof(CreateRestartTicket))]        
         public async Task<ActionResult<VmTicketDto>> CreateRestartTicket(VmTicketDto dto)
         {
             if (dto == null)
@@ -112,8 +111,7 @@ namespace CSRO.Server.Api.Controllers
         }
 
         //// POST: api/MessageDetails
-        [HttpPost(Name = nameof(RebootVmAndWaitForConfirmation))]
-        [Route("[action]")]
+        [HttpPost, Route(nameof(RebootVmAndWaitForConfirmation))]
         public async Task<ActionResult<VmTicketDto>> RebootVmAndWaitForConfirmation(VmTicketDto dto)
         {
             if (dto == null)

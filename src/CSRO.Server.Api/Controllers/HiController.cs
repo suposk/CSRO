@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using CSRO.Server.Core.Helpers;
 
 namespace CSRO.Server.Api.Controllers
 {
@@ -37,7 +38,26 @@ namespace CSRO.Server.Api.Controllers
                 List<string> list = new List<string>();
                 var helloSetting = _configuration.GetValue<string>("HelloSetting");
                 list.Add("Info");
-                list.Add($"HelloSetting:{helloSetting}");
+                list.Add($"HelloSetting = {helloSetting}");
+
+                bool UseKeyVault = _configuration.GetValue<bool>("UseKeyVault");
+                list.Add($"{nameof(UseKeyVault)} = {UseKeyVault}");
+
+                string TokenCacheDbConnStr = _configuration.GetConnectionString("TokenCacheDbConnStr");
+                list.Add($"{nameof(TokenCacheDbConnStr)} = {TokenCacheDbConnStr.ReplaceWithStars()}");
+
+                string SqlConnString = _configuration.GetConnectionString("SqlConnString");
+                list.Add($"{nameof(SqlConnString)} = {SqlConnString.ReplaceWithStars()}");
+
+                string ClientSecretVaultName = _configuration.GetValue<string>("ClientSecretVaultName");
+                list.Add($"{nameof(ClientSecretVaultName)} = {ClientSecretVaultName}");
+
+                string ClientSecret = _configuration.GetValue<string>("AzureAd:ClientSecret");
+                list.Add($"{nameof(ClientSecret)} = {ClientSecret.ReplaceWithStars()}");
+
+                var VaultName = _configuration.GetValue<string>("CsroVaultNeuDev");
+                list.Add($"{nameof(VaultName)} = {VaultName}");
+
                 return list;
             }
             catch (Exception ex)
