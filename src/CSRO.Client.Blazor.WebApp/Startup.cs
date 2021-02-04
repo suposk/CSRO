@@ -88,6 +88,7 @@ namespace CSRO.Client.Blazor.WebApp
 
                     ClientSecret = keyVaultClient.GetSecretAsync(VaultName, ClientSecretVaultName).Result.Value;
                     azureAdOptions.ClientSecret = ClientSecret;
+
                     var TokenCacheDbConnStrVault = keyVaultClient.GetSecretAsync(VaultName, "TokenCacheDbConnStrVault").Result.Value;
                     TokenCacheDbConnStr = TokenCacheDbConnStrVault;                    
                 }
