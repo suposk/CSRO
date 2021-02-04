@@ -1,7 +1,6 @@
 # CSRO
-
-
 web link: https://csro-webapp-dev.azurewebsites.net/
+
 api Link: https://csro-api-dev.azurewebsites.net/
 
 
