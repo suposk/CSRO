@@ -43,6 +43,8 @@ namespace CSRO.Server.Api.Controllers
             {
                 _logger.LogInformation(ApiLogEvents.GetAllItems, $"{nameof(Get)} Started");
 
+                //throw new Exception("some fake value is null");
+
                 var all = await _repository.GetList().ConfigureAwait(false);
                 var result = _mapper.Map<List<TicketDto>>(all);
                 return result;
@@ -50,7 +52,7 @@ namespace CSRO.Server.Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, nameof(Get), null);
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }
         }
 
@@ -76,7 +78,7 @@ namespace CSRO.Server.Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, nameof(GetTicket), id);
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }
         }
 
@@ -104,7 +106,7 @@ namespace CSRO.Server.Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, nameof(PostTicket), dto);
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }
             return null;
         }
@@ -141,7 +143,7 @@ namespace CSRO.Server.Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, nameof(PutTicket), dto);
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }            
         }
 
@@ -173,7 +175,7 @@ namespace CSRO.Server.Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, nameof(DeleteTicket), id);
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }
             return null;
         }

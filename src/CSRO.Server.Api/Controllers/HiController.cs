@@ -62,7 +62,7 @@ namespace CSRO.Server.Api.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }
         }
 
@@ -83,10 +83,8 @@ namespace CSRO.Server.Api.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }
         }
-
-
     }
 }
