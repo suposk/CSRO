@@ -5,7 +5,7 @@
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-6">
     <MudText Typo="Typo.h4" GutterBottom="true">Tickes count: @Tickets?.Count</MudText>
-    @if (Tickets == null)
+    @if (IsLoading)
     {
         <MudGrid>
             <MudItem>

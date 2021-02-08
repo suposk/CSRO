@@ -43,6 +43,8 @@ namespace CSRO.Server.Api.Controllers
             {
                 _logger.LogInformation(ApiLogEvents.GetAllItems, $"{nameof(Get)} Started");
 
+                //throw new Exception("some fake value is null");
+
                 var all = await _repository.GetList().ConfigureAwait(false);
                 var result = _mapper.Map<List<TicketDto>>(all);
                 return result;
