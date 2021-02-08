@@ -138,12 +138,18 @@ namespace CSRO.Client.Services
                     var result = Mapper.Map<List<Ticket>>(ser);
                     return result;
                 }
+                else
+                {
+                    var content = await apiData.Content.ReadAsStringAsync();
+                    if (string.IsNullOrWhiteSpace(content)) content = apiData.ReasonPhrase;
+                    throw new Exception(content);
+                }
             }
             catch (Exception ex)
             {
                 base.HandleException(ex);
+                throw;
             }
-            return null;
         }
 
         public Task<List<Ticket>> GetItemsByParrentIdAsync(int parrentId)

@@ -34,21 +34,22 @@ namespace CSRO.Client.Blazor.WebApp.Pages
         #endregion
 
         public Ticket Model { get; set; } = new Ticket();
-        
-        public List<Ticket> Tickets { get; set; }
+
+        public List<Ticket> Tickets { get; set; } = new List<Ticket>();
 
         protected async override Task OnInitializedAsync()
         {
 
             try
             {
-                ShowLoading();                
-                Tickets = null;
+                ShowLoading();
+                Tickets.Clear();
                 Tickets = await TicketDataService.GetItemsAsync();
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, nameof(OnInitializedAsync));
+                await CsroDialogService.ShowError("Error", ex?.Message);
             }
             HideLoading();
         }
