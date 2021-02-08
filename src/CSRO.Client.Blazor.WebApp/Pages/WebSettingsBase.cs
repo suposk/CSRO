@@ -89,6 +89,9 @@ namespace CSRO.Client.Blazor.WebApp.Pages
                         string ClientSecretVaultName = Configuration.GetValue<string>("ClientSecretVaultName");
                         SettingModels.Add(new SettingModel { Name = nameof(ClientSecretVaultName), Value = ClientSecretVaultName, Type = "Config" });
 
+                        string ApiEndpoint = Configuration.GetValue<string>("ApiEndpoint");
+                        SettingModels.Add(new SettingModel { Name = nameof(ApiEndpoint), Value = ApiEndpoint, Type = "Config" });
+
                         var VaultName = Configuration.GetValue<string>("CsroVaultNeuDev");
                         SettingModels.Add(new SettingModel { Name = "CsroVaultNeuDev", Value = VaultName.ReplaceWithStars(15), Type = "Config" });
                                                 

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -106,6 +107,62 @@ namespace CSRO.Server.Infrastructure
                 // get latest version of record for display
                 return false;
             }
+            //catch (DbUpdateConcurrencyException ex)
+            //{
+            //    //foreach (var entry in ex.Entries)
+            //    //{
+            //    //    if (entry.Entity is EntityBase)
+            //    //    {
+            //    //        var proposedValues = entry.CurrentValues;
+            //    //        var databaseValues = entry.GetDatabaseValues();
+
+            //    //        try
+            //    //        {
+            //    //            var rwNew = proposedValues.GetValue<byte[]>(nameof(EntityBase.RowVersion));
+            //    //            var rwDb = databaseValues.GetValue<byte[]>(nameof(EntityBase.RowVersion));
+            //    //            if (rwNew != null && rwDb != null)
+            //    //            {
+            //    //                rwNew = rwDb;
+            //    //                var saved = await DatabaseContext.SaveChangesAsync().ConfigureAwait(false) >= 0;
+            //    //                return saved;
+            //    //            }
+            //    //        }
+            //    //        catch (Exception ex2)
+            //    //        {
+
+            //    //        }
+
+
+            //    //        //foreach (IProperty property in proposedValues.Properties)
+            //    //        //{
+            //    //        //    var proposedValue = proposedValues[property];
+            //    //        //    var databaseValue = databaseValues[property];
+
+            //    //        //    // TODO: decide which value should be written to database
+            //    //        //    // proposedValues[property] = <value to be saved>;
+            //    //        //    if (property.Name == nameof(EntityBase.RowVersion))
+            //    //        //    {
+            //    //        //        proposedValue = databaseValue;
+            //    //        //        var saved = await DatabaseContext.SaveChangesAsync().ConfigureAwait(false) >= 0;
+            //    //        //        return saved;
+            //    //        //    }
+            //    //        //}
+
+            //    //        //// Refresh original values to bypass next concurrency check
+            //    //        //entry.OriginalValues.SetValues(databaseValues);
+            //    //    }
+            //    //    else
+            //    //    {
+            //    //        throw new NotSupportedException(
+            //    //            "Don't know how to handle concurrency conflicts for "
+            //    //            + entry.Metadata.Name);
+            //    //    }
+            //    //}
+            //    //ex.Entries.Single().Reload();
+            //    //var saved = await DatabaseContext.SaveChangesAsync().ConfigureAwait(false) >= 0;
+            //    //return saved;
+            //    return false;
+            //}
             catch (Exception ee)
             {
                 return false;

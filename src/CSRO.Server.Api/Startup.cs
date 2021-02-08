@@ -154,8 +154,8 @@ namespace CSRO.Server.Api
             services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApi(Configuration, "AzureAd")
                 .EnableTokenAcquisitionToCallDownstreamApi()
-                //.AddInMemoryTokenCaches();
-                .AddDistributedTokenCaches();            
+                .AddInMemoryTokenCaches();
+                //.AddDistributedTokenCaches();            
 
             //services.Configure<MicrosoftIdentityOptions>(options =>
             //{
@@ -243,26 +243,37 @@ namespace CSRO.Server.Api
             #endregion
 
             #region DbContext
+            var UseSqlLiteDb = Configuration.GetValue<bool>("UseSqlLiteDb");
 
             services.AddDbContext<AppVersionContext>(options =>
             {
-                //sql Lite                
-                //options.UseSqlite(Configuration.GetConnectionString("SqlLiteConnString"));
+                if (UseSqlLiteDb)
+                {
+                    //sql Lite                
+                    options.UseSqlite(Configuration.GetConnectionString("SqlLiteConnString"));
+                }
+                else
+                {
 
-
-                //sql Server
-                //options.UseSqlServer(Configuration.GetConnectionString("SqlConnString"));
-                options.UseSqlServer(SqlConnString);
+                    //sql Server
+                    //options.UseSqlServer(Configuration.GetConnectionString("SqlConnString"));
+                    options.UseSqlServer(SqlConnString);
+                }
             });
 
             services.AddDbContext<TokenCacheContext>(options =>
             {
-                //sql Lite                
-                //options.UseSqlite(Configuration.GetConnectionString("SqlLiteConnString"));
-
-                //sql Server
-                //options.UseSqlServer(Configuration.GetConnectionString("TokenCacheDbConnStr"));
-                options.UseSqlServer(TokenCacheDbConnStr);
+                if (UseSqlLiteDb)
+                {
+                    //sql Lite                
+                    //options.UseSqlite(Configuration.GetConnectionString("SqlLiteConnString"));
+                }
+                else 
+                {
+                    //sql Server
+                    //options.UseSqlServer(Configuration.GetConnectionString("TokenCacheDbConnStr"));
+                    options.UseSqlServer(TokenCacheDbConnStr);
+                }
             });
 
             #endregion

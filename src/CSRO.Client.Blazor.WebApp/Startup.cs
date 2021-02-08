@@ -165,8 +165,8 @@ namespace CSRO.Client.Blazor.WebApp
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
                 .EnableTokenAcquisitionToCallDownstreamApi()
-                //.AddInMemoryTokenCaches();
-                .AddDistributedTokenCaches();
+                .AddInMemoryTokenCaches();
+                //.AddDistributedTokenCaches();
             
             services.Configure<MicrosoftIdentityOptions>(options =>
             {
@@ -189,7 +189,7 @@ namespace CSRO.Client.Blazor.WebApp
             {
                 // By default, all incoming requests will be authorized according to the default policy
                 //Will automatical sign in user
-                //options.FallbackPolicy = options.DefaultPolicy;
+                options.FallbackPolicy = options.DefaultPolicy;
             });
 
             services.AddRazorPages();
