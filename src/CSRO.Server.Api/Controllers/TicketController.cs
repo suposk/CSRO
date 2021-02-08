@@ -50,7 +50,7 @@ namespace CSRO.Server.Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, nameof(Get), null);
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }
         }
 
@@ -76,7 +76,7 @@ namespace CSRO.Server.Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, nameof(GetTicket), id);
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }
         }
 
@@ -104,7 +104,7 @@ namespace CSRO.Server.Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, nameof(PostTicket), dto);
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }
             return null;
         }
@@ -141,7 +141,7 @@ namespace CSRO.Server.Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, nameof(PutTicket), dto);
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }            
         }
 
@@ -173,7 +173,7 @@ namespace CSRO.Server.Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, nameof(DeleteTicket), id);
-                return StatusCode(StatusCodes.Status500InternalServerError);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }
             return null;
         }
