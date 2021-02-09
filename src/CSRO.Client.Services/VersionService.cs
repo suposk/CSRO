@@ -53,12 +53,17 @@ namespace CSRO.Client.Services
                     var result = _mapper.Map<AppVersion>(ser);
                     return result;
                 }
+                else
+                {
+                    var content = await apiData.Content.ReadAsStringAsync();
+                    if (string.IsNullOrWhiteSpace(content)) content = apiData.ReasonPhrase;
+                    throw new Exception(content);
+                }
             }
             catch (Exception ex)
             {
                 throw;
-            }
-            return null;
+            }            
         }
 
         public async Task<List<AppVersion>> GetAllVersion()
@@ -79,12 +84,17 @@ namespace CSRO.Client.Services
                     var version = _mapper.Map<List<AppVersion>>(ser);
                     return version;
                 }
+                else
+                {
+                    var content = await apiData.Content.ReadAsStringAsync();
+                    if (string.IsNullOrWhiteSpace(content)) content = apiData.ReasonPhrase;
+                    throw new Exception(content);
+                }
             }
             catch (Exception ex)
             {
                 throw;
-            }
-            return null;
+            }            
         }
 
 
