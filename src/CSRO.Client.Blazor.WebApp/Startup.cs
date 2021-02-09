@@ -1,7 +1,7 @@
 using AutoMapper;
 using CSRO.Client.Blazor.WebApp.Data;
 using CSRO.Client.Services;
-        using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -233,9 +233,7 @@ namespace CSRO.Client.Blazor.WebApp
             services.AddTransient<ICsroDialogService, CsroDialogService>();
             //services.AddSingleton<WeatherForecastService>();
 
-            services.AddMudBlazorDialog();
-            services.AddMudBlazorSnackbar();
-            services.AddMudBlazorResizeListener();
+            services.AddMudServices();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

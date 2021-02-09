@@ -21,7 +21,7 @@
         <MudTooltip Text="Add New" Delayed="1">
             <MudGrid>
                 <MudItem>
-                    <MudIconButton Link="/vm/restart" Icon="@Icons.Material.Add">Reuest restart</MudIconButton>
+                    <MudIconButton Link="/vm/restart" Icon="@Icons.Material.Filled.Add">Reuest restart</MudIconButton>
                 </MudItem>
             </MudGrid>
         </MudTooltip>
@@ -49,13 +49,13 @@
                 <MudTd DataLabel="Modified At">@context.ModifiedAt</MudTd>
                 <MudPaper Class="demo-grid-paper" Elevation="0">
                     <MudTooltip Text="Edit" Delayed="1">
-                        <MudIconButton Link="@($"vm/restart/edit/{context.Id}")" Icon="@Icons.Material.Edit"></MudIconButton>
+                        <MudIconButton Link="@($"vm/restart/edit/{context.Id}")" Icon="@Icons.Material.Filled.Edit"></MudIconButton>
                     </MudTooltip>
                     <MudTooltip Text="Details">
-                        <MudIconButton Link="@($"vm/restart/view/{context.Id}")" Icon="@Icons.Material.Info"></MudIconButton>
+                        <MudIconButton Link="@($"vm/restart/view/{context.Id}")" Icon="@Icons.Material.Filled.Info"></MudIconButton>
                     </MudTooltip>
                     <MudTooltip Text="Delete">
-                        <MudIconButton OnClick="@(e => DeleteTicketAsync(context))" Icon="@Icons.Material.Delete"></MudIconButton>
+                        <MudIconButton OnClick="@(e => DeleteTicketAsync(context))" Icon="@Icons.Material.Filled.Delete"></MudIconButton>
                     </MudTooltip>
                 </MudPaper>
                 @*<div>
