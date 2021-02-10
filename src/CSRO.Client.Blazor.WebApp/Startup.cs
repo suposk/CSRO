@@ -194,7 +194,7 @@ namespace CSRO.Client.Blazor.WebApp
             {
                 // By default, all incoming requests will be authorized according to the default policy
                 //Will automatical sign in user
-                options.FallbackPolicy = options.DefaultPolicy;
+                //options.FallbackPolicy = options.DefaultPolicy;
             });
 
             services.AddRazorPages();
