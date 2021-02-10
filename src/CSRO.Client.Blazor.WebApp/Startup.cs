@@ -164,7 +164,12 @@ namespace CSRO.Client.Blazor.WebApp
             //only for client
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
-                .EnableTokenAcquisitionToCallDownstreamApi()
+                //.EnableTokenAcquisitionToCallDownstreamApi()
+                //.EnableTokenAcquisitionToCallDownstreamApi(new List<string> { "user.read" })
+                //.EnableTokenAcquisitionToCallDownstreamApi(new List<string> { "user.read", ConstatCsro.Scopes.MANAGEMENT_AZURE_SCOPE })
+                .EnableTokenAcquisitionToCallDownstreamApi(new List<string> { "https://graph.microsoft.com/.default" })
+                //.EnableTokenAcquisitionToCallDownstreamApi(new List<string> { "https://graph.microsoft.com/.default", Configuration.GetValue<string>("Scope_Api") })
+                
                 .AddInMemoryTokenCaches();
                 //.AddDistributedTokenCaches();
             
