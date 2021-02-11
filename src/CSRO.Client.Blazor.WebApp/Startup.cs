@@ -164,7 +164,12 @@ namespace CSRO.Client.Blazor.WebApp
             //only for client
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
-                .EnableTokenAcquisitionToCallDownstreamApi()
+                //.EnableTokenAcquisitionToCallDownstreamApi()
+                //.EnableTokenAcquisitionToCallDownstreamApi(new List<string> { "user.read" })
+                //.EnableTokenAcquisitionToCallDownstreamApi(new List<string> { "user.read", ConstatCsro.Scopes.MANAGEMENT_AZURE_SCOPE })
+                .EnableTokenAcquisitionToCallDownstreamApi(new List<string> { "https://graph.microsoft.com/.default" })
+                //.EnableTokenAcquisitionToCallDownstreamApi(new List<string> { "https://graph.microsoft.com/.default", Configuration.GetValue<string>("Scope_Api") })
+                
                 .AddInMemoryTokenCaches();
                 //.AddDistributedTokenCaches();
             
@@ -189,7 +194,7 @@ namespace CSRO.Client.Blazor.WebApp
             {
                 // By default, all incoming requests will be authorized according to the default policy
                 //Will automatical sign in user
-                options.FallbackPolicy = options.DefaultPolicy;
+                //options.FallbackPolicy = options.DefaultPolicy;
             });
 
             services.AddRazorPages();
@@ -213,6 +218,7 @@ namespace CSRO.Client.Blazor.WebApp
             
             services.AddTransient<IVmSdkService, VmSdkService>();
             services.AddTransient<ISubscriptionSdkService, SubscriptionSdkService>();
+            services.AddTransient<IAdService, AdService>();
                         
             bool UseChainTokenCredential = Configuration.GetValue<bool>("UseChainTokenCredential");
             if (UseChainTokenCredential)           

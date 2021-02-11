@@ -59,6 +59,9 @@ namespace CSRO.Client.Blazor.WebApp.Components
         [Inject]
         public ILogger<SubLocRgCompBase> Logger { get; set; }
 
+        [Inject]
+        public IAdService AdService { get; set; }
+
         #endregion
 
         protected EditContext editContext { get; private set; }
@@ -163,6 +166,8 @@ namespace CSRO.Client.Blazor.WebApp.Components
             try
             {                
                 ShowLoading();
+                var ad = await AdService.TryGetData();
+
                 Subscripions?.Clear();
                 Subscripions = await SubcriptionSdkService.GetAllSubcriptions();
                 if (Subscripions == null || Subscripions.Count == 0)
