@@ -192,6 +192,7 @@ namespace CSRO.Server.Api
 
             services.AddTransient<IVmSdkService, VmSdkService>();
             services.AddTransient<ISubscriptionSdkService, SubscriptionSdkService>();
+            services.AddTransient<IAdService, AdService>();
 
             bool UseChainTokenCredential = Configuration.GetValue<bool>("UseChainTokenCredential");
             if (UseChainTokenCredential)

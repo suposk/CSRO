@@ -3,8 +3,10 @@ using Azure.Core;
 using Azure.ResourceManager.Compute;
 using Azure.ResourceManager.Compute.Models;
 using Azure.ResourceManager.Resources;
+using CSRO.Common.AzureSdkServices.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Identity.Client;
@@ -14,201 +16,147 @@ using System.DirectoryServices.AccountManagement;
 using System.Linq;
 using System.Security.Principal;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace CSRO.Common.AzureSdkServices
 {
     public interface IAdService
     {
-        Task<List<object>> TryGetData();
+        Task<AdUser> GetCurrentAdUserInfo(bool includeGroups = false);
+        bool IsAdminAccount(string accountName);
     }
 
     public class AdService : IAdService
     {
-        private readonly ICsroTokenCredentialProvider _csroTokenCredentialProvider;
-        private readonly AuthenticationStateProvider _authenticationStateProvider;
         private readonly ILogger<AdService> _logger;
-        private readonly AzureAd _azureAd;
-        private readonly TokenCredential _tokenCredential;
+        private readonly IHttpContextAccessor _context;
+        //private readonly AzureAd _azureAd;
 
         public AdService(
-            ICsroTokenCredentialProvider csroTokenCredentialProvider,
-            AuthenticationStateProvider authenticationStateProvider,
             ILogger<AdService> logger,
+            IHttpContextAccessor context,
             IConfiguration configuration
             )
         {
-            _csroTokenCredentialProvider = csroTokenCredentialProvider;
-            _authenticationStateProvider = authenticationStateProvider;
             _logger = logger;
-            _tokenCredential = _csroTokenCredentialProvider.GetCredential();
-            _azureAd = configuration.GetSection(nameof(AzureAd)).Get<AzureAd>();            
+            _context = context;
+            //_azureAd = configuration.GetSection(nameof(AzureAd)).Get<AzureAd>();            
         }
 
-        public async Task<List<object>> TryGetData()
+        public Task<AdUser> GetCurrentAdUserInfo(bool includeGroups = false)
         {
-            try
+            return Task.Run(() => getUserInfo(includeGroups));                      
+
+            AdUser getUserInfo(bool includeGroups)
             {
-                var auth = await _authenticationStateProvider.GetAuthenticationStateAsync();
-                PrincipalContext context = new PrincipalContext(ContextType.Domain);
-                UserPrincipal principal = new UserPrincipal(context);
-                if (context != null)
+                try
                 {
-                    principal = UserPrincipal.FindByIdentity(context, IdentityType.SamAccountName, auth.User.Identity.Name);
-                    var gropus = principal.GetGroups();
+                    var claims = _context.HttpContext?.User?.Claims?.ToList();
+                    if (claims == null)
+                        return null;
+
+                    var context = new PrincipalContext(ContextType.Domain);
+                    var principal = new UserPrincipal(context);
+                    if (context != null)
+                    {
+                        string upn = null;
+                        upn = claims.FirstOrDefault(a => a.Type == System.Security.Claims.ClaimTypes.Upn)?.Value;
+                        upn ??= claims.FirstOrDefault(a => a.Type == "preferred_username")?.Value;
+
+                        if (string.IsNullOrWhiteSpace(upn))
+                        {
+                            _logger.LogWarning(nameof(GetCurrentAdUserInfo), "upn/preferred_username claim is null");
+                            return null;
+                        }
+
+                        principal = UserPrincipal.FindByIdentity(context, IdentityType.UserPrincipalName, upn);
+                        if (IsAdminAccount(upn) && principal == null)
+                        {
+                            //for admin account only GPN in name admin_4325....
+                            principal = UserPrincipal.FindByIdentity(context, IdentityType.UserPrincipalName, upn);
+                            if (principal == null)
+                            {
+                                //Supolik, Jan (Admin)
+                                var name = claims.FirstOrDefault(a => a.Type == "name")?.Value;
+                                if (string.IsNullOrWhiteSpace(name))
+                                {
+                                    _logger.LogWarning(nameof(GetCurrentAdUserInfo), "name claim is null");
+                                    return null;
+                                }
+
+                                //consrtcut Supolik Jan 4235xxx
+                                var coverted = convertName(name);
+                                principal = UserPrincipal.FindByIdentity(context, IdentityType.Name, coverted);
+                            }
+                        }
+                        if (principal != null)
+                        {
+                            AdUser adUser = new AdUser 
+                            {
+                                EmailAddress = principal.EmailAddress, 
+                                SamAccountName = principal.SamAccountName, 
+                                DisplayName = principal.DisplayName
+                            };
+                            if (includeGroups)
+                            {
+                                var groups = principal.GetGroups()?.ToList();
+                                groups?.ForEach(a => adUser.AdGroups.Add(new AdUser 
+                                {
+                                    Name = a.Name, 
+                                    DisplayName = a.DisplayName,
+                                }));
+                            }
+                            return adUser;
+                        }
+                    }
+                    return null;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(nameof(GetCurrentAdUserInfo), ex);
                 }
                 return null;
-
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(nameof(TryGetData), ex);
-            }
-            return null;
         }
 
-        public class AdUser
+        string convertName(string name)
         {
-            public DateTime? AccountExpirationDate
+            //admin_4325....
+            var f = new StringBuilder();
+            var l = new StringBuilder();
+            int noneChar = 0;
+            foreach (var letter in name)
             {
-                get;
-                set;
+                if (noneChar >= 2)
+                    break;
+
+                if (Char.IsLetter(letter))
+                {
+                    switch (noneChar)
+                    {
+                        case 0:
+                            l.Append(letter); break;
+                        case 1:
+                            f.Append(f);break;
+                    }
+                }
+                else
+                    noneChar++;
+
             }
-            public DateTime? AccountLockoutTime
-            {
-                get;
-                set;
-            }
-            public int BadLogonCount
-            {
-                get;
-                set;
-            }
-            public string Description
-            {
-                get;
-                set;
-            }
-            public string DisplayName
-            {
-                get;
-                set;
-            }
-            public string DistinguishedName
-            {
-                get;
-                set;
-            }
-            public string Domain
-            {
-                get;
-                set;
-            }
-            public string EmailAddress
-            {
-                get;
-                set;
-            }
-            public string EmployeeId
-            {
-                get;
-                set;
-            }
-            public bool? Enabled
-            {
-                get;
-                set;
-            }
-            public string GivenName
-            {
-                get;
-                set;
-            }
-            public Guid? Guid
-            {
-                get;
-                set;
-            }
-            public string HomeDirectory
-            {
-                get;
-                set;
-            }
-            public string HomeDrive
-            {
-                get;
-                set;
-            }
-            public DateTime? LastBadPasswordAttempt
-            {
-                get;
-                set;
-            }
-            public DateTime? LastLogon
-            {
-                get;
-                set;
-            }
-            public DateTime? LastPasswordSet
-            {
-                get;
-                set;
-            }
-            public string MiddleName
-            {
-                get;
-                set;
-            }
-            public string Name
-            {
-                get;
-                set;
-            }
-            public bool PasswordNeverExpires
-            {
-                get;
-                set;
-            }
-            public bool PasswordNotRequired
-            {
-                get;
-                set;
-            }
-            public string SamAccountName
-            {
-                get;
-                set;
-            }
-            public string ScriptPath
-            {
-                get;
-                set;
-            }
-            public SecurityIdentifier Sid
-            {
-                get;
-                set;
-            }
-            public string Surname
-            {
-                get;
-                set;
-            }
-            public bool UserCannotChangePassword
-            {
-                get;
-                set;
-            }
-            public string UserPrincipalName
-            {
-                get;
-                set;
-            }
-            public string VoiceTelephoneNumber
-            {
-                get;
-                set;
-            }
+            string gpn = Regex.Replace(name, @"\d", "");
+            //Supolik Jan 4235xxx
+            return $"{l} {f} {gpn}";
+        }
+
+        public bool IsAdminAccount(string accountName)
+        {
+            if (string.IsNullOrWhiteSpace(accountName))            
+                throw new ArgumentException($"{nameof(IsAdminAccount)} '{nameof(accountName)}' cannot be null or empty", nameof(accountName));            
+
+            return accountName.ToLower().Contains("admin");
         }
     }
+    
 }

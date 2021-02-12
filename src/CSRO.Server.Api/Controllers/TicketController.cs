@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CSRO.Common.AzureSdkServices;
 using CSRO.Server.Domain;
 using CSRO.Server.Entities.Entity;
 using CSRO.Server.Infrastructure;
@@ -26,11 +27,11 @@ namespace CSRO.Server.Api.Controllers
         private readonly ITicketRepository _repository;
         private readonly IMapper _mapper;
 
-        public TicketController(ILogger<TicketController> logger,            
+        public TicketController(ILogger<TicketController> logger,
             ITicketRepository repository,
             IMapper mapper)
         {
-            _logger = logger;            
+            _logger = logger;
             _repository = repository;
             _mapper = mapper;
         }
@@ -58,14 +59,16 @@ namespace CSRO.Server.Api.Controllers
 
         // GET: api/MessageDetails/5        
         [HttpGet("{id}", Name = nameof(GetTicket))]
-        public async Task<ActionResult<TicketDto>> GetTicket(int id)
+        //public async Task<ActionResult<TicketDto>> GetTicket(int id)
+        public async Task<ActionResult<TicketDto>> GetTicket(int id, [FromServices] IAdService adService)
         {
             if (id < 1)
-                return BadRequest();
-                        
+                return BadRequest();            
             try
             {
                 _logger.LogInformation(ApiLogEvents.GetItem, $"{nameof(GetTicket)} with {id} Started");
+
+                //var ad = await adService.GetCurrentAdUserInfo();
 
                 var repoObj = await _repository.GetId(id).ConfigureAwait(false);
                 if (repoObj == null)
