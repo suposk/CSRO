@@ -166,7 +166,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
             try
             {                
                 ShowLoading();
-                var ad = await AdService.TryGetData();
+                //var ad = await AdService.GetCurrentAdUserInfo();
 
                 Subscripions?.Clear();
                 Subscripions = await SubcriptionSdkService.GetAllSubcriptions();

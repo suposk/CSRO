@@ -10,6 +10,7 @@
     @using CSRO.Client.Services
     @using CSRO.Client.Services.Models
     @inject IBaseDataService<Ticket> TicketDataService
+    @inject NavigationManager NavigationManager
 
     protected async override Task OnInitializedAsync()
     {
@@ -17,6 +18,7 @@
         try
         {
             await TicketDataService.GetItemByIdAsync(0);
+            //NavigationManager.NavigateTo("/MicrosoftIdentity/Account/SignIn", false);
         }
         catch (Exception ex)
         {
