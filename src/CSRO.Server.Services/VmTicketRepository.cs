@@ -68,12 +68,17 @@ namespace CSRO.Server.Services
         {
             try
             {
+                //validate sub name and tags
+                var canReboot = await _vmSdkService.IsRebootAllowed(entity.SubcriptionId, entity.ResorceGroup, entity.VmName).ConfigureAwait(false);
+                if (!canReboot.success)
+                    return (canReboot.success, canReboot.errorMessage);
+
                 //first add
                 base.Add(entity, _userId);
                 entity.Status = "Opened";
                 entity.VmState = "Restart Submited";
                 await SaveChangesAsync();
-                
+
                 var res = await _vmSdkService.RebootVmAndWaitForConfirmation(entity.SubcriptionId, entity.ResorceGroup, entity.VmName).ConfigureAwait(false);
                 //update
                 base.Update(entity, _userId);                                

@@ -5,6 +5,7 @@ using Azure.ResourceManager.Compute.Models;
 using Azure.ResourceManager.Network;
 using Azure.ResourceManager.Resources;
 using Azure.ResourceManager.Resources.Models;
+using CSRO.Common.AzureSdkServices.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,16 +19,20 @@ namespace CSRO.Common.AzureSdkServices
     {
         Task<(bool success, string status, string errorMessage)> RebootVmAndWaitForConfirmation(string subscriptionId, string resourceGroupName, string vmName, CancellationToken cancelToken = default);
         Task<List<object>> TryGetData(string subscriptionId, string resourceGroupName, string vmName);
+        Task<IDictionary<string, string>> GetTags(string subscriptionId, string resourceGroupName, string vmName, CancellationToken cancelToken = default);
+        Task<(bool success, string errorMessage)> IsRebootAllowed(string subscriptionId, string resourceGroupName, string vmName, CancellationToken cancelToken = default);
     }
 
     public class VmSdkService : IVmSdkService
     {
         private readonly ICsroTokenCredentialProvider _csroTokenCredentialProvider;
+        private readonly ISubscriptionSdkService _subscriptionSdkService;
         private readonly TokenCredential _tokenCredential;
 
-        public VmSdkService(ICsroTokenCredentialProvider csroTokenCredentialProvider)
+        public VmSdkService(ICsroTokenCredentialProvider csroTokenCredentialProvider, ISubscriptionSdkService subscriptionSdkService)
         {
             _csroTokenCredentialProvider = csroTokenCredentialProvider;
+            _subscriptionSdkService = subscriptionSdkService;
             _tokenCredential = _csroTokenCredentialProvider.GetCredential();
         }
 
@@ -82,7 +87,7 @@ namespace CSRO.Common.AzureSdkServices
             try
             {
                 if (string.IsNullOrWhiteSpace(subscriptionId) | string.IsNullOrWhiteSpace(resourceGroupName) || string.IsNullOrWhiteSpace(vmName))
-                    return (false, null, $"Unable to {nameof(RebootVmAndWaitForConfirmation)}: missing parameters");
+                    return (false, null, $"{nameof(RebootVmAndWaitForConfirmation)}: missing parameters");
 
                 var computeClient = new ComputeManagementClient(subscriptionId, _tokenCredential);
                 var virtualMachinesClient = computeClient.VirtualMachines;
@@ -107,7 +112,7 @@ namespace CSRO.Common.AzureSdkServices
             }
             catch (Exception ex)
             {
-                return (false, null, $"Unable to RebootVm: \n{ex.Message}");
+                return (false, null, $"Error in {nameof(RebootVmAndWaitForConfirmation)}: \n{ex.Message}");
             }
 
             static async Task<Response<VirtualMachineInstanceView>> GetStatus(string resourceGroupName, string vmName, VirtualMachinesOperations virtualMachinesClient, List<string> statuses, CancellationToken cancelToken)
@@ -116,6 +121,55 @@ namespace CSRO.Common.AzureSdkServices
                 var last = result.Value.Statuses.LastOrDefault(a => a.Code.Contains("PowerState"));
                 statuses.Add(last.DisplayStatus);
                 return result;
+            }
+        }
+
+        public async Task<(bool success, string errorMessage)> IsRebootAllowed(string subscriptionId, string resourceGroupName, string vmName, CancellationToken cancelToken = default)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(subscriptionId) | string.IsNullOrWhiteSpace(resourceGroupName) || string.IsNullOrWhiteSpace(vmName))
+                    return (false, $"{nameof(IsRebootAllowed)}: missing parameters");
+
+                var subTags = await _subscriptionSdkService.GetTags(subscriptionId, cancelToken);                             
+                if (subTags?.Count == 0)
+                    return (false, $"{nameof(IsRebootAllowed)}: No tags on subscription");
+
+                var subEnv = subTags.FirstOrDefault(a => a.Key.Equals(nameof(DefaultTagSdk.opEnvironment)));
+                if (subEnv.Value == null)
+                    return (false, $"{nameof(IsRebootAllowed)}: No {(nameof(DefaultTagSdk.opEnvironment))} tags on subscription");
+                if (!subEnv.Value.Contains("dev", StringComparison.OrdinalIgnoreCase))
+                    return (false, $"{nameof(IsRebootAllowed)}: No tags on subscription");
+
+                var wmTags = await GetTags(subscriptionId, resourceGroupName, vmName, cancelToken);
+                if (wmTags?.Count == 0)
+                    return (false, $"{nameof(IsRebootAllowed)}: No tags on vm");
+
+                return (true, null);
+
+            }
+            catch (Exception ex)
+            {
+                return (false, $"Error in {nameof(IsRebootAllowed)}: \n{ex.Message}");
+            }
+        }
+
+        public async Task<IDictionary<string, string>> GetTags(string subscriptionId, string resourceGroupName, string vmName, CancellationToken cancelToken = default)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(subscriptionId) | string.IsNullOrWhiteSpace(resourceGroupName) || string.IsNullOrWhiteSpace(vmName))
+                    throw new Exception ($"{nameof(GetTags)}: missing parameters");
+
+                var computeClient = new ComputeManagementClient(subscriptionId, _tokenCredential);
+                var virtualMachinesClient = computeClient.VirtualMachines;
+
+                var info = await virtualMachinesClient.GetAsync(resourceGroupName, vmName, cancelToken);
+                return info?.Value.Tags;
+            }
+            catch (Exception)
+            {
+                throw;
             }
         }
     }
