@@ -11,6 +11,8 @@ namespace CSRO.Client.Services.Models
             _SubscripionIdName = new IdNameSdk();
         }
 
+        public string ExternalTicket { get; set; }
+
         private string _SubcriptionId;
         public string SubcriptionId
         {

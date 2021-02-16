@@ -6,6 +6,8 @@ namespace CSRO.Server.Entities.Entity
     {
         public string Note { get; set; }
 
+        public string ExternalTicket { get; set; }
+
         public string SubcriptionId { get; set; }
 
         public string SubcriptionName { get; set; }

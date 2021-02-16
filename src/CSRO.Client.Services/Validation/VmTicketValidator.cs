@@ -15,8 +15,19 @@ namespace CSRO.Client.Services.Validation
     {
         public SubscripionIdNameValidator()
         {
-            RuleFor(p => p.Name).NotEmpty()
-                .WithMessage("Subscripion must be selected");
+            When(p => string.IsNullOrWhiteSpace(p.Name), () => 
+            {
+                RuleFor(p => p.Name)
+                .NotEmpty()
+                .WithMessage("Subscripion must be selected")
+                ;               
+            }).Otherwise(()=> 
+            {
+                RuleFor(p => p.Name)                    
+                    .Must((p) => p.Contains("dev", StringComparison.OrdinalIgnoreCase))
+                    .WithMessage("Only dev, appdev Subscripion")
+                    ;
+            });
         }
     }
 
@@ -38,10 +49,21 @@ namespace CSRO.Client.Services.Validation
                 //.MustAsync(ValidateVm).WithMessage("Test only, name has to contain vm letter")
                 ;
 
-            //RuleFor(p => p.SubcriptionId)
-            //    .NotEmpty()
-            //    //.MustAsync(subcriptionService.SubcriptionExist).WithMessage("Subcription Id not found");
-            //;                       
+            RuleFor(p => p.ExternalTicket)
+                .NotNull();
+
+            When(p => string.IsNullOrWhiteSpace(p.ExternalTicket), () => 
+            {
+                RuleFor(p => p.ExternalTicket).NotEmpty()
+                .WithMessage("Ticket # must be entered");
+            }).Otherwise(()=> 
+            {
+                RuleFor(p => p.ExternalTicket)
+                    .Must(p => p.StartsWith("inc", StringComparison.OrdinalIgnoreCase))
+                    .WithMessage("Ticket # must start with INC. Only Gsnow incident tickets.")
+                    .MinimumLength(8)
+                ;
+            });
         }
 
         private async Task<bool> ValidateVm(string vm, CancellationToken token)
