@@ -59,8 +59,8 @@ namespace CSRO.Client.Blazor.WebApp.Components
         [Inject]
         public ILogger<SubLocRgCompBase> Logger { get; set; }
 
-        [Inject]
-        public IAdService AdService { get; set; }
+        //[Inject]
+        //public IAdService AdService { get; set; }
 
         #endregion
 

@@ -156,22 +156,26 @@ namespace CSRO.Client.Blazor.WebApp.Components
                     Subscripions = await SubcriptionSdkService.GetAllSubcriptions();
                     Subscripions = Subscripions ?? new List<IdNameSdk>();
 
-                    #if DEBUG
+#if DEBUG
+                    //dubug only                    
+                    //if (Subscripions?.Count == 1)
+                    //{
+                    //    for (int i=1; i <= 3; i++)
+                    //    {
+                    //        Subscripions.Add(new IdNameSdk(Guid.NewGuid().ToString(), $"fake sub name {i}"));
+                    //    }
+                    //}
 
-                    //dubug only
-                    //Model.SubcriptionId = "33fb38df-688e-4ca1-8dd8-b46e26262ff8";
                     if (Subscripions?.Count == 1)
                     {
-                        for (int i=1; i <= 3; i++)
-                        {
-                            Subscripions.Add(new IdNameSdk(Guid.NewGuid().ToString(), $"fake sub name {i}"));
-                        }
+                        var id = Subscripions.First().Id;
+                        Subscripions.Add(new IdNameSdk(id, $"fake-sub-prod"));
+                        Subscripions.Add(new IdNameSdk(id, $"fake-sub-uat"));
+                        Subscripions.Add(new IdNameSdk(id, $"fake-sub-dev"));
+                        Subscripions.Add(new IdNameSdk(id, $"fake-sub-appdev"));
+                        Subscripions.Add(new IdNameSdk(id, $"fake-sub-test"));
                     }
-                    //Model.ResorceGroup = "dev-VMS";
-                    //Model.VmName = "VmDelete";
-
-                    #endif
-
+#endif
                 }
             }
             catch (Exception ex)

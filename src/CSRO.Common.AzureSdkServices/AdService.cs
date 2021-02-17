@@ -23,7 +23,7 @@ namespace CSRO.Common.AzureSdkServices
 {
     public interface IAdService
     {
-        Task<AdUser> GetCurrentAdUserInfo(bool includeGroups = false);
+        Task<AdUserSdk> GetCurrentAdUserInfo(bool includeGroups = false);
         bool IsAdminAccount(string accountName);
     }
 
@@ -44,11 +44,11 @@ namespace CSRO.Common.AzureSdkServices
             //_azureAd = configuration.GetSection(nameof(AzureAd)).Get<AzureAd>();            
         }
 
-        public Task<AdUser> GetCurrentAdUserInfo(bool includeGroups = false)
+        public Task<AdUserSdk> GetCurrentAdUserInfo(bool includeGroups = false)
         {
             return Task.Run(() => getUserInfo(includeGroups));                      
 
-            AdUser getUserInfo(bool includeGroups)
+            AdUserSdk getUserInfo(bool includeGroups)
             {
                 try
                 {
@@ -92,7 +92,7 @@ namespace CSRO.Common.AzureSdkServices
                         }
                         if (principal != null)
                         {
-                            AdUser adUser = new AdUser 
+                            AdUserSdk adUser = new AdUserSdk 
                             {
                                 EmailAddress = principal.EmailAddress, 
                                 SamAccountName = principal.SamAccountName, 
@@ -101,7 +101,7 @@ namespace CSRO.Common.AzureSdkServices
                             if (includeGroups)
                             {
                                 var groups = principal.GetGroups()?.ToList();
-                                groups?.ForEach(a => adUser.AdGroups.Add(new AdUser 
+                                groups?.ForEach(a => adUser.AdGroups.Add(new AdUserSdk 
                                 {
                                     Name = a.Name, 
                                     DisplayName = a.DisplayName,

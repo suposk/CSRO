@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace CSRO.Common.AzureSdkServices.Models
 {
-    public class AdUser
+    public class AdUserSdk
     {
-        public List<AdUser> AdGroups { get; set; } = new List<AdUser>();
+        public List<AdUserSdk> AdGroups { get; set; } = new List<AdUserSdk>();
 
         public DateTime? AccountExpirationDate
         {

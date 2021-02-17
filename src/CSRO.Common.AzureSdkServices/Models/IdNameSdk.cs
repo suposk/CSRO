@@ -34,6 +34,8 @@ namespace CSRO.Common.AzureSdkServices.Models
 
         public override int GetHashCode()
         {
+            if (Id == null || Name == null)
+                return 0;            
             return Id.GetHashCode() ^ Name.GetHashCode();
         }
 

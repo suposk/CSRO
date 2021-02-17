@@ -55,15 +55,16 @@
                             <MudAutocomplete ResetValueOnEmptyText="true"
                                              T="@IdNameSdk"
                                              Label="Select Subcription:"
+                                             Placeholder="Only dev or appdev"
                                              For="@(() => Model.SubscripionIdName)"
                                              ValueChanged="(e) => OnSubscriptionChanged(e)"
                                              SearchFunc="@SearchSubs" />
 
                             @*
-                                Value="@(new IdName { Name = Model.SubcriptionName })"
-                                For="@(() => new IdName { Id = Model.Id.ToString(), Name = Model.SubcriptionName })"
-                                For="@(() => SelSubscripion)"
-                                <MudSelectItem Value="@(new Pizza() { Name="Cardinale"})" />
+            Value="@(new IdName { Name = Model.SubcriptionName })"
+            For="@(() => new IdName { Id = Model.Id.ToString(), Name = Model.SubcriptionName })"
+            For="@(() => SelSubscripion)"
+            <MudSelectItem Value="@(new Pizza() { Name="Cardinale"})" />
                             *@
 
                             <MudSelect T="@string"
@@ -93,11 +94,16 @@
                         }
                         else
                         {
-                            <MudTextField Label="Vm Name:" HelperText="Name of Virtual Machine"
+                            <MudTextField Label="Vm Name:"
                                           Disabled="@IsVmDisabled"
                                           @bind-Value="Model.VmName"
                                           For="@(() => Model.VmName)" />
                         }
+                                                
+                        <MudTextField Label="External Ticket #(Gsnow)" 
+                                        Placeholder="Example INC123..."
+                                        Disabled="@IsVmDisabled"
+                                        @bind-Value="Model.ExternalTicket" For="@(() => Model.ExternalTicket)" />                        
 
                         <MudTextField Label="Note:"
                                       Disabled="@IsReadOnly"

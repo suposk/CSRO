@@ -8,6 +8,8 @@ namespace CSRO.Server.Domain
     {
         public string Note { get; set; }
 
+        public string ExternalTicket { get; set; }
+
         public string SubcriptionId { get; set; }
 
         public string SubcriptionName { get; set; }
