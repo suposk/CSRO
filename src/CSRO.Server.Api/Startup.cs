@@ -174,7 +174,7 @@ namespace CSRO.Server.Api
             .AddFluentValidation(options =>
             {
                 //options.RegisterValidatorsFromAssemblyContaining<Startup>();
-                options.RegisterValidatorsFromAssemblyContaining<Domain.AbstractValidation.BaseAbstractValidator>();
+                options.RegisterValidatorsFromAssemblyContaining<Services.Validation.BaseAbstractValidator>();
             });
 
             //services.AddControllers(options => options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
