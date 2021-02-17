@@ -193,16 +193,17 @@ namespace CSRO.Server.Api
             services.AddTransient<IVmSdkService, VmSdkService>();
             services.AddTransient<ISubscriptionSdkService, SubscriptionSdkService>();
             services.AddTransient<IAdService, AdService>();
+            services.AddTransient<IGsnowService, FakeGsnowService>();
 
             bool UseChainTokenCredential = Configuration.GetValue<bool>("UseChainTokenCredential");
             if (UseChainTokenCredential)
             {
-                //services.AddTransient<ICsroTokenCredentialProvider, ChainnedCsroTokenCredentialProvider>(); //for personal 
-                services.AddTransient<ICsroTokenCredentialProvider, ChainnedCsroTokenCredentialProvider>((op) =>
-                {
-                    var pr = new ChainnedCsroTokenCredentialProvider(azureAdOptions);
-                    return pr;
-                }); //for personal 
+                services.AddTransient<ICsroTokenCredentialProvider, ChainnedCsroTokenCredentialProvider>(); //for personal 
+                //services.AddTransient<ICsroTokenCredentialProvider, ChainnedCsroTokenCredentialProvider>((op) =>
+                //{
+                //    var pr = new ChainnedCsroTokenCredentialProvider(azureAdOptions);
+                //    return pr;
+                //}); //for personal 
             }
             else
                 services.AddTransient<ICsroTokenCredentialProvider, CsroTokenCredentialProvider>(); //for work                        

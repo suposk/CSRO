@@ -223,12 +223,12 @@ namespace CSRO.Client.Blazor.WebApp
             bool UseChainTokenCredential = Configuration.GetValue<bool>("UseChainTokenCredential");
             if (UseChainTokenCredential)           
             {
-                //services.AddTransient<ICsroTokenCredentialProvider, ChainnedCsroTokenCredentialProvider>(); //for personal 
-                services.AddTransient<ICsroTokenCredentialProvider, ChainnedCsroTokenCredentialProvider>((op) => 
-                {
-                    var pr = new ChainnedCsroTokenCredentialProvider(azureAdOptions);
-                    return pr;
-                }); //for personal 
+                services.AddTransient<ICsroTokenCredentialProvider, ChainnedCsroTokenCredentialProvider>(); //for personal 
+                //services.AddTransient<ICsroTokenCredentialProvider, ChainnedCsroTokenCredentialProvider>((op) => 
+                //{
+                //    var pr = new ChainnedCsroTokenCredentialProvider(azureAdOptions);
+                //    return pr;
+                //}); //for personal 
             }
             else
                 services.AddTransient<ICsroTokenCredentialProvider, CsroTokenCredentialProvider>(); //for work                        
