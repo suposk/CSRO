@@ -26,12 +26,19 @@ namespace CSRO.Common.AzureSdkServices
     public class VmSdkService : IVmSdkService
     {
         private readonly ICsroTokenCredentialProvider _csroTokenCredentialProvider;
+        private readonly IAdService _adService;
         private readonly ISubscriptionSdkService _subscriptionSdkService;
         private readonly TokenCredential _tokenCredential;
 
-        public VmSdkService(ICsroTokenCredentialProvider csroTokenCredentialProvider, ISubscriptionSdkService subscriptionSdkService)
+        public VmSdkService
+            (
+            ICsroTokenCredentialProvider csroTokenCredentialProvider,
+            IAdService adService,
+            ISubscriptionSdkService subscriptionSdkService
+            )
         {
             _csroTokenCredentialProvider = csroTokenCredentialProvider;
+            _adService = adService;
             _subscriptionSdkService = subscriptionSdkService;
             _tokenCredential = _csroTokenCredentialProvider.GetCredential();
         }
@@ -129,24 +136,42 @@ namespace CSRO.Common.AzureSdkServices
             try
             {
                 if (string.IsNullOrWhiteSpace(subscriptionId) | string.IsNullOrWhiteSpace(resourceGroupName) || string.IsNullOrWhiteSpace(vmName))
-                    return (false, $"{nameof(IsRebootAllowed)}: missing parameters");
+                    return (false, $"missing parameters");
 
-                var subTags = await _subscriptionSdkService.GetTags(subscriptionId, cancelToken);                             
+                var subTags = await _subscriptionSdkService.GetTags(subscriptionId, cancelToken);
                 if (subTags?.Count == 0)
-                    return (false, $"{nameof(IsRebootAllowed)}: No tags on subscription");
+                    return (false, $"No tags on subscription");
 
-                var subEnv = subTags.FirstOrDefault(a => a.Key.Equals(nameof(DefaultTagSdk.opEnvironment)));
-                if (subEnv.Value == null)
-                    return (false, $"{nameof(IsRebootAllowed)}: No {(nameof(DefaultTagSdk.opEnvironment))} tags on subscription");
-                if (!subEnv.Value.Contains("dev", StringComparison.OrdinalIgnoreCase))
-                    return (false, $"{nameof(IsRebootAllowed)}: No tags on subscription");
+                //first check subcription
+                var opEnvironment = subTags.FirstOrDefault(a => a.Key.Equals(nameof(DefaultTagSdk.opEnvironment)));
+                if (opEnvironment.Value == null || !opEnvironment.Value.Contains("dev", StringComparison.OrdinalIgnoreCase))
+                    return (false, $"subscription must have {nameof(DefaultTagSdk.opEnvironment)} dev tag assign");
 
+                //check VM
                 var wmTags = await GetTags(subscriptionId, resourceGroupName, vmName, cancelToken);
                 if (wmTags?.Count == 0)
-                    return (false, $"{nameof(IsRebootAllowed)}: No tags on vm");
+                    return (false, $"No tags on vm");
 
+                opEnvironment = wmTags.FirstOrDefault(a => a.Key.Equals(nameof(DefaultTagSdk.opEnvironment)));
+                if (opEnvironment.Value == null || !opEnvironment.Value.Contains("dev", StringComparison.OrdinalIgnoreCase))
+                    return (false, $"vm must have {nameof(DefaultTagSdk.opEnvironment)} dev tag assign");
+
+                var privilegedMembers = wmTags.FirstOrDefault(a => a.Key.Equals(nameof(DefaultTagSdk.privilegedMembers)));
+                if (privilegedMembers.Value == null)
+                    return (false, $"No {nameof(DefaultTagSdk.privilegedMembers)} tags on wm assign");
+
+                var adUserSdk = await _adService.GetCurrentAdUserInfo(includeGroups: false);
+                //todo refactor. Must have value
+                if (adUserSdk != null)
+                {
+                    if (string.IsNullOrWhiteSpace(adUserSdk.SamAccountName))
+                        //posible exception
+                        return (false, $"Failed to retrive {nameof(AdUserSdk.SamAccountName)}");
+
+                    if (!privilegedMembers.Value.Contains(adUserSdk.SamAccountName, StringComparison.OrdinalIgnoreCase))
+                        return (false, $"Your account {adUserSdk.SamAccountName} is not set on {nameof(DefaultTagSdk.privilegedMembers)} tags on vm");
+                }
                 return (true, null);
-
             }
             catch (Exception ex)
             {
