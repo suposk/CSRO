@@ -60,7 +60,7 @@ namespace CSRO.Server.Services.Validation
 
         private async Task<bool> ValidateGsnow(string gsnowTicket, CancellationToken cancelToken)
         {
-            gsnowTicket = null; //test
+            //gsnowTicket = null; //test
             try
             {
                 var valid = await _gsnowService.IsValidGsnowTicket(gsnowTicket, cancelToken);

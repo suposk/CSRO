@@ -252,15 +252,17 @@ namespace CSRO.Server.Api
                 if (UseSqlLiteDb)
                 {
                     //sql Lite                
-                    options.UseSqlite(Configuration.GetConnectionString("SqlLiteConnString"));
+                    options.UseSqlite(Configuration.GetConnectionString("SqlLiteConnString"), x => x.MigrationsAssembly("CSRO.Server.Api"));
                 }
                 else
                 {
 
                     //sql Server
-                    //options.UseSqlServer(Configuration.GetConnectionString("SqlConnString"));
-                    options.UseSqlServer(SqlConnString);
+                    //options.UseSqlServer(Configuration.GetConnectionString("SqlConnString"), x => x.MigrationsAssembly("CSRO.Server.Api"));
+                    options.UseSqlServer(SqlConnString, x => x.MigrationsAssembly("CSRO.Server.Api"));
                 }
+
+                //options.UseSqlServer(Configuration.GetConnectionString("SqlConnString"), x => x.MigrationsAssembly("CSRO.Server.Api"));
             });
 
             services.AddDbContext<TokenCacheContext>(options =>
@@ -268,14 +270,15 @@ namespace CSRO.Server.Api
                 if (UseSqlLiteDb)
                 {
                     //sql Lite                
-                    //options.UseSqlite(Configuration.GetConnectionString("SqlLiteConnString"));
+                    options.UseSqlite(Configuration.GetConnectionString("SqlLiteConnString"), x => x.MigrationsAssembly("CSRO.Server.Api"));
                 }
-                else 
+                else
                 {
                     //sql Server
-                    //options.UseSqlServer(Configuration.GetConnectionString("TokenCacheDbConnStr"));
-                    options.UseSqlServer(TokenCacheDbConnStr);
+                    //options.UseSqlServer(Configuration.GetConnectionString("TokenCacheDbConnStr"), x => x.MigrationsAssembly("CSRO.Server.Api"));
+                    options.UseSqlServer(TokenCacheDbConnStr, x => x.MigrationsAssembly("CSRO.Server.Api"));
                 }
+                //options.UseSqlServer(Configuration.GetConnectionString("TokenCacheDbConnStr"), x => x.MigrationsAssembly("CSRO.Server.Api"));
             });
 
             #endregion

@@ -1,0 +1,6 @@
+﻿//package manager console
+Add-Migration ExternalTicket -Context AppVersionContext -OutputDir Migrations\SqlServerMigrations
+
+
+//command prompt
+dotnet ef migrations add ExternalTicket --context AppVersionContext --output-dir Migrations/SqlServerMigrations
