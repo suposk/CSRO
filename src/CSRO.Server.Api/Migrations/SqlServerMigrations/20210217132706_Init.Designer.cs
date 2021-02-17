@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CSRO.Server.Api.Migrations.SqlServerMigrations
 {
     [DbContext(typeof(AppVersionContext))]
-    [Migration("20210217130936_ExternalTicket")]
-    partial class ExternalTicket
+    [Migration("20210217132706_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

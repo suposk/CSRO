@@ -1,4 +1,5 @@
 ﻿//package manager console
+Add-Migration Init -Context AppVersionContext -OutputDir Migrations\SqlServerMigrations
 Add-Migration ExternalTicket -Context AppVersionContext -OutputDir Migrations\SqlServerMigrations
 
 

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System;
 using CSRO.Common.AzureSdkServices;
+using Microsoft.Extensions.Configuration;
 
 namespace CSRO.Server.Services
 {
@@ -20,20 +21,26 @@ namespace CSRO.Server.Services
         private readonly IRepository<VmTicket> _repository;
         private AppVersionContext _context;
         private readonly IVmSdkService _vmSdkService;
+        private readonly IConfiguration _configuration;
         private string _userId;
+        private readonly int VmRebootDelay = 0;
 
         public VmTicketRepository(
             IAzureVmManagementService azureVmManagementService,
             IRepository<VmTicket> repository, 
             AppVersionContext context,
             IVmSdkService vmSdkService,
+            IConfiguration configuration,
             IApiIdentity apiIdentity) : base(context, apiIdentity)
         {
             _azureVmManagementService = azureVmManagementService;
             _repository = repository;
             _context = context;
             _vmSdkService = vmSdkService;
+            _configuration = configuration;
             _userId = ApiIdentity.GetUserName();
+
+            VmRebootDelay = configuration.GetValue<int>("VmRebootDelay");
         }
 
         public override Task<List<VmTicket>> GetList()
@@ -80,6 +87,10 @@ namespace CSRO.Server.Services
                 await SaveChangesAsync();
 
                 var res = await _vmSdkService.RebootVmAndWaitForConfirmation(entity.SubcriptionId, entity.ResorceGroup, entity.VmName).ConfigureAwait(false);
+
+                if (VmRebootDelay > 0)
+                    await Task.Delay(VmRebootDelay * 1000).ConfigureAwait(false);
+
                 //update
                 base.Update(entity, _userId);                                
                 if (res.success)
