@@ -50,7 +50,7 @@ namespace CSRO.Server.Api
 
                     try
                     {
-                        context?.Database.EnsureDeleted(); logger?.LogInformation("Called EnsureCreated");
+                        //context?.Database.EnsureDeleted(); logger?.LogInformation("Called EnsureCreated");
                         context?.Database.Migrate(); logger?.LogInformation("Called Migrate");
                     }
                     catch (Exception e)
