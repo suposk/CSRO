@@ -91,7 +91,8 @@ namespace CSRO.Client.Blazor.WebApp
                     Configuration["AzureAd:ClientSecret"] = ClientSecret;
 
                     var TokenCacheDbConnStrVault = keyVaultClient.GetSecretAsync(VaultName, "TokenCacheDbConnStrVault").Result.Value;
-                    TokenCacheDbConnStr = TokenCacheDbConnStrVault;                    
+                    TokenCacheDbConnStr = TokenCacheDbConnStrVault;
+                    Configuration["ConnectionStrings:TokenCacheDbConnStr"] = TokenCacheDbConnStr;                                        
                 }
                 catch (Exception ex)
                 {
@@ -240,6 +241,7 @@ namespace CSRO.Client.Blazor.WebApp
             //services.AddSingleton<WeatherForecastService>();
 
             services.AddMudServices();
+            services.AddApplicationInsightsTelemetry(Configuration["APPINSIGHTS_CONNECTIONSTRING"]);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
