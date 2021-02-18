@@ -165,12 +165,11 @@ namespace CSRO.Client.Blazor.WebApp
             //only for client
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
-                //.EnableTokenAcquisitionToCallDownstreamApi()
+                .EnableTokenAcquisitionToCallDownstreamApi()    //v1
                 //.EnableTokenAcquisitionToCallDownstreamApi(new List<string> { "user.read" })
                 //.EnableTokenAcquisitionToCallDownstreamApi(new List<string> { "user.read", ConstatCsro.Scopes.MANAGEMENT_AZURE_SCOPE })
-                .EnableTokenAcquisitionToCallDownstreamApi(new List<string> { "https://graph.microsoft.com/.default" })
-                //.EnableTokenAcquisitionToCallDownstreamApi(new List<string> { "https://graph.microsoft.com/.default", Configuration.GetValue<string>("Scope_Api") })
-                
+                //.EnableTokenAcquisitionToCallDownstreamApi(new List<string> { "https://graph.microsoft.com/.default" })   /v2
+                //.EnableTokenAcquisitionToCallDownstreamApi(new List<string> { "https://graph.microsoft.com/.default", Configuration.GetValue<string>("Scope_Api") })                
                 //.AddInMemoryTokenCaches();
                 .AddDistributedTokenCaches();
             
@@ -237,8 +236,7 @@ namespace CSRO.Client.Blazor.WebApp
             #endregion
 
             //UI component for dialods
-            services.AddTransient<ICsroDialogService, CsroDialogService>();
-            //services.AddSingleton<WeatherForecastService>();
+            services.AddTransient<ICsroDialogService, CsroDialogService>();            
 
             services.AddMudServices();
             services.AddApplicationInsightsTelemetry(Configuration["APPINSIGHTS_CONNECTIONSTRING"]);

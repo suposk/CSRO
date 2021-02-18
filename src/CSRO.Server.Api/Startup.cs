@@ -247,45 +247,29 @@ namespace CSRO.Server.Api
             #endregion
 
             #region DbContext
+
             var UseSqlLiteDb = Configuration.GetValue<bool>("UseSqlLiteDb");
 
             services.AddDbContext<AppVersionContext>(options =>
             {
-                if (UseSqlLiteDb)
-                {
-                    //sql Lite                
-                    options.UseSqlite(Configuration.GetConnectionString("SqlLiteConnString"), x => x.MigrationsAssembly("CSRO.Server.Api"));
-                }
-                else
-                {
-
-                    //sql Server
-                    //options.UseSqlServer(Configuration.GetConnectionString("SqlConnString"), x => x.MigrationsAssembly("CSRO.Server.Api"));
-                    options.UseSqlServer(SqlConnString, x => x.MigrationsAssembly("CSRO.Server.Api"));
-                }
-
-                //options.UseSqlServer(Configuration.GetConnectionString("SqlConnString"), x => x.MigrationsAssembly("CSRO.Server.Api"));
+                if (UseSqlLiteDb)                                               
+                    options.UseSqlite(Configuration.GetConnectionString("SqlLiteConnString"), x => x.MigrationsAssembly("CSRO.Server.Api"));                
+                else                                                   
+                    options.UseSqlServer(SqlConnString, x => x.MigrationsAssembly("CSRO.Server.Api"));                                
             });
 
             services.AddDbContext<TokenCacheContext>(options =>
             {
-                if (UseSqlLiteDb)
-                {
-                    //sql Lite                
-                    options.UseSqlite(Configuration.GetConnectionString("SqlLiteConnString"), x => x.MigrationsAssembly("CSRO.Server.Api"));
-                }
-                else
-                {
-                    //sql Server
-                    //options.UseSqlServer(Configuration.GetConnectionString("TokenCacheDbConnStr"), x => x.MigrationsAssembly("CSRO.Server.Api"));
-                    //options.UseSqlServer(TokenCacheDbConnStr, x => x.MigrationsAssembly("CSRO.Server.Api"));
+                if (UseSqlLiteDb)                                    
+                    options.UseSqlite(Configuration.GetConnectionString("SqlLiteConnString"));                
+                else                
                     options.UseSqlServer(TokenCacheDbConnStr);
-                }
-                //options.UseSqlServer(Configuration.GetConnectionString("TokenCacheDbConnStr"), x => x.MigrationsAssembly("CSRO.Server.Api"));
+                                
             });
-            services.AddApplicationInsightsTelemetry(Configuration["APPINSIGHTS_CONNECTIONSTRING"]);
 
             #endregion
+
+            services.AddApplicationInsightsTelemetry(Configuration["APPINSIGHTS_CONNECTIONSTRING"]);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
