@@ -156,8 +156,8 @@ namespace CSRO.Server.Api
             services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApi(Configuration, "AzureAd")
                 .EnableTokenAcquisitionToCallDownstreamApi()
-                .AddInMemoryTokenCaches();
-                //.AddDistributedTokenCaches();            
+                //.AddInMemoryTokenCaches();
+                .AddDistributedTokenCaches();            
 
             //services.Configure<MicrosoftIdentityOptions>(options =>
             //{
@@ -278,7 +278,8 @@ namespace CSRO.Server.Api
                 {
                     //sql Server
                     //options.UseSqlServer(Configuration.GetConnectionString("TokenCacheDbConnStr"), x => x.MigrationsAssembly("CSRO.Server.Api"));
-                    options.UseSqlServer(TokenCacheDbConnStr, x => x.MigrationsAssembly("CSRO.Server.Api"));
+                    //options.UseSqlServer(TokenCacheDbConnStr, x => x.MigrationsAssembly("CSRO.Server.Api"));
+                    options.UseSqlServer(TokenCacheDbConnStr);
                 }
                 //options.UseSqlServer(Configuration.GetConnectionString("TokenCacheDbConnStr"), x => x.MigrationsAssembly("CSRO.Server.Api"));
             });
