@@ -4,6 +4,17 @@
 <MudContainer>
     <div>
         <MudText Typo="Typo.h4" GutterBottom="true">@Title</MudText>
+        @if (IsLoading)
+        {
+            <MudGrid>
+                <MudItem>
+                    <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+                </MudItem>
+                <MudItem>
+                    <MudText Align="Align.Center">@LoadingMessage</MudText>
+                </MudItem>
+            </MudGrid>
+        }
 
         @if (Success == false)
         {
@@ -52,7 +63,7 @@
                     @if (!IsReadOnly)
                     {
                         <MudCardActions>
-                            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Submit</MudButton>
+                            <MudButton Disabled="@IsLoading" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Submit</MudButton>
                         </MudCardActions>
                     }
                 </MudCard>
@@ -82,6 +93,6 @@
         {
             <MudText Color="Color.Success" Typo="Typo.h4">Success</MudText>
         }
-        <MudButton Class="mt-4" OnClick="GoBack" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary">Go Back</MudButton>
+        <MudButton Class="mt-4" OnClick="GoBack" Variant="Variant.Filled" Color="Color.Primary">Go Back</MudButton>
     </div>
 </MudContainer>

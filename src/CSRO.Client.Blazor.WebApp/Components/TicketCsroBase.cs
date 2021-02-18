@@ -1,4 +1,5 @@
-﻿using CSRO.Client.Blazor.UI.Services;
+﻿using CSRO.Client.Blazor.UI;
+using CSRO.Client.Blazor.UI.Services;
 using CSRO.Client.Services;
 using CSRO.Client.Services.Models;
 using Microsoft.AspNetCore.Components;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace CSRO.Client.Blazor.WebApp.Components
 {
-    public class TicketCsroBase : ComponentBase
+    public class TicketCsroBase : CsroComponentBase
     {
         #region Params and Injects
 
@@ -33,9 +34,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
         #endregion
 
-        public Ticket Model { get; set; } = new Ticket();
-
-        protected bool Success { get; set; }
+        public Ticket Model { get; set; } = new Ticket();               
         protected bool IsReadOnly => OperationTypeTicket == OperatioType.View;
         protected string Title => OperationTypeTicket.ToString() + " Ticket";
 
@@ -48,6 +47,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
         {
             try
             {
+                ShowLoading();
                 if (OperationTypeTicket != OperatioType.Create)
                 {
                     Model.Id = int.Parse(TicketId);
@@ -60,6 +60,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
             {
                 Logger.LogError(ex, nameof(OnInitializedAsync));
             }
+            HideLoading();
         }
 
         public async Task OnValidSubmit(EditContext context)
@@ -69,6 +70,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
             {
                 try
                 {
+                    ShowLoading();
                     if (OperationTypeTicket == OperatioType.Create)
                     {
                         var added = await TicketDataService.AddItemAsync(Model);
@@ -98,6 +100,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
                 {
                     Logger.LogError(ex, nameof(OnValidSubmit));
                 }
+                HideLoading();
             }
         }
 
