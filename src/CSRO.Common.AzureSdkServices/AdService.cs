@@ -138,7 +138,7 @@ namespace CSRO.Common.AzureSdkServices
                         case 0:
                             l.Append(letter); break;
                         case 1:
-                            f.Append(f);break;
+                            f.Append(letter);break;
                     }
                 }
                 else

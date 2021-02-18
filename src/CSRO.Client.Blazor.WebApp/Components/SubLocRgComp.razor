@@ -83,7 +83,7 @@
                         <MudCardActions>
                             @if (Model.IsNewRg)
                             {
-                                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Create</MudButton>
+                                <MudButton Disabled="@IsLoading" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Create</MudButton>
                             }
                         </MudCardActions>
                     }
