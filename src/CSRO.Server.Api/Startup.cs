@@ -282,6 +282,7 @@ namespace CSRO.Server.Api
                 }
                 //options.UseSqlServer(Configuration.GetConnectionString("TokenCacheDbConnStr"), x => x.MigrationsAssembly("CSRO.Server.Api"));
             });
+            services.AddApplicationInsightsTelemetry(Configuration["APPINSIGHTS_CONNECTIONSTRING"]);
 
             #endregion
         }
