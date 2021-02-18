@@ -91,7 +91,8 @@ namespace CSRO.Client.Blazor.WebApp
                     Configuration["AzureAd:ClientSecret"] = ClientSecret;
 
                     var TokenCacheDbConnStrVault = keyVaultClient.GetSecretAsync(VaultName, "TokenCacheDbConnStrVault").Result.Value;
-                    TokenCacheDbConnStr = TokenCacheDbConnStrVault;                    
+                    TokenCacheDbConnStr = TokenCacheDbConnStrVault;
+                    Configuration["ConnectionStrings:TokenCacheDbConnStr"] = TokenCacheDbConnStr;                                        
                 }
                 catch (Exception ex)
                 {

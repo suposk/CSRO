@@ -87,9 +87,11 @@ namespace CSRO.Server.Api
 
                     var SqlConnStringVault = keyVaultClient.GetSecretAsync(VaultName, "SqlConnStringVault").Result.Value;
                     SqlConnString = SqlConnStringVault;
+                    Configuration["ConnectionStrings:SqlConnString"] = SqlConnString;
 
                     var TokenCacheDbConnStrVault = keyVaultClient.GetSecretAsync(VaultName, "TokenCacheDbConnStrVault").Result.Value;
                     TokenCacheDbConnStr = TokenCacheDbConnStrVault;
+                    Configuration["ConnectionStrings:TokenCacheDbConnStr"] = TokenCacheDbConnStr;
                 }
                 catch (Exception ex)
                 {
