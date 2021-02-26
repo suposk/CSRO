@@ -31,9 +31,9 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
 namespace CSRO.Server.Api
 {
-    public class Startup
+    public class StartupApi
     {
-        public Startup(
+        public StartupApi(
             IConfiguration configuration,
             IWebHostEnvironment env)
         {
@@ -45,8 +45,8 @@ namespace CSRO.Server.Api
                 builder.AddConsole();
                 builder.AddEventSourceLogger();
             });
-            _logger = loggerFactory.CreateLogger("Startup");
-            _logger.LogInformation("Created Startup _logger");
+            _logger = loggerFactory.CreateLogger(nameof(StartupApi));
+            _logger.LogInformation($"Created {nameof(StartupApi)} _logger");
         }
 
         public IConfiguration Configuration { get; }
