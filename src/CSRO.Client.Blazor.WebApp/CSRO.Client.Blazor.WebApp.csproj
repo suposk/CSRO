@@ -37,4 +37,8 @@
     <ProjectReference Include="..\CSRO.Common.AzureSdkServices\CSRO.Common.AzureSdkServices.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Pages\Ado\" />
+  </ItemGroup>
+
 </Project>
