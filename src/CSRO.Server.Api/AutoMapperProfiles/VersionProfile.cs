@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using CSRO.Server.Domain;
 using CSRO.Server.Entities.Entity;
 using Entity = CSRO.Server.Entities.Entity;
 using System;
@@ -7,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CSRO.Server.Domain.AzureDtos;
+using CSRO.Server.Domain;
 
 namespace CSRO.Server.Api.AutoMapperProfiles
 {
@@ -14,7 +14,7 @@ namespace CSRO.Server.Api.AutoMapperProfiles
     {
         public VersionProfile()
         {
-            CreateMap<AppVersionDto, Entity.AppVersion>()
+            CreateMap<Dtos.AppVersionDto, Entity.AppVersion>()
                 //.ForMember(s => s.CurrentUnits, op => op.Ignore())
                 .ReverseMap();
 
