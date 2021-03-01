@@ -32,6 +32,7 @@ using CSRO.Client.Blazor.UI.Services;
 using CSRO.Common.AzureSdkServices;
 using CSRO.Client.Core;
 using Microsoft.Extensions.Logging;
+using CSRO.Common.AdoServices;
 
 namespace CSRO.Client.Blazor.WebApp
 {
@@ -234,6 +235,8 @@ namespace CSRO.Client.Blazor.WebApp
                 services.AddTransient<ICsroTokenCredentialProvider, CsroTokenCredentialProvider>(); //for work                        
 
             #endregion
+
+            services.AddTransient<IProjectAdoServices, ProjectAdoServices>();
 
             //UI component for dialods
             services.AddTransient<ICsroDialogService, CsroDialogService>();            

@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using CSRO.Server.Domain;
+using CSRO.Server.Api.Dtos;
 using CSRO.Server.Entities.Entity;
 using CSRO.Server.Infrastructure;
 using CSRO.Server.Services;

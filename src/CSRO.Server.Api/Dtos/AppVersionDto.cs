@@ -1,20 +1,13 @@
-﻿using System;
+﻿using CSRO.Server.Domain;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CSRO.Server.Domain
+namespace CSRO.Server.Api.Dtos
 {
-    public enum RecomendedAction
+    public class AppVersionDto : DtoBase
     {
-        Unknown = 0,
-        None = 1,
-        Warning = 2,
-        CloseApplication = 3
-    }
-
-    public class AppVersionDto: DtoBase
-    {
-        public RecomendedAction RecomendedAction { get; set; }
+        public RecomendedActionEnum RecomendedAction { get; set; }
 
         public int VersionValue { get; set; }
 
