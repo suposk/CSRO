@@ -66,7 +66,11 @@ namespace CSRO.Common.AdoServices
 
                 // Setup process properties       
                 ProcessHttpClient processClient = connection.GetClient<ProcessHttpClient>();
-                Guid processId = processClient.GetProcessesAsync().Result.Find(process => { return process.Name.Equals(processName, StringComparison.InvariantCultureIgnoreCase); }).Id;
+                //Guid processId = processClient.GetProcessesAsync().Result.Find(process => { return process.Name.Equals(processName, StringComparison.InvariantCultureIgnoreCase); }).Id;
+                Guid? processId = null;
+                var prs = await processClient.GetProcessesAsync().ConfigureAwait(false);
+                if (prs?.Count > 0)
+                    processId = prs.Find(process => { return process.Name.Equals(processName, StringComparison.InvariantCultureIgnoreCase); })?.Id;
 
                 Dictionary<string, string> processProperaties = new Dictionary<string, string>();
 
@@ -97,12 +101,12 @@ namespace CSRO.Common.AdoServices
 
                 // Queue the project creation operation 
                 // This returns an operation object that can be used to check the status of the creation
-                OperationReference operation = projectClient.QueueCreateProject(projectCreateParameters).Result;
+                OperationReference operation = await projectClient.QueueCreateProject(projectCreateParameters).ConfigureAwait(false);
 
                 //ClientSampleHttpLogger.SetSuppressOutput(Context, true);
 
                 // Check the operation status every 5 seconds (for up to 30 seconds)
-                Operation completedOperation = WaitForLongRunningOperation(connection, operation.Id, 5, 30).Result;
+                Operation completedOperation = await WaitForLongRunningOperation(connection, operation.Id, 5, 30).ConfigureAwait(false);
 
                 // Check if the operation succeeded (the project was created) or failed
                 if (completedOperation.Status == OperationStatus.Succeeded)
