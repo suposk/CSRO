@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.Services.OAuth;
 using Microsoft.Identity.Web;
 using Microsoft.VisualStudio.Services.Client; //it ,ay be removed perhaps
+using Microsoft.Extensions.Configuration;
 
 namespace CSRO.Common.AdoServices
 {
@@ -21,12 +22,13 @@ namespace CSRO.Common.AdoServices
 
     public class ProjectAdoServices : IProjectAdoServices
     {
-        private readonly ITokenAcquisition _tokenAcquisition;
+        //private readonly ITokenAcquisition _tokenAcquisition;
+        private readonly AdoConfig _adoConfig;
         internal const string azureDevOpsOrganizationUrl = "https://dev.azure.com/organization"; //change to the URL of your Azure DevOps account; NOTE: This must use HTTPS
 
-        public ProjectAdoServices(ITokenAcquisition tokenAcquisition)
-        {
-            _tokenAcquisition = tokenAcquisition;
+        public ProjectAdoServices(IConfiguration configuration)
+        {            
+            _adoConfig = configuration.GetSection(nameof(AdoConfig)).Get<AdoConfig>();
         }
 
         public async Task<ProjectAdo> CreateProject(ProjectAdo projectAdo)
@@ -35,10 +37,10 @@ namespace CSRO.Common.AdoServices
             TeamProject project = null;
             try
             {
-                string projectName = projectAdo.Name ?? "Jano Test";
+                string projectName = projectAdo.Name ?? "Test";
                 string projectDescription = projectAdo.Description ?? "Some Desc...";
                 string processName = "Agile";
-                var organization = "jansupolikAdo";                
+                var organization = projectAdo.Organization ?? "jansupolikAdo";                        
                 string url = $"https://dev.azure.com/{organization}";
 
 
@@ -48,9 +50,15 @@ namespace CSRO.Common.AdoServices
                 versionControlProperties[TeamProjectCapabilitiesConstants.VersionControlCapabilityAttributeName] =
                     SourceControlTypes.Git.ToString();
 
-                //connection = new VssConnection(new Uri(url), new VssCredentials());
-                connection = new VssConnection(new Uri(url), new VssClientCredentials());
-
+                if (_adoConfig.UsePta)
+                {
+                    connection = new VssConnection(new Uri(url), new VssBasicCredential(string.Empty, _adoConfig.AdoPersonalAccessToken));
+                }
+                else
+                {
+                    //connection = new VssConnection(new Uri(url), new VssCredentials(true));
+                    connection = new VssConnection(new Uri(url), new VssClientCredentials(true));
+                }
                 //var scope = "vso.project_manage";
                 //var token = await _tokenAcquisition.GetAccessTokenForAppAsync(scope);
                 //var accessTokenCredential = new VssOAuthAccessTokenCredential(token);

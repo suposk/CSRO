@@ -10,6 +10,6 @@ namespace CSRO.Common.AdoServices.Models
     /// </summary>
     public class ProjectAdo : TeamProject
     {
-
+        public string Organization { get; set; }
     }
 }

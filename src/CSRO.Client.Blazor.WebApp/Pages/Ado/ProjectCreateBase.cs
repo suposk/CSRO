@@ -62,6 +62,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Ado
                 //    if (server != null)
                 //        Model = server;
                 //}
+                Model = new ProjectAdo { Organization = "jansupolikAdo", Name = "My test Project", Description = "Project from code" };
             }
             catch (Exception ex)
             {
