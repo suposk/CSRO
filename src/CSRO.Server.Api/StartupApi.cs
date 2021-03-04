@@ -156,8 +156,8 @@ namespace CSRO.Server.Api
             services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApi(Configuration, "AzureAd")
                 .EnableTokenAcquisitionToCallDownstreamApi()
-                //.AddInMemoryTokenCaches();
-                .AddDistributedTokenCaches();            
+                .AddInMemoryTokenCaches();
+                //.AddDistributedTokenCaches();            
 
             //services.Configure<MicrosoftIdentityOptions>(options =>
             //{

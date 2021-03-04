@@ -171,8 +171,8 @@ namespace CSRO.Client.Blazor.WebApp
                 //.EnableTokenAcquisitionToCallDownstreamApi(new List<string> { "user.read", ConstatCsro.Scopes.MANAGEMENT_AZURE_SCOPE })
                 //.EnableTokenAcquisitionToCallDownstreamApi(new List<string> { "https://graph.microsoft.com/.default" })   /v2
                 //.EnableTokenAcquisitionToCallDownstreamApi(new List<string> { "https://graph.microsoft.com/.default", Configuration.GetValue<string>("Scope_Api") })                
-                //.AddInMemoryTokenCaches();
-                .AddDistributedTokenCaches();
+                .AddInMemoryTokenCaches();
+                //.AddDistributedTokenCaches();
             
             services.Configure<MicrosoftIdentityOptions>(options =>
             {

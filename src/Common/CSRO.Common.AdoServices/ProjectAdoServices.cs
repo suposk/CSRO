@@ -12,53 +12,55 @@ using Microsoft.VisualStudio.Services.OAuth;
 using Microsoft.Identity.Web;
 using Microsoft.VisualStudio.Services.Client; //it ,ay be removed perhaps
 using Microsoft.Extensions.Configuration;
+using AutoMapper;
+using Microsoft.Extensions.Logging;
 
 namespace CSRO.Common.AdoServices
 {
     public interface IProjectAdoServices
     {
-        Task<ProjectAdo> CreateProject(ProjectAdo projectAdo);
+        Task<ProjectAdo> CreateProject(ProjectAdo projectAdoCreate);
     }
 
     public class ProjectAdoServices : IProjectAdoServices
     {
         //private readonly ITokenAcquisition _tokenAcquisition;
         private readonly AdoConfig _adoConfig;
+        private readonly IMapper _mapper;
+        private readonly ILogger<ProjectAdoServices> _logger;
         internal const string azureDevOpsOrganizationUrl = "https://dev.azure.com/organization"; //change to the URL of your Azure DevOps account; NOTE: This must use HTTPS
 
-        public ProjectAdoServices(IConfiguration configuration)
-        {            
-            _adoConfig = configuration.GetSection(nameof(AdoConfig)).Get<AdoConfig>();
+        public ProjectAdoServices(IConfiguration configuration, IMapper mapper, ILogger<ProjectAdoServices> logger = null)
+        {
+            _mapper = mapper;
+            _logger = logger;
+            _adoConfig = configuration.GetSection(nameof(AdoConfig)).Get<AdoConfig>();            
         }
 
-        public async Task<ProjectAdo> CreateProject(ProjectAdo projectAdo)
+        public async Task<ProjectAdo> CreateProject(ProjectAdo projectAdoCreate)
         {
             VssConnection connection = null;
             TeamProject project = null;
+            ProjectAdo result = null;
             try
             {
-                string projectName = projectAdo.Name ?? "Test";
-                string projectDescription = projectAdo.Description ?? "Some Desc...";
+                string projectName = projectAdoCreate.Name ?? "Project";
+                string projectDescription = projectAdoCreate.Description ?? "Some Desc...";
                 string processName = "Agile";
-                var organization = projectAdo.Organization ?? "jansupolikAdo";                        
+                var organization = projectAdoCreate.Organization ?? "jansupolikAdo";                 
                 string url = $"https://dev.azure.com/{organization}";
-
 
                 // Setup version control properties
                 Dictionary<string, string> versionControlProperties = new Dictionary<string, string>();
-
                 versionControlProperties[TeamProjectCapabilitiesConstants.VersionControlCapabilityAttributeName] =
                     SourceControlTypes.Git.ToString();
 
-                if (_adoConfig.UsePta)
-                {
-                    connection = new VssConnection(new Uri(url), new VssBasicCredential(string.Empty, _adoConfig.AdoPersonalAccessToken));
-                }
-                else
-                {
+                if (_adoConfig.UsePta)                
+                    connection = new VssConnection(new Uri(url), new VssBasicCredential(string.Empty, _adoConfig.AdoPersonalAccessToken));                
+                else                
                     //connection = new VssConnection(new Uri(url), new VssCredentials(true));
                     connection = new VssConnection(new Uri(url), new VssClientCredentials(true));
-                }
+                
                 //var scope = "vso.project_manage";
                 //var token = await _tokenAcquisition.GetAccessTokenForAppAsync(scope);
                 //var accessTokenCredential = new VssOAuthAccessTokenCredential(token);
@@ -73,7 +75,6 @@ namespace CSRO.Common.AdoServices
                     processId = prs.Find(process => { return process.Name.Equals(processName, StringComparison.InvariantCultureIgnoreCase); })?.Id;
 
                 Dictionary<string, string> processProperaties = new Dictionary<string, string>();
-
                 processProperaties[TeamProjectCapabilitiesConstants.ProcessTemplateCapabilityTemplateTypeIdAttributeName] =
                     processId.ToString();
 
@@ -94,10 +95,8 @@ namespace CSRO.Common.AdoServices
                 };
 
                 // Get a client            
-                ProjectHttpClient projectClient = connection.GetClient<ProjectHttpClient>();
-                                
-
-                Console.WriteLine("Queuing project creation...");
+                ProjectHttpClient projectClient = connection.GetClient<ProjectHttpClient>();                                               
+                _logger?.LogDebug("Queuing project creation...");
 
                 // Queue the project creation operation 
                 // This returns an operation object that can be used to check the status of the creation
@@ -116,28 +115,27 @@ namespace CSRO.Common.AdoServices
                         projectCreateParameters.Name,
                         includeCapabilities: true,
                         includeHistory: true).Result;
-
-                    Console.WriteLine();
-                    Console.WriteLine("Project created (ID: {0})", project.Id);
+                                        
+                    _logger?.LogDebug("Project created (ID: {0})", project.Id);
 
                     // Save the newly created project (other sample methods will use it)
                     //Context.SetValue<TeamProject>("$newProject", project);
+                    result = _mapper.Map<ProjectAdo>(project);
+                    result.Organization = projectAdoCreate.Organization;                    
                 }
-                else
-                {
-                    Console.WriteLine("Project creation operation failed: " + completedOperation.ResultMessage);
-                }
+                else                                    
+                    _logger?.LogError("Project creation operation failed: " + completedOperation.ResultMessage);                
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Exception during create project: ", ex.Message);
+                //Console.WriteLine("Exception during create project: ", ex.Message);
+                throw;
             }
             finally
             {
                 connection?.Dispose();
             }
-
-            return project == null ? null : project as ProjectAdo;
+            return result;            
         }
 
         private async Task<Operation> WaitForLongRunningOperation(VssConnection connection, Guid operationId, int interavalInSec = 5, int maxTimeInSeconds = 60, CancellationToken cancellationToken = default(CancellationToken))
@@ -147,26 +145,20 @@ namespace CSRO.Common.AdoServices
             int checkCount = 0;
 
             while (true)
-            {
-                Console.WriteLine(" Checking status ({0})... ", (checkCount++));
-
+            {                
+                _logger?.LogDebug(" Checking status ({0})... ", (checkCount++));
                 Operation operation = await operationsClient.GetOperation(operationId, cancellationToken);
 
                 if (!operation.Completed)
-                {
-                    Console.WriteLine("   Pausing {0} seconds", interavalInSec);
-
+                {                    
+                    _logger?.LogDebug("   Pausing {0} seconds", interavalInSec);
                     await Task.Delay(interavalInSec * 1000);
 
-                    if (DateTime.Now > expiration)
-                    {
-                        throw new Exception(String.Format("Operation did not complete in {0} seconds.", maxTimeInSeconds));
-                    }
+                    if (DateTime.Now > expiration)                    
+                       throw new Exception(String.Format("Operation did not complete in {0} seconds.", maxTimeInSeconds));                    
                 }
-                else
-                {
-                    return operation;
-                }
+                else                
+                    return operation;                
             }
         }
     }

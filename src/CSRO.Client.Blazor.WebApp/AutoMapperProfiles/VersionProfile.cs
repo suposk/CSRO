@@ -2,6 +2,7 @@
 using CSRO.Client.Services.Dtos;
 using CSRO.Client.Services.Dtos.AzureDtos;
 using Models = CSRO.Client.Services.Models;
+using AdoModels = CSRO.Common.AdoServices.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,6 +51,9 @@ namespace CSRO.Client.Blazor.WebApp.AutoMapperProfiles
                 //.ForMember(s => s.Tags.privilegedMembers, op => op.Ignore())
                 .ReverseMap();
 
+            CreateMap<Microsoft.TeamFoundation.Core.WebApi.TeamProject, AdoModels.ProjectAdo>()
+                .ForMember(s => s.Organization, op => op.Ignore())
+                .ReverseMap();
 
             //CreateMap<Models.ResourceGroup, Models.ResourceGroupModel>()
             //    .ForMember(s => s.ResourceGroup, op => op.MapFrom(ss => ss))
