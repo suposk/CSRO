@@ -237,6 +237,7 @@ namespace CSRO.Client.Blazor.WebApp
             #endregion
 
             services.AddTransient<IProjectAdoServices, ProjectAdoServices>();
+            services.AddSingleton<IProcessAdoServices, ProcessAdoServices>();
 
             //UI component for dialods
             services.AddTransient<ICsroDialogService, CsroDialogService>();            

@@ -42,8 +42,7 @@ namespace CSRO.Client.Blazor.WebApp.AutoMapperProfiles
             CreateMap<TagDto, Models.DefaultTag>()
                 .ReverseMap();
 
-            CreateMap<ResourceGroupDto, Models.ResourceGroup>()
-                //.ForMember(s => s.CurrentUnits, op => op.Ignore())
+            CreateMap<ResourceGroupDto, Models.ResourceGroup>()                
                 .ReverseMap();
 
             CreateMap<ResourceGroupCreateDto, Models.ResourceGroup>()
@@ -53,6 +52,9 @@ namespace CSRO.Client.Blazor.WebApp.AutoMapperProfiles
 
             CreateMap<Microsoft.TeamFoundation.Core.WebApi.TeamProject, AdoModels.ProjectAdo>()
                 .ForMember(s => s.Organization, op => op.Ignore())
+                .ReverseMap();
+
+            CreateMap<Microsoft.TeamFoundation.Core.WebApi.Process, AdoModels.ProcessAdo>()                
                 .ReverseMap();
 
             //CreateMap<Models.ResourceGroup, Models.ResourceGroupModel>()

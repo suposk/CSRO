@@ -27,12 +27,19 @@ namespace CSRO.Common.AdoServices
         //private readonly ITokenAcquisition _tokenAcquisition;
         private readonly AdoConfig _adoConfig;
         private readonly IMapper _mapper;
+        private readonly IProcessAdoServices _processAdoServices;
         private readonly ILogger<ProjectAdoServices> _logger;
         internal const string azureDevOpsOrganizationUrl = "https://dev.azure.com/organization"; //change to the URL of your Azure DevOps account; NOTE: This must use HTTPS
 
-        public ProjectAdoServices(IConfiguration configuration, IMapper mapper, ILogger<ProjectAdoServices> logger = null)
+        public ProjectAdoServices(
+            IConfiguration configuration, 
+            IMapper mapper,
+            IProcessAdoServices processAdoServices,
+            ILogger<ProjectAdoServices> logger = null
+            )
         {
             _mapper = mapper;
+            _processAdoServices = processAdoServices;
             _logger = logger;
             _adoConfig = configuration.GetSection(nameof(AdoConfig)).Get<AdoConfig>();            
         }
@@ -66,13 +73,15 @@ namespace CSRO.Common.AdoServices
                 //var accessTokenCredential = new VssOAuthAccessTokenCredential(token);
                 //connection = new VssConnection(new Uri(url), accessTokenCredential);
 
-                // Setup process properties       
-                ProcessHttpClient processClient = connection.GetClient<ProcessHttpClient>();
-                //Guid processId = processClient.GetProcessesAsync().Result.Find(process => { return process.Name.Equals(processName, StringComparison.InvariantCultureIgnoreCase); }).Id;
+                // Setup process properties                                 
                 Guid? processId = null;
-                var prs = await processClient.GetProcessesAsync().ConfigureAwait(false);
-                if (prs?.Count > 0)
-                    processId = prs.Find(process => { return process.Name.Equals(processName, StringComparison.InvariantCultureIgnoreCase); })?.Id;
+                //ProcessHttpClient processClient = connection.GetClient<ProcessHttpClient>();
+                //var prs = await processClient.GetProcessesAsync().ConfigureAwait(false);
+                //if (prs?.Count > 0)
+                //    processId = prs.Find(process => { return process.Name.Equals(processName, StringComparison.InvariantCultureIgnoreCase); })?.Id;
+
+                var process = await _processAdoServices.GetAdoProcesByName(organization, processName);
+                processId = process?.Id;
 
                 Dictionary<string, string> processProperaties = new Dictionary<string, string>();
                 processProperaties[TeamProjectCapabilitiesConstants.ProcessTemplateCapabilityTemplateTypeIdAttributeName] =
@@ -111,10 +120,10 @@ namespace CSRO.Common.AdoServices
                 if (completedOperation.Status == OperationStatus.Succeeded)
                 {
                     // Get the full details about the newly created project
-                    project = projectClient.GetProject(
-                        projectCreateParameters.Name,
-                        includeCapabilities: true,
-                        includeHistory: true).Result;
+                    project = await projectClient.GetProject(
+                                projectCreateParameters.Name,
+                                includeCapabilities: true,
+                                includeHistory: true);
                                         
                     _logger?.LogDebug("Project created (ID: {0})", project.Id);
 
