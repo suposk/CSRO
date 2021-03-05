@@ -29,20 +29,31 @@ namespace CSRO.Common.AdoServices
     {
         private readonly AdoConfig _adoConfig;
         private readonly IMapper _mapper;
+        private readonly ICacheProvider _cacheProvider;
         private readonly ILogger<ProcessAdoServices> _logger;
-        private List<ProcessAdo> _processAdos = null;
+        //private List<ProcessAdo> _processAdos = null;
+        const string cacheKey = nameof(ProcessAdo);
 
-        public ProcessAdoServices(IConfiguration configuration, IMapper mapper, ILogger<ProcessAdoServices> logger = null)
+        public ProcessAdoServices(
+            IConfiguration configuration, 
+            IMapper mapper,
+            ICacheProvider cacheProvider,
+            ILogger<ProcessAdoServices> logger = null)
         {
             _mapper = mapper;
+            _cacheProvider = cacheProvider;
             _logger = logger;
             _adoConfig = configuration.GetSection(nameof(AdoConfig)).Get<AdoConfig>();
         }
 
         public async Task<List<ProcessAdo>> GetAdoProcesses(string organization)
         {
-            if (_processAdos != null)
-                return _processAdos;
+            //if (_processAdos != null)
+            //    return _processAdos;
+
+            var processAdos = _cacheProvider.GetFromCache<List<ProcessAdo>>(cacheKey);
+            if (processAdos?.Count > 0)
+                return processAdos;
 
             VssConnection connection = null;
             try
@@ -58,7 +69,10 @@ namespace CSRO.Common.AdoServices
                 ProcessHttpClient processClient = connection.GetClient<ProcessHttpClient>();
                 var prs = await processClient.GetProcessesAsync().ConfigureAwait(false);
                 if (prs?.Count > 0)
-                    _processAdos = _mapper.Map<List<ProcessAdo>>(prs);
+                {
+                    processAdos = _mapper.Map<List<ProcessAdo>>(prs);
+                    _cacheProvider.SetCache(cacheKey, processAdos);
+                }
             }
             catch (Exception ex)
             {
@@ -69,7 +83,7 @@ namespace CSRO.Common.AdoServices
             {
                 connection?.Dispose();
             }
-            return _processAdos;
+            return processAdos;
         }
 
         public async Task<List<string>> GetAdoProcessesName(string organization)

@@ -1,0 +1,49 @@
+﻿using Microsoft.Extensions.Caching.Memory;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace CSRO.Common
+{
+    public interface ICacheProvider
+    {
+        T GetFromCache<T>(string key) where T : class;
+        void SetCache<T>(string key, T value) where T : class;
+        void SetCache<T>(string key, T value, DateTimeOffset duration) where T : class;
+        void ClearCache(string key);
+    }
+    public class CacheProvider : ICacheProvider
+    {
+        private const int CacheSeconds = 10 * 60;  // 10 minutes
+
+        private readonly IMemoryCache _cache;
+
+        public CacheProvider(IMemoryCache cache)
+        {
+            _cache = cache;
+        }
+
+        public T GetFromCache<T>(string key) where T : class
+        {
+            var cachedResponse = _cache.Get(key);
+            return cachedResponse as T;
+        }
+
+        public void SetCache<T>(string key, T value) where T : class
+        {
+            SetCache(key, value, DateTimeOffset.Now.AddSeconds(CacheSeconds));
+        }
+
+        public void SetCache<T>(string key, T value, DateTimeOffset duration) where T : class
+        {
+            _cache.Set(key, value, duration);
+        }
+
+        public void ClearCache(string key)
+        {
+            _cache.Remove(key);
+        }
+    }
+}

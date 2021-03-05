@@ -33,6 +33,7 @@ using CSRO.Common.AzureSdkServices;
 using CSRO.Client.Core;
 using Microsoft.Extensions.Logging;
 using CSRO.Common.AdoServices;
+using CSRO.Common;
 
 namespace CSRO.Client.Blazor.WebApp
 {
@@ -237,7 +238,8 @@ namespace CSRO.Client.Blazor.WebApp
             #endregion
 
             services.AddTransient<IProjectAdoServices, ProjectAdoServices>();
-            services.AddSingleton<IProcessAdoServices, ProcessAdoServices>();
+            services.AddTransient<IProcessAdoServices, ProcessAdoServices>();
+            services.AddSingleton<ICacheProvider, CacheProvider>(); //testing
 
             //UI component for dialods
             services.AddTransient<ICsroDialogService, CsroDialogService>();            
