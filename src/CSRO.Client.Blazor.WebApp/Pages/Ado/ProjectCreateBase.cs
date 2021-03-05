@@ -37,6 +37,9 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Ado
         public ICsroDialogService CsroDialogService { get; set; }
 
         [Inject]
+        public IProcessAdoServices ProcessAdoServices { get; set; }
+
+        [Inject]
         public ILogger<ProjectCreateBase> Logger { get; set; }
 
         #endregion
@@ -44,6 +47,8 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Ado
         public ProjectAdo Model { get; set; } = new ProjectAdo();
         protected bool IsReadOnly => OperationTypeTicket == OperatioType.View;
         protected string Title => OperationTypeTicket.ToString() + " Project";
+
+        protected List<string> Processes = new List<string>();
 
         protected async override Task OnInitializedAsync()
         {
@@ -54,7 +59,12 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Ado
         {
             try
             {
-                //ShowLoading();
+                ShowLoading();
+                var prs = await ProcessAdoServices.GetAdoProcessesName(null);
+                Processes.Clear();
+                if (prs != null)
+                    Processes = prs;
+
                 //if (OperationTypeTicket != OperatioType.Create)
                 //{
                 //    Model.Id = int.Parse(TicketId);
@@ -69,6 +79,16 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Ado
                 Logger.LogError(ex, nameof(OnInitializedAsync));
             }
             HideLoading();
+        }
+
+        public Task OnProcessNameChanged(string value)
+        {
+            if (value != null)
+            {
+                Model.ProcessName = value;
+                //await OnNetworkSelectedEvent.InvokeAsync(Model);
+            }
+            return Task.CompletedTask;
         }
 
         public async Task OnValidSubmit(EditContext context)

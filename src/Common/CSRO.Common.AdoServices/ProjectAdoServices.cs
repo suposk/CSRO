@@ -46,14 +46,13 @@ namespace CSRO.Common.AdoServices
 
         public async Task<ProjectAdo> CreateProject(ProjectAdo projectAdoCreate)
         {
-            VssConnection connection = null;
-            TeamProject project = null;
+            VssConnection connection = null;            
             ProjectAdo result = null;
             try
             {
                 string projectName = projectAdoCreate.Name ?? "Project";
                 string projectDescription = projectAdoCreate.Description ?? "Some Desc...";
-                string processName = "Agile";
+                string processName = projectAdoCreate.ProcessName ?? "Agile";
                 var organization = projectAdoCreate.Organization ?? "jansupolikAdo";                 
                 string url = $"https://dev.azure.com/{organization}";
 
@@ -75,11 +74,6 @@ namespace CSRO.Common.AdoServices
 
                 // Setup process properties                                 
                 Guid? processId = null;
-                //ProcessHttpClient processClient = connection.GetClient<ProcessHttpClient>();
-                //var prs = await processClient.GetProcessesAsync().ConfigureAwait(false);
-                //if (prs?.Count > 0)
-                //    processId = prs.Find(process => { return process.Name.Equals(processName, StringComparison.InvariantCultureIgnoreCase); })?.Id;
-
                 var process = await _processAdoServices.GetAdoProcesByName(organization, processName);
                 processId = process?.Id;
 
@@ -120,7 +114,7 @@ namespace CSRO.Common.AdoServices
                 if (completedOperation.Status == OperationStatus.Succeeded)
                 {
                     // Get the full details about the newly created project
-                    project = await projectClient.GetProject(
+                    var project = await projectClient.GetProject(
                                 projectCreateParameters.Name,
                                 includeCapabilities: true,
                                 includeHistory: true);
@@ -130,7 +124,8 @@ namespace CSRO.Common.AdoServices
                     // Save the newly created project (other sample methods will use it)
                     //Context.SetValue<TeamProject>("$newProject", project);
                     result = _mapper.Map<ProjectAdo>(project);
-                    result.Organization = projectAdoCreate.Organization;                    
+                    result.Organization = projectAdoCreate.Organization;
+                    result.ProcessName = projectName;
                 }
                 else                                    
                     _logger?.LogError("Project creation operation failed: " + completedOperation.ResultMessage);                

@@ -15,6 +15,7 @@ using Microsoft.Extensions.Configuration;
 using AutoMapper;
 using Microsoft.Extensions.Logging;
 using System.Linq;
+using Microsoft.VisualStudio.Services.Organization.Client;
 
 namespace CSRO.Common.AdoServices
 {
@@ -47,17 +48,17 @@ namespace CSRO.Common.AdoServices
         }
 
         public async Task<List<ProcessAdo>> GetAdoProcesses(string organization)
-        {
-            //if (_processAdos != null)
-            //    return _processAdos;
-
-            var processAdos = _cacheProvider.GetFromCache<List<ProcessAdo>>(cacheKey);
-            if (processAdos?.Count > 0)
-                return processAdos;
-
+        {                                  
+            organization ??= "jansupolikAdo";
             VssConnection connection = null;
             try
             {
+                //var or = await GetOrganizations();
+
+                var processAdos = _cacheProvider.GetFromCache<List<ProcessAdo>>(cacheKey);
+                if (processAdos?.Count > 0)
+                    return processAdos;
+
                 string url = $"https://dev.azure.com/{organization}";
                 if (_adoConfig.UsePta)
                     connection = new VssConnection(new Uri(url), new VssBasicCredential(string.Empty, _adoConfig.AdoPersonalAccessToken));
@@ -66,24 +67,49 @@ namespace CSRO.Common.AdoServices
                     connection = new VssConnection(new Uri(url), new VssClientCredentials(true));
 
                 // Setup process properties       
-                ProcessHttpClient processClient = connection.GetClient<ProcessHttpClient>();
+                var processClient = connection.GetClient<ProcessHttpClient>();
                 var prs = await processClient.GetProcessesAsync().ConfigureAwait(false);
                 if (prs?.Count > 0)
                 {
                     processAdos = _mapper.Map<List<ProcessAdo>>(prs);
                     _cacheProvider.SetCache(cacheKey, processAdos);
                 }
+                return processAdos;
             }
             catch (Exception ex)
             {
-                //Console.WriteLine("Exception during create project: ", ex.Message);
+                throw;
+            }
+            finally
+            {
+                connection?.Dispose();
+            }            
+        }
+
+        public async Task<List<string>> GetOrganizations()
+        {            
+            VssConnection connection = null;
+            try
+            {
+                var organization = "jansupolikAdo";
+                string url = $"https://dev.azure.com/{organization}";
+                if (_adoConfig.UsePta)
+                    connection = new VssConnection(new Uri(url), new VssBasicCredential(string.Empty, _adoConfig.AdoPersonalAccessToken));
+                else                    
+                    connection = new VssConnection(new Uri(url), new VssClientCredentials(true));
+
+                OrganizationHttpClient organizatioClient = connection.GetClient<OrganizationHttpClient>();
+                var orgs = await organizatioClient.GetOrganizationsAsync(Microsoft.VisualStudio.Services.Organization.OrganizationSearchKind.ByName, organization);
+                return orgs.Select(a => a.Name).ToList();
+            }
+            catch (Exception ex)
+            {
                 throw;
             }
             finally
             {
                 connection?.Dispose();
             }
-            return processAdos;
         }
 
         public async Task<List<string>> GetAdoProcessesName(string organization)

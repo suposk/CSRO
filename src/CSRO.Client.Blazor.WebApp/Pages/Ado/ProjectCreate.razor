@@ -30,6 +30,27 @@
                                           @bind-Value="Model.Id" For="@(() => Model.Id)" />
                         }
 
+                        @if (Processes?.Count > 0)
+                        {
+                            <MudSelect T="@string"                                       
+                                       OffsetY="true"
+                                       Label="Select Process:"
+                                       ValueChanged="(e) => OnProcessNameChanged(e)"
+                                       For="@(() => Model.ProcessName)">
+                                @foreach (var item in Processes)
+                                {
+                                    <MudSelectItem T="string" Value="@item">@item</MudSelectItem>
+                                }
+                            </MudSelect>
+                        }
+                        else
+                        {
+
+                            <MudTextField Label="Processes Name"
+                                          @bind-Value="Model.ProcessName"
+                                          For="@(() => Model.ProcessName)" />
+                        }
+
                         <MudTextField Label="Project Name:"
                                       Disabled="@IsReadOnly"
                                       @bind-Value="Model.Name" For="@(() => Model.Name)" />
@@ -40,16 +61,16 @@
                                       @bind-Value="Model.Description" For="@(() => Model.Description)" />
 
                         @*@if (IsReadOnly)
-                        {
-                            <MudTextField Label="Created By:" Disabled="true"
-                                          @bind-Value="Model.CreatedBy" For="@(() => Model.CreatedBy)" />
+        {
+            <MudTextField Label="Created By:" Disabled="true"
+                          @bind-Value="Model.CreatedBy" For="@(() => Model.CreatedBy)" />
 
-                            <MudTextField Label="Created At:" Disabled="true"
-                                          @bind-Value="Model.CreatedAt" For="@(() => Model.CreatedAt)" />
+            <MudTextField Label="Created At:" Disabled="true"
+                          @bind-Value="Model.CreatedAt" For="@(() => Model.CreatedAt)" />
 
-                            <MudTextField Label="Modified At:" Disabled="true"
-                                          @bind-Value="Model.ModifiedAt" For="@(() => Model.ModifiedAt)" />
-                        }*@
+            <MudTextField Label="Modified At:" Disabled="true"
+                          @bind-Value="Model.ModifiedAt" For="@(() => Model.ModifiedAt)" />
+        }*@
 
                     </MudCardContent>
                     @if (!IsReadOnly)

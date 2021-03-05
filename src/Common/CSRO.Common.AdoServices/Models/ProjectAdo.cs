@@ -11,5 +11,6 @@ namespace CSRO.Common.AdoServices.Models
     public class ProjectAdo : TeamProject
     {
         public string Organization { get; set; }
+        public string ProcessName { get; set; }
     }
 }
