@@ -50,6 +50,8 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Ado
 
         protected List<string> Processes = new List<string>();
 
+        protected List<string> Organizations = new List<string>();
+
         protected async override Task OnInitializedAsync()
         {
             await Load();
@@ -65,6 +67,11 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Ado
                 if (prs != null)
                     Processes = prs;
 
+                var orgs = await ProcessAdoServices.GetOrganizationNames();
+                Organizations.Clear();
+                if (orgs != null)
+                    Organizations = orgs;
+
                 //if (OperationTypeTicket != OperatioType.Create)
                 //{
                 //    Model.Id = int.Parse(TicketId);
@@ -79,6 +86,16 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Ado
                 Logger.LogError(ex, nameof(OnInitializedAsync));
             }
             HideLoading();
+        }
+
+        public Task OnOrganizationChanged(string value)
+        {
+            if (value != null)
+            {
+                Model.Organization = value;
+                //await OnNetworkSelectedEvent.InvokeAsync(Model);
+            }
+            return Task.CompletedTask;
         }
 
         public Task OnProcessNameChanged(string value)
@@ -127,6 +144,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Ado
                 catch (Exception ex)
                 {
                     Logger.LogError(ex, nameof(OnValidSubmit));
+                    await CsroDialogService.ShowError("Error", $"Detail error: {ex.Message}");
                 }
                 HideLoading();
             }

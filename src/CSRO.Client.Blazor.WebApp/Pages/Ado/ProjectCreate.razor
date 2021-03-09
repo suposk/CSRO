@@ -30,9 +30,31 @@
                                           @bind-Value="Model.Id" For="@(() => Model.Id)" />
                         }
 
+
+                        @if (Organizations?.Count > 0)
+                        {
+                            <MudSelect T="@string"
+                                       OffsetY="true"
+                                       Label="Select Organization:"
+                                       ValueChanged="(e) => OnOrganizationChanged(e)"
+                                       For="@(() => Model.Organization)">
+                                @foreach (var item in Organizations)
+                                {
+                                    <MudSelectItem T="string" Value="@item">@item</MudSelectItem>
+                                }
+                            </MudSelect>
+                        }
+                        else
+                        {
+
+                            <MudTextField Label="Organization Name"
+                                          @bind-Value="Model.Organization"
+                                          For="@(() => Model.Organization)" />
+                        }
+
                         @if (Processes?.Count > 0)
                         {
-                            <MudSelect T="@string"                                       
+                            <MudSelect T="@string"
                                        OffsetY="true"
                                        Label="Select Process:"
                                        ValueChanged="(e) => OnProcessNameChanged(e)"

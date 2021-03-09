@@ -45,6 +45,7 @@ namespace CSRO.Common.AdoServices
         const string cacheKeyProcess = nameof(ProcessAdo);
         const string cacheKeyOrganization = nameof(OrganizationDto);
         public JsonSerializerOptions _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        readonly string DefAdoOrganization;
 
         public ProcessAdoServices(
             IConfiguration configuration, 
@@ -58,11 +59,12 @@ namespace CSRO.Common.AdoServices
             _httpClientFactory = httpClientFactory;
             _logger = logger;
             _adoConfig = configuration.GetSection(nameof(AdoConfig)).Get<AdoConfig>();
+            DefAdoOrganization = configuration.GetValue<string>("DefAdoOrganization");
         }
 
         public async Task<List<ProcessAdo>> GetAdoProcesses(string organization)
         {                                  
-            organization ??= "jansupolikAdo";
+            organization ??= DefAdoOrganization;
             VssConnection connection = null;
             try
             {
@@ -107,7 +109,7 @@ namespace CSRO.Common.AdoServices
 
         public async Task<List<OrganizationDto>> GetOrganizations()
         {
-            var organization = "jansupolikAdo";
+            var organization = DefAdoOrganization;
             HttpClient httpClient = null;
             try
             {
