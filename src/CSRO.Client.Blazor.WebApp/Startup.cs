@@ -164,6 +164,24 @@ namespace CSRO.Client.Blazor.WebApp
             .AddPolicyHandler(PollyHelper.GetRetryPolicy());
             ;
 
+            services.AddHttpClient(ConstatAdo.ClientNames.DEVOPS_EndPoint, (client) =>
+            {
+                client.Timeout = TimeSpan.FromMinutes(ConstatAdo.ClientNames.MANAGEMENT_TimeOut_Mins);
+                client.BaseAddress = new Uri(ConstatAdo.ClientNames.DEVOPS_EndPoint);
+                client.DefaultRequestHeaders.Add("Accept", "application/json");
+            }).ConfigurePrimaryHttpMessageHandler(() =>
+            {
+                return new HttpClientHandler()
+                {
+                    AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip | DecompressionMethods.Brotli,
+                    UseCookies = false
+                };
+            })
+            .SetHandlerLifetime(TimeSpan.FromMinutes(5))
+            .AddPolicyHandler(PollyHelper.GetRetryPolicy())
+            .AddPolicyHandler(PollyHelper.GetRetryPolicy());
+            ;
+
             //only for client
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))

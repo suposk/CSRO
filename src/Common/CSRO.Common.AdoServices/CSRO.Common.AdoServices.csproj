@@ -16,4 +16,10 @@
     <ProjectReference Include="..\CSRO.Common\CSRO.Common.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="RequestAllOrgBody.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
