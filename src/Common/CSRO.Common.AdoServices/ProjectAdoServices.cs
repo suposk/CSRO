@@ -50,10 +50,10 @@ namespace CSRO.Common.AdoServices
             ProjectAdo result = null;
             try
             {
-                string projectName = projectAdoCreate.Name ?? "Project";
-                string projectDescription = projectAdoCreate.Description ?? "Some Desc...";
+                string projectName = projectAdoCreate.Name;
+                string projectDescription = projectAdoCreate.Description;
                 string processName = projectAdoCreate.ProcessName ?? "Agile";
-                var organization = projectAdoCreate.Organization ?? "jansupolikAdo";                 
+                var organization = projectAdoCreate.Organization;                 
                 string url = $"https://dev.azure.com/{organization}";
 
                 // Setup version control properties

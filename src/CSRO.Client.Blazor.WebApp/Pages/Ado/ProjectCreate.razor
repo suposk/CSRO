@@ -1,6 +1,7 @@
 ﻿@page "/ado/ProjectCreate"
 @inherits ProjectCreateBase
 @using CSRO.Client.Services.Models
+@using Blazored.FluentValidation
 
 <MudContainer>
     <div>
@@ -20,7 +21,7 @@
         @if (Success == false)
         {
             <EditForm Model="@Model" OnValidSubmit="OnValidSubmit">
-                <DataAnnotationsValidator />
+                <FluentValidationValidator />
                 <MudCard>
                     <MudCardContent>
                         @if (OperationTypeTicket != OperatioType.Create)
@@ -83,16 +84,16 @@
                                       @bind-Value="Model.Description" For="@(() => Model.Description)" />
 
                         @*@if (IsReadOnly)
-        {
-            <MudTextField Label="Created By:" Disabled="true"
-                          @bind-Value="Model.CreatedBy" For="@(() => Model.CreatedBy)" />
+                            {
+                                <MudTextField Label="Created By:" Disabled="true"
+                                              @bind-Value="Model.CreatedBy" For="@(() => Model.CreatedBy)" />
 
-            <MudTextField Label="Created At:" Disabled="true"
-                          @bind-Value="Model.CreatedAt" For="@(() => Model.CreatedAt)" />
+                                <MudTextField Label="Created At:" Disabled="true"
+                                              @bind-Value="Model.CreatedAt" For="@(() => Model.CreatedAt)" />
 
-            <MudTextField Label="Modified At:" Disabled="true"
-                          @bind-Value="Model.ModifiedAt" For="@(() => Model.ModifiedAt)" />
-        }*@
+                                <MudTextField Label="Modified At:" Disabled="true"
+                                              @bind-Value="Model.ModifiedAt" For="@(() => Model.ModifiedAt)" />
+                            }*@
 
                     </MudCardContent>
                     @if (!IsReadOnly)
