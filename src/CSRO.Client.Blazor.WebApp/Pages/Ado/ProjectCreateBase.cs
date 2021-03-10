@@ -72,14 +72,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Ado
                 if (orgs != null)
                     Organizations = orgs;
 
-                //if (OperationTypeTicket != OperatioType.Create)
-                //{
-                //    Model.Id = int.Parse(TicketId);
-                //    var server = await TicketDataService.GetItemByIdAsync(Model.Id);
-                //    if (server != null)
-                //        Model = server;
-                //}
-                Model = new ProjectAdo { Organization = "jansupolikAdo", Name = "My test Project", Description = "Project from code" };
+                //Model = new ProjectAdo { Name = "New Project", };
             }
             catch (Exception ex)
             {
@@ -90,21 +83,17 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Ado
 
         public Task OnOrganizationChanged(string value)
         {
-            if (value != null)
-            {
-                Model.Organization = value;
-                //await OnNetworkSelectedEvent.InvokeAsync(Model);
-            }
+            if (value != null)            
+                Model.Organization = value;                            
+
             return Task.CompletedTask;
         }
 
         public Task OnProcessNameChanged(string value)
         {
-            if (value != null)
-            {
-                Model.ProcessName = value;
-                //await OnNetworkSelectedEvent.InvokeAsync(Model);
-            }
+            if (value != null)            
+                Model.ProcessName = value;            
+            
             return Task.CompletedTask;
         }
 
