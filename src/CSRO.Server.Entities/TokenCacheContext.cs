@@ -48,10 +48,7 @@ namespace CSRO.Server.Entities
            : base(options)
         {
             ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
-        }
-
-        public DbSet<AppVersion> AppVersions { get; set; }
-        public DbSet<Ticket> Tickets { get; set; }
+        }        
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
