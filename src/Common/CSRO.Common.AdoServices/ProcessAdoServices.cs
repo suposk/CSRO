@@ -23,6 +23,8 @@ using System.Net.Http.Headers;
 using System.Text.Json;
 using System.IO;
 using CSRO.Common.AdoServices.Dtos;
+using Microsoft.VisualStudio.Services.Users.Client;
+using Microsoft.VisualStudio.Services.Graph.Client;
 
 namespace CSRO.Common.AdoServices
 {
@@ -63,13 +65,12 @@ namespace CSRO.Common.AdoServices
         }
 
         public async Task<List<ProcessAdo>> GetAdoProcesses(string organization)
-        {                                  
+        {            
             organization ??= DefAdoOrganization;
+            //var users = await GetUsers(organization);
             VssConnection connection = null;
             try
-            {
-                //var or = await GetOrganizations();
-
+            {               
                 var processAdos = _cacheProvider.GetFromCache<List<ProcessAdo>>(cacheKeyProcess);
                 if (processAdos?.Count > 0)
                     return processAdos;
@@ -150,44 +151,52 @@ namespace CSRO.Common.AdoServices
                 httpClient?.Dispose();
             }
             return null;
+        }
 
-            #region sdk not working for GetOrganizationsAsync
-            //VssConnection connection = null;
-            //try
-            //{                
-            //    string url = $"https://dev.azure.com/{organization}";
-            //    if (_adoConfig.UsePta)
-            //        connection = new VssConnection(new Uri(url), new VssBasicCredential(string.Empty, _adoConfig.AdoPersonalAccessToken));                    
-            //        //connection = new VssConnection()                    
-            //    else                    
-            //        connection = new VssConnection(new Uri(url), new VssClientCredentials(true));
+        public async Task<List<string>> GetUsers(string organization)
+        {
+            VssConnection connection = null;
+            try
+            {
+                string url = $"https://dev.azure.com/{organization}";
+                if (_adoConfig.UsePta)
+                    connection = new VssConnection(new Uri(url), new VssBasicCredential(string.Empty, _adoConfig.AdoPersonalAccessToken));
+                //connection = new VssConnection()                    
+                else
+                    connection = new VssConnection(new Uri(url), new VssClientCredentials(true));
 
-            //    //AccountHttpClient accountHttpClient = connection.GetClient<AccountHttpClient>();                
-            //    //ProfileHttpClient profileHttpClient = connection.GetClient<ProfileHttpClient>();         
-            //    //var pr = await profileHttpClient
+                GraphHttpClient graphClient = connection.GetClient<GraphHttpClient>();
+                PagedGraphGroups groups = await graphClient.ListGroupsAsync();
+                var users = await graphClient.ListUsersAsync();
+                return users?.GraphUsers.Where(a => a.Origin.Contains("ad", StringComparison.OrdinalIgnoreCase))?.Select(a => a.DisplayName)?.ToList();
+                
 
-            //    OrganizationHttpClient organizatioClient = connection.GetClient<OrganizationHttpClient>();
-            //    //var curOrg = await organizatioClient.GetOrganizationAsync("/Me");
-            //    //var col = await organizatioClient.GetCollectionsAsync("Contribution");
+                //UserHttpClient userHttpClient = connection.GetClient<UserHttpClient>();
 
-            //    List<Organization> orgs = null;
-            //    orgs = await organizatioClient.GetOrganizationsAsync(Microsoft.VisualStudio.Services.Organization.OrganizationSearchKind.ByName, organization);
-            //    orgs = await organizatioClient.GetOrganizationsAsync(Microsoft.VisualStudio.Services.Organization.OrganizationSearchKind.ById, "7a26cf8d-e2c1-48f5-b2b0-5f933898c6a6");
-            //    orgs = await organizatioClient.GetOrganizationsAsync(Microsoft.VisualStudio.Services.Organization.OrganizationSearchKind.ByTenantId, "1ff35017-cbf2-4700-9930-3210afb6182b");
-            //    orgs = await organizatioClient.GetOrganizationsAsync(Microsoft.VisualStudio.Services.Organization.OrganizationSearchKind.Unknown, "1ff35017-cbf2-4700-9930-3210afb6182b");
-            //    var res = orgs.Select(a => a.Name).ToList();
-            //    return res;
-            //}
-            //catch (Exception ex)
-            //{
-            //    //throw;
-            //}
-            //finally
-            //{
-            //    connection?.Dispose();
-            //}
-            //return null;
-            #endregion
+                //TeamHttpClient teamHttpClient = connection.GetClient<TeamHttpClient>();
+
+                //AccountHttpClient accountHttpClient = connection.GetClient<AccountHttpClient>();
+                //var res = await accountHttpClient.GetAccountsAsync();
+                //return res.Select(a => a.AccountName).ToList();
+
+                //ProfileHttpClient profileHttpClient = connection.GetClient<ProfileHttpClient>();
+
+                //OrganizationHttpClient organizatioClient = connection.GetClient<OrganizationHttpClient>();                
+
+                //var res = profileHttpClient.ge
+                //var res = await teamHttpClient.GetTeamMembers()
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                //throw;
+            }
+            finally
+            {
+                connection?.Dispose();
+            }
+            return null;
         }
 
         public async Task<List<string>> GetAdoProcessesName(string organization)
