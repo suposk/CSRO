@@ -44,7 +44,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSRO.Server.Ado.Api", "Serv
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSRO.Common.AdoServices", "Common\CSRO.Common.AdoServices\CSRO.Common.AdoServices.csproj", "{5E6B402A-93B9-444B-B2C3-5DF0A1C9B079}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSRO.Common", "Common\CSRO.Common\CSRO.Common.csproj", "{D3E80681-8CF6-4B55-A7C6-722187DD7091}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSRO.Common", "Common\CSRO.Common\CSRO.Common.csproj", "{D3E80681-8CF6-4B55-A7C6-722187DD7091}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

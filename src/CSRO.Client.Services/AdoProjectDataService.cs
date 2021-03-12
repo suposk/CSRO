@@ -21,6 +21,7 @@ namespace CSRO.Client.Services
     public interface IAdoProjectDataService : IBaseDataService<ProjectAdo>
     {
         Task<List<ProjectAdo>> ApproveAdoProject(List<int> toApprove);
+        Task<List<ProjectAdo>> GetProjectsForApproval();
     }
 
     public class AdoProjectDataService : BaseDataService, IAdoProjectDataService
@@ -231,8 +232,8 @@ namespace CSRO.Client.Services
             catch (Exception ex)
             {
                 base.HandleException(ex);
-            }
-            return null;
+                throw;
+            }            
         }
 
         public Task<List<ProjectAdo>> GetItemsByParrentIdAsync(int parrentId)
@@ -243,6 +244,36 @@ namespace CSRO.Client.Services
         public Task<List<ProjectAdo>> GetItemsByTypeAsync(string type)
         {
             throw new NotImplementedException();
+        }
+
+        public async Task<List<ProjectAdo>> GetProjectsForApproval()
+        {
+            try
+            {
+                await base.AddAuthHeaderAsync();
+
+                var url = $"{ApiPart}";
+                var apiData = await HttpClientBase.GetAsync(url).ConfigureAwait(false);
+
+                if (apiData.IsSuccessStatusCode)
+                {
+                    var content = await apiData.Content.ReadAsStringAsync();
+                    var ser = JsonSerializer.Deserialize<List<ProjectAdo>>(content, _options);
+                    return ser?.Where(a => a.State == ProjectState.CreatePending)?.ToList();
+                    //var result = Mapper.Map<List<ProjectAdo>>(ser);
+                    //return result;
+                }
+                else
+                {
+                    var content = await apiData.Content.ReadAsStringAsync();
+                    throw new Exception(content);
+                }
+            }
+            catch (Exception ex)
+            {
+                base.HandleException(ex);
+                throw;
+            }
         }
     }
 }
