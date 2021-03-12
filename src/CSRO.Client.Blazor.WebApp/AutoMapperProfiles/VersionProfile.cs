@@ -3,6 +3,7 @@ using CSRO.Client.Services.Dtos;
 using CSRO.Client.Services.Dtos.AzureDtos;
 using Models = CSRO.Client.Services.Models;
 using AdoModels = CSRO.Common.AdoServices.Models;
+using AdoDtos = CSRO.Common.AdoServices.Dtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,8 +52,15 @@ namespace CSRO.Client.Blazor.WebApp.AutoMapperProfiles
                 .ReverseMap();
 
             CreateMap<Microsoft.TeamFoundation.Core.WebApi.TeamProject, AdoModels.ProjectAdo>()
+                .ForMember(s => s.AdoId, op => op.MapFrom(ss => ss.Id)) //Id is guid
                 .ForMember(s => s.Organization, op => op.Ignore())
+                .ForMember(s => s.ProcessName, op => op.Ignore())                
                 .ReverseMap();
+
+            //Will use Model
+            //CreateMap<AdoDtos.AdoProjectDto, AdoModels.ProjectAdo>()
+            //    .ForMember(s => s.Organization, op => op.Ignore())
+            //    .ReverseMap();
 
             CreateMap<Microsoft.TeamFoundation.Core.WebApi.Process, AdoModels.ProcessAdo>()                
                 .ReverseMap();

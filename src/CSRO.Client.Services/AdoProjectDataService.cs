@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CSRO.Client.Core;
 using CSRO.Client.Services;
 using CSRO.Client.Services.Dtos;
 using CSRO.Client.Services.Models;
@@ -11,108 +12,26 @@ using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using CSRO.Client.Core;
 
 namespace CSRO.Client.Services
 {
-    public interface IVmTicketDataService : IBaseDataService<VmTicket>
-    {
-        /// <summary>
-        /// Call directly azure api and updated status
-        /// </summary>
-        /// <param name="item"></param>
-        /// <returns></returns>
-        Task<bool> VerifyRestartStatus(VmTicket item);
-        Task<bool> VerifyRestartStatusCallback(VmTicket item, Action<string> callbackStatus);        
-        Task<VmTicket> RebootVmAndWaitForConfirmation(VmTicket item);
-    }
 
-    public class VmTicketDataService : BaseDataService, IVmTicketDataService
-    {
-        private readonly IVmService _vmManagementService;
+    public class AdoProjectDataService : BaseDataService
+    {        
 
-        public VmTicketDataService(
-            IVmService vmManagementService, 
-            IHttpClientFactory httpClientFactory, IAuthCsroService authCsroService, IMapper mapper, IConfiguration configuration)
+        public AdoProjectDataService(            
+            IHttpClientFactory httpClientFactory, 
+            IAuthCsroService authCsroService, 
+            IMapper mapper, 
+            IConfiguration configuration)
             : base(httpClientFactory, authCsroService, mapper, configuration)
         {
-            ApiPart = "api/vmticket/";
+            ApiPart = "api/adoproject/";
             //Scope = "api://ee2f0320-29c3-432a-bf84-a5d4277ce052/user_impersonation";
-            Scope = Configuration.GetValue<string>(ConstatCsro.Scopes.Scope_Api);
-            ClientName = ConstatCsro.EndPoints.ApiEndpoint;
+            Scope = Configuration.GetValue<string>(ConstatCsro.Scopes.Scope_Ado_Api);
+            ClientName = ConstatCsro.EndPoints.ApiEndpointAdo;
 
-            base.Init();
-
-            _vmManagementService = vmManagementService;
-        }
-
-
-        public async Task<bool> VerifyRestartStatus(VmTicket item)
-        {
-            
-            try
-            {
-                var vmstatus = await _vmManagementService.GetVmDisplayStatus(item);
-                if (vmstatus.suc)
-                {
-                    var server = await GetItemByIdAsync(item.Id);
-                    if (server == null)
-                        return false;
-
-                    server.VmState = vmstatus.status;
-                    var up = await UpdateItemAsync(server);
-                    if (server.VmState.ToLower().Contains("running"))
-                    {
-                        item = server;
-                        return true;
-                    }
-                }                   
-                
-            }
-            catch (Exception ex)
-            {
-                base.HandleException(ex);
-            }
-            return false;
-        }
-
-        public async Task<bool> VerifyRestartStatusCallback(VmTicket item, Action<string> callbackStatus)
-        {
-
-            try
-            {
-                var i = 1;
-                while (i < 10)
-                {
-                    i++;
-                    await Task.Delay(2 * 1000);
-
-                    var vmstatus = await _vmManagementService.GetVmDisplayStatus(item);
-                    if (vmstatus.suc)
-                    {
-                        var server = await GetItemByIdAsync(item.Id);
-                        if (server == null)
-                            return false;
-
-                        server.VmState = vmstatus.status;
-                        if (server.VmState.ToLower().Contains("running"))
-                        {
-                            server.Status = "Completed";
-                            var up = await UpdateItemAsync(server);
-                            item = server;
-                            return true;
-                        }
-                        else
-                            callbackStatus?.Invoke(vmstatus.status);
-                    }
-                }
-
-            }
-            catch (Exception ex)
-            {
-                base.HandleException(ex);
-            }
-            return false;
+            base.Init();                        
         }
 
         public async Task<VmTicket> RebootVmAndWaitForConfirmation(VmTicket item)

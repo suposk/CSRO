@@ -127,13 +127,34 @@ namespace CSRO.Client.Blazor.WebApp
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-            string ApiEndpoint = Configuration.GetValue<string>("ApiEndpoint");
-            services.AddHttpClient("api", (client) =>
+            #region Add HttpClient
+
+            string ApiEndpoint = Configuration.GetValue<string>(ConstatCsro.EndPoints.ApiEndpoint);
+            services.AddHttpClient(ConstatCsro.EndPoints.ApiEndpoint, (client) =>
             {
                 client.Timeout = TimeSpan.FromMinutes(ConstatCsro.ClientNames.API_TimeOut_Mins);
                 client.BaseAddress = new Uri(ApiEndpoint);
                 client.DefaultRequestHeaders.Add("Accept", "application/json");
             }).ConfigurePrimaryHttpMessageHandler(() => 
+            {
+                return new HttpClientHandler()
+                {
+                    AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip | DecompressionMethods.Brotli,
+                    UseCookies = false
+                };
+            })
+            .SetHandlerLifetime(TimeSpan.FromMinutes(5))
+            .AddPolicyHandler(PollyHelper.GetRetryPolicy())
+            .AddPolicyHandler(PollyHelper.GetRetryPolicy());
+            ;
+
+            string ApiEndpointAdo = Configuration.GetValue<string>(ConstatCsro.EndPoints.ApiEndpointAdo);
+            services.AddHttpClient(ConstatCsro.EndPoints.ApiEndpointAdo, (client) =>
+            {
+                client.Timeout = TimeSpan.FromMinutes(ConstatCsro.ClientNames.API_TimeOut_Mins);
+                client.BaseAddress = new Uri(ApiEndpointAdo);
+                client.DefaultRequestHeaders.Add("Accept", "application/json");
+            }).ConfigurePrimaryHttpMessageHandler(() =>
             {
                 return new HttpClientHandler()
                 {
@@ -181,6 +202,8 @@ namespace CSRO.Client.Blazor.WebApp
             .AddPolicyHandler(PollyHelper.GetRetryPolicy())
             .AddPolicyHandler(PollyHelper.GetRetryPolicy());
             ;
+
+            #endregion
 
             //only for client
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)

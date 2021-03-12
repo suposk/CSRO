@@ -93,8 +93,10 @@ namespace CSRO.Common.AdoServices
                 TeamProject projectCreateParameters = new TeamProject()
                 {
                     Name = projectName,
-                    Description = projectDescription,
-                    Capabilities = capabilities
+                    Description = projectDescription + " ,Created via CSRO Web Portal",
+                    Capabilities = capabilities, 
+                    Abbreviation = "origin CSRO Portal",
+                    //State = ProjectState.CreatePending //only from UI
                 };
 
                 // Get a client            
@@ -124,8 +126,8 @@ namespace CSRO.Common.AdoServices
                     // Save the newly created project (other sample methods will use it)
                     //Context.SetValue<TeamProject>("$newProject", project);
                     result = _mapper.Map<ProjectAdo>(project);
-                    result.Organization = projectAdoCreate.Organization;
-                    result.ProcessName = projectName;
+                    result.Organization = organization;
+                    result.ProcessName = processName;
                 }
                 else                                    
                     _logger?.LogError("Project creation operation failed: " + completedOperation.ResultMessage);                
