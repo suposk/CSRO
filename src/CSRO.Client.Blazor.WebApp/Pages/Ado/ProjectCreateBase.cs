@@ -62,6 +62,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Ado
             try
             {
                 ShowLoading();
+                //var all = await AdoProjectDataService.GetItemsAsync(); //test
                 var prs = await ProcessAdoServices.GetAdoProcessesName(null);
                 Processes.Clear();
                 if (prs != null)

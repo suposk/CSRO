@@ -33,8 +33,7 @@ namespace CSRO.Client.Services
             IConfiguration configuration)
             : base(httpClientFactory, authCsroService, mapper, configuration)
         {
-            ApiPart = "api/adoproject/";
-            //Scope = "api://ee2f0320-29c3-432a-bf84-a5d4277ce052/user_impersonation";
+            ApiPart = "api/adoproject/";            
             Scope = Configuration.GetValue<string>(ConstatCsro.Scopes.Scope_Ado_Api);
             ClientName = ConstatCsro.EndPoints.ApiEndpointAdo;
 
@@ -92,13 +91,13 @@ namespace CSRO.Client.Services
                 {
                     var content = await apiData.Content.ReadAsStringAsync();
                     var ser = JsonSerializer.Deserialize<ProjectAdo>(content, _options);
-                    var result = Mapper.Map<ProjectAdo>(ser);
-                    return result;
+                    return ser;
+                    //var result = Mapper.Map<ProjectAdo>(ser);
+                    //return result;
                 }
                 else
                 {
-                    var content = await apiData.Content.ReadAsStringAsync();
-                    //var ser = JsonSerializer.Deserialize<AzureManagErrorDto>(content, _options);
+                    var content = await apiData.Content.ReadAsStringAsync();                    
                     throw new Exception(content);
                 }
             }
@@ -190,8 +189,14 @@ namespace CSRO.Client.Services
                 {
                     var content = await apiData.Content.ReadAsStringAsync();
                     var ser = JsonSerializer.Deserialize<List<ProjectAdo>>(content, _options);
-                    var result = Mapper.Map<List<ProjectAdo>>(ser);
-                    return result;
+                    return ser;
+                    //var result = Mapper.Map<List<ProjectAdo>>(ser);
+                    //return result;
+                }
+                else
+                {
+                    var content = await apiData.Content.ReadAsStringAsync();
+                    throw new Exception(content);
                 }
             }
             catch (Exception ex)
