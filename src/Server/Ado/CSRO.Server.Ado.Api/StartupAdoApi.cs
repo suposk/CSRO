@@ -139,7 +139,7 @@ namespace CSRO.Server.Ado.Api
             });
 
 
-            //services.AddScoped<IApiIdentity, ApiIdentity>();
+            services.AddScoped<IApiIdentity, ApiIdentity>();
 
             #region Repositories
 

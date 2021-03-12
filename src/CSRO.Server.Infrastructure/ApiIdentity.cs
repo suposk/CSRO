@@ -1,5 +1,4 @@
-﻿using CSRO.Server.Infrastructure;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +6,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CSRO.Server.Services
+namespace CSRO.Server.Infrastructure
 {
     public class ApiIdentity : IApiIdentity
     {
@@ -23,12 +22,12 @@ namespace CSRO.Server.Services
         public string GetUserName()
         {
             if (_context?.HttpContext == null)
-                return null;  
+                return null;
 
-            var defname = _context.HttpContext?.User?.Identity?.Name;            
+            var defname = _context.HttpContext?.User?.Identity?.Name;
             if (!string.IsNullOrWhiteSpace(defname))
                 return defname;
-            
+
             List<string> list = new List<string>();
             //var nameId = _context.HttpContext?.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier);
             var email = _context.HttpContext?.User.FindFirst(c => c.Type == ClaimTypes.Email);
@@ -46,7 +45,7 @@ namespace CSRO.Server.Services
             {
                 var shortestName = list.OrderBy(name => name.Length).FirstOrDefault();
                 return shortestName;
-            }                
+            }
             return _context.HttpContext?.User?.Identity?.Name;
         }
 

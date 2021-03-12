@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Models = CSRO.Server.Ado.Api.Models;
+using Entity = CSRO.Server.Entities.Entity;
 using AdoModels = CSRO.Common.AdoServices.Models;
 using AdoDtos = CSRO.Common.AdoServices.Dtos;
 using System;
@@ -16,8 +17,13 @@ namespace CSRO.Server.Ado.Api.AdoAutoMapperProfiles
 
         public AdoProfile()
         {
+            CreateMap<AdoModels.ProjectAdo, Entity.AdoProject>()
+                .ForMember(s => s.Organization, op => op.Ignore())
+                .ReverseMap();
+
+
             CreateMap<Microsoft.TeamFoundation.Core.WebApi.TeamProject, AdoModels.ProjectAdo>()
-                .ForMember(s => s.AdoId, op => op.MapFrom(ss => ss.Id)) //Id is guid
+                .ForMember(s => s.AdoId, op => op.MapFrom(ss => ss.Id)) //Id is guid                
                 .ForMember(s => s.Organization, op => op.Ignore())
                 .ForMember(s => s.ProcessName, op => op.Ignore())
                 .ReverseMap();
