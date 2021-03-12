@@ -1,4 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using CSRO.Common.AdoServices.Models;
+using CSRO.Server.Ado.Api.Services;
+using CSRO.Server.Infrastructure;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,23 +19,42 @@ namespace CSRO.Server.Ado.Api.Controllers
     public class AdoProjectController : ControllerBase
     {
 
-        public AdoProjectController()
-        {
+        private readonly ILogger<AdoProjectController> _logger;
+        //private readonly IRepository<Vm> _repository;
+        private readonly IAdoProjectRepository _repository;
+        private readonly IMapper _mapper;
 
+        public AdoProjectController(ILogger<AdoProjectController> logger,
+            IAdoProjectRepository repository,
+            IMapper mapper)
+        {
+            _logger = logger;
+            _repository = repository;
+            _mapper = mapper;
         }
 
         // GET: api/<AdoProjectController>
-        [HttpGet]
-        public IEnumerable<string> Get()
+        public async Task<ActionResult<List<ProjectAdo>>> Get()
         {
-            return new string[] { "value1", "value2" };
+            try
+            {
+                _logger.LogInformation(ApiLogEvents.GetAllItems, $"{nameof(Get)} Started");                
+                var all = await _repository.GetList().ConfigureAwait(false);
+                var result = _mapper.Map<List<ProjectAdo>>(all);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, nameof(Get), null);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
+            }
         }
 
         // GET api/<AdoProjectController>/5
         [HttpGet("{id}")]
         public string Get(int id)
         {
-            return "value";
+            return "value " + id;
         }
 
         // POST api/<AdoProjectController>

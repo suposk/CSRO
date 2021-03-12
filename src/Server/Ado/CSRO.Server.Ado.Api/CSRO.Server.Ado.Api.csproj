@@ -37,10 +37,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Services\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\..\Common\CSRO.Common.AdoServices\CSRO.Common.AdoServices.csproj" />
     <ProjectReference Include="..\..\..\Common\CSRO.Common\CSRO.Common.csproj" />
     <ProjectReference Include="..\..\..\CSRO.Server.Core\CSRO.Server.Core.csproj" />

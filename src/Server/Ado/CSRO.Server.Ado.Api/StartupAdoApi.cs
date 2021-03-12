@@ -27,6 +27,7 @@ using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Azure.KeyVault;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using CSRO.Common;
+using CSRO.Server.Ado.Api.Services;
 
 namespace CSRO.Server.Ado.Api
 {
@@ -142,15 +143,17 @@ namespace CSRO.Server.Ado.Api
 
             #region Repositories
 
-            //services.AddScoped<IVmTicketRepository, VmTicketRepository>();
-            //services.AddScoped<IRepository<VmTicket>>(sp =>
-            //{
-            //    var serviceProvider = services.BuildServiceProvider();
-            //    var apiIdentity = serviceProvider.GetService<IApiIdentity>();
-            //    var ctx = serviceProvider.GetService<AppVersionContext>();
-            //    IRepository<VmTicket> obj = new Repository<VmTicket>(ctx, apiIdentity);
-            //    return obj;
-            //});
+            //services.AddScoped(typeof(IRepository<AdoProject>), typeof(Repository<AdoProject>));
+            //services.AddScoped<IRepository<AdoProject>>();
+            services.AddScoped<IRepository<AdoProject>>(sp => 
+            {                
+                var serviceProvider = services.BuildServiceProvider();
+                var apiIdentity = serviceProvider.GetService<IApiIdentity>();
+                var ctx = serviceProvider.GetService<AdoContext>();
+                IRepository<AdoProject> obj = new Repository<AdoProject>(ctx, apiIdentity);
+                return obj;
+            });
+            services.AddScoped<IAdoProjectRepository, AdoProjectRepository>();
 
             #endregion
 
