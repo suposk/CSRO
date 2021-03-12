@@ -20,7 +20,7 @@ namespace CSRO.Client.Services
 
     public interface IAdoProjectDataService : IBaseDataService<ProjectAdo>
     {
-
+        Task<List<ProjectAdo>> ApproveAdoProject(List<int> toApprove);
     }
 
     public class AdoProjectDataService : BaseDataService, IAdoProjectDataService
@@ -80,11 +80,9 @@ namespace CSRO.Client.Services
             {
                 await base.AddAuthHeaderAsync();
 
-                //var url = $"{ApiPart}CreateRestartTicket";
-                var url = $"{ApiPart}";
-                item.State = ProjectState.CreatePending;
-                var add = Mapper.Map<ProjectAdo>(item);
-                var httpcontent = new StringContent(JsonSerializer.Serialize(add, _options), Encoding.UTF8, "application/json");
+                var url = $"{ApiPart}RequestAdoProject";
+                //var url = $"{ApiPart}";
+                var httpcontent = new StringContent(JsonSerializer.Serialize(item, _options), Encoding.UTF8, "application/json");
                 var apiData = await HttpClientBase.PostAsync(url, httpcontent).ConfigureAwait(false);
 
                 if (apiData.IsSuccessStatusCode)
@@ -98,6 +96,37 @@ namespace CSRO.Client.Services
                 else
                 {
                     var content = await apiData.Content.ReadAsStringAsync();                    
+                    throw new Exception(content);
+                }
+            }
+            catch (Exception ex)
+            {
+                base.HandleException(ex);
+                throw;
+            }
+        }
+
+        public async Task<List<ProjectAdo>> ApproveAdoProject(List<int> toApprove)
+        {
+            try
+            {
+                await base.AddAuthHeaderAsync();
+
+                var url = $"{ApiPart}ApproveAdoProject";
+                var httpcontent = new StringContent(JsonSerializer.Serialize(toApprove, _options), Encoding.UTF8, "application/json");
+                var apiData = await HttpClientBase.PostAsync(url, httpcontent).ConfigureAwait(false);
+
+                if (apiData.IsSuccessStatusCode)
+                {
+                    var content = await apiData.Content.ReadAsStringAsync();
+                    var ser = JsonSerializer.Deserialize<List<ProjectAdo>>(content, _options);
+                    return ser;
+                    //var result = Mapper.Map<List<ProjectAdo>>(ser);
+                    //return result;
+                }
+                else
+                {
+                    var content = await apiData.Content.ReadAsStringAsync();
                     throw new Exception(content);
                 }
             }

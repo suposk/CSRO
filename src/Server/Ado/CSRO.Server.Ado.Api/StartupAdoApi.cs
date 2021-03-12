@@ -28,6 +28,7 @@ using Microsoft.Azure.KeyVault;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using CSRO.Common;
 using CSRO.Server.Ado.Api.Services;
+using CSRO.Common.AdoServices;
 
 namespace CSRO.Server.Ado.Api
 {
@@ -140,6 +141,10 @@ namespace CSRO.Server.Ado.Api
 
 
             services.AddScoped<IApiIdentity, ApiIdentity>();
+
+            services.AddTransient<IProjectAdoServices, ProjectAdoServices>();
+            services.AddTransient<IProcessAdoServices, ProcessAdoServices>();
+            services.AddSingleton<ICacheProvider, CacheProvider>(); //testing
 
             #region Repositories
 

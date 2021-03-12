@@ -63,6 +63,15 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Ado
             {
                 ShowLoading();
                 //var all = await AdoProjectDataService.GetItemsAsync(); //test
+                //if (all != null)
+                //{
+                //    var toapprove = all.Where(a => a.State == Microsoft.TeamFoundation.Core.WebApi.ProjectState.CreatePending).Select(a => a.Id).ToList();
+                //    if (toapprove.Any())
+                //    {
+                //        var approved = await AdoProjectDataService.ApproveAdoProject(toapprove);
+                //    }
+                //}
+
                 var prs = await ProcessAdoServices.GetAdoProcessesName(null);
                 Processes.Clear();
                 if (prs != null)

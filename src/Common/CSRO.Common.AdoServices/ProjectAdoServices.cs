@@ -28,8 +28,7 @@ namespace CSRO.Common.AdoServices
         private readonly AdoConfig _adoConfig;
         private readonly IMapper _mapper;
         private readonly IProcessAdoServices _processAdoServices;
-        private readonly ILogger<ProjectAdoServices> _logger;
-        internal const string azureDevOpsOrganizationUrl = "https://dev.azure.com/organization"; //change to the URL of your Azure DevOps account; NOTE: This must use HTTPS
+        private readonly ILogger<ProjectAdoServices> _logger;        
 
         public ProjectAdoServices(
             IConfiguration configuration, 
@@ -57,7 +56,7 @@ namespace CSRO.Common.AdoServices
                 string url = $"https://dev.azure.com/{organization}";
 
                 // Setup version control properties
-                Dictionary<string, string> versionControlProperties = new Dictionary<string, string>();
+                Dictionary<string, string> versionControlProperties = new();
                 versionControlProperties[TeamProjectCapabilitiesConstants.VersionControlCapabilityAttributeName] =
                     SourceControlTypes.Git.ToString();
 
@@ -77,25 +76,24 @@ namespace CSRO.Common.AdoServices
                 var process = await _processAdoServices.GetAdoProcesByName(organization, processName);
                 processId = process?.Id;
 
-                Dictionary<string, string> processProperaties = new Dictionary<string, string>();
+                Dictionary<string, string> processProperaties = new();
                 processProperaties[TeamProjectCapabilitiesConstants.ProcessTemplateCapabilityTemplateTypeIdAttributeName] =
                     processId.ToString();
 
                 // Construct capabilities dictionary
-                Dictionary<string, Dictionary<string, string>> capabilities = new Dictionary<string, Dictionary<string, string>>();
-
+                Dictionary<string, Dictionary<string, string>> capabilities = new();
                 capabilities[TeamProjectCapabilitiesConstants.VersionControlCapabilityName] =
                     versionControlProperties;
                 capabilities[TeamProjectCapabilitiesConstants.ProcessTemplateCapabilityName] =
                     processProperaties;
 
                 // Construct object containing properties needed for creating the project
-                TeamProject projectCreateParameters = new TeamProject()
+                TeamProject projectCreateParameters = new()
                 {
                     Name = projectName,
                     Description = projectDescription + " ,Created via CSRO Web Portal",
                     Capabilities = capabilities, 
-                    Abbreviation = "origin CSRO Portal",
+                    //Abbreviation = "origin CSRO Portal",
                     //State = ProjectState.CreatePending //only from UI
                 };
 

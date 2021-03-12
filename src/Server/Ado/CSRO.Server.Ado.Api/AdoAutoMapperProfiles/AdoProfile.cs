@@ -17,13 +17,13 @@ namespace CSRO.Server.Ado.Api.AdoAutoMapperProfiles
 
         public AdoProfile()
         {
-            CreateMap<AdoModels.ProjectAdo, Entity.AdoProject>()
-                .ForMember(s => s.Organization, op => op.Ignore())
+            CreateMap<AdoModels.ProjectAdo, Entity.AdoProject>()                
                 .ReverseMap();
 
 
             CreateMap<Microsoft.TeamFoundation.Core.WebApi.TeamProject, AdoModels.ProjectAdo>()
                 .ForMember(s => s.AdoId, op => op.MapFrom(ss => ss.Id)) //Id is guid                
+                .ForMember(s => s.Id, op => op.Ignore())
                 .ForMember(s => s.Organization, op => op.Ignore())
                 .ForMember(s => s.ProcessName, op => op.Ignore())
                 .ReverseMap();
