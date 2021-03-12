@@ -92,8 +92,7 @@ namespace CSRO.Common.AdoServices
                 {
                     Name = projectName,
                     Description = projectDescription + " ,Created via CSRO Web Portal",
-                    Capabilities = capabilities, 
-                    //Abbreviation = "origin CSRO Portal",
+                    Capabilities = capabilities,                     
                     //State = ProjectState.CreatePending //only from UI
                 };
 
@@ -125,7 +124,9 @@ namespace CSRO.Common.AdoServices
                     //Context.SetValue<TeamProject>("$newProject", project);
                     result = _mapper.Map<ProjectAdo>(project);
                     result.Organization = organization;
-                    result.ProcessName = processName;
+                    result.ProcessName = processName;                    
+                    result.Id = projectAdoCreate.Id;
+                    result.RowVersion = projectAdoCreate.RowVersion;                    
                 }
                 else                                    
                     _logger?.LogError("Project creation operation failed: " + completedOperation.ResultMessage);                

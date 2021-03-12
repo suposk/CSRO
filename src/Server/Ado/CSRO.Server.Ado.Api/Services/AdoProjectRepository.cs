@@ -101,8 +101,8 @@ namespace CSRO.Server.Ado.Api.Services
                             entity = _mapper.Map<AdoProject>(created);
                             //entity.State = ProjectState.New;
                             base.Update(entity, _userId);
-                            await SaveChangesAsync();
-                            approved.Add(entity);
+                            if (await SaveChangesAsync())
+                                approved.Add(entity);
                         }
                         else
                             others.Append($"Id {pId} was not found, verify this Id exist or record was modified.");
