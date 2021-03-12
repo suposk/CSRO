@@ -91,7 +91,7 @@ namespace CSRO.Common.AdoServices
                 TeamProject projectCreateParameters = new()
                 {
                     Name = projectName,
-                    Description = projectDescription + " ,Created via CSRO Web Portal",
+                    Description = projectDescription + " 'Created via CSRO Web Portal'",
                     Capabilities = capabilities,                     
                     //State = ProjectState.CreatePending //only from UI
                 };

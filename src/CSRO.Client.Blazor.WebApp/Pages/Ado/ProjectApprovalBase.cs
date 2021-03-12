@@ -38,16 +38,26 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Ado
 
         #endregion
 
-        public List<ProjectAdo> Tickets { get; set; }
+        protected List<ProjectAdo> Tickets { get; set; } = new();
+
+        protected HashSet<ProjectAdo> selectedItems = new();
+
+        protected bool IsButtonDisabled => IsLoading || selectedItems.Count == 0;
+
 
         protected async override Task OnInitializedAsync()
         {
+            await Load();
+        }
 
+        private async Task Load()
+        {
             try
             {
                 ShowLoading();
 
-                Tickets = null;
+                selectedItems?.Clear();
+                Tickets?.Clear();                
                 Tickets = await AdoProjectDataService.GetProjectsForApproval();
             }
             catch (Exception ex)
@@ -58,17 +68,30 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Ado
             HideLoading();
         }
 
-        //public async Task DeleteTicketAsync(VmTicket ticket)
-        //{
-        //    var ok = await CsroDialogService.ShowDialog("Delete Vm Ticket", $"Do you really want to delete these record Id: {ticket.Id}?", "Delete");
-        //    if (ok)
-        //    {
-        //        var res = await VmTicketDataService.DeleteItemAsync(ticket.Id);
-        //        if (res)
-        //        {
-        //            Tickets.Remove(ticket);
-        //        }
-        //    }
-        //}
+        public async Task ApproveAsync()
+        {
+            try
+            {
+                if (selectedItems?.Count == 0)
+                    return;
+
+                var toBeApproved = selectedItems.Select(a => a.Id).ToList();
+                ShowLoading($"Approving {toBeApproved.Count} project(s)");
+                
+                var approved = await AdoProjectDataService.ApproveAdoProject(toBeApproved);
+                if (toBeApproved.Count == approved?.Count)
+                    await CsroDialogService.ShowMessage("Success", $"All {toBeApproved.Count} project(s) were approved and created.");
+                else
+                    await CsroDialogService.ShowMessage("Partial Success", $"Only {approved.Count} out of {toBeApproved.Count} project(s) were approved and created.");
+
+                await Load();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, nameof(OnInitializedAsync));
+                await CsroDialogService.ShowError("Error", $"Detail error: {ex.Message}");
+            }
+            HideLoading();
+        }
     }
 }
