@@ -89,7 +89,7 @@ namespace CSRO.Server.Ado.Api.Controllers
 
                 var repoObj = _mapper.Map<AdoProject>(dto);
                 _repository.Add(repoObj);
-                var suc = await _repository.SaveChangesAsync().ConfigureAwait(false);
+                var suc = await _repository.SaveChangesAsync();
                 if (suc)
                 {
                     var result = _mapper.Map<AdoProject>(repoObj);
