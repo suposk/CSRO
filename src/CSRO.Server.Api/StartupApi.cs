@@ -28,17 +28,21 @@ using CSRO.Common.AzureSdkServices;
 using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Azure.KeyVault;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using CSRO.Common;
 
 namespace CSRO.Server.Api
 {
     public class StartupApi
-    {
+    {        
         public StartupApi(
             IConfiguration configuration,
             IWebHostEnvironment env)
         {
             Configuration = configuration;
             _env = env;
+            var myType = typeof(StartupApi);            
+            _namespace = myType.Namespace;
+
             using var loggerFactory = LoggerFactory.Create(builder =>
             {
                 builder.SetMinimumLevel(LogLevel.Information);
@@ -52,6 +56,7 @@ namespace CSRO.Server.Api
         public IConfiguration Configuration { get; }
         private readonly ILogger _logger;
         private readonly IWebHostEnvironment _env;
+        private readonly string _namespace = null;
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -96,17 +101,6 @@ namespace CSRO.Server.Api
                 catch (Exception ex)
                 {
                     _logger?.LogError("Error reading Keyvalut", ex);
-                }
-            }
-            else
-            {
-                if (_env.IsDevelopment())
-                {
-                    ;
-                }
-                else if (_env.IsStaging())
-                {
-                    ;
                 }
             }
 
@@ -179,12 +173,6 @@ namespace CSRO.Server.Api
                 options.RegisterValidatorsFromAssemblyContaining<Services.Validation.BaseAbstractValidator>();
             });
 
-            //services.AddControllers(options => options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "CSRO.Server.Api", Version = "v1" });
-            });
-
             services.AddScoped<IApiIdentity, ApiIdentity>();            
             services.AddTransient<IAzureVmManagementService, AzureVmManagementService>();
             services.AddTransient<ISubcriptionService, SubcriptionService>();
@@ -253,9 +241,9 @@ namespace CSRO.Server.Api
             services.AddDbContext<AppVersionContext>(options =>
             {
                 if (UseSqlLiteDb)                                               
-                    options.UseSqlite(Configuration.GetConnectionString("SqlLiteConnString"), x => x.MigrationsAssembly("CSRO.Server.Api"));                
+                    options.UseSqlite(Configuration.GetConnectionString("SqlLiteConnString"), x => x.MigrationsAssembly(_namespace));                
                 else                                                   
-                    options.UseSqlServer(SqlConnString, x => x.MigrationsAssembly("CSRO.Server.Api"));                                
+                    options.UseSqlServer(SqlConnString, x => x.MigrationsAssembly(_namespace));                                
             });
 
             services.AddDbContext<TokenCacheContext>(options =>
@@ -270,6 +258,12 @@ namespace CSRO.Server.Api
             #endregion
 
             services.AddApplicationInsightsTelemetry(Configuration["APPINSIGHTS_CONNECTIONSTRING"]);
+
+            //services.AddControllers(options => options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = _namespace, Version = "v1" });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -279,7 +273,7 @@ namespace CSRO.Server.Api
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CSRO.Server.Api v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", $"{_namespace} v1"));
             }
 
             app.UseHttpsRedirection();

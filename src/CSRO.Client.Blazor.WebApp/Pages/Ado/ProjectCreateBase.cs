@@ -27,8 +27,8 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Ado
         [Inject]
         public NavigationManager NavigationManager { get; set; }
 
-        //[Inject]
-        //IBaseDataService<Ticket> TicketDataService { get; set; }
+        [Inject]
+        public IAdoProjectDataService AdoProjectDataService { get; set; }
 
         [Inject]
         public IProjectAdoServices ProjectAdoServices { get; set; }
@@ -107,7 +107,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Ado
                     ShowLoading();
                     if (OperationTypeTicket == OperatioType.Create)
                     {
-                        var added = await ProjectAdoServices.CreateProject(Model);
+                        var added = await AdoProjectDataService.AddItemAsync(Model);
                         if (added != null)
                         {
                             Success = true;

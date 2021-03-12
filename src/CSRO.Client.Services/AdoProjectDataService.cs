@@ -3,8 +3,10 @@ using CSRO.Client.Core;
 using CSRO.Client.Services;
 using CSRO.Client.Services.Dtos;
 using CSRO.Client.Services.Models;
+using CSRO.Common.AdoServices.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Identity.Web;
+using Microsoft.TeamFoundation.Core.WebApi;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +18,12 @@ using System.Threading.Tasks;
 namespace CSRO.Client.Services
 {
 
-    public class AdoProjectDataService : BaseDataService
+    public interface IAdoProjectDataService : IBaseDataService<ProjectAdo>
+    {
+
+    }
+
+    public class AdoProjectDataService : BaseDataService, IAdoProjectDataService
     {        
 
         public AdoProjectDataService(            
@@ -34,86 +41,58 @@ namespace CSRO.Client.Services
             base.Init();                        
         }
 
-        public async Task<VmTicket> RebootVmAndWaitForConfirmation(VmTicket item)
-        {
-            try
-            {     
-                await base.AddAuthHeaderAsync();
+        //public async Task<ProjectAdo> RebootVmAndWaitForConfirmation(ProjectAdo item)
+        //{
+        //    try
+        //    {     
+        //        await base.AddAuthHeaderAsync();
 
-                var url = $"{ApiPart}RebootVmAndWaitForConfirmation";
-                var add = Mapper.Map<VmTicketDto>(item);
-                var httpcontent = new StringContent(JsonSerializer.Serialize(add, _options), Encoding.UTF8, "application/json");
-                var apiData = await HttpClientBase.PostAsync(url, httpcontent).ConfigureAwait(false);
+        //        var url = $"{ApiPart}RebootVmAndWaitForConfirmation";
+        //        var add = Mapper.Map<ProjectAdo>(item);
+        //        var httpcontent = new StringContent(JsonSerializer.Serialize(add, _options), Encoding.UTF8, "application/json");
+        //        var apiData = await HttpClientBase.PostAsync(url, httpcontent).ConfigureAwait(false);
 
-                if (apiData.IsSuccessStatusCode)
-                {
-                    var content = await apiData.Content.ReadAsStringAsync();
-                    var ser = JsonSerializer.Deserialize<VmTicketDto>(content, _options);
-                    var result = Mapper.Map<VmTicket>(ser);
-                    return result;
-                }
-                else
-                {
-                    var content = await apiData.Content.ReadAsStringAsync();
-                    //var ser = JsonSerializer.Deserialize<AzureManagErrorDto>(content, _options);
-                    throw new Exception(content);
-                }
-            }
-            catch (Exception ex)
-            {
-                base.HandleException(ex);
-                throw;
-            }            
-        }
+        //        if (apiData.IsSuccessStatusCode)
+        //        {
+        //            var content = await apiData.Content.ReadAsStringAsync();
+        //            var ser = JsonSerializer.Deserialize<ProjectAdo>(content, _options);
+        //            var result = Mapper.Map<ProjectAdo>(ser);
+        //            return result;
+        //        }
+        //        else
+        //        {
+        //            var content = await apiData.Content.ReadAsStringAsync();
+        //            //var ser = JsonSerializer.Deserialize<AzureManagErrorDto>(content, _options);
+        //            throw new Exception(content);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        base.HandleException(ex);
+        //        throw;
+        //    }            
+        //}
 
         // generic methods
 
-        public async Task<VmTicket> AddItemAsync(VmTicket item)
+        public async Task<ProjectAdo> AddItemAsync(ProjectAdo item)
         {
-
-            //try
-            //{
-            //    var vmstatus = await _azureVmManagementService.GetVmDisplayStatus(item);
-            //    if (vmstatus.suc == false || vmstatus.status.Contains("deallocat"))
-            //        throw new Exception($"Unable to process request: {vmstatus.status}");
-
-            //    var sent = await _azureVmManagementService.RestarVmInAzure(item);
-            //    if (!sent.suc)
-            //        throw new Exception(sent.errorMessage);
-            //}
-            //catch
-            //{
-            //    throw;
-            //}
-
-            //string errorTxt = null;
-
             try
             {
-                //useless try in server
-
-                //var i = 0;
-                //while (i < 5)
-                //{
-                //    i++;
-                //    await Task.Delay(2 * 1000);
-                //    var vmstatus = await _azureVmManagementService.GetVmDisplayStatus(item);
-                //    if (vmstatus.suc && vmstatus.status.Contains("restarting"))
-                //        break;
-                //}                
-
                 await base.AddAuthHeaderAsync();
 
-                var url = $"{ApiPart}CreateRestartTicket";
-                var add = Mapper.Map<VmTicketDto>(item);
+                //var url = $"{ApiPart}CreateRestartTicket";
+                var url = $"{ApiPart}";
+                item.State = ProjectState.CreatePending;
+                var add = Mapper.Map<ProjectAdo>(item);
                 var httpcontent = new StringContent(JsonSerializer.Serialize(add, _options), Encoding.UTF8, "application/json");
                 var apiData = await HttpClientBase.PostAsync(url, httpcontent).ConfigureAwait(false);
 
                 if (apiData.IsSuccessStatusCode)
                 {
                     var content = await apiData.Content.ReadAsStringAsync();
-                    var ser = JsonSerializer.Deserialize<VmTicketDto>(content, _options);
-                    var result = Mapper.Map<VmTicket>(ser);
+                    var ser = JsonSerializer.Deserialize<ProjectAdo>(content, _options);
+                    var result = Mapper.Map<ProjectAdo>(ser);
                     return result;
                 }
                 else
@@ -127,17 +106,17 @@ namespace CSRO.Client.Services
             {
                 base.HandleException(ex);
                 throw;
-            }            
+            }
         }
 
-        public async Task<bool> UpdateItemAsync(VmTicket item)
+        public async Task<bool> UpdateItemAsync(ProjectAdo item)
         {
             try
             {
                 await base.AddAuthHeaderAsync();
 
                 var url = $"{ApiPart}";
-                var add = Mapper.Map<VmTicketDto>(item);
+                var add = Mapper.Map<ProjectAdo>(item);
                 var httpcontent = new StringContent(JsonSerializer.Serialize(add, _options), Encoding.UTF8, "application/json");
                 var apiData = await HttpClientBase.PutAsync(url, httpcontent).ConfigureAwait(false);
 
@@ -174,7 +153,7 @@ namespace CSRO.Client.Services
             return false;
         }
 
-        public async Task<VmTicket> GetItemByIdAsync(int id)
+        public async Task<ProjectAdo> GetItemByIdAsync(int id)
         {
             try
             {
@@ -186,8 +165,8 @@ namespace CSRO.Client.Services
                 if (apiData.IsSuccessStatusCode)
                 {
                     var content = await apiData.Content.ReadAsStringAsync();
-                    var ser = JsonSerializer.Deserialize<VmTicketDto>(content, _options);
-                    var result = Mapper.Map<VmTicket>(ser);
+                    var ser = JsonSerializer.Deserialize<ProjectAdo>(content, _options);
+                    var result = Mapper.Map<ProjectAdo>(ser);
                     return result;
                 }
             }
@@ -198,7 +177,7 @@ namespace CSRO.Client.Services
             return null;
         }
 
-        public async Task<List<VmTicket>> GetItemsAsync()
+        public async Task<List<ProjectAdo>> GetItemsAsync()
         {
             try
             {
@@ -210,8 +189,8 @@ namespace CSRO.Client.Services
                 if (apiData.IsSuccessStatusCode)
                 {
                     var content = await apiData.Content.ReadAsStringAsync();
-                    var ser = JsonSerializer.Deserialize<List<VmTicketDto>>(content, _options);
-                    var result = Mapper.Map<List<VmTicket>>(ser);
+                    var ser = JsonSerializer.Deserialize<List<ProjectAdo>>(content, _options);
+                    var result = Mapper.Map<List<ProjectAdo>>(ser);
                     return result;
                 }
             }
@@ -222,12 +201,12 @@ namespace CSRO.Client.Services
             return null;
         }
 
-        public Task<List<VmTicket>> GetItemsByParrentIdAsync(int parrentId)
+        public Task<List<ProjectAdo>> GetItemsByParrentIdAsync(int parrentId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<List<VmTicket>> GetItemsByTypeAsync(string type)
+        public Task<List<ProjectAdo>> GetItemsByTypeAsync(string type)
         {
             throw new NotImplementedException();
         }

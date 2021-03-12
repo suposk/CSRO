@@ -1,4 +1,4 @@
-﻿namespace CSRO.Common.AzureSdkServices
+﻿namespace CSRO.Common
 {
     public class AzureAd
     {

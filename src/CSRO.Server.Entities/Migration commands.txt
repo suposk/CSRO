@@ -2,6 +2,9 @@
 Add-Migration Init -Context AppVersionContext -OutputDir Migrations\SqlServerMigrations
 Add-Migration ExternalTicket -Context AppVersionContext -OutputDir Migrations\SqlServerMigrations
 
+//ADO
+Add-Migration Init -Context AdoContext -OutputDir Migrations\SqlServerMigrations
+
 
 //command prompt
 dotnet ef migrations add ExternalTicket --context AppVersionContext --output-dir Migrations/SqlServerMigrations

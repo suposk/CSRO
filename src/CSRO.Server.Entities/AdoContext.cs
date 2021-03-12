@@ -44,7 +44,6 @@ namespace CSRO.Server.Entities
             }
         }
 
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             //modelBuilder.Entity<AppVersion>().Property(b => b.Id).HasIdentityOptions(startValue: 22);
@@ -62,31 +61,33 @@ namespace CSRO.Server.Entities
             //   .Property(a => a.RowVersion)
             //   .IsRowVersion();
 
-            //modelBuilder.Entity<AppVersion>().HasData(
-            //    new AppVersion()
-            //    {
-            //        Id = 20,
-            //        VersionValue = 20,
-            //        VersionFull = "1.0.20.0",
-            //        CreatedAt = new DateTime(2020, 11, 22, 10, 0, 0),
-            //        ReleasedAt = new DateTime(2020, 11, 22, 16, 0, 0),
-            //        Details = "<p>This is version 20</p>",
-            //        DetailsFormat = "html",
-            //        Link = "www.bing.com",
-            //        RecomendedAction = RecomendedAction.None,
-            //    },
-            //    new AppVersion()
-            //    {
-            //        Id = 21,
-            //        VersionValue = 21,
-            //        VersionFull = "1.0.21.0",
-            //        CreatedAt = new DateTime(2020, 11, 25, 11, 0, 0),
-            //        ReleasedAt = new DateTime(2020, 11, 25, 17, 0, 0),
-            //        Details = "This is version 21, modified at 5:00 pm",
-            //        DetailsFormat = "text",
-            //        Link = "www.google.sk",
-            //        RecomendedAction = RecomendedAction.Warning,
-            //    });
+            modelBuilder.Entity<AdoProject>().HasData(
+                new AdoProject()
+                {
+                    Id = 1,
+                    CreatedBy = "Migration Script",
+                    CreatedAt = new DateTime(2021, 11, 1, 14, 15, 16),
+                    Name = "Dymmy record", 
+                    ProcessName = "Agile", 
+                    Description = "Fake Not created", 
+                    Organization = "SomeOrg", 
+                    State = ProjectState.Deleted,                    
+                }
+
+                //,
+                //new AppVersion()
+                //{
+                //    Id = 21,
+                //    VersionValue = 21,
+                //    VersionFull = "1.0.21.0",
+                //    CreatedAt = new DateTime(2020, 11, 25, 11, 0, 0),
+                //    ReleasedAt = new DateTime(2020, 11, 25, 17, 0, 0),
+                //    Details = "This is version 21, modified at 5:00 pm",
+                //    DetailsFormat = "text",
+                //    Link = "www.google.sk",
+                //    RecomendedAction = RecomendedAction.Warning,
+                //}
+                );
         }
 
     }
