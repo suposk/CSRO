@@ -16,10 +16,6 @@ using System.Threading.Tasks;
 
 namespace CSRO.Client.Blazor.WebApp.Pages.Ado
 {
-    //public class ProjectsApprovalBase
-    //{
-    //}
-
     public class ProjectApprovalBase : CsroComponentBase
     {
         #region Params and Injects
