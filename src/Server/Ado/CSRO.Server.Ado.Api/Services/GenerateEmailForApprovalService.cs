@@ -51,12 +51,20 @@ namespace CSRO.Server.Ado.Api.Services
                     return;
                 
                 string text = $"There are {toApprove.Count} projects waiting for your approval.";
-                Parallel.ForEach(allApprovers, (approver) => 
+                Parallel.ForEach(allApprovers, async (approver) => 
                 {
                     if (string.IsNullOrWhiteSpace(approver.Email))
                         return;
 
-                    _emailService.SendEmail(_sender, approver.Email, $"test subject service at {DateTime.Now}", $"tested at {DateTime.Now}", false);
+                    try
+                    {
+                        await _emailService.SendEmail(_sender, approver.Email, $"test subject service at {DateTime.Now}", $"tested at {DateTime.Now}", false);                        
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(nameof(ApproveAdoProjects), ex);
+                    }
+                    int x = 1;
                 });
                 //await _emailService.SendEmail(_sender, "suposk@yahoo.com", $"test subject service at {DateTime.Now}", $"tested at {DateTime.Now}", false);
                 

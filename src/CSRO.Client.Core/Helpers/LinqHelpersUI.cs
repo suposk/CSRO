@@ -10,12 +10,25 @@ namespace System.Linq
     {
 
         /// <summary>
-        /// Jan's Extension method
+        /// Is Collection null or empty.
+        /// Jan's Extension method.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="source"></param>
         /// <returns></returns>
         public static bool IsNullOrEmptyCollection<T>(this IEnumerable<T> source)
+        {
+            return source == null || source.Any() == false;
+        }
+
+        /// <summary>
+        /// Collection NOT null or NOT empty.
+        /// Jan's Extension method.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="source"></param>
+        /// <returns></returns>
+        public static bool HasAnyInCollection<T>(this IEnumerable<T> source)
         {
             return source != null && source.Any();
         }
