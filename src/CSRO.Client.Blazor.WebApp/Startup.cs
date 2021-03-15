@@ -33,6 +33,7 @@ using CSRO.Common.AzureSdkServices;
 using CSRO.Client.Core;
 using Microsoft.Extensions.Logging;
 using CSRO.Common.AdoServices;
+using CSRO.Common;
 
 namespace CSRO.Client.Blazor.WebApp
 {
@@ -126,13 +127,34 @@ namespace CSRO.Client.Blazor.WebApp
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-            string ApiEndpoint = Configuration.GetValue<string>("ApiEndpoint");
-            services.AddHttpClient("api", (client) =>
+            #region Add HttpClient
+
+            string ApiEndpoint = Configuration.GetValue<string>(ConstatCsro.EndPoints.ApiEndpoint);
+            services.AddHttpClient(ConstatCsro.EndPoints.ApiEndpoint, (client) =>
             {
                 client.Timeout = TimeSpan.FromMinutes(ConstatCsro.ClientNames.API_TimeOut_Mins);
                 client.BaseAddress = new Uri(ApiEndpoint);
                 client.DefaultRequestHeaders.Add("Accept", "application/json");
             }).ConfigurePrimaryHttpMessageHandler(() => 
+            {
+                return new HttpClientHandler()
+                {
+                    AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip | DecompressionMethods.Brotli,
+                    UseCookies = false
+                };
+            })
+            .SetHandlerLifetime(TimeSpan.FromMinutes(5))
+            .AddPolicyHandler(PollyHelper.GetRetryPolicy())
+            .AddPolicyHandler(PollyHelper.GetRetryPolicy());
+            ;
+
+            string ApiEndpointAdo = Configuration.GetValue<string>(ConstatCsro.EndPoints.ApiEndpointAdo);
+            services.AddHttpClient(ConstatCsro.EndPoints.ApiEndpointAdo, (client) =>
+            {
+                client.Timeout = TimeSpan.FromMinutes(ConstatCsro.ClientNames.API_TimeOut_Mins);
+                client.BaseAddress = new Uri(ApiEndpointAdo);
+                client.DefaultRequestHeaders.Add("Accept", "application/json");
+            }).ConfigurePrimaryHttpMessageHandler(() =>
             {
                 return new HttpClientHandler()
                 {
@@ -163,6 +185,26 @@ namespace CSRO.Client.Blazor.WebApp
             .AddPolicyHandler(PollyHelper.GetRetryPolicy());
             ;
 
+            services.AddHttpClient(ConstatAdo.ClientNames.DEVOPS_EndPoint, (client) =>
+            {
+                client.Timeout = TimeSpan.FromMinutes(ConstatAdo.ClientNames.MANAGEMENT_TimeOut_Mins);
+                client.BaseAddress = new Uri(ConstatAdo.ClientNames.DEVOPS_EndPoint);
+                client.DefaultRequestHeaders.Add("Accept", "application/json");
+            }).ConfigurePrimaryHttpMessageHandler(() =>
+            {
+                return new HttpClientHandler()
+                {
+                    AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip | DecompressionMethods.Brotli,
+                    UseCookies = false
+                };
+            })
+            .SetHandlerLifetime(TimeSpan.FromMinutes(5))
+            .AddPolicyHandler(PollyHelper.GetRetryPolicy())
+            .AddPolicyHandler(PollyHelper.GetRetryPolicy());
+            ;
+
+            #endregion
+
             //only for client
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
@@ -171,8 +213,8 @@ namespace CSRO.Client.Blazor.WebApp
                 //.EnableTokenAcquisitionToCallDownstreamApi(new List<string> { "user.read", ConstatCsro.Scopes.MANAGEMENT_AZURE_SCOPE })
                 //.EnableTokenAcquisitionToCallDownstreamApi(new List<string> { "https://graph.microsoft.com/.default" })   /v2
                 //.EnableTokenAcquisitionToCallDownstreamApi(new List<string> { "https://graph.microsoft.com/.default", Configuration.GetValue<string>("Scope_Api") })                
-                //.AddInMemoryTokenCaches();
-                .AddDistributedTokenCaches();
+                .AddInMemoryTokenCaches();
+                //.AddDistributedTokenCaches();
             
             services.Configure<MicrosoftIdentityOptions>(options =>
             {
@@ -214,6 +256,7 @@ namespace CSRO.Client.Blazor.WebApp
             services.AddTransient<IResourceGroupService, ResourceGroupService>();
             services.AddTransient<INetworkService, NetworkService>();
             services.AddSingleton<ILocationsService, LocationsService>();
+            services.AddTransient<IAdoProjectDataService, AdoProjectDataService>();
 
             #region SDK services      
             
@@ -237,6 +280,8 @@ namespace CSRO.Client.Blazor.WebApp
             #endregion
 
             services.AddTransient<IProjectAdoServices, ProjectAdoServices>();
+            services.AddTransient<IProcessAdoServices, ProcessAdoServices>();
+            services.AddSingleton<ICacheProvider, CacheProvider>(); //testing
 
             //UI component for dialods
             services.AddTransient<ICsroDialogService, CsroDialogService>();            

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CSRO.Client.Core;
 using CSRO.Client.Services;
 using CSRO.Client.Services.Dtos;
 using CSRO.Client.Services.Models;
@@ -21,10 +22,9 @@ namespace CSRO.Client.Services
             : base(httpClientFactory, authCsroService, mapper, configuration)
         {
             ApiPart = "api/ticket/";
-            //Scope = "api://ee2f0320-29c3-432a-bf84-a5d4277ce052/user_impersonation";
-            Scope = Configuration.GetValue<string>("Scope_Api");
-            ClientName = "api";
-
+            //Scope = "api://ee2f0320-29c3-432a-bf84-a5d4277ce052/user_impersonation";            
+            Scope = Configuration.GetValue<string>(ConstatCsro.Scopes.Scope_Api);            
+            ClientName = ConstatCsro.EndPoints.ApiEndpoint;
             base.Init();
         }
 

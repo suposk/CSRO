@@ -1,7 +1,6 @@
 ﻿using CSRO.Client.Blazor.UI;
 using CSRO.Client.Blazor.UI.Services;
 using CSRO.Client.Services;
-using CSRO.Common.AzureSdkServices;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Azure.KeyVault;
@@ -14,6 +13,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using CSRO.Client.Core.Helpers;
+using CSRO.Common;
 
 namespace CSRO.Client.Blazor.WebApp.Pages
 {

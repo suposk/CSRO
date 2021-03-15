@@ -11,6 +11,7 @@ using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using CSRO.Client.Core;
 
 namespace CSRO.Client.Services
 {
@@ -37,8 +38,8 @@ namespace CSRO.Client.Services
         {
             ApiPart = "api/vmticket/";
             //Scope = "api://ee2f0320-29c3-432a-bf84-a5d4277ce052/user_impersonation";
-            Scope = Configuration.GetValue<string>("Scope_Api");
-            ClientName = "api";
+            Scope = Configuration.GetValue<string>(ConstatCsro.Scopes.Scope_Api);
+            ClientName = ConstatCsro.EndPoints.ApiEndpoint;
 
             base.Init();
 

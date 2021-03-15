@@ -27,14 +27,17 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Ado
         [Inject]
         public NavigationManager NavigationManager { get; set; }
 
-        //[Inject]
-        //IBaseDataService<Ticket> TicketDataService { get; set; }
+        [Inject]
+        public IAdoProjectDataService AdoProjectDataService { get; set; }
 
         [Inject]
         public IProjectAdoServices ProjectAdoServices { get; set; }
 
         [Inject]
         public ICsroDialogService CsroDialogService { get; set; }
+
+        [Inject]
+        public IProcessAdoServices ProcessAdoServices { get; set; }
 
         [Inject]
         public ILogger<ProjectCreateBase> Logger { get; set; }
@@ -45,6 +48,10 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Ado
         protected bool IsReadOnly => OperationTypeTicket == OperatioType.View;
         protected string Title => OperationTypeTicket.ToString() + " Project";
 
+        protected List<string> Processes = new List<string>();
+
+        protected List<string> Organizations = new List<string>();
+
         protected async override Task OnInitializedAsync()
         {
             await Load();
@@ -54,20 +61,41 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Ado
         {
             try
             {
-                //ShowLoading();
-                //if (OperationTypeTicket != OperatioType.Create)
-                //{
-                //    Model.Id = int.Parse(TicketId);
-                //    var server = await TicketDataService.GetItemByIdAsync(Model.Id);
-                //    if (server != null)
-                //        Model = server;
-                //}
+                ShowLoading();
+
+                var prs = await ProcessAdoServices.GetAdoProcessesName(null);
+                Processes.Clear();
+                if (prs != null)
+                    Processes = prs;
+
+                var orgs = await ProcessAdoServices.GetOrganizationNames();
+                Organizations.Clear();
+                if (orgs != null)
+                    Organizations = orgs;
+
+                //Model = new ProjectAdo { Name = "New Project", };
             }
             catch (Exception ex)
             {
                 Logger.LogError(ex, nameof(OnInitializedAsync));
             }
             HideLoading();
+        }
+
+        public Task OnOrganizationChanged(string value)
+        {
+            if (value != null)            
+                Model.Organization = value;                            
+
+            return Task.CompletedTask;
+        }
+
+        public Task OnProcessNameChanged(string value)
+        {
+            if (value != null)            
+                Model.ProcessName = value;            
+            
+            return Task.CompletedTask;
         }
 
         public async Task OnValidSubmit(EditContext context)
@@ -80,7 +108,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Ado
                     ShowLoading();
                     if (OperationTypeTicket == OperatioType.Create)
                     {
-                        var added = await ProjectAdoServices.CreateProject(Model);
+                        var added = await AdoProjectDataService.AddItemAsync(Model);
                         if (added != null)
                         {
                             Success = true;
@@ -106,6 +134,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Ado
                 catch (Exception ex)
                 {
                     Logger.LogError(ex, nameof(OnValidSubmit));
+                    await CsroDialogService.ShowError("Error", $"Detail error: {ex.Message}");
                 }
                 HideLoading();
             }

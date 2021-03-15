@@ -35,18 +35,18 @@ namespace CSRO.Server.Api
 
                 try
                 {
-                    logger?.LogInformation("CreateHostBuilder Started AppVersionContext");
+                    logger?.LogInformation($"CreateHostBuilder Started {nameof(AppVersionContext)} ");
 
                     context = scope.ServiceProvider.GetService<AppVersionContext>();
 
                     // for demo purposes, delete the database & migrate on startup so we can start with a clean slate                   
                     //context.Database.EnsureDeleted(); logger?.LogInformation("Called EnsureDeleted");
-                    context?.Database.EnsureCreated(); logger?.LogInformation("Called EnsureCreated");
+                    //context?.Database.EnsureCreated(); logger?.LogInformation("Called EnsureCreated");
                     context?.Database.Migrate(); logger?.LogInformation("Called Migrate");
                 }
                 catch (Exception ex)
                 {
-                    logger?.LogError(ex, "An error occurred while migrating the database AppVersionContext.");
+                    logger?.LogError(ex, $"An error occurred while migrating the database {nameof(AppVersionContext)}");
 
                     try
                     {
@@ -61,14 +61,14 @@ namespace CSRO.Server.Api
 
                 try
                 {
-                    logger?.LogInformation("CreateHostBuilder Started TokenCacheContext");
+                    logger?.LogInformation($"CreateHostBuilder Started {nameof(TokenCacheContext)} ");
 
                     tokenCache = scope.ServiceProvider.GetService<TokenCacheContext>();
                     tokenCache?.Database.Migrate(); logger?.LogInformation("Called Migrate");
                 }
                 catch (Exception ex)
                 {
-                    logger?.LogError(ex, "An error occurred while migrating the database TokenCacheContext.");
+                    logger?.LogError(ex, $"An error occurred while migrating the database {nameof(TokenCacheContext)} .");
                 }
 
                 // run the web app

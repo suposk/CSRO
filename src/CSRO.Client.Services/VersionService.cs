@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CSRO.Client.Core;
 using CSRO.Client.Services.Dtos;
 using CSRO.Client.Services.Models;
 using Microsoft.Extensions.Configuration;
@@ -31,8 +32,8 @@ namespace CSRO.Client.Services
             _httpClientFactory = httpClientFactory;
             _authCsroService = authCsroService;
             _mapper = mapper;
-            _httpClient = _httpClientFactory.CreateClient("api");
-            _scope = configuration.GetValue<string>("Scope_Api");
+            _httpClient = _httpClientFactory.CreateClient(ConstatCsro.EndPoints.ApiEndpoint);
+            _scope = configuration.GetValue<string>(ConstatCsro.Scopes.Scope_Api);
         }
 
         public async Task<AppVersion> GetVersion(string version = "0")

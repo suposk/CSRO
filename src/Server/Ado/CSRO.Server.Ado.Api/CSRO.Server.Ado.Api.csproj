@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+    <UserSecretsId>d6e207c3-c625-4504-978c-e837c306ad5c</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -36,13 +37,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-    <Folder Include="Dtos\" />
-    <Folder Include="Services\" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\CSRO.Common.AdoServices\CSRO.Common.AdoServices.csproj" />
+    <ProjectReference Include="..\..\..\Common\CSRO.Common\CSRO.Common.csproj" />
     <ProjectReference Include="..\..\..\CSRO.Server.Core\CSRO.Server.Core.csproj" />
+    <ProjectReference Include="..\..\..\CSRO.Server.Domain\CSRO.Server.Domain.csproj" />
+    <ProjectReference Include="..\..\..\CSRO.Server.Entities\CSRO.Server.Entities.csproj" />
     <ProjectReference Include="..\..\..\CSRO.Server.Infrastructure\CSRO.Server.Infrastructure.csproj" />
   </ItemGroup>
 
