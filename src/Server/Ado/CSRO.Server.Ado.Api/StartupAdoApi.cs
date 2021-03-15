@@ -29,6 +29,8 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using CSRO.Common;
 using CSRO.Server.Ado.Api.Services;
 using CSRO.Common.AdoServices;
+using CSRO.Server.Services;
+using CSRO.Server.Ado.Api.BackgroundTasks;
 
 namespace CSRO.Server.Ado.Api
 {
@@ -141,6 +143,7 @@ namespace CSRO.Server.Ado.Api
 
 
             services.AddScoped<IApiIdentity, ApiIdentity>();
+            services.AddScoped<IEmailService, EmailService>();
 
             services.AddTransient<IProjectAdoServices, ProjectAdoServices>();
             services.AddTransient<IProcessAdoServices, ProcessAdoServices>();
@@ -185,6 +188,17 @@ namespace CSRO.Server.Ado.Api
 
             #endregion
 
+            services.AddScoped<IGenerateEmailForApprovalService, GenerateEmailForApprovalService>();            
+            services.AddHostedService<ProjectApprovalHostedService>(sp =>
+            {
+                var serviceProvider = services.BuildServiceProvider();
+                var apiIdentity = serviceProvider.GetService<IApiIdentity>();
+                var ctx = serviceProvider.GetService<AdoContext>();
+                IRepository<AdoProject> obj = new Repository<AdoProject>(ctx, apiIdentity);
+                var logger = sp.GetRequiredService<ILogger<ProjectApprovalHostedService>>();
+                IGenerateEmailForApprovalService generateEmailForApprovalService = serviceProvider.GetService<IGenerateEmailForApprovalService>();
+                return new ProjectApprovalHostedService(generateEmailForApprovalService, logger);
+            });
 
             //services.AddControllers(options => options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
             services.AddSwaggerGen(c =>

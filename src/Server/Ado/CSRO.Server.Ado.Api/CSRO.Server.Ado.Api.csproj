@@ -9,6 +9,7 @@
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
     <PackageReference Include="Azure.Security.KeyVault.Secrets" Version="4.1.0" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="9.5.1" />
+    <PackageReference Include="MailKit" Version="2.11.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.17.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.3" NoWarn="NU1605" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="5.0.3" NoWarn="NU1605" />
@@ -43,6 +44,7 @@
     <ProjectReference Include="..\..\..\CSRO.Server.Domain\CSRO.Server.Domain.csproj" />
     <ProjectReference Include="..\..\..\CSRO.Server.Entities\CSRO.Server.Entities.csproj" />
     <ProjectReference Include="..\..\..\CSRO.Server.Infrastructure\CSRO.Server.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\CSRO.Server.Services\CSRO.Server.Services.csproj" />
   </ItemGroup>
 
 </Project>
