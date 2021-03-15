@@ -16,30 +16,52 @@ namespace CSRO.Server.Ado.Api.Services
     {
         private readonly IEmailService _emailService;
         private readonly IAdoProjectRepository _adoProjectRepository;
+        private readonly IAdoProjectApproverService _adoProjectApproverService;
         private readonly ILogger<GenerateEmailForApprovalService> _logger;
+        private readonly string _sender;
 
         public GenerateEmailForApprovalService(
             IEmailService emailService,
-            IAdoProjectRepository adoProjectRepository, 
+            IAdoProjectRepository adoProjectRepository,
+            IAdoProjectApproverService adoProjectApproverService,
             ILogger<GenerateEmailForApprovalService> logger
             )
         {
             _emailService = emailService;
             _adoProjectRepository = adoProjectRepository;
+            _adoProjectApproverService = adoProjectApproverService;
             _logger = logger;
+
+            //TODO Config value
+            _sender = "jan.supolik@hotmail.com";
         }
 
         public async Task ApproveAdoProjects()
         {
             try
-            {                
+            {
+                var allApprovers = await _adoProjectApproverService.GetAdoProjectApprovers();
+                //if (allApprovers?.Any() == false)
+                if (allApprovers.IsNullOrEmptyCollection())
+                    return;
+
+                //allApprovers.
+
                 //var toApprove = await _adoProjectRepository.GetListFilter(a => a.State == Entities.Entity.ProjectState.CreatePending && (a.IsDeleted == null || a.IsDeleted == false)).ConfigureAwait(false);
                 var toApprove = await _adoProjectRepository.GetListFilter(a => a.State == Entities.Entity.ProjectState.CreatePending && a.IsDeleted != true).ConfigureAwait(false);
-                if (toApprove?.Count > 0)
+                if (toApprove.IsNullOrEmptyCollection())
+                    return;
+                
+                string text = $"There are {toApprove.Count} projects waiting for your approval.";
+                Parallel.ForEach(allApprovers, (approver) => 
                 {
-                    string text = $"There are {toApprove.Count} projects waiting for your approval.";
-                    await _emailService.Send("jan.supolik@hotmail.com", "suposk@yahoo.com", $"test subject service at {DateTime.Now}", $"tested at {DateTime.Now}", false);
-                }
+                    if (string.IsNullOrWhiteSpace(approver.Email))
+                        return;
+
+                    _emailService.SendEmail(_sender, approver.Email, $"test subject service at {DateTime.Now}", $"tested at {DateTime.Now}", false);
+                });
+                //await _emailService.SendEmail(_sender, "suposk@yahoo.com", $"test subject service at {DateTime.Now}", $"tested at {DateTime.Now}", false);
+                
             }
             catch (Exception ex)
             {

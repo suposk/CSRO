@@ -188,6 +188,7 @@ namespace CSRO.Server.Ado.Api
 
             #endregion
 
+            services.AddScoped<IAdoProjectApproverService, AdoProjectApproverService>();
             services.AddScoped<IGenerateEmailForApprovalService, GenerateEmailForApprovalService>();            
             services.AddHostedService<ProjectApprovalHostedService>(sp =>
             {

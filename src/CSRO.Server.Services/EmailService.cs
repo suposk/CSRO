@@ -10,7 +10,7 @@ namespace CSRO.Server.Services
 {
     public interface IEmailService
     {
-        Task Send(string from, string to, string subject, string text, bool isHtml);
+        Task SendEmail(string from, string to, string subject, string text, bool isHtml);
     }
 
     public class EmailService : IEmailService
@@ -21,7 +21,7 @@ namespace CSRO.Server.Services
             _emailConfig = configuration.GetSection(nameof(EmailConfig)).Get<EmailConfig>();
         }
 
-        public async Task Send(string from, string to, string subject, string text, bool isHtml)
+        public async Task SendEmail(string from, string to, string subject, string text, bool isHtml)
         {
             try
             {
