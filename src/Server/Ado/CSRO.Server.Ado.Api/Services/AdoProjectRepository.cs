@@ -4,6 +4,7 @@ using CSRO.Common.AdoServices.Models;
 using CSRO.Server.Entities;
 using CSRO.Server.Entities.Entity;
 using CSRO.Server.Infrastructure;
+using CSRO.Server.Services;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -22,24 +23,24 @@ namespace CSRO.Server.Ado.Api.Services
     public class AdoProjectRepository : Repository<AdoProject>, IAdoProjectRepository
     {        
         private readonly IRepository<AdoProject> _repository;
-        private AdoContext _context;        
-        private readonly IConfiguration _configuration;
+        private AdoContext _context;                
         private readonly IProjectAdoServices _projectAdoServices;
+        private readonly IEmailService _emailService;
         private readonly IMapper _mapper;
         private string _userId;        
 
         public AdoProjectRepository(            
             IRepository<AdoProject> repository,
-            AdoContext context,            
-            IConfiguration configuration,
+            AdoContext context,                        
             IProjectAdoServices projectAdoServices,
+            IEmailService emailService,
             IMapper mapper,
             IApiIdentity apiIdentity) : base(context, apiIdentity)
         {            
             _repository = repository;
-            _context = context;            
-            _configuration = configuration;
+            _context = context;                        
             _projectAdoServices = projectAdoServices;
+            _emailService = emailService;
             _mapper = mapper;
             _userId = ApiIdentity.GetUserName();            
         }
@@ -54,6 +55,9 @@ namespace CSRO.Server.Ado.Api.Services
             try
             {
                 base.Add(entity, _userId);
+                ////test only
+                //await _emailService.Send("jan.supolik@hotmail.com", "suposk@yahoo.com", $"test subject service at {DateTime.Now}", $"tested at {DateTime.Now}", false);
+
                 await SaveChangesAsync();
                 return entity;
             }

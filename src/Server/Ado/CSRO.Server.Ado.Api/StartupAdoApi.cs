@@ -29,6 +29,7 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using CSRO.Common;
 using CSRO.Server.Ado.Api.Services;
 using CSRO.Common.AdoServices;
+using CSRO.Server.Services;
 
 namespace CSRO.Server.Ado.Api
 {
@@ -141,6 +142,7 @@ namespace CSRO.Server.Ado.Api
 
 
             services.AddScoped<IApiIdentity, ApiIdentity>();
+            services.AddScoped<IEmailService, EmailService>();
 
             services.AddTransient<IProjectAdoServices, ProjectAdoServices>();
             services.AddTransient<IProcessAdoServices, ProcessAdoServices>();

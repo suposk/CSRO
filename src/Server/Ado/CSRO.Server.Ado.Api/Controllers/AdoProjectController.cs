@@ -87,10 +87,9 @@ namespace CSRO.Server.Ado.Api.Controllers
             {
                 _logger.LogInformation(ApiLogEvents.RequestItem, $"{nameof(RequestAdoProject)} Started");
 
-                var repoObj = _mapper.Map<AdoProject>(dto);
-                _repository.Add(repoObj);
-                var suc = await _repository.SaveChangesAsync();
-                if (suc)
+                var repoObj = _mapper.Map<AdoProject>(dto);              
+                var suc = await _repository.CreateAdoProject(repoObj);
+                if (suc != null)
                 {
                     var result = _mapper.Map<AdoProject>(repoObj);
                     return CreatedAtRoute(nameof(GetRequestAdoProject),
