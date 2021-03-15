@@ -53,14 +53,6 @@ namespace CSRO.Server.Ado.Api.Services
         {
             try
             {
-                //var vmstatus = await _azureVmManagementService.GetVmDisplayStatus(entity);
-                //if (vmstatus.suc == false || vmstatus.status.Contains("deallocat"))
-                //    throw new Exception($"Unable to process request: {vmstatus.status}");
-
-                //var sent = await _azureVmManagementService.RestarVmInAzure(entity).ConfigureAwait(false);
-                //if (!sent.suc)
-                //    throw new Exception(sent.errorMessage);
-
                 base.Add(entity, _userId);
                 await SaveChangesAsync();
                 return entity;
