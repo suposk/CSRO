@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace System.Linq
 {
-    public static class LinqHelpers
+    public static class LinqHelpersUI
     {
+
         /// <summary>
         /// Jan's Extension method
         /// </summary>

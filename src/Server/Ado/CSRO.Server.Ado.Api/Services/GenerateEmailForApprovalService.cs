@@ -43,9 +43,7 @@ namespace CSRO.Server.Ado.Api.Services
                 var allApprovers = await _adoProjectApproverService.GetAdoProjectApprovers();
                 //if (allApprovers?.Any() == false)
                 if (allApprovers.IsNullOrEmptyCollection())
-                    return;
-
-                //allApprovers.
+                    return;                               
 
                 //var toApprove = await _adoProjectRepository.GetListFilter(a => a.State == Entities.Entity.ProjectState.CreatePending && (a.IsDeleted == null || a.IsDeleted == false)).ConfigureAwait(false);
                 var toApprove = await _adoProjectRepository.GetListFilter(a => a.State == Entities.Entity.ProjectState.CreatePending && a.IsDeleted != true).ConfigureAwait(false);
