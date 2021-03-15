@@ -188,7 +188,17 @@ namespace CSRO.Server.Ado.Api
 
             #endregion
 
-            services.AddHostedService<ProjectApprovalHostedService>();
+            services.AddScoped<IGenerateEmailForApprovalService, GenerateEmailForApprovalService>();            
+            services.AddHostedService<ProjectApprovalHostedService>(sp =>
+            {
+                var serviceProvider = services.BuildServiceProvider();
+                var apiIdentity = serviceProvider.GetService<IApiIdentity>();
+                var ctx = serviceProvider.GetService<AdoContext>();
+                IRepository<AdoProject> obj = new Repository<AdoProject>(ctx, apiIdentity);
+                var logger = sp.GetRequiredService<ILogger<ProjectApprovalHostedService>>();
+                IGenerateEmailForApprovalService generateEmailForApprovalService = serviceProvider.GetService<IGenerateEmailForApprovalService>();
+                return new ProjectApprovalHostedService(generateEmailForApprovalService, logger);
+            });
 
             //services.AddControllers(options => options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
             services.AddSwaggerGen(c =>
