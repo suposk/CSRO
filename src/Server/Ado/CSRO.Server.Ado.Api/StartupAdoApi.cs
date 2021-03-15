@@ -30,6 +30,7 @@ using CSRO.Common;
 using CSRO.Server.Ado.Api.Services;
 using CSRO.Common.AdoServices;
 using CSRO.Server.Services;
+using CSRO.Server.Ado.Api.BackgroundTasks;
 
 namespace CSRO.Server.Ado.Api
 {
@@ -187,6 +188,7 @@ namespace CSRO.Server.Ado.Api
 
             #endregion
 
+            services.AddHostedService<ProjectApprovalHostedService>();
 
             //services.AddControllers(options => options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
             services.AddSwaggerGen(c =>
