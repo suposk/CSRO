@@ -50,7 +50,8 @@ namespace CSRO.Server.Ado.Api.Services
                 a =>
                 a.IsDeleted != true &&
                 a.State == ProjectState.CreatePending &&
-                a.AdoProjectHistoryList.Count == 1 //TODO fix
+                //a.AdoProjectHistoryList.Count == 1 //TODO fix
+                a.AdoProjectHistoryList.FirstOrDefault(a => a.Operation != IAdoProjectHistoryRepository.Operation_SentEmailForApproval) != null
                 )
                 .Include(p => p.AdoProjectHistoryList);
 
