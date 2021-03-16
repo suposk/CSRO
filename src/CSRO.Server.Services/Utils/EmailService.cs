@@ -6,7 +6,7 @@ using MimeKit;
 using MimeKit.Text;
 using System.Threading.Tasks;
 
-namespace CSRO.Server.Services
+namespace CSRO.Server.Services.Utils
 {
     public interface IEmailService
     {
@@ -40,17 +40,17 @@ namespace CSRO.Server.Services
                 await smtp.ConnectAsync(_emailConfig.SmtpHost, _emailConfig.SmtpPort, SecureSocketOptions.StartTls);
                 if (_emailConfig.HasPassword)
                     await smtp.AuthenticateAsync(_emailConfig.SmtpUser, _emailConfig.SmtpPass);
-#if DEBUG
-                if (to == "suposk@yahoo.com")
-                    throw new System.Exception("Fake excetion for suposk");
-#endif
+//#if DEBUG
+//                if (to == "suposk@yahoo.com")
+//                    throw new System.Exception("Fake excetion for suposk");
+//#endif
 
                 await smtp.SendAsync(email);
                 await smtp.DisconnectAsync(true);
             }
             catch (System.Exception ex)
             {
-                throw;   
+                throw;
             }
         }
     }

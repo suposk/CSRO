@@ -2,6 +2,7 @@
 using CSRO.Client.Blazor.UI.Services;
 using CSRO.Client.Core.Models;
 using CSRO.Client.Services;
+using CSRO.Client.Services.AzureRestServices;
 using CSRO.Client.Services.Models;
 using CSRO.Common.AzureSdkServices;
 using CSRO.Common.AzureSdkServices.Models;

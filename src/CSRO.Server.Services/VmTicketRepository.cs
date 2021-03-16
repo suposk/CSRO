@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System;
 using CSRO.Common.AzureSdkServices;
 using Microsoft.Extensions.Configuration;
+using CSRO.Server.Services.AzureRestServices;
 
 namespace CSRO.Server.Services
 {

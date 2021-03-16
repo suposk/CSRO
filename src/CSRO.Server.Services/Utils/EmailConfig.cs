@@ -4,14 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CSRO.Server.Services
+namespace CSRO.Server.Services.Utils
 {
     //public record EmailConfig(string SmtpHost, int SmtpPort, string SmtpUser, string SmtpPass) 
     //{
     //    public bool HasPassword => !string.IsNullOrWhiteSpace(SmtpPass);
     //};
 
-    public class EmailConfig 
+    public class EmailConfig
     {
         public string SmtpHost { get; set; }
         public int SmtpPort { get; set; }

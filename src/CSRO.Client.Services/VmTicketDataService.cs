@@ -12,6 +12,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using CSRO.Client.Core;
+using CSRO.Client.Services.AzureRestServices;
 
 namespace CSRO.Client.Services
 {

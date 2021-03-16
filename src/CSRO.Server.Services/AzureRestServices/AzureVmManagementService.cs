@@ -10,7 +10,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace CSRO.Server.Services
+namespace CSRO.Server.Services.AzureRestServices
 {
     public interface IAzureVmManagementService
     {

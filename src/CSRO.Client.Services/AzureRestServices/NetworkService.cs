@@ -12,7 +12,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CSRO.Client.Services
+namespace CSRO.Client.Services.AzureRestServices
 {
     public interface INetworkService
     {
@@ -57,10 +57,10 @@ namespace CSRO.Client.Services
                         List<Network> list = new List<Network>();
                         foreach (var item in ser.Value)
                         {
-                            var net = new Network 
+                            var net = new Network
                             {
-                                Location = item.Location, 
-                                VirtualNetwork = item.Name,                                
+                                Location = item.Location,
+                                VirtualNetwork = item.Name,
                                 Subnets = new List<string>(item.Properties.Subnets.Select(a => a.Name)),
                             };
                             var rg = Core.Helpers.GetValueHelper.GetVal(item.Id, "resourceGroups");

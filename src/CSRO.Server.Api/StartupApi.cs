@@ -29,6 +29,7 @@ using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Azure.KeyVault;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using CSRO.Common;
+using CSRO.Server.Services.AzureRestServices;
 
 namespace CSRO.Server.Api
 {

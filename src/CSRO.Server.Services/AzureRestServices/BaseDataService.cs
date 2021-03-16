@@ -8,7 +8,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace CSRO.Server.Services
+namespace CSRO.Server.Services.AzureRestServices
 {
     public class BaseDataService
     {
@@ -69,7 +69,7 @@ namespace CSRO.Server.Services
         {
             //user_impersonation
             //var apiToken = await AuthCsroService.GetAccessTokenForUserAsync(Scope);
-            var apiToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new List<string> { Scope});            
+            var apiToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new List<string> { Scope });
             HttpClientBase.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
         }
     }
