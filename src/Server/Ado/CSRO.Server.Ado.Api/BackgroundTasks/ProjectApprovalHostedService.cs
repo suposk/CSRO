@@ -30,16 +30,16 @@ namespace CSRO.Server.Ado.Api.BackgroundTasks
             _logger.LogInformation($"${nameof(ProjectApprovalHostedService)} is starting.");
             await Task.Delay(10 * 1000).ConfigureAwait(false);            //initial delay
 
-            stoppingToken.Register(() => _logger.LogInformation($"${nameof(ProjectApprovalHostedService)} register background task is stopping."));
+            stoppingToken.Register(() => _logger.LogInformation($"{nameof(ProjectApprovalHostedService)} register background task is stopping."));
 
             while (!stoppingToken.IsCancellationRequested)
             {
                 int minutes = 1;
-                _logger.LogDebug($"${nameof(ProjectApprovalHostedService)} background task is doing background work every {minutes} {nameof(minutes)}.");
+                _logger.LogDebug($"{nameof(ProjectApprovalHostedService)} background task is doing background work every {minutes} {nameof(minutes)}.");
                 await _generateEmailForApprovalService.ApproveAdoProjects().ConfigureAwait(false);
                 await Task.Delay(minutes * 60 * 1000, stoppingToken).ConfigureAwait(false);
             }
-            _logger.LogInformation($"${nameof(ProjectApprovalHostedService)} background task is stopping.");
+            _logger.LogInformation($"{nameof(ProjectApprovalHostedService)} background task is stopping.");
 
             await Task.CompletedTask;
         }
