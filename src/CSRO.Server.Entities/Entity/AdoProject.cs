@@ -1,5 +1,6 @@
 ﻿using CSRO.Server.Infrastructure;
 using System;
+using System.Collections.Generic;
 
 namespace CSRO.Server.Entities.Entity
 {
@@ -55,6 +56,12 @@ namespace CSRO.Server.Entities.Entity
 
     public class AdoProject : EntitySoftDeleteBase
     {
+        public AdoProject()
+        {
+            AdoProjectHistoryList = new();
+        }
+        public List<AdoProjectHistory> AdoProjectHistoryList { get; set; }
+
         public string Organization { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }

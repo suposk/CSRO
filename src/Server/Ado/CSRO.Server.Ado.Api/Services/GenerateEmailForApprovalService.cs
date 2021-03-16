@@ -17,23 +17,20 @@ namespace CSRO.Server.Ado.Api.Services
 
     public class GenerateEmailForApprovalService : IGenerateEmailForApprovalService
     {
-        private readonly IEmailService _emailService;
-        //private readonly IAdoProjectRepository _adoProjectRepository;
+        private readonly IEmailService _emailService;        
         private readonly IAdoProjectHistoryRepository _adoProjectHistoryRepository;
         private readonly IAdoProjectApproverService _adoProjectApproverService;
         private readonly ILogger<GenerateEmailForApprovalService> _logger;
         private readonly string _sender;
 
         public GenerateEmailForApprovalService(
-            IEmailService emailService,
-            //IAdoProjectRepository adoProjectRepository,
+            IEmailService emailService,            
             IAdoProjectHistoryRepository adoProjectHistoryRepository,
             IAdoProjectApproverService adoProjectApproverService,
             ILogger<GenerateEmailForApprovalService> logger
             )
         {
-            _emailService = emailService;
-            //_adoProjectRepository = adoProjectRepository;
+            _emailService = emailService;            
             _adoProjectHistoryRepository = adoProjectHistoryRepository;
             _adoProjectApproverService = adoProjectApproverService;
             _logger = logger;
@@ -51,12 +48,12 @@ namespace CSRO.Server.Ado.Api.Services
                 if (allApprovers.IsNullOrEmptyCollection())
                     return;
 
-                //v1. read ado proj
-                //var toApprove = await _adoProjectRepository.GetListFilter(a => a.State == Entities.Entity.ProjectState.CreatePending && a.IsDeleted != true).ConfigureAwait(false);
-                //v2. 
                 var toApprove = await _adoProjectHistoryRepository.GetPendingProjectsApproval();
                 if (toApprove.IsNullOrEmptyCollection())
+                {
+                    _logger.LogDebug("No new project and email must be sent for approval");
                     return;
+                }
                 
                 string text = $"There are {toApprove.Count} projects waiting for your approval.";
                 long totalSent = 0;
@@ -69,8 +66,7 @@ namespace CSRO.Server.Ado.Api.Services
                             return subtotal;
 
                         try
-                        {
-                            //await _emailService.SendEmail(_sender, approver.Email, $"test subject service at {DateTime.Now}", $"tested at {DateTime.Now}", false);                                                
+                        {                            
                             //_emailService.SendEmail(_sender, approver.Email, $"test subject service at {DateTime.Now}", $"tested at {DateTime.Now}", false).Wait();                                                
                             Task.Delay(5 * 1000).Wait(); //simulate sent email
                             subtotal++;

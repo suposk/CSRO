@@ -17,7 +17,7 @@ namespace System.Linq
         /// <returns></returns>
         public static bool IsNullOrEmptyCollection<T>(this IEnumerable<T> source)
         {
-            return source == null || source.Any() == false;
+            return source == null || source.Any() == false || source.FirstOrDefault() == null;
         }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace System.Linq
         /// <returns></returns>
         public static bool HasAnyInCollection<T>(this IEnumerable<T> source)
         {
-            return source != null && source.Any();
+            return !IsNullOrEmptyCollection(source);
         }
     }
 }
