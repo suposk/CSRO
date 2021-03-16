@@ -6,11 +6,11 @@ using MimeKit;
 using MimeKit.Text;
 using System.Threading.Tasks;
 
-namespace CSRO.Server.Services
+namespace CSRO.Server.Services.Utils
 {
     public interface IEmailService
     {
-        Task Send(string from, string to, string subject, string text, bool isHtml);
+        Task SendEmail(string from, string to, string subject, string text, bool isHtml);
     }
 
     public class EmailService : IEmailService
@@ -21,7 +21,7 @@ namespace CSRO.Server.Services
             _emailConfig = configuration.GetSection(nameof(EmailConfig)).Get<EmailConfig>();
         }
 
-        public async Task Send(string from, string to, string subject, string text, bool isHtml)
+        public async Task SendEmail(string from, string to, string subject, string text, bool isHtml)
         {
             try
             {
@@ -40,12 +40,17 @@ namespace CSRO.Server.Services
                 await smtp.ConnectAsync(_emailConfig.SmtpHost, _emailConfig.SmtpPort, SecureSocketOptions.StartTls);
                 if (_emailConfig.HasPassword)
                     await smtp.AuthenticateAsync(_emailConfig.SmtpUser, _emailConfig.SmtpPass);
+//#if DEBUG
+//                if (to == "suposk@yahoo.com")
+//                    throw new System.Exception("Fake excetion for suposk");
+//#endif
+
                 await smtp.SendAsync(email);
                 await smtp.DisconnectAsync(true);
             }
             catch (System.Exception ex)
             {
-                throw;   
+                throw;
             }
         }
     }

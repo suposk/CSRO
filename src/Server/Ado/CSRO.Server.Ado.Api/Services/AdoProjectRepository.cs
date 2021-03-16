@@ -4,7 +4,7 @@ using CSRO.Common.AdoServices.Models;
 using CSRO.Server.Entities;
 using CSRO.Server.Entities.Entity;
 using CSRO.Server.Infrastructure;
-using CSRO.Server.Services;
+using CSRO.Server.Services.Utils;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -22,9 +22,9 @@ namespace CSRO.Server.Ado.Api.Services
 
     public class AdoProjectRepository : Repository<AdoProject>, IAdoProjectRepository
     {        
-        private readonly IRepository<AdoProject> _repository;
-        private AdoContext _context;                
+        private readonly IRepository<AdoProject> _repository;                       
         private readonly IProjectAdoServices _projectAdoServices;
+        private readonly IAdoProjectHistoryRepository _adoProjectHistoryRepository;
         private readonly IEmailService _emailService;
         private readonly IMapper _mapper;
         private string _userId;        
@@ -33,13 +33,14 @@ namespace CSRO.Server.Ado.Api.Services
             IRepository<AdoProject> repository,
             AdoContext context,                        
             IProjectAdoServices projectAdoServices,
+            IAdoProjectHistoryRepository adoProjectHistoryRepository,
             IEmailService emailService,
             IMapper mapper,
             IApiIdentity apiIdentity) : base(context, apiIdentity)
         {            
-            _repository = repository;
-            _context = context;                        
+            _repository = repository;                                   
             _projectAdoServices = projectAdoServices;
+            _adoProjectHistoryRepository = adoProjectHistoryRepository;
             _emailService = emailService;
             _mapper = mapper;
             _userId = ApiIdentity.GetUserName();            
@@ -54,11 +55,9 @@ namespace CSRO.Server.Ado.Api.Services
         {
             try
             {
-                base.Add(entity, _userId);
-                ////test only
-                //await _emailService.Send("jan.supolik@hotmail.com", "suposk@yahoo.com", $"test subject service at {DateTime.Now}", $"tested at {DateTime.Now}", false);
-
+                Add(entity, _userId);
                 await SaveChangesAsync();
+                await _adoProjectHistoryRepository.Create(entity.Id, IAdoProjectHistoryRepository.Operation_RequestCreated, _userId);                
                 return entity;
             }
             catch
@@ -98,7 +97,10 @@ namespace CSRO.Server.Ado.Api.Services
                             //entity.State = ProjectState.New;
                             base.Update(entity, _userId);
                             if (await SaveChangesAsync())
+                            {
+                                await _adoProjectHistoryRepository.Create(entity.Id, IAdoProjectHistoryRepository.Operation_RequestApproved, _userId);
                                 approved.Add(entity);
+                            }
                         }
                         else
                             others.Append($"Id {pId} was not found, verify this Id exist or record was modified.");

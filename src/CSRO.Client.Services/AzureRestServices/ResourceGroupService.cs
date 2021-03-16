@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CSRO.Client.Core;
 using CSRO.Client.Core.Models;
+using CSRO.Client.Services.AzureRestServices;
 using CSRO.Client.Services.Dtos.AzureDtos;
 using CSRO.Client.Services.Models;
 using Microsoft.Extensions.Configuration;
@@ -13,7 +14,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CSRO.Client.Services
+namespace CSRO.Client.Services.AzureRestServices
 {
     public interface IResourceGroupService
     {
@@ -22,7 +23,10 @@ namespace CSRO.Client.Services
         Task<List<ResourceGroup>> GetResourceGroups(string subscriptionId, string location, CancellationToken cancelToken = default);
         Task<List<IdName>> GetResourceGroupsIdName(string subscriptionId, CancellationToken cancelToken = default);
     }
+}
 
+namespace CSRO.Client.Services
+{
     public class ResourceGroupService : BaseDataService, IResourceGroupService
     {
         public ResourceGroupService(
@@ -78,7 +82,7 @@ namespace CSRO.Client.Services
             {
                 base.HandleException(ex);
                 throw;
-            }            
+            }
         }
 
         public async Task<List<ResourceGroup>> GetResourceGroups(string subscriptionId, CancellationToken cancelToken = default)
@@ -94,7 +98,7 @@ namespace CSRO.Client.Services
 
                 if (apiData.IsSuccessStatusCode)
                 {
-                    var content = await apiData.Content.ReadAsStringAsync();                    
+                    var content = await apiData.Content.ReadAsStringAsync();
                     var ser = JsonSerializer.Deserialize<ResourceGroupsDto>(content, _options);
                     if (ser?.Value?.Count > 0)
                     {
@@ -134,7 +138,7 @@ namespace CSRO.Client.Services
                         {
                             var list = result.Where(a => a.Location == location).ToList();
                             return list;
-                        }                        
+                        }
                     }
                 }
             }
@@ -158,7 +162,7 @@ namespace CSRO.Client.Services
 
                 if (apiData.IsSuccessStatusCode)
                 {
-                    var content = await apiData.Content.ReadAsStringAsync();                    
+                    var content = await apiData.Content.ReadAsStringAsync();
                     var ser = JsonSerializer.Deserialize<ResourceGroupsDto>(content, _options);
                     if (ser?.Value?.Count > 0)
                     {

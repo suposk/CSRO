@@ -34,6 +34,7 @@ using CSRO.Client.Core;
 using Microsoft.Extensions.Logging;
 using CSRO.Common.AdoServices;
 using CSRO.Common;
+using CSRO.Client.Services.AzureRestServices;
 
 namespace CSRO.Client.Blazor.WebApp
 {

@@ -13,7 +13,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CSRO.Client.Services
+namespace CSRO.Client.Services.AzureRestServices
 {
     public interface IVmService
     {

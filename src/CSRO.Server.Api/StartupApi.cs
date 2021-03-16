@@ -29,6 +29,7 @@ using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Azure.KeyVault;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using CSRO.Common;
+using CSRO.Server.Services.AzureRestServices;
 
 namespace CSRO.Server.Api
 {
@@ -178,6 +179,14 @@ namespace CSRO.Server.Api
             services.AddTransient<ISubcriptionService, SubcriptionService>();
             services.AddTransient<IResourceGroupervice, ResourceGroupervice>();
 
+            services.AddApplicationInsightsTelemetry(Configuration["APPINSIGHTS_CONNECTIONSTRING"]);
+
+            //services.AddControllers(options => options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = _namespace, Version = "v1" });
+            });
+
             #region SDK services      
 
             services.AddTransient<IVmSdkService, VmSdkService>();
@@ -197,40 +206,6 @@ namespace CSRO.Server.Api
             }
             else
                 services.AddTransient<ICsroTokenCredentialProvider, CsroTokenCredentialProvider>(); //for work                        
-
-            #endregion
-
-            #region Repositories
-
-            services.AddScoped<IVersionRepository, VersionRepository>();
-            services.AddScoped<IRepository<AppVersion>>(sp =>
-            {
-                var serviceProvider = services.BuildServiceProvider();
-                var apiIdentity = serviceProvider.GetService<IApiIdentity>();
-                var ctx = serviceProvider.GetService<AppVersionContext>();
-                IRepository<AppVersion> obj = new Repository<AppVersion>(ctx, apiIdentity);
-                return obj;
-            });
-
-            
-            services.AddScoped<IVmTicketRepository, VmTicketRepository>();
-            services.AddScoped<IRepository<VmTicket>>(sp =>
-            {
-                var serviceProvider = services.BuildServiceProvider();
-                var apiIdentity = serviceProvider.GetService<IApiIdentity>();
-                var ctx = serviceProvider.GetService<AppVersionContext>();
-                IRepository<VmTicket> obj = new Repository<VmTicket>(ctx, apiIdentity);
-                return obj;
-            });
-            services.AddScoped<ITicketRepository, TicketRepository>();
-            services.AddScoped<IRepository<Ticket>>(sp =>
-            {
-                var serviceProvider = services.BuildServiceProvider();
-                var apiIdentity = serviceProvider.GetService<IApiIdentity>();
-                var ctx = serviceProvider.GetService<AppVersionContext>();
-                IRepository<Ticket> obj = new Repository<Ticket>(ctx, apiIdentity);
-                return obj;
-            });
 
             #endregion
 
@@ -255,15 +230,41 @@ namespace CSRO.Server.Api
                                 
             });
 
-            #endregion
+            #endregion           
 
-            services.AddApplicationInsightsTelemetry(Configuration["APPINSIGHTS_CONNECTIONSTRING"]);
+            #region Repositories
+            
+            services.AddScoped<IVersionRepository, VersionRepository>();
+            services.AddScoped<IVmTicketRepository, VmTicketRepository>();
+            services.AddScoped<ITicketRepository, TicketRepository>();
 
-            //services.AddControllers(options => options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
-            services.AddSwaggerGen(c =>
+            var serviceProvider = services.BuildServiceProvider();
+
+            services.AddScoped<IRepository<AppVersion>>(sp =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = _namespace, Version = "v1" });
+                var apiIdentity = serviceProvider.GetService<IApiIdentity>();
+                var ctx = serviceProvider.GetService<AppVersionContext>();
+                IRepository<AppVersion> obj = new Repository<AppVersion>(ctx, apiIdentity);
+                return obj;
             });
+
+            
+            services.AddScoped<IRepository<VmTicket>>(sp =>
+            {
+                var apiIdentity = serviceProvider.GetService<IApiIdentity>();
+                var ctx = serviceProvider.GetService<AppVersionContext>();
+                IRepository<VmTicket> obj = new Repository<VmTicket>(ctx, apiIdentity);
+                return obj;
+            });            
+            services.AddScoped<IRepository<Ticket>>(sp =>
+            {
+                var apiIdentity = serviceProvider.GetService<IApiIdentity>();
+                var ctx = serviceProvider.GetService<AppVersionContext>();
+                IRepository<Ticket> obj = new Repository<Ticket>(ctx, apiIdentity);
+                return obj;
+            });
+
+            #endregion
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
