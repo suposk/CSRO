@@ -46,16 +46,37 @@ namespace CSRO.Server.Ado.Api.Services
 
         public async Task<List<AdoProject>> GetPendingProjectsApproval()
         {
+            //var q = _context.AdoProjectHistorys.Where(
+            //    a =>
+            //    //a.AdoProject.IsDeleted != true && 
+            //    //a.AdoProject.State == ProjectState.CreatePending &&
+            //    //a.Operation == IAdoProjectHistoryRepository.Operation_RequestCreated &&
+            //    a.Operation != IAdoProjectHistoryRepository.Operation_SentEmailForApproval
+            //    ).Include(p => p.AdoProject);
+            //var all = await q.ToListAsync();
+            //return all.IsNullOrEmptyCollection() ? null : all.Select(a => a.AdoProject).ToList();
+
             var q = _context.AdoProjectHistorys.Where(
-                a => a.AdoProject.IsDeleted != true && 
-                a.AdoProject.State == ProjectState.CreatePending && 
-                a.Operation == IAdoProjectHistoryRepository.Operation_RequestCreated
-                ).Include(p => p.AdoProject);
-            var all = await q.ToListAsync();
-            return all.IsNullOrEmptyCollection()? null : all.Select(a=> a.AdoProject).ToList();
-            //var ra = all.Select(a => a)
-            //var projects = all.AddRange()
-            //return projects;
+                a =>
+                a.AdoProject.IsDeleted != true && 
+                a.AdoProject.State == ProjectState.CreatePending &&
+                a.Operation == IAdoProjectHistoryRepository.Operation_RequestCreated &&
+                a.Operation != IAdoProjectHistoryRepository.Operation_SentEmailForApproval
+                )
+                .Include(p => p.AdoProject)
+                .OrderBy(p => p.AdoProjectId)
+                ;
+            var all = await q.ToListAsync();            
+
+            var q2 = from p in _context.AdoProjects
+                    join h in _context.AdoProjectHistorys on p.Id equals h.AdoProjectId
+                    where (p.IsDeleted != true && p.State == ProjectState.CreatePending &&
+                    h.Operation == IAdoProjectHistoryRepository.Operation_RequestCreated && h.Operation != IAdoProjectHistoryRepository.Operation_SentEmailForApproval)
+                    orderby p.Id
+                    select p;
+
+            var all2 = await q2.ToListAsync();
+            return all2.IsNullOrEmptyCollection()? null : all2.ToList();
         }
 
         public async Task<AdoProjectHistory> Create(int adoProjectId, string operation, string userId)
