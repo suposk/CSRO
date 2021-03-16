@@ -45,8 +45,7 @@ namespace CSRO.Server.Ado.Api.Services
                 //if (allApprovers?.Any() == false)
                 if (allApprovers.IsNullOrEmptyCollection())
                     return;                               
-
-                //var toApprove = await _adoProjectRepository.GetListFilter(a => a.State == Entities.Entity.ProjectState.CreatePending && (a.IsDeleted == null || a.IsDeleted == false)).ConfigureAwait(false);
+                                
                 var toApprove = await _adoProjectRepository.GetListFilter(a => a.State == Entities.Entity.ProjectState.CreatePending && a.IsDeleted != true).ConfigureAwait(false);
                 if (toApprove.IsNullOrEmptyCollection())
                     return;
@@ -59,7 +58,7 @@ namespace CSRO.Server.Ado.Api.Services
 
                     try
                     {
-                        await _emailService.SendEmail(_sender, approver.Email, $"test subject service at {DateTime.Now}", $"tested at {DateTime.Now}", false);                        
+                        //await _emailService.SendEmail(_sender, approver.Email, $"test subject service at {DateTime.Now}", $"tested at {DateTime.Now}", false);                        
                     }
                     catch (Exception ex)
                     {
