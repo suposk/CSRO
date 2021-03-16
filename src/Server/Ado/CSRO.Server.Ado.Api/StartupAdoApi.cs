@@ -181,8 +181,11 @@ namespace CSRO.Server.Ado.Api
             });
 
             #endregion
-            
+
             #region Repositories
+
+            services.AddScoped<IAdoProjectHistoryRepository, AdoProjectHistoryRepository>();
+            services.AddScoped<IAdoProjectRepository, AdoProjectRepository>();
 
             var serviceProvider = services.BuildServiceProvider();
 
@@ -197,8 +200,13 @@ namespace CSRO.Server.Ado.Api
                 return obj;
             });
 
-            services.AddScoped<IAdoProjectRepository, AdoProjectRepository>();
-
+            services.AddScoped<IRepository<AdoProjectHistory>>(sp =>
+            {
+                var apiIdentity = serviceProvider.GetService<IApiIdentity>();
+                var ctx = serviceProvider.GetService<AdoContext>();
+                IRepository<AdoProjectHistory> obj = new Repository<AdoProjectHistory>(ctx, apiIdentity);
+                return obj;
+            });
             #endregion  
             
             //should be last to hav all dependencies

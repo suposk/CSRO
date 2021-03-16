@@ -22,8 +22,7 @@ namespace CSRO.Server.Ado.Api.Services
 
     public class AdoProjectRepository : Repository<AdoProject>, IAdoProjectRepository
     {        
-        private readonly IRepository<AdoProject> _repository;
-        private AdoContext _context;                
+        private readonly IRepository<AdoProject> _repository;                       
         private readonly IProjectAdoServices _projectAdoServices;
         private readonly IEmailService _emailService;
         private readonly IMapper _mapper;
@@ -37,8 +36,7 @@ namespace CSRO.Server.Ado.Api.Services
             IMapper mapper,
             IApiIdentity apiIdentity) : base(context, apiIdentity)
         {            
-            _repository = repository;
-            _context = context;                        
+            _repository = repository;                                   
             _projectAdoServices = projectAdoServices;
             _emailService = emailService;
             _mapper = mapper;

@@ -233,9 +233,13 @@ namespace CSRO.Server.Api
             #endregion           
 
             #region Repositories
+            
+            services.AddScoped<IVersionRepository, VersionRepository>();
+            services.AddScoped<IVmTicketRepository, VmTicketRepository>();
+            services.AddScoped<ITicketRepository, TicketRepository>();
+
             var serviceProvider = services.BuildServiceProvider();
 
-            services.AddScoped<IVersionRepository, VersionRepository>();
             services.AddScoped<IRepository<AppVersion>>(sp =>
             {
                 var apiIdentity = serviceProvider.GetService<IApiIdentity>();
@@ -244,16 +248,14 @@ namespace CSRO.Server.Api
                 return obj;
             });
 
-
-            services.AddScoped<IVmTicketRepository, VmTicketRepository>();
+            
             services.AddScoped<IRepository<VmTicket>>(sp =>
             {
                 var apiIdentity = serviceProvider.GetService<IApiIdentity>();
                 var ctx = serviceProvider.GetService<AppVersionContext>();
                 IRepository<VmTicket> obj = new Repository<VmTicket>(ctx, apiIdentity);
                 return obj;
-            });
-            services.AddScoped<ITicketRepository, TicketRepository>();
+            });            
             services.AddScoped<IRepository<Ticket>>(sp =>
             {
                 var apiIdentity = serviceProvider.GetService<IApiIdentity>();

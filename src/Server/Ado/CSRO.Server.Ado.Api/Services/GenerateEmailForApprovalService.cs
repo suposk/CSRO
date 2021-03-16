@@ -16,20 +16,23 @@ namespace CSRO.Server.Ado.Api.Services
     public class GenerateEmailForApprovalService : IGenerateEmailForApprovalService
     {
         private readonly IEmailService _emailService;
-        private readonly IAdoProjectRepository _adoProjectRepository;
+        //private readonly IAdoProjectRepository _adoProjectRepository;
+        private readonly IAdoProjectHistoryRepository _adoProjectHistoryRepository;
         private readonly IAdoProjectApproverService _adoProjectApproverService;
         private readonly ILogger<GenerateEmailForApprovalService> _logger;
         private readonly string _sender;
 
         public GenerateEmailForApprovalService(
             IEmailService emailService,
-            IAdoProjectRepository adoProjectRepository,
+            //IAdoProjectRepository adoProjectRepository,
+            IAdoProjectHistoryRepository adoProjectHistoryRepository,
             IAdoProjectApproverService adoProjectApproverService,
             ILogger<GenerateEmailForApprovalService> logger
             )
         {
             _emailService = emailService;
-            _adoProjectRepository = adoProjectRepository;
+            //_adoProjectRepository = adoProjectRepository;
+            _adoProjectHistoryRepository = adoProjectHistoryRepository;
             _adoProjectApproverService = adoProjectApproverService;
             _logger = logger;
 
@@ -44,9 +47,12 @@ namespace CSRO.Server.Ado.Api.Services
                 var allApprovers = await _adoProjectApproverService.GetAdoProjectApprovers();
                 //if (allApprovers?.Any() == false)
                 if (allApprovers.IsNullOrEmptyCollection())
-                    return;                               
-                                
-                var toApprove = await _adoProjectRepository.GetListFilter(a => a.State == Entities.Entity.ProjectState.CreatePending && a.IsDeleted != true).ConfigureAwait(false);
+                    return;
+
+                //v1. read ado proj
+                //var toApprove = await _adoProjectRepository.GetListFilter(a => a.State == Entities.Entity.ProjectState.CreatePending && a.IsDeleted != true).ConfigureAwait(false);
+                //v2. 
+                var toApprove = await _adoProjectHistoryRepository.GetPendingProjectsApproval();
                 if (toApprove.IsNullOrEmptyCollection())
                     return;
                 
@@ -59,6 +65,7 @@ namespace CSRO.Server.Ado.Api.Services
                     try
                     {
                         //await _emailService.SendEmail(_sender, approver.Email, $"test subject service at {DateTime.Now}", $"tested at {DateTime.Now}", false);                        
+                        await _adoProjectHistoryRepository.Create(IAdoProjectHistoryRepository.Operation_SentEmailForApproval, nameof(GenerateEmailForApprovalService));
                     }
                     catch (Exception ex)
                     {

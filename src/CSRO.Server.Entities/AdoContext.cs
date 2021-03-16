@@ -29,6 +29,7 @@ namespace CSRO.Server.Entities
             ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
         public DbSet<AdoProject> AdoProjects { get; set; }
+        public DbSet<AdoProjectHistory> AdoProjectHistorys { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
