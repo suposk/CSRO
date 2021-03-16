@@ -55,9 +55,6 @@ namespace CSRO.Server.Ado.Api.Services
             try
             {
                 Add(entity, _userId);
-                ////test only
-                //await _emailService.Send("jan.supolik@hotmail.com", "suposk@yahoo.com", $"test subject service at {DateTime.Now}", $"tested at {DateTime.Now}", false);
-
                 await SaveChangesAsync();
                 return entity;
             }

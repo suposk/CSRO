@@ -1,17 +1,13 @@
 ﻿using CSRO.Server.Entities.Entity;
+using CSRO.Server.Services.Ado;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CSRO.Server.Services
+namespace CSRO.Server.Ado.Api.Services
 {
-    public interface IAdoProjectApproverService
-    {
-        Task<List<AdoProjectApprover>> GetAdoProjectApprovers();
-    }
-
     public class AdoProjectApproverService : IAdoProjectApproverService
     {
         public Task<List<AdoProjectApprover>> GetAdoProjectApprovers()
