@@ -65,7 +65,7 @@ namespace CSRO.Server.Ado.Api.Services
                     try
                     {
                         //await _emailService.SendEmail(_sender, approver.Email, $"test subject service at {DateTime.Now}", $"tested at {DateTime.Now}", false);                        
-                        await _adoProjectHistoryRepository.Create(IAdoProjectHistoryRepository.Operation_SentEmailForApproval, nameof(GenerateEmailForApprovalService));
+                        await _adoProjectHistoryRepository.Create(approver.Id, IAdoProjectHistoryRepository.Operation_SentEmailForApproval, nameof(GenerateEmailForApprovalService));
                     }
                     catch (Exception ex)
                     {

@@ -15,8 +15,10 @@ namespace CSRO.Server.Ado.Api.Services
     public interface IAdoProjectHistoryRepository: IRepository<AdoProjectHistory>
     {
         const string Operation_SentEmailForApproval = "SentEmailForApproval";
+        const string Operation_RequestCreated = "RequestCreated";
 
-        Task<AdoProjectHistory> Create(string operation, string userId);
+        Task<AdoProjectHistory> Create(int adoProjectId, string operation, string userId);
+
         Task<List<AdoProject>> GetPendingProjectsApproval();
     }
 
@@ -45,13 +47,14 @@ namespace CSRO.Server.Ado.Api.Services
         {
             var q = _context.AdoProjectHistorys.Where(
                 a => a.AdoProject.IsDeleted != true && 
-                a.AdoProject.State == ProjectState.CreatePending && (a.Operation == IAdoProjectHistoryRepository.Operation_SentEmailForApproval)
+                a.AdoProject.State == ProjectState.CreatePending && 
+                a.Operation == IAdoProjectHistoryRepository.Operation_RequestCreated
                 );
             var all = await q.ToListAsync();            
             return all.IsNullOrEmptyCollection()? null : all.Select(a=> a.AdoProject).ToList();
         }
 
-        public async Task<AdoProjectHistory> Create(string operation, string userId)
+        public async Task<AdoProjectHistory> Create(int adoProjectId, string operation, string userId)
         {
             if (string.IsNullOrEmpty(operation))            
                 throw new ArgumentException($"'{nameof(operation)}' cannot be null or empty.", nameof(operation));            
@@ -59,7 +62,7 @@ namespace CSRO.Server.Ado.Api.Services
             if (string.IsNullOrEmpty(userId))            
                 throw new ArgumentException($"'{nameof(userId)}' cannot be null or empty.", nameof(userId));
             
-            var entity = new AdoProjectHistory { Operation = operation };
+            var entity = new AdoProjectHistory { Operation = operation , AdoProjectId = adoProjectId };
             base.Add(entity, userId);
             await SaveChangesAsync();
             return entity;            

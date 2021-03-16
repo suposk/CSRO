@@ -24,6 +24,7 @@ namespace CSRO.Server.Ado.Api.Services
     {        
         private readonly IRepository<AdoProject> _repository;                       
         private readonly IProjectAdoServices _projectAdoServices;
+        private readonly IAdoProjectHistoryRepository _adoProjectHistoryRepository;
         private readonly IEmailService _emailService;
         private readonly IMapper _mapper;
         private string _userId;        
@@ -32,12 +33,14 @@ namespace CSRO.Server.Ado.Api.Services
             IRepository<AdoProject> repository,
             AdoContext context,                        
             IProjectAdoServices projectAdoServices,
+            IAdoProjectHistoryRepository adoProjectHistoryRepository,
             IEmailService emailService,
             IMapper mapper,
             IApiIdentity apiIdentity) : base(context, apiIdentity)
         {            
             _repository = repository;                                   
             _projectAdoServices = projectAdoServices;
+            _adoProjectHistoryRepository = adoProjectHistoryRepository;
             _emailService = emailService;
             _mapper = mapper;
             _userId = ApiIdentity.GetUserName();            
@@ -54,6 +57,7 @@ namespace CSRO.Server.Ado.Api.Services
             {
                 Add(entity, _userId);
                 await SaveChangesAsync();
+                await _adoProjectHistoryRepository.Create(entity.Id, IAdoProjectHistoryRepository.Operation_RequestCreated, _userId);                
                 return entity;
             }
             catch
