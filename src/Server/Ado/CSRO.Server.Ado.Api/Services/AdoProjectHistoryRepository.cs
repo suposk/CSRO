@@ -53,7 +53,8 @@ namespace CSRO.Server.Ado.Api.Services
                 //a.AdoProjectHistoryList.Count == 1 //TODO fix
                 a.AdoProjectHistoryList.FirstOrDefault(a => a.Operation != IAdoProjectHistoryRepository.Operation_SentEmailForApproval) != null
                 )
-                .Include(p => p.AdoProjectHistoryList);
+                //.Include(p => p.AdoProjectHistoryList)
+                ;
 
             var all = await q.ToListAsync();
             return all.IsNullOrEmptyCollection() ? null : all.ToList();
