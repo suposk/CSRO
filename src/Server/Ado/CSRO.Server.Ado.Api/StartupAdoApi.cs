@@ -150,21 +150,14 @@ namespace CSRO.Server.Ado.Api
             services.AddTransient<IProcessAdoServices, ProcessAdoServices>();
             services.AddSingleton<ICacheProvider, CacheProvider>(); //testing
 
-            #region Repositories
+            services.AddScoped<IAdoProjectApproverService, AdoProjectApproverService>();
+            services.AddScoped<IGenerateEmailForApprovalService, GenerateEmailForApprovalService>();
 
-            //services.AddScoped(typeof(IRepository<AdoProject>), typeof(Repository<AdoProject>));
-            //services.AddScoped<IRepository<AdoProject>>();
-            services.AddScoped<IRepository<AdoProject>>(sp => 
-            {                
-                var serviceProvider = services.BuildServiceProvider();
-                var apiIdentity = serviceProvider.GetService<IApiIdentity>();
-                var ctx = serviceProvider.GetService<AdoContext>();
-                IRepository<AdoProject> obj = new Repository<AdoProject>(ctx, apiIdentity);
-                return obj;
-            });
-            services.AddScoped<IAdoProjectRepository, AdoProjectRepository>();
-
-            #endregion
+            //services.AddControllers(options => options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = _namespace, Version = "v1" });
+            });            
 
             #region DbContext
 
@@ -188,9 +181,27 @@ namespace CSRO.Server.Ado.Api
             });
 
             #endregion
+            
+            #region Repositories
 
-            services.AddScoped<IAdoProjectApproverService, AdoProjectApproverService>();
-            services.AddScoped<IGenerateEmailForApprovalService, GenerateEmailForApprovalService>();            
+            var serviceProvider = services.BuildServiceProvider();
+
+            //services.AddScoped(typeof(IRepository<AdoProject>), typeof(Repository<AdoProject>));
+            //services.AddScoped<IRepository<AdoProject>>();
+            services.AddScoped<IRepository<AdoProject>>(sp => 
+            {               
+                
+                var apiIdentity = serviceProvider.GetService<IApiIdentity>();
+                var ctx = serviceProvider.GetService<AdoContext>();
+                IRepository<AdoProject> obj = new Repository<AdoProject>(ctx, apiIdentity);
+                return obj;
+            });
+
+            services.AddScoped<IAdoProjectRepository, AdoProjectRepository>();
+
+            #endregion  
+            
+            //should be last to hav all dependencies
             services.AddHostedService<ProjectApprovalHostedService>(sp =>
             {
                 var serviceProvider = services.BuildServiceProvider();
@@ -200,12 +211,6 @@ namespace CSRO.Server.Ado.Api
                 var logger = sp.GetRequiredService<ILogger<ProjectApprovalHostedService>>();
                 IGenerateEmailForApprovalService generateEmailForApprovalService = serviceProvider.GetService<IGenerateEmailForApprovalService>();
                 return new ProjectApprovalHostedService(generateEmailForApprovalService, logger);
-            });
-
-            //services.AddControllers(options => options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = _namespace, Version = "v1" });
             });
         }
 
