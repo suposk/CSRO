@@ -97,7 +97,10 @@ namespace CSRO.Server.Ado.Api.Services
                             //entity.State = ProjectState.New;
                             base.Update(entity, _userId);
                             if (await SaveChangesAsync())
+                            {
+                                await _adoProjectHistoryRepository.Create(entity.Id, IAdoProjectHistoryRepository.Operation_RequestApproved, _userId);
                                 approved.Add(entity);
+                            }
                         }
                         else
                             others.Append($"Id {pId} was not found, verify this Id exist or record was modified.");

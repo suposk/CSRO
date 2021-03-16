@@ -14,8 +14,9 @@ namespace CSRO.Server.Ado.Api.Services
 {
     public interface IAdoProjectHistoryRepository: IRepository<AdoProjectHistory>
     {
-        const string Operation_SentEmailForApproval = "SentEmailForApproval";
-        const string Operation_RequestCreated = "RequestCreated";
+        const string Operation_RequestCreated = "Request Created";
+        const string Operation_SentEmailForApproval = "Sent Email For Approval";
+        const string Operation_RequestApproved = "Request Approved";
 
         Task<AdoProjectHistory> Create(int adoProjectId, string operation, string userId);
 
@@ -49,9 +50,12 @@ namespace CSRO.Server.Ado.Api.Services
                 a => a.AdoProject.IsDeleted != true && 
                 a.AdoProject.State == ProjectState.CreatePending && 
                 a.Operation == IAdoProjectHistoryRepository.Operation_RequestCreated
-                );
-            var all = await q.ToListAsync();            
+                ).Include(p => p.AdoProject);
+            var all = await q.ToListAsync();
             return all.IsNullOrEmptyCollection()? null : all.Select(a=> a.AdoProject).ToList();
+            //var ra = all.Select(a => a)
+            //var projects = all.AddRange()
+            //return projects;
         }
 
         public async Task<AdoProjectHistory> Create(int adoProjectId, string operation, string userId)
