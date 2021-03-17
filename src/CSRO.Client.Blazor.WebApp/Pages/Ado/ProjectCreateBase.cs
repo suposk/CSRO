@@ -101,13 +101,16 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Ado
 
         public async Task OnValidSubmit(EditContext context)
         {
+            ShowLoading();            
             var valid = context.Validate();
             if (valid)
             {
                 try
                 {
-                    ShowLoading();
-                    if (OperationTypeTicket == OperatioType.Create)
+                    await Task.Delay(1 * 1000); // todo fix workaround
+                    valid = context.Validate();                       
+                                        
+                    if (valid && OperationTypeTicket == OperatioType.Create)
                     {
                         var added = await AdoProjectDataService.AddItemAsync(Model);
                         if (added != null)
@@ -137,8 +140,9 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Ado
                     Logger.LogError(ex, nameof(OnValidSubmit));
                     await CsroDialogService.ShowError("Error", $"Detail error: {ex.Message}");
                 }
-                HideLoading();
+                
             }
+            HideLoading();
         }
 
         public void GoBack()

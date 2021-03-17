@@ -16,6 +16,8 @@ namespace CSRO.Client.Services.Validation
 
         public ProjectAdoValidator(IProjectAdoServices projectAdoServices)
         {
+            _projectAdoServices = projectAdoServices;
+
             RuleFor(p => p.Organization)
             .NotEmpty()
             .WithMessage("Organization must be selected");
@@ -34,33 +36,35 @@ namespace CSRO.Client.Services.Validation
                 .MustAsync(ProjectName).WithMessage("Project already exist in ADO, Enter different name")
                 .MustAsync(ProjecRequested).WithMessage("Project already requested, Enter different name")
                 ;
-            });
-            _projectAdoServices = projectAdoServices;
+            });            
         }
 
         private async Task<bool> ProjectName(string name, CancellationToken token)
         {
-            await Task.Delay(1 * 300, token).ConfigureAwait(false);
             if (token.IsCancellationRequested)
+                //return Task.FromResult(false);
                 return false;
 
-            if (name == null)
+            if (string.IsNullOrWhiteSpace(name))
+                //return Task.FromResult(false);
                 return false;
 
-            var exisit = await _projectAdoServices.ProjectExistInAdo("jansupolikAdo", name).ConfigureAwait(false);
+            var exisit = await _projectAdoServices.ProjectExistInAdo("jansupolikAdo", name);
             return !exisit;
+
+            //return _projectAdoServices.ProjectDoesNotExistInAdo("jansupolikAdo", name);            
         }
 
         private async Task<bool> ProjecRequested(string name, CancellationToken token)
-        {
-            await Task.Delay(1 * 300, token).ConfigureAwait(false);
+        {           
             if (token.IsCancellationRequested)
                 return false;
 
-            if (name == null)
+            if (string.IsNullOrWhiteSpace(name))
                 return false;
 
-            return false;
+            //return false;
+            return true;
         }
     }
 }

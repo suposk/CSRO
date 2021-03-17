@@ -22,6 +22,8 @@ namespace CSRO.Common.AdoServices
     {
         Task<ProjectAdo> CreateProject(ProjectAdo projectAdoCreate);
         Task<bool> ProjectExistInAdo(string organization, string projectName);
+
+        //Task<bool> ProjectDoesNotExistInAdo(string organization, string projectName);
     }
 
     public class ProjectAdoServices : IProjectAdoServices
@@ -44,6 +46,12 @@ namespace CSRO.Common.AdoServices
             _logger = logger;
             _adoConfig = configuration.GetSection(nameof(AdoConfig)).Get<AdoConfig>();            
         }
+
+        //public async Task<bool> ProjectDoesNotExistInAdo(string organization, string projectName)
+        //{
+        //    var exist = await ProjectDoesNotExistInAdo(organization, projectName);
+        //    return !exist;
+        //}
 
         public async Task<bool> ProjectExistInAdo(string organization, string projectName)
         {
