@@ -91,7 +91,7 @@ namespace CSRO.Server.Ado.Api.Controllers
                 var suc = await _repository.CreateAdoProject(repoObj);
                 if (suc != null)
                 {
-                    var result = _mapper.Map<AdoProject>(repoObj);
+                    var result = _mapper.Map<ProjectAdo>(repoObj);                    
                     return CreatedAtRoute(nameof(GetRequestAdoProject),
                         new { id = result.Id }, result);
                 }

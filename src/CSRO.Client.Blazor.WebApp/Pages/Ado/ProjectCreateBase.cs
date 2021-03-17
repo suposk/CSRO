@@ -74,6 +74,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Ado
                     Organizations = orgs;
 
                 //Model = new ProjectAdo { Name = "New Project", };
+                //var ado = await AdoProjectDataService.GetItemByIdAsync(3);
             }
             catch (Exception ex)
             {
