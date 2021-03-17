@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using CSRO.Common.AdoServices.Models;
 using CSRO.Server.Ado.Api.Services;
-using CSRO.Server.Entities.Entity;
+using Entity = CSRO.Server.Entities.Entity;
 using CSRO.Server.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -87,7 +87,7 @@ namespace CSRO.Server.Ado.Api.Controllers
             {
                 _logger.LogInformation(ApiLogEvents.RequestItem, $"{nameof(RequestAdoProject)} Started");
 
-                var repoObj = _mapper.Map<AdoProject>(dto);              
+                var repoObj = _mapper.Map<Entity.AdoProject>(dto);              
                 var suc = await _repository.CreateAdoProject(repoObj);
                 if (suc != null)
                 {
