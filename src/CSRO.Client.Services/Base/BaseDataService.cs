@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -13,6 +14,12 @@ namespace CSRO.Client.Services
         protected string ClientName { get; set; }
         protected string ApiPart { get; set; }
         protected string Scope { get; set; }
+
+        //not valid
+        //protected List<string> Scopes { get; set; } = new List<string> { "email", "offline_access", "openid", "profile", "https://graph.microsoft.com/.default" };
+        //no email from ad        
+        protected List<string> Scopes { get; set; } = new List<string> { "email", "offline_access", "openid", "profile", };
+        //protected List<string> Scopes { get; set; } = new List<string> { "email", "offline_access", "openid", "profile", "User.Read" , "Directory.AccessAsUser.All" };                
 
         public JsonSerializerOptions _options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
 
@@ -44,6 +51,8 @@ namespace CSRO.Client.Services
             if (string.IsNullOrWhiteSpace(Scope))
                 throw new Exception($"{Scope} must be set in before calling method.");
 
+            Scopes.Add(Scope);
+
             if (HttpClientBase == null)
                 HttpClientBase = HttpClientFactory.CreateClient(ClientName);
 
@@ -58,7 +67,8 @@ namespace CSRO.Client.Services
         public virtual async Task AddAuthHeaderAsync()
         {
             //user_impersonation
-            var apiToken = await AuthCsroService.GetAccessTokenForUserAsync(Scope);
+            //var apiToken = await AuthCsroService.GetAccessTokenForUserAsync(Scope);
+            var apiToken = await AuthCsroService.GetAccessTokenForUserAsync(Scopes);
             HttpClientBase.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
         }
     }
