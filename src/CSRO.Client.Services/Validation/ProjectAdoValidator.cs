@@ -40,31 +40,37 @@ namespace CSRO.Client.Services.Validation
             });            
         }
 
-        private async Task<bool> ProjectName(string name, CancellationToken token)
+        private async Task<bool> ProjectName(ProjectAdo projectAdo, string name, CancellationToken token)
         {
             if (token.IsCancellationRequested)
-                //return Task.FromResult(false);
                 return false;
 
-            if (string.IsNullOrWhiteSpace(name))
-                //return Task.FromResult(false);
+            if (projectAdo == null || string.IsNullOrWhiteSpace(projectAdo.Name) || string.IsNullOrWhiteSpace(projectAdo.Organization))
                 return false;
-
-            var exisit = await _projectAdoServices.ProjectExistInAdo("jansupolikAdo", name);
-            return !exisit;
-            //return _projectAdoServices.ProjectDoesNotExistInAdo("jansupolikAdo", name);            
+            try
+            {
+                var exisit = await _projectAdoServices.ProjectExistInAdo(projectAdo.Organization, projectAdo.Name);
+                return !exisit;
+            }
+            catch (Exception) { }
+            return false;
         }
 
-        private async Task<bool> ProjecAlredyRequested(string name, CancellationToken token)
+        private async Task<bool> ProjecAlredyRequested(ProjectAdo projectAdo, string name, CancellationToken token)
         {
             if (token.IsCancellationRequested)
                 return false;
 
-            if (string.IsNullOrWhiteSpace(name))
+            if (projectAdo == null || string.IsNullOrWhiteSpace(projectAdo.Name) || string.IsNullOrWhiteSpace(projectAdo.Organization))
                 return false;
 
-            var exisit = await _adoProjectDataService.ProjectExists(name, "jansupolikAdo");
-            return !exisit;
+            try
+            {
+                var exisit = await _adoProjectDataService.ProjectExists(projectAdo.Organization, projectAdo.Name);
+                return !exisit;
+            }
+            catch (Exception) { }
+            return false;
         }
     }
 }

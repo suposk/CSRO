@@ -22,7 +22,7 @@ namespace CSRO.Client.Services
     {
         Task<List<ProjectAdo>> ApproveAdoProject(List<int> toApprove);
         Task<List<ProjectAdo>> GetProjectsForApproval();
-        Task<bool> ProjectExists(string projectName, string organization);
+        Task<bool> ProjectExists(string organization, string projectName);
     }
 
     public class AdoProjectDataService : BaseDataService, IAdoProjectDataService
@@ -277,7 +277,7 @@ namespace CSRO.Client.Services
             }
         }
 
-        public async Task<bool> ProjectExists(string projectName, string organization)
+        public async Task<bool> ProjectExists(string organization, string projectName)
         {
             try
             {
