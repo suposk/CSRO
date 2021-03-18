@@ -2,6 +2,7 @@
 using CSRO.Common.AdoServices.Models;
 using CSRO.Server.Ado.Api.Services;
 using FluentValidation;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,11 +15,13 @@ namespace CSRO.Server.Ado.Api.Validation
     {
         private readonly IProjectAdoServices _projectAdoServices;
         private readonly IAdoProjectRepository _adoProjectRepository;
+        private readonly ILogger<ProjectAdoValidator> _logger;
 
-        public ProjectAdoValidator(IProjectAdoServices projectAdoServices, IAdoProjectRepository adoProjectRepository)
+        public ProjectAdoValidator(IProjectAdoServices projectAdoServices, IAdoProjectRepository adoProjectRepository, ILogger<ProjectAdoValidator> logger)
         {
             _projectAdoServices = projectAdoServices;
             _adoProjectRepository = adoProjectRepository;
+            _logger = logger;
 
             RuleFor(p => p.Organization)
             .NotEmpty()
@@ -53,7 +56,7 @@ namespace CSRO.Server.Ado.Api.Validation
                 var exisit = await _projectAdoServices.ProjectExistInAdo(projectAdo.Organization, projectAdo.Name);
                 return !exisit;
             }
-            catch (Exception) { }
+            catch (Exception ex) { _logger.LogError(ex, nameof(ProjectName), null); }
             return false;
         }
 
@@ -70,7 +73,7 @@ namespace CSRO.Server.Ado.Api.Validation
                 var exisit = await _adoProjectRepository.ProjectExists(projectAdo.Organization, projectAdo.Name);
                 return !exisit;
             }
-            catch (Exception) { }
+            catch (Exception ex) { _logger.LogError(ex, nameof(ProjecAlredyRequested), null); }
             return false;
         }
     }
