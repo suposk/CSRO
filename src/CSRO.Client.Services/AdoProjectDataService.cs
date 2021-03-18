@@ -22,6 +22,7 @@ namespace CSRO.Client.Services
     {
         Task<List<ProjectAdo>> ApproveAdoProject(List<int> toApprove);
         Task<List<ProjectAdo>> GetProjectsForApproval();
+        Task<bool> ProjectExists(string projectName, string organization);
     }
 
     public class AdoProjectDataService : BaseDataService, IAdoProjectDataService
@@ -263,6 +264,32 @@ namespace CSRO.Client.Services
                     //var result = Mapper.Map<List<ProjectAdo>>(ser);
                     //return result;
                 }
+                else
+                {
+                    var content = await apiData.Content.ReadAsStringAsync();
+                    throw new Exception(content);
+                }
+            }
+            catch (Exception ex)
+            {
+                base.HandleException(ex);
+                throw;
+            }
+        }
+
+        public async Task<bool> ProjectExists(string projectName, string organization)
+        {
+            try
+            {
+                await base.AddAuthHeaderAsync();
+
+                var url = $"{ApiPart}{projectName}/{organization}";
+                var apiData = await HttpClientBase.GetAsync(url).ConfigureAwait(false);
+
+                if (apiData.StatusCode == System.Net.HttpStatusCode.OK)
+                    return true;
+                else if (apiData.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    return false;
                 else
                 {
                     var content = await apiData.Content.ReadAsStringAsync();

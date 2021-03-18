@@ -13,11 +13,12 @@ namespace CSRO.Client.Services.Validation
     public class ProjectAdoValidator: AbstractValidator<ProjectAdo>
     {
         private readonly IProjectAdoServices _projectAdoServices;
+        private readonly IAdoProjectDataService _adoProjectDataService;
 
-        public ProjectAdoValidator(IProjectAdoServices projectAdoServices)
+        public ProjectAdoValidator(IProjectAdoServices projectAdoServices, IAdoProjectDataService adoProjectDataService)
         {
             _projectAdoServices = projectAdoServices;
-
+            _adoProjectDataService = adoProjectDataService;
             RuleFor(p => p.Organization)
             .NotEmpty()
             .WithMessage("Organization must be selected");
@@ -34,7 +35,7 @@ namespace CSRO.Client.Services.Validation
             {
                 RuleFor(p => p.Name)
                 .MustAsync(ProjectName).WithMessage("Project already exist in ADO, Enter different name")
-                .MustAsync(ProjecRequested).WithMessage("Project already requested, Enter different name")
+                .MustAsync(ProjecAlredyRequested).WithMessage("Project already requested, Enter different name")
                 ;
             });            
         }
@@ -51,20 +52,19 @@ namespace CSRO.Client.Services.Validation
 
             var exisit = await _projectAdoServices.ProjectExistInAdo("jansupolikAdo", name);
             return !exisit;
-
             //return _projectAdoServices.ProjectDoesNotExistInAdo("jansupolikAdo", name);            
         }
 
-        private async Task<bool> ProjecRequested(string name, CancellationToken token)
-        {           
+        private async Task<bool> ProjecAlredyRequested(string name, CancellationToken token)
+        {
             if (token.IsCancellationRequested)
                 return false;
 
             if (string.IsNullOrWhiteSpace(name))
                 return false;
 
-            //return false;
-            return true;
+            var exisit = await _adoProjectDataService.ProjectExists(name, "jansupolikAdo");
+            return !exisit;
         }
     }
 }

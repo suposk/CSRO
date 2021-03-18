@@ -32,6 +32,7 @@ using CSRO.Common.AdoServices;
 using CSRO.Server.Ado.Api.BackgroundTasks;
 using CSRO.Server.Services.Utils;
 using CSRO.Server.Services.Ado;
+using CSRO.Server.Infrastructure.Search;
 
 namespace CSRO.Server.Ado.Api
 {
@@ -149,6 +150,7 @@ namespace CSRO.Server.Ado.Api
             services.AddTransient<IProjectAdoServices, ProjectAdoServices>();
             services.AddTransient<IProcessAdoServices, ProcessAdoServices>();
             services.AddSingleton<ICacheProvider, CacheProvider>(); //testing
+            services.AddTransient<IPropertyMappingService, AdoPropertyMappingService>();
 
             services.AddScoped<IAdoProjectApproverService, AdoProjectApproverService>();
             services.AddScoped<IGenerateEmailForApprovalService, GenerateEmailForApprovalService>();
