@@ -19,7 +19,7 @@ namespace CSRO.Server.Ado.Api.Services
 {
     public interface IAdoProjectRepository : IRepository<AdoProject>
     {
-        Task<List<AdoProject>> ApproveAdoProject(List<int> toApprove);
+        Task<List<AdoProject>> ApproveAndCreateAdoProject(List<int> toApprove);
         Task<AdoProject> CreateAdoProject(AdoProject entity);
         Task<bool> ProjectExists(string organization, string projectName);
         Task<CsroPagedList<AdoProject>> Search(ResourceParameters resourceParameters, string organization = null);
@@ -135,7 +135,12 @@ namespace CSRO.Server.Ado.Api.Services
 
         }
 
-        public async Task<List<AdoProject>> ApproveAdoProject(List<int> toApprove)
+        /// <summary>
+        /// Approves and Creates ado Project
+        /// </summary>
+        /// <param name="toApprove"></param>
+        /// <returns></returns>
+        public async Task<List<AdoProject>> ApproveAndCreateAdoProject(List<int> toApprove)
         {
             if (toApprove is null)
                 throw new ArgumentNullException(nameof(toApprove));
@@ -163,7 +168,8 @@ namespace CSRO.Server.Ado.Api.Services
 
                             //2. Update Db
                             entity = _mapper.Map<AdoProject>(created);
-                            //entity.State = ProjectState.New;
+                            //entity.Status = Status.Approved;
+                            entity.Status = Status.Completed;
                             base.Update(entity, _userId);
                             if (await SaveChangesAsync())
                             {
