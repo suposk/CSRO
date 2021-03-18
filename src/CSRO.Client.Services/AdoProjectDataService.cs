@@ -283,7 +283,7 @@ namespace CSRO.Client.Services
             {
                 await base.AddAuthHeaderAsync();
 
-                var url = $"{ApiPart}{projectName}/{organization}";
+                var url = $"{ApiPart}{organization}/{projectName}";
                 var apiData = await HttpClientBase.GetAsync(url).ConfigureAwait(false);
 
                 if (apiData.StatusCode == System.Net.HttpStatusCode.OK)

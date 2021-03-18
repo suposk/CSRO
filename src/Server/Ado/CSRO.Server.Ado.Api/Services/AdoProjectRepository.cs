@@ -21,7 +21,7 @@ namespace CSRO.Server.Ado.Api.Services
     {
         Task<List<AdoProject>> ApproveAdoProject(List<int> toApprove);
         Task<AdoProject> CreateAdoProject(AdoProject entity);
-        Task<bool> ProjectExists(string projectName, string organization);
+        Task<bool> ProjectExists(string organization, string projectName);
         Task<CsroPagedList<AdoProject>> Search(ResourceParameters resourceParameters, string organization = null);
     }
 
@@ -53,7 +53,7 @@ namespace CSRO.Server.Ado.Api.Services
             _userId = ApiIdentity.GetUserName();            
         }
 
-        public async Task<bool> ProjectExists(string projectName, string organization)
+        public async Task<bool> ProjectExists(string organization, string projectName)
         {
             if (string.IsNullOrWhiteSpace(projectName))            
                 throw new ArgumentException($"'{nameof(projectName)}' cannot be null or whitespace.", nameof(projectName));            

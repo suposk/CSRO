@@ -140,7 +140,7 @@ namespace CSRO.Server.Ado.Api
             .AddFluentValidation(options =>
             {
                 //options.RegisterValidatorsFromAssemblyContaining<Startup>();
-                options.RegisterValidatorsFromAssemblyContaining<Validation.BaseAbstractValidator>();
+                options.RegisterValidatorsFromAssemblyContaining<Validation.BaseAdoAbstractValidator>();
             });
 
 
