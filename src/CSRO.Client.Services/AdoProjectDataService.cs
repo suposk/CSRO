@@ -82,7 +82,11 @@ namespace CSRO.Client.Services
             {
                 await base.AddAuthHeaderAsync();
 
-                var url = $"{ApiPart}RequestAdoProject";
+                string url = null;
+                if (item.Status == Common.AdoServices.Models.Status.Draft)
+                    url = $"{ApiPart}SaveDraftAdoProject";
+                else
+                    url = $"{ApiPart}RequestAdoProject";
                 //var url = $"{ApiPart}";
                 var httpcontent = new StringContent(JsonSerializer.Serialize(item, _options), Encoding.UTF8, "application/json");
                 var apiData = await HttpClientBase.PostAsync(url, httpcontent).ConfigureAwait(false);

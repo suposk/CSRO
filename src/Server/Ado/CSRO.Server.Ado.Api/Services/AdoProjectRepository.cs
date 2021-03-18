@@ -80,6 +80,7 @@ namespace CSRO.Server.Ado.Api.Services
             try
             {
                 Add(entity, _userId);
+                entity.Status = Status.Submitted;
                 if (!await SaveChangesAsync())
                     return null;
                 await _adoProjectHistoryRepository.Create(entity.Id, IAdoProjectHistoryRepository.Operation_RequestCreated, _userId);                

@@ -44,7 +44,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Ado
 
         #endregion
 
-        public ProjectAdo Model { get; set; } = new ProjectAdo();
+        public ProjectAdo Model { get; set; } = new ProjectAdo { Status = Status.Draft };
         protected bool IsReadOnly => OperationTypeTicket == OperatioType.View;
         protected string Title => OperationTypeTicket.ToString() + " Project";
 
@@ -101,7 +101,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Ado
 
         public async Task OnValidSubmit(EditContext context)
         {
-            ShowLoading();            
+            ShowProcessing();            
             var valid = context.Validate();
             if (valid)
             {
@@ -112,6 +112,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Ado
                                         
                     if (valid && OperationTypeTicket == OperatioType.Create)
                     {
+                        Model.Status = Status.Submitted;
                         var added = await AdoProjectDataService.AddItemAsync(Model);
                         if (added != null)
                         {
@@ -144,6 +145,26 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Ado
             }
             HideLoading();
         }
+
+        public async Task SaveAsDraftAsync()
+        {
+            try
+            {
+                ShowLoading("Saving...");
+                Model.Status = Status.Draft;
+                var saved = await AdoProjectDataService.AddItemAsync(Model);
+                if (saved != null)
+                    await CsroDialogService.ShowMessage("Success", $"Request was saved.");
+                
+                //await Load();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, nameof(OnInitializedAsync));
+                await CsroDialogService.ShowError("Error", $"Detail error: {ex.Message}");
+            }
+            HideLoading();
+        }    
 
         public void GoBack()
         {

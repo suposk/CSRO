@@ -97,6 +97,35 @@ namespace CSRO.Server.Ado.Api.Controllers
             }
         }
 
+        [HttpPost, Route(nameof(SaveDraftAdoProject))]
+        public async Task<ActionResult<ProjectAdo>> SaveDraftAdoProject(ProjectAdo dto)
+        {
+            if (dto == null)
+                return BadRequest();
+
+            try
+            {
+                _logger.LogInformation(ApiLogEvents.RequestItem, $"{nameof(SaveDraftAdoProject)} Started");
+
+                var repoObj = _mapper.Map<Entity.AdoProject>(dto);
+                _repository.Add(repoObj);
+                var suc = await _repository.SaveChangesAsync();
+                if (suc)
+                {
+                    var result = _mapper.Map<ProjectAdo>(repoObj);
+                    return CreatedAtRoute(nameof(GetRequestAdoProject),
+                        new { id = result.Id }, result);
+                }
+                else
+                    return null;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, nameof(SaveDraftAdoProject), dto);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
+            }
+        }
+
 
         [HttpPost, Route(nameof(RequestAdoProject))]        
         public async Task<ActionResult<ProjectAdo>> RequestAdoProject(ProjectAdo dto)

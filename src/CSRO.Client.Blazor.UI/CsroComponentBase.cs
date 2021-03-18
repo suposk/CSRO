@@ -9,6 +9,7 @@ namespace CSRO.Client.Blazor.UI
     public class CsroComponentBase : ComponentBase
     {
         public const string LOADING_MESSAGE = "Loading...";
+        public const string PROCESSING_MESSAGE = "Processing...";
 
 
         protected bool IsLoading { get; set; }
@@ -16,6 +17,12 @@ namespace CSRO.Client.Blazor.UI
         protected bool Success { get; set; }
 
         public virtual void ShowLoading(string loadingMessage = LOADING_MESSAGE)
+        {
+            IsLoading = true;
+            LoadingMessage = loadingMessage;
+        }
+
+        public virtual void ShowProcessing(string loadingMessage = PROCESSING_MESSAGE)
         {
             IsLoading = true;
             LoadingMessage = loadingMessage;

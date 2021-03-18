@@ -98,9 +98,14 @@
                     </MudCardContent>
                     @if (!IsReadOnly)
                     {
-                        <MudCardActions>
-                            <MudButton Disabled="@IsLoading" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Submit</MudButton>
-                        </MudCardActions>
+                    <MudCardActions>
+                        <MudButton Disabled="@IsLoading" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Submit</MudButton>
+                        @*@if (Model.Status == Common.AdoServices.Models.Status.Draft)
+                        {
+                            <MudButton OnClick="SaveAsDraftAsync"
+                                       Disabled="@IsLoading" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto">Save as Draft</MudButton>
+                        }*@
+                    </MudCardActions>
                     }
                 </MudCard>
                 @if (!IsReadOnly)
