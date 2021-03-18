@@ -189,13 +189,14 @@ namespace CSRO.Server.Ado.Api.Services
         public override void Add(AdoProject entity, string UserId = null)
         {            
             base.Add(entity, _userId);
-            entity.State = ProjectState.CreatePending;            
+            entity.State = ProjectState.CreatePending;                        
         }
 
         public override void Remove(AdoProject entity, string UserId = null)
         {
             base.Remove(entity, _userId);
             entity.State = ProjectState.Deleted;
+            entity.Status = Status.Deleted;
         }
     }
 }
