@@ -164,8 +164,9 @@ namespace CSRO.Server.Ado.Api.Controllers
 
             try
             {
-                _logger.LogInformation(ApiLogEvents.ApproveItem, $"{nameof(ApproveAdoProject)} Started");                
-                var approved = await _repository.ApproveAndCreateAdoProjects(toApprove).ConfigureAwait(false);
+                _logger.LogInformation(ApiLogEvents.ApproveItem, $"{nameof(ApproveAdoProject)} Started");
+                //var approved = await _repository.ApproveAndCreateAdoProjects(toApprove).ConfigureAwait(false);
+                var approved = await _repository.ApproveAdoProjects(toApprove).ConfigureAwait(false);
                 var result = _mapper.Map<List<ProjectAdo>>(approved);
                 return result;
             }
@@ -182,10 +183,37 @@ namespace CSRO.Server.Ado.Api.Controllers
         //{
         //}
 
-        //// DELETE api/<AdoProjectController>/5
-        //[HttpDelete("{id}")]
-        //public void Delete(int id)
-        //{
-        //}
+        // DELETE api/<AdoProjectController>/5
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteAdoProjectRequest(int id)
+        {
+            if (id < 1)
+                return BadRequest();
+
+            try
+            {
+                _logger.LogInformation(ApiLogEvents.DeleteItem, $"{nameof(DeleteAdoProjectRequest)} Started");
+
+                var repoObj = await _repository.GetId(id).ConfigureAwait(false);
+                if (repoObj == null)
+                {
+                    _logger.LogWarning(ApiLogEvents.DeleteItemNotFound, $"{nameof(DeleteAdoProjectRequest)} not found");
+                    return NotFound();
+                }
+
+                _repository.Remove(repoObj);
+                if (await _repository.SaveChangesAsync())
+                {
+                    return NoContent();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, nameof(DeleteAdoProjectRequest), id);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
+            }
+            return null;
+        }
     }
 }
