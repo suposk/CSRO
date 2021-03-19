@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace CSRO.Client.Blazor.WebApp.Pages.Ado
 {
-    public class AdoRequestsBase : CsroComponentBase
+    public class AdoRequestsListBase : CsroComponentBase
     {
         #region Params and Injects
 
@@ -30,7 +30,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Ado
         public IAdoProjectDataService AdoProjectDataService { get; set; }
 
         [Inject]
-        public ILogger<AdoRequestsBase> Logger { get; set; }
+        public ILogger<AdoRequestsListBase> Logger { get; set; }
 
         #endregion
 
