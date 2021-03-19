@@ -165,8 +165,8 @@ namespace CSRO.Server.Ado.Api.Controllers
             try
             {
                 _logger.LogInformation(ApiLogEvents.ApproveItem, $"{nameof(ApproveAdoProject)} Started");
-                //var approved = await _repository.ApproveAndCreateAdoProjects(toApprove).ConfigureAwait(false);
-                var approved = await _repository.ApproveAdoProjects(toApprove).ConfigureAwait(false);
+                var approved = await _repository.ApproveAndCreateAdoProjects(toApprove).ConfigureAwait(false);
+                //var approved = await _repository.ApproveAdoProjects(toApprove).ConfigureAwait(false);
                 var result = _mapper.Map<List<ProjectAdo>>(approved);
                 return result;
             }

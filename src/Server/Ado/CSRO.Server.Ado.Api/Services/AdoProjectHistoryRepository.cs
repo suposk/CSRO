@@ -17,6 +17,7 @@ namespace CSRO.Server.Ado.Api.Services
         const string Operation_RequestCreated = "Request Created";
         const string Operation_SentEmailForApproval = "Sent Email For Approval";
         const string Operation_RequestApproved = "Request Approved";
+        const string Operation_RequestCompleted = "Request Completed";
 
         Task<AdoProjectHistory> Create(int adoProjectId, string operation, string userId);
 

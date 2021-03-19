@@ -14,11 +14,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using MediatR;
+using CSRO.Server.Ado.Api.Commands;
 
 namespace CSRO.Server.Ado.Api.Services
 {
     public interface IAdoProjectRepository : IRepository<AdoProject>
     {
+        Task<List<AdoProject>> ApproveAdoProjects(List<int> toApprove);
         Task<List<AdoProject>> ApproveAndCreateAdoProjects(List<int> toApprove);
         Task<AdoProject> CreateAdoProject(AdoProject entity);
         Task<bool> ProjectExists(string organization, string projectName);
@@ -33,6 +36,7 @@ namespace CSRO.Server.Ado.Api.Services
         private readonly IAdoProjectHistoryRepository _adoProjectHistoryRepository;
         private readonly IPropertyMappingService _propertyMappingService;
         private readonly IMapper _mapper;
+        private readonly IMediator _mediator;
         private string _userId;        
 
         public AdoProjectRepository(            
@@ -42,6 +46,7 @@ namespace CSRO.Server.Ado.Api.Services
             IAdoProjectHistoryRepository adoProjectHistoryRepository,
             IPropertyMappingService propertyMappingService, 
             IMapper mapper,
+            IMediator mediator,
             IApiIdentity apiIdentity) : base(context, apiIdentity)
         {            
             _repository = repository;
@@ -50,6 +55,7 @@ namespace CSRO.Server.Ado.Api.Services
             _adoProjectHistoryRepository = adoProjectHistoryRepository;
             _propertyMappingService = propertyMappingService;
             _mapper = mapper;
+            _mediator = mediator;
             _userId = ApiIdentity.GetUserName();            
         }
 
@@ -91,8 +97,7 @@ namespace CSRO.Server.Ado.Api.Services
                 throw;
             }           
         }
-
-        //public async Task<CsroPagedList<AdoProject>> Search(ResourceParameters resourceParameters)
+                
         public async Task<CsroPagedList<AdoProject>> Search(ResourceParameters resourceParameters, string organization = null)        
         {
             if (resourceParameters is null)
@@ -170,7 +175,7 @@ namespace CSRO.Server.Ado.Api.Services
                             entity = _mapper.Map<AdoProject>(created);
                             //entity.Status = Status.Approved;
                             entity.Status = Status.Completed;
-                            base.Update(entity, _userId);
+                            Update(entity, _userId);
                             if (await SaveChangesAsync())
                             {
                                 await _adoProjectHistoryRepository.Create(entity.Id, IAdoProjectHistoryRepository.Operation_RequestApproved, _userId);
@@ -217,7 +222,7 @@ namespace CSRO.Server.Ado.Api.Services
                             var mapped = _mapper.Map<AdoModels.ProjectAdo>(entity);                            
                             //1. Update Db
                             entity.Status = Status.Approved;                            
-                            base.Update(entity, _userId);
+                            Update(entity, _userId);
                             if (await SaveChangesAsync())
                             {
                                 await _adoProjectHistoryRepository.Create(entity.Id, IAdoProjectHistoryRepository.Operation_RequestApproved, _userId);
@@ -233,7 +238,12 @@ namespace CSRO.Server.Ado.Api.Services
                     }
                 }
 
+                //TODO sent message
                 //2. Send command to create projects
+                var createApprovedAdoProjectsCommand = new CreateApprovedAdoProjectsCommand() { Approved = approved, UserId = _userId };
+                // no need to await
+                var task = _mediator.Send(createApprovedAdoProjectsCommand); 
+
                 return approved.Any() ? approved : null;
             }
             catch

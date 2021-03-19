@@ -76,7 +76,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Ado
                 
                 var approved = await AdoProjectDataService.ApproveAdoProject(toBeApproved);
                 if (toBeApproved.Count == approved?.Count)
-                    await CsroDialogService.ShowMessage("Success", $"All {toBeApproved.Count} project(s) were approved and created.");
+                    await CsroDialogService.ShowMessage("Success", $"All {toBeApproved.Count} project(s) were approved.");
                 else
                     await CsroDialogService.ShowMessage("Partial Success", $"Only {approved.Count} out of {toBeApproved.Count} project(s) were approved and created.");
 
