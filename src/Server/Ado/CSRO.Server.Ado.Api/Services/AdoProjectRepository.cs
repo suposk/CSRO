@@ -241,8 +241,8 @@ namespace CSRO.Server.Ado.Api.Services
                 //TODO sent message
                 //2. Send command to create projects
                 var createApprovedAdoProjectsCommand = new CreateApprovedAdoProjectsCommand() { Approved = approved, UserId = _userId };
-                // no need to await
-                var task = _mediator.Send(createApprovedAdoProjectsCommand); 
+                //var task = _mediator.Send(createApprovedAdoProjectsCommand); // exception, repo is disposed                
+                await _mediator.Send(createApprovedAdoProjectsCommand);
 
                 return approved.Any() ? approved : null;
             }

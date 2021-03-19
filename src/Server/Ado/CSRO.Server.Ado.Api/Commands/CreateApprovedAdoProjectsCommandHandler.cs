@@ -42,6 +42,9 @@ namespace CSRO.Server.Ado.Api.Commands
         {
             try
             {
+                _adoProjectRepository.DatabaseContext.ChangeTracker.Clear();
+                _adoProjectHistoryRepository.DatabaseContext.ChangeTracker.Clear();
+
                 List<AdoProject> created = new();
                 StringBuilder warnings = new();
                 if (request.Approved.IsNullOrEmptyCollection())
@@ -57,7 +60,8 @@ namespace CSRO.Server.Ado.Api.Commands
                             continue;                            
                         }
 
-                        var origEntity = await _adoProjectRepository.GetId(obj.Id);                        
+                        var origEntity = await _adoProjectRepository.GetId(obj.Id);
+                        //var origEntity = obj;
 
                         //1. create Proj
                         var mapped = _mapper.Map<AdoModels.ProjectAdo>(origEntity);
