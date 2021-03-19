@@ -33,6 +33,8 @@ using CSRO.Server.Ado.Api.BackgroundTasks;
 using CSRO.Server.Services.Utils;
 using CSRO.Server.Services.Ado;
 using CSRO.Server.Infrastructure.Search;
+using System.Reflection;
+using MediatR;
 
 namespace CSRO.Server.Ado.Api
 {
@@ -124,6 +126,7 @@ namespace CSRO.Server.Ado.Api
             #endregion
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            services.AddMediatR(Assembly.GetExecutingAssembly());
 
             services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApi(Configuration, "AzureAd")

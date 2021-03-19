@@ -30,6 +30,8 @@ using Microsoft.Azure.KeyVault;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using CSRO.Common;
 using CSRO.Server.Services.AzureRestServices;
+using MediatR;
+using System.Reflection;
 
 namespace CSRO.Server.Api
 {
@@ -129,6 +131,7 @@ namespace CSRO.Server.Api
             #endregion
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            services.AddMediatR(Assembly.GetExecutingAssembly());
 
             services.AddHttpClient(Core.ConstatCsro.ClientNames.MANAGEMENT_AZURE_EndPoint, (client) =>
             {

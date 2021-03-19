@@ -19,7 +19,7 @@ namespace CSRO.Server.Ado.Api.Services
 {
     public interface IAdoProjectRepository : IRepository<AdoProject>
     {
-        Task<List<AdoProject>> ApproveAndCreateAdoProject(List<int> toApprove);
+        Task<List<AdoProject>> ApproveAndCreateAdoProjects(List<int> toApprove);
         Task<AdoProject> CreateAdoProject(AdoProject entity);
         Task<bool> ProjectExists(string organization, string projectName);
         Task<CsroPagedList<AdoProject>> Search(ResourceParameters resourceParameters, string organization = null);
@@ -140,7 +140,7 @@ namespace CSRO.Server.Ado.Api.Services
         /// </summary>
         /// <param name="toApprove"></param>
         /// <returns></returns>
-        public async Task<List<AdoProject>> ApproveAndCreateAdoProject(List<int> toApprove)
+        public async Task<List<AdoProject>> ApproveAndCreateAdoProjects(List<int> toApprove)
         {
             if (toApprove is null)
                 throw new ArgumentNullException(nameof(toApprove));
@@ -191,6 +191,55 @@ namespace CSRO.Server.Ado.Api.Services
             {
                 throw;
             }            
+        }
+
+        public async Task<List<AdoProject>> ApproveAdoProjects(List<int> toApprove)
+        {
+            if (toApprove is null)
+                throw new ArgumentNullException(nameof(toApprove));
+
+            try
+            {
+                List<AdoProject> approved = new();
+                StringBuilder others = new();
+
+                foreach (var pId in toApprove)
+                {
+                    try
+                    {
+                        var entity = await _repository.GetId(pId);
+                        if (entity != null)
+                        {
+                            //only if in pending state
+                            if (entity.State != ProjectState.CreatePending)
+                                continue;
+                            
+                            var mapped = _mapper.Map<AdoModels.ProjectAdo>(entity);                            
+                            //1. Update Db
+                            entity.Status = Status.Approved;                            
+                            base.Update(entity, _userId);
+                            if (await SaveChangesAsync())
+                            {
+                                await _adoProjectHistoryRepository.Create(entity.Id, IAdoProjectHistoryRepository.Operation_RequestApproved, _userId);
+                                approved.Add(entity);
+                            }
+                        }
+                        else
+                            others.Append($"Id {pId} was not found, verify this Id exist or record was modified.");
+                    }
+                    catch (Exception ex)
+                    {
+                        others.Append($"Error approving Id {pId}: {ex.Message}");
+                    }
+                }
+
+                //2. Send command to create projects
+                return approved.Any() ? approved : null;
+            }
+            catch
+            {
+                throw;
+            }
         }
 
         public override void Add(AdoProject entity, string UserId = null)
