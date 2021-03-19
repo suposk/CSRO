@@ -62,6 +62,8 @@ namespace CSRO.Server.Entities.Entity
         }
         public List<AdoProjectHistory> AdoProjectHistoryList { get; set; }
 
+        public Status Status { get; set; }
+
         public string Organization { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }

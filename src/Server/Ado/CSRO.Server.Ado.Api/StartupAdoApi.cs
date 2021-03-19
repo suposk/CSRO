@@ -32,6 +32,9 @@ using CSRO.Common.AdoServices;
 using CSRO.Server.Ado.Api.BackgroundTasks;
 using CSRO.Server.Services.Utils;
 using CSRO.Server.Services.Ado;
+using CSRO.Server.Infrastructure.Search;
+using System.Reflection;
+using MediatR;
 
 namespace CSRO.Server.Ado.Api
 {
@@ -123,6 +126,7 @@ namespace CSRO.Server.Ado.Api
             #endregion
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            services.AddMediatR(Assembly.GetExecutingAssembly());
 
             services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApi(Configuration, "AzureAd")
@@ -139,7 +143,7 @@ namespace CSRO.Server.Ado.Api
             .AddFluentValidation(options =>
             {
                 //options.RegisterValidatorsFromAssemblyContaining<Startup>();
-                options.RegisterValidatorsFromAssemblyContaining<Validation.BaseAbstractValidator>();
+                options.RegisterValidatorsFromAssemblyContaining<Validation.BaseAdoAbstractValidator>();
             });
 
 
@@ -149,6 +153,7 @@ namespace CSRO.Server.Ado.Api
             services.AddTransient<IProjectAdoServices, ProjectAdoServices>();
             services.AddTransient<IProcessAdoServices, ProcessAdoServices>();
             services.AddSingleton<ICacheProvider, CacheProvider>(); //testing
+            services.AddTransient<IPropertyMappingService, AdoPropertyMappingService>();
 
             services.AddScoped<IAdoProjectApproverService, AdoProjectApproverService>();
             services.AddScoped<IGenerateEmailForApprovalService, GenerateEmailForApprovalService>();

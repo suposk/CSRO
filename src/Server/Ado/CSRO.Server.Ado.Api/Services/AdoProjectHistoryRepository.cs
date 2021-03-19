@@ -17,6 +17,7 @@ namespace CSRO.Server.Ado.Api.Services
         const string Operation_RequestCreated = "Request Created";
         const string Operation_SentEmailForApproval = "Sent Email For Approval";
         const string Operation_RequestApproved = "Request Approved";
+        const string Operation_RequestCompleted = "Request Completed";
 
         Task<AdoProjectHistory> Create(int adoProjectId, string operation, string userId);
 
@@ -46,18 +47,27 @@ namespace CSRO.Server.Ado.Api.Services
 
         public async Task<List<AdoProject>> GetPendingProjectsApproval()
         {
-            var q = _context.AdoProjects.Where(
-                a =>
-                a.IsDeleted != true &&
-                a.State == ProjectState.CreatePending &&
-                //a.AdoProjectHistoryList.Count == 1 //TODO fix
-                a.AdoProjectHistoryList.FirstOrDefault(a => a.Operation != IAdoProjectHistoryRepository.Operation_SentEmailForApproval) != null
-                )
-                //.Include(p => p.AdoProjectHistoryList)
-                ;
+            try
+            {
+                var q = _context.AdoProjects.Where(
+                    a =>
+                    a.IsDeleted != true &&
+                    a.State == ProjectState.CreatePending &&
+                    //a.AdoProjectHistoryList.Count == 1 //not ideal, only count
+                    //a.AdoProjectHistoryList.FirstOrDefault(a => a.Operation != IAdoProjectHistoryRepository.Operation_SentEmailForApproval) != null //error                    
+                    a.AdoProjectHistoryList.FirstOrDefault(a => a.Operation == IAdoProjectHistoryRepository.Operation_SentEmailForApproval) == null //works
+                    )
+                    //.Include(p => p.AdoProjectHistoryList) //not needed
+                    //.AsQueryable()
+                    ;
 
-            var all = await q.ToListAsync();
-            return all.IsNullOrEmptyCollection() ? null : all.ToList();
+                var all = await q.ToListAsync();
+                return all.IsNullOrEmptyCollection() ? null : all.ToList();
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
 
             #region
             //var q = _context.AdoProjectHistorys.Where(

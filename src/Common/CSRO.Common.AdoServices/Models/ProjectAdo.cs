@@ -5,13 +5,18 @@ using System.Text;
 
 namespace CSRO.Common.AdoServices.Models
 {
+
     /// <summary>
     /// Wrapper around TeamProject
     /// </summary>
     public class ProjectAdo : TeamProject
     {
+        public Status Status { get; set; }
+        
         public string Organization { get; set; }
+        
         public string ProcessName { get; set; }
+
         public Guid? AdoId { get; set; }
 
         public new int Id { get; set; }

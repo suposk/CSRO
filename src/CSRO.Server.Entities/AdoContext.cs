@@ -62,17 +62,20 @@ namespace CSRO.Server.Entities
             //   .Property(a => a.RowVersion)
             //   .IsRowVersion();
 
+
+            //First-Ado is create but not in DB
             modelBuilder.Entity<AdoProject>().HasData(
                 new AdoProject()
                 {
                     Id = 1,
                     CreatedBy = "Migration Script",
                     CreatedAt = new DateTime(2021, 11, 1, 14, 15, 16),
-                    Name = "Dymmy record", 
+                    Name = "del", 
                     ProcessName = "Agile", 
-                    Description = "Fake Not created", 
-                    Organization = "SomeOrg", 
-                    State = ProjectState.Deleted,                    
+                    Description = "dummy fake project, not created", 
+                    Organization = "jansupolikAdo", 
+                    Status = Status.Draft,
+                    State = ProjectState.Unchanged,                    
                 }
 
                 //,

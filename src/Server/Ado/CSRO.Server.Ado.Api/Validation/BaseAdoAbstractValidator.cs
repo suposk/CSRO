@@ -11,7 +11,7 @@ namespace CSRO.Server.Ado.Api.Validation
     /// <summary>
     /// Only for registration for assemby
     /// </summary>
-    public class BaseAbstractValidator : AbstractValidator<DtoBase>
+    public class BaseAdoAbstractValidator : AbstractValidator<DtoBase>
     {
 
     }

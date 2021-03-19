@@ -14,12 +14,16 @@ using Microsoft.VisualStudio.Services.Client; //it ,ay be removed perhaps
 using Microsoft.Extensions.Configuration;
 using AutoMapper;
 using Microsoft.Extensions.Logging;
+using System.Linq;
 
 namespace CSRO.Common.AdoServices
 {
     public interface IProjectAdoServices
     {
         Task<ProjectAdo> CreateProject(ProjectAdo projectAdoCreate);
+        Task<bool> ProjectExistInAdo(string organization, string projectName);
+
+        //Task<bool> ProjectDoesNotExistInAdo(string organization, string projectName);
     }
 
     public class ProjectAdoServices : IProjectAdoServices
@@ -41,6 +45,58 @@ namespace CSRO.Common.AdoServices
             _processAdoServices = processAdoServices;
             _logger = logger;
             _adoConfig = configuration.GetSection(nameof(AdoConfig)).Get<AdoConfig>();            
+        }
+
+        //public async Task<bool> ProjectDoesNotExistInAdo(string organization, string projectName)
+        //{
+        //    var exist = await ProjectDoesNotExistInAdo(organization, projectName);
+        //    return !exist;
+        //}
+
+        public async Task<bool> ProjectExistInAdo(string organization, string projectName)
+        {
+            if (string.IsNullOrWhiteSpace(organization))            
+                throw new ArgumentException($"'{nameof(organization)}' cannot be null or whitespace.", nameof(organization));
+            
+
+            if (string.IsNullOrWhiteSpace(projectName))            
+                throw new ArgumentException($"'{nameof(projectName)}' cannot be null or whitespace.", nameof(projectName));
+            
+
+            VssConnection connection = null;            
+            try
+            {
+                string url = $"https://dev.azure.com/{organization}";
+
+                // Setup version control properties
+                Dictionary<string, string> versionControlProperties = new();
+                versionControlProperties[TeamProjectCapabilitiesConstants.VersionControlCapabilityAttributeName] =
+                    SourceControlTypes.Git.ToString();
+
+                if (_adoConfig.UsePta)
+                    connection = new VssConnection(new Uri(url), new VssBasicCredential(string.Empty, _adoConfig.AdoPersonalAccessToken));
+                else
+                    //connection = new VssConnection(new Uri(url), new VssCredentials(true));
+                    connection = new VssConnection(new Uri(url), new VssClientCredentials(true));
+
+                // Get a client            
+                ProjectHttpClient projectClient = connection.GetClient<ProjectHttpClient>();
+                var all = await projectClient.GetProjects();
+                if (all?.Any() == false)
+                    return false;
+
+                var exist = all.Any(a => string.Equals(a.Name, projectName, StringComparison.OrdinalIgnoreCase));
+                return exist;
+            }
+            catch (Exception ex)
+            {
+                //Console.WriteLine("Exception during create project: ", ex.Message);
+                throw;
+            }
+            finally
+            {
+                connection?.Dispose();
+            }            
         }
 
         public async Task<ProjectAdo> CreateProject(ProjectAdo projectAdoCreate)

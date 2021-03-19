@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using CSRO.Common.AdoServices.Models;
 using CSRO.Server.Ado.Api.Services;
-using CSRO.Server.Entities.Entity;
+using Entity = CSRO.Server.Entities.Entity;
 using CSRO.Server.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -76,6 +76,56 @@ namespace CSRO.Server.Ado.Api.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }
         }
+                
+        [HttpGet("{organization}/{projectName}", Name = nameof(ProjectExists))]
+        public async Task<ActionResult<bool>> ProjectExists(string organization, string projectName)
+        {
+            if (string.IsNullOrWhiteSpace(projectName) || string.IsNullOrWhiteSpace(organization))
+                return BadRequest();
+
+            try
+            {
+                _logger.LogInformation(ApiLogEvents.GetItem, $"{nameof(ProjectExists)} with {projectName} {organization} Started");
+
+                var res = await _repository.ProjectExists(organization, projectName).ConfigureAwait(false);
+                return res ? Ok(true) : NotFound();                    
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, nameof(ProjectExists), projectName, organization);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
+            }
+        }
+
+        [HttpPost, Route(nameof(SaveDraftAdoProject))]
+        public async Task<ActionResult<ProjectAdo>> SaveDraftAdoProject(ProjectAdo dto)
+        {
+            if (dto == null)
+                return BadRequest();
+
+            try
+            {
+                _logger.LogInformation(ApiLogEvents.RequestItem, $"{nameof(SaveDraftAdoProject)} Started");
+
+                var repoObj = _mapper.Map<Entity.AdoProject>(dto);
+                _repository.Add(repoObj);
+                var suc = await _repository.SaveChangesAsync();
+                if (suc)
+                {
+                    var result = _mapper.Map<ProjectAdo>(repoObj);
+                    return CreatedAtRoute(nameof(GetRequestAdoProject),
+                        new { id = result.Id }, result);
+                }
+                else
+                    return null;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, nameof(SaveDraftAdoProject), dto);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
+            }
+        }
+
 
         [HttpPost, Route(nameof(RequestAdoProject))]        
         public async Task<ActionResult<ProjectAdo>> RequestAdoProject(ProjectAdo dto)
@@ -87,11 +137,11 @@ namespace CSRO.Server.Ado.Api.Controllers
             {
                 _logger.LogInformation(ApiLogEvents.RequestItem, $"{nameof(RequestAdoProject)} Started");
 
-                var repoObj = _mapper.Map<AdoProject>(dto);              
+                var repoObj = _mapper.Map<Entity.AdoProject>(dto);              
                 var suc = await _repository.CreateAdoProject(repoObj);
                 if (suc != null)
                 {
-                    var result = _mapper.Map<AdoProject>(repoObj);
+                    var result = _mapper.Map<ProjectAdo>(repoObj);                    
                     return CreatedAtRoute(nameof(GetRequestAdoProject),
                         new { id = result.Id }, result);
                 }
@@ -114,8 +164,9 @@ namespace CSRO.Server.Ado.Api.Controllers
 
             try
             {
-                _logger.LogInformation(ApiLogEvents.ApproveItem, $"{nameof(ApproveAdoProject)} Started");                
-                var approved = await _repository.ApproveAdoProject(toApprove).ConfigureAwait(false);
+                _logger.LogInformation(ApiLogEvents.ApproveItem, $"{nameof(ApproveAdoProject)} Started");
+                //var approved = await _repository.ApproveAndCreateAdoProjects(toApprove).ConfigureAwait(false);
+                var approved = await _repository.ApproveAdoProjects(toApprove).ConfigureAwait(false);
                 var result = _mapper.Map<List<ProjectAdo>>(approved);
                 return result;
             }
@@ -132,10 +183,37 @@ namespace CSRO.Server.Ado.Api.Controllers
         //{
         //}
 
-        //// DELETE api/<AdoProjectController>/5
-        //[HttpDelete("{id}")]
-        //public void Delete(int id)
-        //{
-        //}
+        // DELETE api/<AdoProjectController>/5
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteAdoProjectRequest(int id)
+        {
+            if (id < 1)
+                return BadRequest();
+
+            try
+            {
+                _logger.LogInformation(ApiLogEvents.DeleteItem, $"{nameof(DeleteAdoProjectRequest)} Started");
+
+                var repoObj = await _repository.GetId(id).ConfigureAwait(false);
+                if (repoObj == null)
+                {
+                    _logger.LogWarning(ApiLogEvents.DeleteItemNotFound, $"{nameof(DeleteAdoProjectRequest)} not found");
+                    return NotFound();
+                }
+
+                _repository.Remove(repoObj);
+                if (await _repository.SaveChangesAsync())
+                {
+                    return NoContent();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, nameof(DeleteAdoProjectRequest), id);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
+            }
+            return null;
+        }
     }
 }
