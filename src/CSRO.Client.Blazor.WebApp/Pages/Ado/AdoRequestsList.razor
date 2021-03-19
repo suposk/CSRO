@@ -36,7 +36,7 @@
               Hover="true" SortLabel="Sort By" Elevation="0">
         <HeaderContent>
             <MudTh><MudTableSortLabel SortBy="new Func<ProjectAdo, object>(x=>x.Id)">Id</MudTableSortLabel></MudTh>
-            @*<MudTh><MudTableSortLabel SortBy="new Func<ProjectAdo, object>(x=>x.State)">State</MudTableSortLabel></MudTh>*@
+            <MudTh><MudTableSortLabel SortBy="new Func<ProjectAdo, object>(x=>x.Status)">Status</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortBy="new Func<ProjectAdo, object>(x=>x.Organization)">Organization</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortBy="new Func<ProjectAdo, object>(x=>x.Name)">Name</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortBy="new Func<ProjectAdo, object>(x=>x.Description)">Description</MudTableSortLabel></MudTh>
@@ -47,7 +47,7 @@
         </HeaderContent>
         <RowTemplate>
             <MudTd DataLabel="Id">@context.Id</MudTd>
-            @*<MudTd DataLabel="State">@context.State</MudTd>*@
+            <MudTd DataLabel="Status">@context.Status</MudTd>
             <MudTd DataLabel="Organization">@context.Organization</MudTd>
             <MudTd DataLabel="Name">@context.Name</MudTd>
             <MudTd DataLabel="Description">@context.Description</MudTd>
