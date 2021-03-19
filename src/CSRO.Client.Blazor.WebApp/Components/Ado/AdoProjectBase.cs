@@ -12,9 +12,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace CSRO.Client.Blazor.WebApp.Pages.Ado
+namespace CSRO.Client.Blazor.WebApp.Components.Ado
 {
-    public class ProjectCreateBase : CsroComponentBase
+    public class AdoProjectBase : CsroComponentBase
     {
         #region Params and Injects
 
@@ -40,7 +40,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Ado
         public IProcessAdoServices ProcessAdoServices { get; set; }
 
         [Inject]
-        public ILogger<ProjectCreateBase> Logger { get; set; }
+        public ILogger<AdoProjectBase> Logger { get; set; }
 
         #endregion
 
@@ -85,31 +85,31 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Ado
 
         public Task OnOrganizationChanged(string value)
         {
-            if (value != null)            
-                Model.Organization = value;                            
+            if (value != null)
+                Model.Organization = value;
 
             return Task.CompletedTask;
         }
 
         public Task OnProcessNameChanged(string value)
         {
-            if (value != null)            
-                Model.ProcessName = value;            
-            
+            if (value != null)
+                Model.ProcessName = value;
+
             return Task.CompletedTask;
         }
 
         public async Task OnValidSubmit(EditContext context)
         {
-            ShowProcessing();            
+            ShowProcessing();
             var valid = context.Validate();
             if (valid)
             {
                 try
                 {
                     await Task.Delay(1 * 1000); // todo fix workaround
-                    valid = context.Validate();                       
-                                        
+                    valid = context.Validate();
+
                     if (valid && OperationTypeTicket == OperatioType.Create)
                     {
                         Model.Status = Status.Submitted;
@@ -141,7 +141,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Ado
                     Logger.LogError(ex, nameof(OnValidSubmit));
                     await CsroDialogService.ShowError("Error", $"Detail error: {ex.Message}");
                 }
-                
+
             }
             HideLoading();
         }
@@ -155,7 +155,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Ado
                 var saved = await AdoProjectDataService.AddItemAsync(Model);
                 if (saved != null)
                     await CsroDialogService.ShowMessage("Success", $"Request was saved.");
-                
+
                 //await Load();
             }
             catch (Exception ex)
@@ -164,7 +164,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Ado
                 await CsroDialogService.ShowError("Error", $"Detail error: {ex.Message}");
             }
             HideLoading();
-        }    
+        }
 
         public void GoBack()
         {
