@@ -35,6 +35,7 @@ using CSRO.Server.Services.Ado;
 using CSRO.Server.Infrastructure.Search;
 using System.Reflection;
 using MediatR;
+using CSRO.Server.Infrastructure.MessageBus;
 
 namespace CSRO.Server.Ado.Api
 {
@@ -154,6 +155,7 @@ namespace CSRO.Server.Ado.Api
             services.AddTransient<IProcessAdoServices, ProcessAdoServices>();
             services.AddSingleton<ICacheProvider, CacheProvider>(); //testing
             services.AddTransient<IPropertyMappingService, AdoPropertyMappingService>();
+            services.AddSingleton<IMessageBus, AzServiceBusMessageBus>();
 
             services.AddScoped<IAdoProjectApproverService, AdoProjectApproverService>();
             services.AddScoped<IGenerateEmailForApprovalService, GenerateEmailForApprovalService>();

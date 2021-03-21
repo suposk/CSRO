@@ -14,8 +14,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using MediatR;
-using CSRO.Server.Ado.Api.Commands;
+//using MediatR;
+//using CSRO.Server.Ado.Api.Commands;
+using CSRO.Server.Infrastructure.MessageBus;
+using CSRO.Server.Ado.Api.Messaging;
 
 namespace CSRO.Server.Ado.Api.Services
 {
@@ -36,7 +38,8 @@ namespace CSRO.Server.Ado.Api.Services
         private readonly IAdoProjectHistoryRepository _adoProjectHistoryRepository;
         private readonly IPropertyMappingService _propertyMappingService;
         private readonly IMapper _mapper;
-        private readonly IMediator _mediator;
+       // private readonly IMediator _mediator;
+        private readonly IMessageBus _messageBus;
         private string _userId;        
 
         public AdoProjectRepository(            
@@ -46,7 +49,8 @@ namespace CSRO.Server.Ado.Api.Services
             IAdoProjectHistoryRepository adoProjectHistoryRepository,
             IPropertyMappingService propertyMappingService, 
             IMapper mapper,
-            IMediator mediator,
+           // IMediator mediator,
+            IMessageBus messageBus,
             IApiIdentity apiIdentity) : base(context, apiIdentity)
         {            
             _repository = repository;
@@ -55,7 +59,8 @@ namespace CSRO.Server.Ado.Api.Services
             _adoProjectHistoryRepository = adoProjectHistoryRepository;
             _propertyMappingService = propertyMappingService;
             _mapper = mapper;
-            _mediator = mediator;
+            //_mediator = mediator;
+            _messageBus = messageBus;
             _userId = ApiIdentity.GetUserName();            
         }
 
@@ -240,13 +245,14 @@ namespace CSRO.Server.Ado.Api.Services
 
                 //TODO sent message
                 //2. Send command to create projects
-                var createApprovedAdoProjectsCommand = new CreateApprovedAdoProjectsCommand() { Approved = approved, UserId = _userId };
-                //var task = _mediator.Send(createApprovedAdoProjectsCommand); // exception, repo is disposed                
-                await _mediator.Send(createApprovedAdoProjectsCommand);
+                //var createApprovedAdoProjectsCommand = new CreateApprovedAdoProjectsCommand() { Approved = approved, UserId = _userId };             
+                //await _mediator.Send(createApprovedAdoProjectsCommand);
+                var message = new ApprovedAdoProjectsMessage { ApprovedAdoProjectIds = approved.Select(a => a.Id).ToList(), UserId = _userId };
+                await _messageBus.PublishMessage(message, "approvedadoprojects");
 
                 return approved.Any() ? approved : null;
             }
-            catch
+            catch(Exception ex)
             {
                 throw;
             }
