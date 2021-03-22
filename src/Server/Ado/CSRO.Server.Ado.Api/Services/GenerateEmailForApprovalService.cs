@@ -82,7 +82,7 @@ namespace CSRO.Server.Ado.Api.Services
                 (finalResult) => Interlocked.Add(ref totalSent, finalResult));
 
                 //at least one email sent
-                if (totalSent > 1)
+                if (totalSent > 0)
                 {
                     Parallel.ForEach(toApprove, async (project) =>
                     {
