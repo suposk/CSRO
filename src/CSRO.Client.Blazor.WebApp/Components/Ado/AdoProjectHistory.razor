@@ -1,0 +1,39 @@
+﻿@inherits AdoProjectHistoryBase
+@using CSRO.Client.Services.Models;
+
+@if (OperationTypeTicket != @OperatioType.Create)
+{
+<MudPaper>
+    <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="m-2">
+        <MudText Typo="Typo.h4" GutterBottom="true">Ado Project History</MudText>
+        @if (IsLoading)
+        {
+            <MudGrid>
+                <MudItem>
+                    <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+                </MudItem>
+                <MudItem>
+                    <MudText>@LoadingMessage</MudText>
+                </MudItem>
+            </MudGrid>
+        }
+        <MudTable Items="History"
+                  Hover="true" SortLabel="Sort By" Elevation="0">
+            <HeaderContent>
+                <MudTh><MudTableSortLabel SortBy="new Func<AdoProjectHistoryModel, object>(x => x.Operation)">Operation</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<AdoProjectHistoryModel, object>(x => x.CreatedBy)">Created By</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<AdoProjectHistoryModel, object>(x => x.CreatedAt)">Created At</MudTableSortLabel></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Operation">@context.Operation</MudTd>
+                <MudTd DataLabel="Created By">@context.CreatedBy</MudTd>
+                <MudTd DataLabel="Created At">@context.CreatedAt</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager 
+                               PageSizeOptions="new int[] { 10, 20, 50 }" />
+            </PagerContent>
+        </MudTable>
+    </MudContainer>
+</MudPaper>
+}

@@ -14,21 +14,21 @@ using AdoModels = CSRO.Common.AdoServices.Models;
 
 namespace CSRO.Server.Ado.Api.Commands
 {
-    public class CreateApprovedAdoProjectsCommandHandler : IRequestHandler<CreateApprovedAdoProjectsCommand, List<AdoProject>>
+    public class CreateApprovedAdoProjectIdsCommandHandler : IRequestHandler<CreateApprovedAdoProjectIdsCommand, List<AdoProject>>
     {
         private readonly IProjectAdoServices _projectAdoServices;
         private readonly IAdoProjectRepository _adoProjectRepository;
         private readonly IAdoProjectHistoryRepository _adoProjectHistoryRepository;
         private readonly IMapper _mapper;
-        private readonly ILogger<CreateApprovedAdoProjectsCommandHandler> _logger;
+        private readonly ILogger<CreateApprovedAdoProjectIdsCommandHandler> _logger;
 
-        public CreateApprovedAdoProjectsCommandHandler
+        public CreateApprovedAdoProjectIdsCommandHandler
             (
             IProjectAdoServices projectAdoServices,
             IAdoProjectRepository adoProjectRepository,
             IAdoProjectHistoryRepository adoProjectHistoryRepository,
             IMapper mapper,
-            ILogger<CreateApprovedAdoProjectsCommandHandler> logger
+            ILogger<CreateApprovedAdoProjectIdsCommandHandler> logger
             )
         {
             _projectAdoServices = projectAdoServices;
@@ -38,7 +38,7 @@ namespace CSRO.Server.Ado.Api.Commands
             _logger = logger;
         }
 
-        public async Task<List<AdoProject>> Handle(CreateApprovedAdoProjectsCommand request, CancellationToken cancellationToken)
+        public async Task<List<AdoProject>> Handle(CreateApprovedAdoProjectIdsCommand request, CancellationToken cancellationToken)
         {
             try
             {
@@ -49,19 +49,13 @@ namespace CSRO.Server.Ado.Api.Commands
                 StringBuilder warnings = new();
                 if (request.Approved.IsNullOrEmptyCollection())
                     return null;
-
-                foreach (var obj in request.Approved)
+                AdoProject origEntity = null;
+                foreach (var id in request.Approved)
                 {
                     try
                     {
-                        if (obj.Status != Status.Approved)
-                        {
-                            warnings.Append($"Skipping Id: {obj.Id}, {nameof(obj.Name)}: {obj.Name}");
-                            continue;                            
-                        }
-
-                        var origEntity = await _adoProjectRepository.GetId(obj.Id);
-                        //var origEntity = obj;
+                        origEntity = null;
+                        origEntity = await _adoProjectRepository.GetId(id);
 
                         //1. create Proj
                         var mapped = _mapper.Map<AdoModels.ProjectAdo>(origEntity);
@@ -71,9 +65,9 @@ namespace CSRO.Server.Ado.Api.Commands
                         var createdEntity = _mapper.Map<AdoProject>(createdModel);
                         createdEntity.Status = origEntity.Status;
 
-                        if (createdModel.State == Microsoft.TeamFoundation.Core.WebApi.ProjectState.New || 
+                        if (createdModel.State == Microsoft.TeamFoundation.Core.WebApi.ProjectState.New ||
                             createdModel.State == Microsoft.TeamFoundation.Core.WebApi.ProjectState.WellFormed)
-                        {                             
+                        {
                             createdEntity.Status = Status.Completed;
                             created.Add(createdEntity);
                         }
@@ -82,25 +76,25 @@ namespace CSRO.Server.Ado.Api.Commands
                         if (await _adoProjectRepository.SaveChangesAsync() && createdEntity.Status == Status.Completed)
                         {
                             //3. create record in history DB                            
-                            await _adoProjectHistoryRepository.Create(origEntity.Id, IAdoProjectHistoryRepository.Operation_RequestCompleted, request.UserId);                            
+                            await _adoProjectHistoryRepository.Create(origEntity.Id, IAdoProjectHistoryRepository.Operation_RequestCompleted, request.UserId);
                         }
                     }
                     catch (Exception ex)
                     {
-                        warnings.Append($"Error approving Id: {obj.Id}, {nameof(obj.Name)}: {obj.Name}, {ex.Message}");
+                        warnings.Append($"Error approving Id: {origEntity?.Id}, {nameof(origEntity.Name)}: {origEntity?.Name}, {ex.Message}");
                     }
-                }    
+                }
                 if (warnings.Length > 0)
-                    _logger.LogWarning($"{nameof(CreateApprovedAdoProjectsCommand)} warnings to report: {warnings}");
+                    _logger.LogWarning($"{nameof(CreateApprovedAdoProjectIdsCommandHandler)} warnings to report: {warnings}");
 
                 return created;
             }
             catch (Exception ex)
             {
                 //this shouldn't stop the API from doing else so this can be logged
-                _logger.LogError($"{nameof(CreateApprovedAdoProjectsCommand)} failed due to: {ex.Message}");
+                _logger.LogError($"{nameof(CreateApprovedAdoProjectIdsCommandHandler)} failed due to: {ex.Message}");
             }
-            return null;            
+            return null;
         }
     }
 }

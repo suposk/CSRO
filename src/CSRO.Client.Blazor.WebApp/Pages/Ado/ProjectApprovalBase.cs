@@ -78,7 +78,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Ado
                 if (toBeApproved.Count == approved?.Count)
                     await CsroDialogService.ShowMessage("Success", $"All {toBeApproved.Count} project(s) were approved.");
                 else
-                    await CsroDialogService.ShowMessage("Partial Success", $"Only {approved.Count} out of {toBeApproved.Count} project(s) were approved and created.");
+                    await CsroDialogService.ShowMessage("Partial Success", $"Only {approved.Count} out of {toBeApproved.Count} project(s) were approved.");
 
                 await Load();
             }
@@ -89,5 +89,33 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Ado
             }
             HideLoading();
         }
+
+
+        public async Task RejectAsync()
+        {
+            try
+            {
+                if (selectedItems?.Count == 0)
+                    return;
+
+                var toBeRejected = selectedItems.Select(a => a.Id).ToList();
+                ShowLoading($"Rejecting {toBeRejected.Count} project(s)");
+
+                var rejected = await AdoProjectDataService.RejectAdoProject(toBeRejected);
+                if (toBeRejected.Count == rejected?.Count)
+                    await CsroDialogService.ShowMessage("Success", $"All {toBeRejected.Count} project(s) were rejected.");
+                else
+                    await CsroDialogService.ShowMessage("Partial Success", $"Only {rejected.Count} out of {toBeRejected.Count} project(s) were rejected.");
+
+                await Load();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, nameof(OnInitializedAsync));
+                await CsroDialogService.ShowError("Error", $"Detail error: {ex.Message}");
+            }
+            HideLoading();
+        }
+
     }
 }

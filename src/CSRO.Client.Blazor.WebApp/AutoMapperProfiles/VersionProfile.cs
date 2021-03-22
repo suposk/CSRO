@@ -66,6 +66,10 @@ namespace CSRO.Client.Blazor.WebApp.AutoMapperProfiles
             CreateMap<Microsoft.TeamFoundation.Core.WebApi.Process, AdoModels.ProcessAdo>()                
                 .ReverseMap();
 
+            CreateMap<AdoProjectHistoryDto, Models.AdoProjectHistoryModel>()
+                //.ForMember(s => s.AdoProject, op => op.Ignore())
+                .ReverseMap();
+
             //CreateMap<Models.ResourceGroup, Models.ResourceGroupModel>()
             //    .ForMember(s => s.ResourceGroup, op => op.MapFrom(ss => ss))
             //    .ReverseMap();

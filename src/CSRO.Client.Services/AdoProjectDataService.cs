@@ -21,6 +21,7 @@ namespace CSRO.Client.Services
     public interface IAdoProjectDataService : IBaseDataService<ProjectAdo>
     {
         Task<List<ProjectAdo>> ApproveAdoProject(List<int> toApprove);
+        Task<List<ProjectAdo>> RejectAdoProject(List<int> toReject);
         Task<List<ProjectAdo>> GetProjectsForApproval();
         Task<bool> ProjectExists(string organization, string projectName);
     }
@@ -112,6 +113,39 @@ namespace CSRO.Client.Services
             }
         }
 
+        //RejectAdoProject
+
+        public async Task<List<ProjectAdo>> RejectAdoProject(List<int> toReject)
+        {
+            try
+            {
+                await base.AddAuthHeaderAsync();
+
+                var url = $"{ApiPart}RejectAdoProject";
+                var httpcontent = new StringContent(JsonSerializer.Serialize(toReject, _options), Encoding.UTF8, "application/json");
+                var apiData = await HttpClientBase.PostAsync(url, httpcontent).ConfigureAwait(false);
+
+                if (apiData.IsSuccessStatusCode)
+                {
+                    var content = await apiData.Content.ReadAsStringAsync();
+                    var ser = JsonSerializer.Deserialize<List<ProjectAdo>>(content, _options);
+                    return ser;
+                    //var result = Mapper.Map<List<ProjectAdo>>(ser);
+                    //return result;
+                }
+                else
+                {
+                    var content = await apiData.Content.ReadAsStringAsync();
+                    throw new Exception(content);
+                }
+            }
+            catch (Exception ex)
+            {
+                base.HandleException(ex);
+                throw;
+            }
+        }
+
         public async Task<List<ProjectAdo>> ApproveAdoProject(List<int> toApprove)
         {
             try
@@ -150,8 +184,8 @@ namespace CSRO.Client.Services
                 await base.AddAuthHeaderAsync();
 
                 var url = $"{ApiPart}";
-                var add = Mapper.Map<ProjectAdo>(item);
-                var httpcontent = new StringContent(JsonSerializer.Serialize(add, _options), Encoding.UTF8, "application/json");
+                //var add = Mapper.Map<ProjectAdo>(item);
+                var httpcontent = new StringContent(JsonSerializer.Serialize(item, _options), Encoding.UTF8, "application/json");
                 var apiData = await HttpClientBase.PutAsync(url, httpcontent).ConfigureAwait(false);
 
                 if (apiData.IsSuccessStatusCode)
@@ -200,8 +234,7 @@ namespace CSRO.Client.Services
                 {
                     var content = await apiData.Content.ReadAsStringAsync();
                     var ser = JsonSerializer.Deserialize<ProjectAdo>(content, _options);
-                    var result = Mapper.Map<ProjectAdo>(ser);
-                    return result;
+                    return ser;
                 }
             }
             catch (Exception ex)
@@ -264,7 +297,7 @@ namespace CSRO.Client.Services
                 {
                     var content = await apiData.Content.ReadAsStringAsync();
                     var ser = JsonSerializer.Deserialize<List<ProjectAdo>>(content, _options);
-                    return ser?.Where(a => a.State == ProjectState.CreatePending)?.ToList();
+                    return ser?.Where(a => a.State == ProjectState.CreatePending && a.Status == Common.AdoServices.Models.Status.Submitted)?.ToList();
                     //var result = Mapper.Map<List<ProjectAdo>>(ser);
                     //return result;
                 }

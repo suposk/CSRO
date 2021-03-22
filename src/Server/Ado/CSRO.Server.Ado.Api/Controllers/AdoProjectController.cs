@@ -166,7 +166,7 @@ namespace CSRO.Server.Ado.Api.Controllers
             {
                 _logger.LogInformation(ApiLogEvents.ApproveItem, $"{nameof(ApproveAdoProject)} Started");
                 //var approved = await _repository.ApproveAndCreateAdoProjects(toApprove).ConfigureAwait(false);
-                var approved = await _repository.ApproveAdoProjects(toApprove).ConfigureAwait(false);
+                var approved = await _repository.ApproveRejectAdoProjects(toApprove, false).ConfigureAwait(false);
                 var result = _mapper.Map<List<ProjectAdo>>(approved);
                 return result;
             }
@@ -177,11 +177,64 @@ namespace CSRO.Server.Ado.Api.Controllers
             }
         }
 
+        [HttpPost, Route(nameof(RejectAdoProject))]
+        public async Task<ActionResult<List<ProjectAdo>>> RejectAdoProject(List<int> toReject)
+        {
+            if (toReject == null || !toReject.Any())
+                return BadRequest();
+
+            try
+            {
+                _logger.LogInformation(ApiLogEvents.ApproveItem, $"{nameof(RejectAdoProject)} Started");                
+                var approved = await _repository.ApproveRejectAdoProjects(toReject, true).ConfigureAwait(false);
+                var result = _mapper.Map<List<ProjectAdo>>(approved);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, nameof(RejectAdoProject), toReject);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
+            }
+        }
+
         //// PUT api/<AdoProjectController>/5
-        //[HttpPut("{id}")]
-        //public void Put(int id, [FromBody] string value)
-        //{
-        //}
+        [HttpPut()]
+        public async Task<ActionResult<ProjectAdo>> UpdateAdoProjectRequest(ProjectAdo dto)
+        {
+            if (dto == null || dto.Id < 1)
+                return BadRequest();
+
+            try
+            {
+                _logger.LogInformation(ApiLogEvents.UpdateItem, $"{nameof(UpdateAdoProjectRequest)} Started");
+
+                var repoObj = await _repository.GetId(dto.Id).ConfigureAwait(false);
+                if (repoObj == null)
+                {
+                    _logger.LogWarning(ApiLogEvents.UpdateItemNotFound, $"{nameof(UpdateAdoProjectRequest)} not found");
+                    return NotFound();
+                }
+
+                repoObj = _mapper.Map<Entity.AdoProject>(dto);
+                _repository.Update(repoObj);
+                if (await _repository.SaveChangesAsync())
+                {
+                    return NoContent();
+                }
+                else
+                {
+                    return Conflict("Conflict detected, refresh and try again.");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, nameof(UpdateAdoProjectRequest), dto);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
+            }
+        }
+
+
+
 
         // DELETE api/<AdoProjectController>/5
         [HttpDelete("{id}")]

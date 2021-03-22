@@ -17,11 +17,14 @@ namespace CSRO.Server.Ado.Api.Services
         const string Operation_RequestCreated = "Request Created";
         const string Operation_SentEmailForApproval = "Sent Email For Approval";
         const string Operation_RequestApproved = "Request Approved";
+        const string Operation_RequestRejected = "Request Rejected";
         const string Operation_RequestCompleted = "Request Completed";
 
         Task<AdoProjectHistory> Create(int adoProjectId, string operation, string userId);
 
         Task<List<AdoProject>> GetPendingProjectsApproval();
+
+        Task<List<AdoProjectHistory>> GetHitoryByParentId(int parentId);
     }
 
     public class AdoProjectHistoryRepository : Repository<AdoProjectHistory>, IAdoProjectHistoryRepository
@@ -40,9 +43,15 @@ namespace CSRO.Server.Ado.Api.Services
             //_userId = ApiIdentity.GetUserName();
         }
 
+        public Task<List<AdoProjectHistory>> GetHitoryByParentId(int parentId)
+        {
+            return _context.AdoProjectHistorys.Where(a => a.IsDeleted != true && a.AdoProjectId == parentId).OrderByDescending(a => a.CreatedAt).ToListAsync();
+        }
+
         public override Task<List<AdoProjectHistory>> GetList()
         {
-            return _repository.GetListFilter(a => a.IsDeleted != true);
+            //return _repository.GetListFilter(a => a.IsDeleted != true);
+            return _context.AdoProjectHistorys.Where(a => a.IsDeleted != true).OrderByDescending(a => a.CreatedAt).ToListAsync();
         }
 
         public async Task<List<AdoProject>> GetPendingProjectsApproval()
@@ -52,7 +61,8 @@ namespace CSRO.Server.Ado.Api.Services
                 var q = _context.AdoProjects.Where(
                     a =>
                     a.IsDeleted != true &&
-                    a.State == ProjectState.CreatePending &&
+                    a.State == ProjectState.CreatePending && 
+                    a.Status == Entities.Entity.Status.Submitted &&
                     //a.AdoProjectHistoryList.Count == 1 //not ideal, only count
                     //a.AdoProjectHistoryList.FirstOrDefault(a => a.Operation != IAdoProjectHistoryRepository.Operation_SentEmailForApproval) != null //error                    
                     a.AdoProjectHistoryList.FirstOrDefault(a => a.Operation == IAdoProjectHistoryRepository.Operation_SentEmailForApproval) == null //works

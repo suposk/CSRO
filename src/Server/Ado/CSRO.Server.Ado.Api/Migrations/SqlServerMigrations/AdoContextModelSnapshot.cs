@@ -84,7 +84,7 @@ namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2021, 11, 1, 14, 15, 16, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2021, 1, 15, 14, 15, 16, 0, DateTimeKind.Unspecified),
                             CreatedBy = "Migration Script",
                             Description = "dummy fake project, not created",
                             Name = "del",
