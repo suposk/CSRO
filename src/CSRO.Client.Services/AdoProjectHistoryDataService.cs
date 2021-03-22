@@ -18,12 +18,12 @@ using System.Threading.Tasks;
 namespace CSRO.Client.Services
 {
 
-    //public interface IAdoProjectHistoryDataService: IBaseDataService<AdoProjectHistory>
-    //{
+    public interface IAdoProjectHistoryDataService : IBaseDataService<AdoProjectHistoryModel>
+    {
 
-    //}
+    }
 
-    public class AdoProjectHistoryDataService : BaseDataService, IBaseDataService<AdoProjectHistory> //, IAdoProjectHistoryDataService
+    public class AdoProjectHistoryDataService : BaseDataService, IAdoProjectHistoryDataService
     {
         public AdoProjectHistoryDataService(
             IHttpClientFactory httpClientFactory,
@@ -45,7 +45,7 @@ namespace CSRO.Client.Services
             return base.AddAuthHeaderAsync();
         }
 
-        public Task<AdoProjectHistory> AddItemAsync(AdoProjectHistory item)
+        public Task<AdoProjectHistoryModel> AddItemAsync(AdoProjectHistoryModel item)
         {
             throw new NotImplementedException();
         }
@@ -65,17 +65,17 @@ namespace CSRO.Client.Services
             return base.GetHashCode();
         }
 
-        public Task<AdoProjectHistory> GetItemByIdAsync(int id)
+        public Task<AdoProjectHistoryModel> GetItemByIdAsync(int id)
         {
             throw new NotImplementedException();
         }
 
-        public Task<List<AdoProjectHistory>> GetItemsAsync()
+        public Task<List<AdoProjectHistoryModel>> GetItemsAsync()
         {
             throw new NotImplementedException();
         }
 
-        public async Task<List<AdoProjectHistory>> GetItemsByParrentIdAsync(int parrentId)
+        public async Task<List<AdoProjectHistoryModel>> GetItemsByParrentIdAsync(int parrentId)
         {
             try
             {
@@ -88,8 +88,8 @@ namespace CSRO.Client.Services
                 if (apiData.IsSuccessStatusCode)
                 {
                     var content = await apiData.Content.ReadAsStringAsync();
-                    var ser = JsonSerializer.Deserialize<List<AdoProjectHistory>>(content, _options);                    
-                    var result = Mapper.Map<List<AdoProjectHistory>>(ser);
+                    var ser = JsonSerializer.Deserialize<List<AdoProjectHistoryModel>>(content, _options);                    
+                    var result = Mapper.Map<List<AdoProjectHistoryModel>>(ser);
                     return result;
                 }
                 else
@@ -106,7 +106,7 @@ namespace CSRO.Client.Services
 
         }
 
-        public Task<List<AdoProjectHistory>> GetItemsByTypeAsync(string type)
+        public Task<List<AdoProjectHistoryModel>> GetItemsByTypeAsync(string type)
         {
             throw new NotImplementedException();
         }
@@ -126,7 +126,7 @@ namespace CSRO.Client.Services
             return base.ToString();
         }
 
-        public Task<bool> UpdateItemAsync(AdoProjectHistory item)
+        public Task<bool> UpdateItemAsync(AdoProjectHistoryModel item)
         {
             throw new NotImplementedException();
         }

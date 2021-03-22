@@ -14,6 +14,10 @@ namespace CSRO.Client.Blazor.UI
 
         protected bool IsLoading { get; set; }
         protected string LoadingMessage { get; set; } = LOADING_MESSAGE;
+
+        protected bool IsLoadingSecondary { get; set; }
+        protected string LoadingMessageSecondary { get; set; } = LOADING_MESSAGE;
+
         protected bool Success { get; set; }
 
         public virtual void ShowLoading(string loadingMessage = LOADING_MESSAGE)
@@ -31,6 +35,17 @@ namespace CSRO.Client.Blazor.UI
         public virtual void HideLoading()
         {
             IsLoading = false;
+        }
+
+        public virtual void ShowLoadingSecondary(string loadingMessage = LOADING_MESSAGE)
+        {
+            IsLoadingSecondary = true;
+            LoadingMessageSecondary = loadingMessage;
+        }
+
+        public virtual void HideLoadingSecondary()
+        {
+            IsLoadingSecondary = false;
         }
     }
 }

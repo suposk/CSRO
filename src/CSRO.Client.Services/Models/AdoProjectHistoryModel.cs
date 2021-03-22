@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CSRO.Client.Services.Models
 {
-    public class AdoProjectHistory : ModelBase
+    public class AdoProjectHistoryModel : ModelBase
     {
         public int AdoProjectId { get; set; }
         public string Operation { get; set; }
