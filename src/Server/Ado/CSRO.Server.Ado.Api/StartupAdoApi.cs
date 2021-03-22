@@ -159,7 +159,7 @@ namespace CSRO.Server.Ado.Api
             services.AddTransient<IPropertyMappingService, AdoPropertyMappingService>();
 
             services.AddSingleton<IMessageBus, AzServiceBusMessageBus>();
-            services.AddSingleton<IServiceBusConsumer, AzServiceBusConsumer>();
+            //services.AddSingleton<IServiceBusConsumer, AzServiceBusConsumer>();
 
             services.AddScoped<IAdoProjectApproverService, AdoProjectApproverService>();
             services.AddScoped<IGenerateEmailForApprovalService, GenerateEmailForApprovalService>();
@@ -227,10 +227,31 @@ namespace CSRO.Server.Ado.Api
                 var apiIdentity = serviceProvider.GetService<IApiIdentity>();
                 var ctx = serviceProvider.GetService<AdoContext>();
                 IRepository<AdoProject> obj = new Repository<AdoProject>(ctx, apiIdentity);
-                var logger = sp.GetRequiredService<ILogger<ProjectApprovalHostedService>>();
+                var logger = sp.GetService<ILogger<ProjectApprovalHostedService>>();
                 IGenerateEmailForApprovalService generateEmailForApprovalService = serviceProvider.GetService<IGenerateEmailForApprovalService>();
                 return new ProjectApprovalHostedService(generateEmailForApprovalService, logger);
             });
+
+            services.AddHostedService<AzServiceBusConsumer>(sp =>
+            {
+                var serviceProvider = services.BuildServiceProvider();
+                //var serviceProvider = sp;
+                var apiIdentity = serviceProvider.GetService<IApiIdentity>();
+                var ctx = serviceProvider.GetService<AdoContext>();
+                IRepository<AdoProject> obj = new Repository<AdoProject>(ctx, apiIdentity);                                             
+
+                IConfiguration configuration = serviceProvider.GetService<IConfiguration>();
+                IMessageBus messageBus = serviceProvider.GetService<IMessageBus>();
+                IMediator mediator = serviceProvider.GetService<IMediator>();
+                IProjectAdoServices projectAdoServices = serviceProvider.GetService<IProjectAdoServices>();
+                IAdoProjectRepository adoProjectRepository = serviceProvider.GetService<IAdoProjectRepository>();
+                IAdoProjectHistoryRepository adoProjectHistoryRepository = serviceProvider.GetService<IAdoProjectHistoryRepository>();
+                IMapper mapper = serviceProvider.GetService<IMapper>();
+                ILogger<AzServiceBusConsumer> logger = serviceProvider.GetService<ILogger<AzServiceBusConsumer>>();
+                return new AzServiceBusConsumer(configuration, messageBus, mediator, projectAdoServices, adoProjectRepository, adoProjectHistoryRepository, mapper, logger);
+            });
+
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -255,7 +276,7 @@ namespace CSRO.Server.Ado.Api
                 endpoints.MapControllers();
             });
 
-            app.UseAzServiceBusConsumer();
+            //app.UseAzServiceBusConsumer();
         }
     }
 }

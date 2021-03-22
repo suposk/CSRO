@@ -1,9 +1,13 @@
-﻿using CSRO.Server.Ado.Api.Commands;
+﻿using AutoMapper;
+using CSRO.Common.AdoServices;
+using CSRO.Server.Ado.Api.Commands;
+using CSRO.Server.Ado.Api.Services;
 using CSRO.Server.Infrastructure.MessageBus;
 using MediatR;
 using Microsoft.Azure.ServiceBus;
 using Microsoft.Azure.ServiceBus.Core;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
@@ -13,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace CSRO.Server.Ado.Api.Messaging
 {
-    public class AzServiceBusConsumer : IServiceBusConsumer
+    public class AzServiceBusConsumer : BackgroundService, IServiceBusConsumer
     {
         private readonly string subscriptionName = "approvedadoprojectssub";
         //private readonly IReceiverClient checkoutMessageReceiverClient;
@@ -22,16 +26,30 @@ namespace CSRO.Server.Ado.Api.Messaging
         private readonly IConfiguration _configuration;
         private readonly IMessageBus _messageBus;
         private readonly IMediator _mediator;
+        private readonly IProjectAdoServices _projectAdoServices;
+        private readonly IAdoProjectRepository _adoProjectRepository;
+        private readonly IAdoProjectHistoryRepository _adoProjectHistoryRepository;
         private readonly ILogger<AzServiceBusConsumer> _logger;
         //private readonly string checkoutMessageTopic;
         //private readonly string orderPaymentRequestMessageTopic;
         private readonly string orderPaymentUpdatedMessageTopic;
 
-        public AzServiceBusConsumer(IConfiguration configuration, IMessageBus messageBus, IMediator mediator, ILogger<AzServiceBusConsumer> logger)
+        public AzServiceBusConsumer(
+            IConfiguration configuration, 
+            IMessageBus messageBus, 
+            IMediator mediator,
+            IProjectAdoServices projectAdoServices,
+            IAdoProjectRepository adoProjectRepository,
+            IAdoProjectHistoryRepository adoProjectHistoryRepository,
+            IMapper mapper,
+            ILogger<AzServiceBusConsumer> logger)
         {
             _configuration = configuration;
             _messageBus = messageBus;
             _mediator = mediator;
+            _projectAdoServices = projectAdoServices;
+            _adoProjectRepository = adoProjectRepository;
+            _adoProjectHistoryRepository = adoProjectHistoryRepository;
             _logger = logger;
 
             var serviceBusConnectionString = configuration.GetConnectionString("AzureServiceBus");
@@ -41,6 +59,12 @@ namespace CSRO.Server.Ado.Api.Messaging
 
             //checkoutMessageReceiverClient = new SubscriptionClient(serviceBusConnectionString, checkoutMessageTopic, subscriptionName);
             approvedAdoProjcetMessageReceiverClient = new SubscriptionClient(serviceBusConnectionString, "approvedadoprojects", subscriptionName);
+        }
+
+        protected override Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            Start();
+            return Task.CompletedTask;
         }
 
         public void Start()
