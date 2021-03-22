@@ -37,7 +37,6 @@ using System.Reflection;
 using MediatR;
 using CSRO.Server.Infrastructure.MessageBus;
 using CSRO.Server.Ado.Api.Extensions;
-using CSRO.Server.Ado.Api.Messaging;
 
 namespace CSRO.Server.Ado.Api
 {

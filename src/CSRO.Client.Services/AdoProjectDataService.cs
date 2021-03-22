@@ -21,6 +21,7 @@ namespace CSRO.Client.Services
     public interface IAdoProjectDataService : IBaseDataService<ProjectAdo>
     {
         Task<List<ProjectAdo>> ApproveAdoProject(List<int> toApprove);
+        Task<List<ProjectAdo>> RejectAdoProject(List<int> toReject);
         Task<List<ProjectAdo>> GetProjectsForApproval();
         Task<bool> ProjectExists(string organization, string projectName);
     }
@@ -102,6 +103,39 @@ namespace CSRO.Client.Services
                 else
                 {
                     var content = await apiData.Content.ReadAsStringAsync();                    
+                    throw new Exception(content);
+                }
+            }
+            catch (Exception ex)
+            {
+                base.HandleException(ex);
+                throw;
+            }
+        }
+
+        //RejectAdoProject
+
+        public async Task<List<ProjectAdo>> RejectAdoProject(List<int> toReject)
+        {
+            try
+            {
+                await base.AddAuthHeaderAsync();
+
+                var url = $"{ApiPart}RejectAdoProject";
+                var httpcontent = new StringContent(JsonSerializer.Serialize(toReject, _options), Encoding.UTF8, "application/json");
+                var apiData = await HttpClientBase.PostAsync(url, httpcontent).ConfigureAwait(false);
+
+                if (apiData.IsSuccessStatusCode)
+                {
+                    var content = await apiData.Content.ReadAsStringAsync();
+                    var ser = JsonSerializer.Deserialize<List<ProjectAdo>>(content, _options);
+                    return ser;
+                    //var result = Mapper.Map<List<ProjectAdo>>(ser);
+                    //return result;
+                }
+                else
+                {
+                    var content = await apiData.Content.ReadAsStringAsync();
                     throw new Exception(content);
                 }
             }

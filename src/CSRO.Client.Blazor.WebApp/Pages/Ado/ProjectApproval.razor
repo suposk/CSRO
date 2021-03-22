@@ -19,12 +19,13 @@
     <MudGrid>
         <MudItem>
             <MudButton Disabled="@IsButtonDisabled" ButtonType="ButtonType.Submit" Variant="Variant.Filled"
-                        OnClick="ApproveAsync"
-                        Color="Color.Primary" Class="ml-auto">Approve</MudButton>
+                       OnClick="ApproveAsync"
+                       Color="Color.Primary" Class="ml-auto">Approve</MudButton>
         </MudItem>
         <MudItem>
             <MudButton Disabled="@IsButtonDisabled" ButtonType="ButtonType.Reset" Variant="Variant.Filled"
-                        Color="Color.Error" Class="ml-auto">Reject</MudButton>
+                       OnClick="RejectAsync"
+                       Color="Color.Error" Class="ml-auto">Reject</MudButton>
         </MudItem>
     </MudGrid>
 

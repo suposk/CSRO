@@ -23,8 +23,8 @@ namespace CSRO.Server.Ado.Api.Services
 {
     public interface IAdoProjectRepository : IRepository<AdoProject>
     {
-        Task<List<AdoProject>> ApproveAdoProjects(List<int> toApprove);
-        Task<List<AdoProject>> ApproveAndCreateAdoProjects(List<int> toApprove);
+        Task<List<AdoProject>> ApproveRejectAdoProjects(List<int> idList, bool reject);
+        //Task<List<AdoProject>> ApproveAndCreateAdoProjects(List<int> toApprove);
         Task<AdoProject> CreateAdoProject(AdoProject entity);
         Task<bool> ProjectExists(string organization, string projectName);
         Task<CsroPagedList<AdoProject>> Search(ResourceParameters resourceParameters, string organization = null);
@@ -40,9 +40,11 @@ namespace CSRO.Server.Ado.Api.Services
         private readonly IMapper _mapper;
        // private readonly IMediator _mediator;
         private readonly IMessageBus _messageBus;
-        private string _userId;        
+        private string _userId;
+        private readonly ServiceBusConfig _serviceBusConfig;
 
-        public AdoProjectRepository(            
+        public AdoProjectRepository(
+            IConfiguration configuration,
             IRepository<AdoProject> repository,
             AdoContext context,                        
             IProjectAdoServices projectAdoServices,
@@ -61,7 +63,8 @@ namespace CSRO.Server.Ado.Api.Services
             _mapper = mapper;
             //_mediator = mediator;
             _messageBus = messageBus;
-            _userId = ApiIdentity.GetUserName();            
+            _userId = ApiIdentity.GetUserName();
+            _serviceBusConfig = configuration.GetSection(nameof(ServiceBusConfig)).Get<ServiceBusConfig>();
         }
 
         public async Task<bool> ProjectExists(string organization, string projectName)
@@ -145,75 +148,75 @@ namespace CSRO.Server.Ado.Api.Services
 
         }
 
-        /// <summary>
-        /// Approves and Creates ado Project
-        /// </summary>
-        /// <param name="toApprove"></param>
-        /// <returns></returns>
-        public async Task<List<AdoProject>> ApproveAndCreateAdoProjects(List<int> toApprove)
+        ///// <summary>
+        ///// Approves and Creates ado Project
+        ///// </summary>
+        ///// <param name="toApprove"></param>
+        ///// <returns></returns>
+        //public async Task<List<AdoProject>> ApproveAndCreateAdoProjects(List<int> toApprove)
+        //{
+        //    if (toApprove is null)
+        //        throw new ArgumentNullException(nameof(toApprove));
+
+        //    try
+        //    {                         
+        //        List<AdoProject> approved = new();
+        //        StringBuilder others = new();
+
+        //        foreach (var pId in toApprove)
+        //        {
+
+        //            try
+        //            {
+        //                var entity = await _repository.GetId(pId);
+        //                if (entity != null)
+        //                {
+        //                    //only if in pending state
+        //                    if (entity.State != ProjectState.CreatePending)
+        //                        continue;
+
+        //                    //1. create Proj
+        //                    var mapped = _mapper.Map<AdoModels.ProjectAdo>(entity);                           
+        //                    var created = await _projectAdoServices.CreateProject(mapped);
+
+        //                    //2. Update Db
+        //                    entity = _mapper.Map<AdoProject>(created);
+        //                    //entity.Status = Status.Approved;
+        //                    entity.Status = Status.Completed;
+        //                    Update(entity, _userId);
+        //                    if (await SaveChangesAsync())
+        //                    {
+        //                        await _adoProjectHistoryRepository.Create(entity.Id, IAdoProjectHistoryRepository.Operation_RequestApproved, _userId);
+        //                        approved.Add(entity);
+        //                    }
+        //                }
+        //                else
+        //                    others.Append($"Id {pId} was not found, verify this Id exist or record was modified.");
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                others.Append($"Error approving Id {pId}: {ex.Message}");
+        //            }
+        //        }
+        //        return approved.Any() ? approved : null;
+        //    }
+        //    catch
+        //    {
+        //        throw;
+        //    }            
+        //}
+
+        public async Task<List<AdoProject>> ApproveRejectAdoProjects(List<int> idList, bool reject)
         {
-            if (toApprove is null)
-                throw new ArgumentNullException(nameof(toApprove));
+            if (idList is null)
+                throw new ArgumentNullException(nameof(idList));
 
             try
-            {                         
-                List<AdoProject> approved = new();
+            {
+                List<AdoProject> list = new();
                 StringBuilder others = new();
 
-                foreach (var pId in toApprove)
-                {
-
-                    try
-                    {
-                        var entity = await _repository.GetId(pId);
-                        if (entity != null)
-                        {
-                            //only if in pending state
-                            if (entity.State != ProjectState.CreatePending)
-                                continue;
-
-                            //1. create Proj
-                            var mapped = _mapper.Map<AdoModels.ProjectAdo>(entity);                           
-                            var created = await _projectAdoServices.CreateProject(mapped);
-
-                            //2. Update Db
-                            entity = _mapper.Map<AdoProject>(created);
-                            //entity.Status = Status.Approved;
-                            entity.Status = Status.Completed;
-                            Update(entity, _userId);
-                            if (await SaveChangesAsync())
-                            {
-                                await _adoProjectHistoryRepository.Create(entity.Id, IAdoProjectHistoryRepository.Operation_RequestApproved, _userId);
-                                approved.Add(entity);
-                            }
-                        }
-                        else
-                            others.Append($"Id {pId} was not found, verify this Id exist or record was modified.");
-                    }
-                    catch (Exception ex)
-                    {
-                        others.Append($"Error approving Id {pId}: {ex.Message}");
-                    }
-                }
-                return approved.Any() ? approved : null;
-            }
-            catch
-            {
-                throw;
-            }            
-        }
-
-        public async Task<List<AdoProject>> ApproveAdoProjects(List<int> toApprove)
-        {
-            if (toApprove is null)
-                throw new ArgumentNullException(nameof(toApprove));
-
-            try
-            {
-                List<AdoProject> approved = new();
-                StringBuilder others = new();
-
-                foreach (var pId in toApprove)
+                foreach (var pId in idList)
                 {
                     try
                     {
@@ -224,14 +227,18 @@ namespace CSRO.Server.Ado.Api.Services
                             if (entity.State != ProjectState.CreatePending)
                                 continue;
                             
-                            var mapped = _mapper.Map<AdoModels.ProjectAdo>(entity);                            
+                            var mapped = _mapper.Map<AdoModels.ProjectAdo>(entity);
                             //1. Update Db
-                            entity.Status = Status.Approved;                            
+                            //entity.Status = Status.Approved;                            
+                            entity.Status = (reject) ? Status.Rejected : Status.Approved;
                             Update(entity, _userId);
                             if (await SaveChangesAsync())
                             {
-                                await _adoProjectHistoryRepository.Create(entity.Id, IAdoProjectHistoryRepository.Operation_RequestApproved, _userId);
-                                approved.Add(entity);
+                                if (reject)
+                                    await _adoProjectHistoryRepository.Create(entity.Id, IAdoProjectHistoryRepository.Operation_RequestRejected, _userId);                                    
+                                else
+                                    await _adoProjectHistoryRepository.Create(entity.Id, IAdoProjectHistoryRepository.Operation_RequestApproved, _userId);
+                                list.Add(entity);
                             }
                         }
                         else
@@ -247,10 +254,18 @@ namespace CSRO.Server.Ado.Api.Services
                 //2. Send command to create projects
                 //var createApprovedAdoProjectsCommand = new CreateApprovedAdoProjectsCommand() { Approved = approved, UserId = _userId };             
                 //await _mediator.Send(createApprovedAdoProjectsCommand);
-                var message = new ApprovedAdoProjectsMessage { ApprovedAdoProjectIds = approved.Select(a => a.Id).ToList(), UserId = _userId };
-                await _messageBus.PublishMessage(message, "approvedadoprojects");
 
-                return approved.Any() ? approved : null;
+                if (reject)
+                {
+                    var message = new RejectedAdoProjectsMessage { RejectedAdoProjectIds = list.Select(a => a.Id).ToList(), UserId = _userId }.CreateBaseMessage();
+                    await _messageBus.PublishMessage(message, _serviceBusConfig.RejectedAdoProjectsTopic);
+                }
+                else
+                {
+                    var message = new ApprovedAdoProjectsMessage { ApprovedAdoProjectIds = list.Select(a => a.Id).ToList(), UserId = _userId }.CreateBaseMessage();
+                    await _messageBus.PublishMessage(message, _serviceBusConfig.ApprovedAdoProjectsTopic);
+                }
+                return list.Any() ? list : null;
             }
             catch(Exception ex)
             {

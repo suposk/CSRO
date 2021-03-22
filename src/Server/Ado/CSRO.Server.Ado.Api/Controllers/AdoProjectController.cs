@@ -166,13 +166,33 @@ namespace CSRO.Server.Ado.Api.Controllers
             {
                 _logger.LogInformation(ApiLogEvents.ApproveItem, $"{nameof(ApproveAdoProject)} Started");
                 //var approved = await _repository.ApproveAndCreateAdoProjects(toApprove).ConfigureAwait(false);
-                var approved = await _repository.ApproveAdoProjects(toApprove).ConfigureAwait(false);
+                var approved = await _repository.ApproveRejectAdoProjects(toApprove, false).ConfigureAwait(false);
                 var result = _mapper.Map<List<ProjectAdo>>(approved);
                 return result;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, nameof(ApproveAdoProject), toApprove);                
+                return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
+            }
+        }
+
+        [HttpPost, Route(nameof(RejectAdoProject))]
+        public async Task<ActionResult<List<ProjectAdo>>> RejectAdoProject(List<int> toReject)
+        {
+            if (toReject == null || !toReject.Any())
+                return BadRequest();
+
+            try
+            {
+                _logger.LogInformation(ApiLogEvents.ApproveItem, $"{nameof(RejectAdoProject)} Started");                
+                var approved = await _repository.ApproveRejectAdoProjects(toReject, true).ConfigureAwait(false);
+                var result = _mapper.Map<List<ProjectAdo>>(approved);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, nameof(RejectAdoProject), toReject);
                 return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }
         }

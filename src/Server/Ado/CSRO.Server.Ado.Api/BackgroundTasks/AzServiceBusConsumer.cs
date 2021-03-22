@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using CSRO.Common.AdoServices;
 using CSRO.Server.Ado.Api.Commands;
+using CSRO.Server.Ado.Api.Messaging;
 using CSRO.Server.Ado.Api.Services;
 using CSRO.Server.Infrastructure.MessageBus;
 using MediatR;
@@ -15,13 +16,13 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CSRO.Server.Ado.Api.Messaging
+namespace CSRO.Server.Ado.Api.BackgroundTasks
 {
     public class AzServiceBusConsumer : BackgroundService, IServiceBusConsumer
     {
-        private readonly string subscriptionName = "approvedadoprojectssub";
-        //private readonly IReceiverClient checkoutMessageReceiverClient;
+        private readonly string subscriptionName;        
         private readonly IReceiverClient approvedAdoProjcetMessageReceiverClient;
+        private readonly IReceiverClient rejectedAdoProjcetMessageReceiverClient;
 
         private readonly IConfiguration _configuration;
         private readonly IMessageBus _messageBus;
@@ -32,11 +33,12 @@ namespace CSRO.Server.Ado.Api.Messaging
         private readonly ILogger<AzServiceBusConsumer> _logger;
         //private readonly string checkoutMessageTopic;
         //private readonly string orderPaymentRequestMessageTopic;
-        private readonly string orderPaymentUpdatedMessageTopic;
+        //private readonly string orderPaymentUpdatedMessageTopic;
+        private readonly ServiceBusConfig _serviceBusConfig;
 
         public AzServiceBusConsumer(
-            IConfiguration configuration, 
-            IMessageBus messageBus, 
+            IConfiguration configuration,
+            IMessageBus messageBus,
             IMediator mediator,
             IProjectAdoServices projectAdoServices,
             IAdoProjectRepository adoProjectRepository,
@@ -53,12 +55,12 @@ namespace CSRO.Server.Ado.Api.Messaging
             _logger = logger;
 
             var serviceBusConnectionString = configuration.GetConnectionString("AzureServiceBus");
-            //checkoutMessageTopic = _configuration.GetValue<string>("CheckoutMessageTopic");
-            //orderPaymentRequestMessageTopic = _configuration.GetValue<string>("OrderPaymentRequestMessageTopic");
-            //orderPaymentUpdatedMessageTopic = _configuration.GetValue<string>("OrderPaymentUpdatedMessageTopic");
-
-            //checkoutMessageReceiverClient = new SubscriptionClient(serviceBusConnectionString, checkoutMessageTopic, subscriptionName);
-            approvedAdoProjcetMessageReceiverClient = new SubscriptionClient(serviceBusConnectionString, "approvedadoprojects", subscriptionName);
+            _serviceBusConfig = configuration.GetSection(nameof(ServiceBusConfig)).Get<ServiceBusConfig>();
+            //var type = typeof(AzServiceBusConsumer);
+            //subscriptionName = type.Namespace; //Sub must exist in portal                      
+            
+            approvedAdoProjcetMessageReceiverClient = new SubscriptionClient(serviceBusConnectionString, _serviceBusConfig.ApprovedAdoProjectsTopic, _serviceBusConfig.ApprovedAdoProjectsSub);
+            rejectedAdoProjcetMessageReceiverClient = new SubscriptionClient(serviceBusConnectionString, _serviceBusConfig.RejectedAdoProjectsTopic, _serviceBusConfig.RejectedAdoProjectsSub);
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -70,16 +72,25 @@ namespace CSRO.Server.Ado.Api.Messaging
         public void Start()
         {
             var messageHandlerOptions = new MessageHandlerOptions(OnServiceBusException) { MaxConcurrentCalls = 4 };
-            approvedAdoProjcetMessageReceiverClient.RegisterMessageHandler(OnOrderPaymentUpdateReceived, messageHandlerOptions);
+            approvedAdoProjcetMessageReceiverClient.RegisterMessageHandler(OnApprovedReceived, messageHandlerOptions);
+            rejectedAdoProjcetMessageReceiverClient.RegisterMessageHandler(OnRejectedReceived, messageHandlerOptions);
         }
 
-        private async Task OnOrderPaymentUpdateReceived(Message message, CancellationToken arg2)
+        private async Task OnApprovedReceived(Message message, CancellationToken arg2)
         {
             var body = Encoding.UTF8.GetString(message.Body);//json from service bus
             var dto = JsonConvert.DeserializeObject<ApprovedAdoProjectsMessage>(body);
 
-            var createApprovedAdoProjectsCommand = new CreateApprovedAdoProjectIdsCommand() { Approved = dto.ApprovedAdoProjectIds, UserId = dto.UserId };             
+            var createApprovedAdoProjectsCommand = new CreateApprovedAdoProjectIdsCommand() { Approved = dto.ApprovedAdoProjectIds, UserId = dto.UserId };
             await _mediator.Send(createApprovedAdoProjectsCommand);
+        }
+
+        private async Task OnRejectedReceived(Message message, CancellationToken arg2)
+        {
+            var body = Encoding.UTF8.GetString(message.Body);//json from service bus
+            var dto = JsonConvert.DeserializeObject<RejectedAdoProjectsMessage>(body);
+
+            //sent email
         }
 
         private Task OnServiceBusException(ExceptionReceivedEventArgs exceptionReceivedEventArgs)
