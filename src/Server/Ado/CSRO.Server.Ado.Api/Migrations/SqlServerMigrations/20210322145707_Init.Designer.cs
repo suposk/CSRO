@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
 {
     [DbContext(typeof(AdoContext))]
-    [Migration("20210312110421_Init")]
+    [Migration("20210322145707_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -69,6 +69,9 @@ namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
                     b.Property<int>("State")
                         .HasColumnType("int");
 
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.Property<string>("Url")
                         .HasColumnType("nvarchar(max)");
 
@@ -83,15 +86,72 @@ namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2021, 11, 1, 14, 15, 16, 0, DateTimeKind.Unspecified),
+                            CreatedAt = new DateTime(2021, 1, 15, 14, 15, 16, 0, DateTimeKind.Unspecified),
                             CreatedBy = "Migration Script",
-                            Description = "Fake Not created",
-                            Name = "Dymmy record",
-                            Organization = "SomeOrg",
+                            Description = "dummy fake project, not created",
+                            Name = "del",
+                            Organization = "jansupolikAdo",
                             ProcessName = "Agile",
-                            State = 4,
+                            State = -2,
+                            Status = 10,
                             Visibility = 0
                         });
+                });
+
+            modelBuilder.Entity("CSRO.Server.Entities.Entity.AdoProjectHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("AdoProjectId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Operation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AdoProjectId");
+
+                    b.ToTable("AdoProjectHistorys");
+                });
+
+            modelBuilder.Entity("CSRO.Server.Entities.Entity.AdoProjectHistory", b =>
+                {
+                    b.HasOne("CSRO.Server.Entities.Entity.AdoProject", "AdoProject")
+                        .WithMany("AdoProjectHistoryList")
+                        .HasForeignKey("AdoProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AdoProject");
+                });
+
+            modelBuilder.Entity("CSRO.Server.Entities.Entity.AdoProject", b =>
+                {
+                    b.Navigation("AdoProjectHistoryList");
                 });
 #pragma warning restore 612, 618
         }

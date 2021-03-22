@@ -297,7 +297,7 @@ namespace CSRO.Client.Services
                 {
                     var content = await apiData.Content.ReadAsStringAsync();
                     var ser = JsonSerializer.Deserialize<List<ProjectAdo>>(content, _options);
-                    return ser?.Where(a => a.State == ProjectState.CreatePending)?.ToList();
+                    return ser?.Where(a => a.State == ProjectState.CreatePending && a.Status == Common.AdoServices.Models.Status.Submitted)?.ToList();
                     //var result = Mapper.Map<List<ProjectAdo>>(ser);
                     //return result;
                 }

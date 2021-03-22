@@ -47,7 +47,8 @@ namespace CSRO.Server.Ado.Api.Controllers
                 _logger.LogInformation(ApiLogEvents.GetItem, $"{nameof(GetAdoProjectHistory)} with {adoProjectId} Started");
 
                 //var repoObj = await _repository.GetId(adoProjectId).ConfigureAwait(false);
-                var repoObj = await _repository.GetListFilter(a => a.IsDeleted != true && a.AdoProjectId == adoProjectId).ConfigureAwait(false);                
+                //var repoObj = await _repository.GetListFilter(a => a.IsDeleted != true && a.AdoProjectId == adoProjectId).ConfigureAwait(false);                
+                var repoObj = await _repository.GetHitoryByParentId(adoProjectId).ConfigureAwait(false);
                 if (repoObj == null)
                     return NotFound();
 

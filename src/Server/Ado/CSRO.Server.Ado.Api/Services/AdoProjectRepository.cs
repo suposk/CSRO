@@ -86,7 +86,8 @@ namespace CSRO.Server.Ado.Api.Services
 
         public override Task<List<AdoProject>> GetList()
         {
-            return _repository.GetListFilter(a => a.IsDeleted != true);
+            //return _repository.GetListFilter(a => a.IsDeleted != true);
+            return _context.AdoProjects.Where(a => a.IsDeleted != true).OrderByDescending(a => a.CreatedAt).ToListAsync();
         }
 
         public async Task<AdoProject> CreateAdoProject(AdoProject entity)

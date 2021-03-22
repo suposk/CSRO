@@ -85,12 +85,13 @@ namespace CSRO.Server.Ado.Api.BackgroundTasks
             await _mediator.Send(createApprovedAdoProjectsCommand);
         }
 
-        private async Task OnRejectedReceived(Message message, CancellationToken arg2)
+        private Task OnRejectedReceived(Message message, CancellationToken arg2)
         {
             var body = Encoding.UTF8.GetString(message.Body);//json from service bus
             var dto = JsonConvert.DeserializeObject<RejectedAdoProjectsMessage>(body);
 
             //sent email
+            return Task.CompletedTask;
         }
 
         private Task OnServiceBusException(ExceptionReceivedEventArgs exceptionReceivedEventArgs)

@@ -15,23 +15,7 @@
             </MudItem>
         </MudGrid>
     }
-    @*<MudGrid>
-        <MudItem>
-            <MudButton Disabled="@IsButtonDisabled" ButtonType="ButtonType.Submit" Variant="Variant.Filled"
-                       OnClick="ApproveAsync"
-                       Color="Color.Primary" Class="ml-auto">Approve</MudButton>
-        </MudItem>
-        <MudItem>
-            <MudButton Disabled="@IsButtonDisabled" ButtonType="ButtonType.Reset" Variant="Variant.Filled"
-                       Color="Color.Error" Class="ml-auto">Reject</MudButton>
-        </MudItem>
-    </MudGrid>*@
-
-    <MudText Class="mt-6"
-             Inline="true">Selected items: @(selectedItems==null ? "" : string.Join(", ", selectedItems.OrderBy(x=>x.Name).Select(x=>x.Name)))</MudText>
-
-    <MudTable MultiSelection="true"
-              @bind-SelectedItems="selectedItems"
+    <MudTable               
               Items="Tickets"
               Hover="true" SortLabel="Sort By" Elevation="0">
         <HeaderContent>
@@ -42,8 +26,7 @@
             <MudTh><MudTableSortLabel SortBy="new Func<ProjectAdo, object>(x=>x.Description)">Description</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortBy="new Func<ProjectAdo, object>(x=>x.ProcessName)">Process</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortBy="new Func<ProjectAdo, object>(x=>x.CreatedBy)">Created By</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<ProjectAdo, object>(x=>x.CreatedAt)">Created At</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<ProjectAdo, object>(x=>x.ModifiedAt)">ModifiedAt At</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<ProjectAdo, object>(x=>x.CreatedAt)">Created At</MudTableSortLabel></MudTh>            
         </HeaderContent>
         <RowTemplate>
             <MudTd DataLabel="Id">@context.Id</MudTd>

@@ -69,7 +69,7 @@ namespace CSRO.Server.Entities
                 {
                     Id = 1,
                     CreatedBy = "Migration Script",
-                    CreatedAt = new DateTime(2021, 11, 1, 14, 15, 16),
+                    CreatedAt = new DateTime(2021, 01, 15, 14, 15, 16),
                     Name = "del", 
                     ProcessName = "Agile", 
                     Description = "dummy fake project, not created", 
