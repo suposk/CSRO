@@ -40,6 +40,9 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
         public IProcessAdoServices ProcessAdoServices { get; set; }
 
         [Inject]
+        public IBaseDataService<AdoProjectHistory> AdoProjectHistoryDataService { get; set; }
+
+        [Inject]
         public ILogger<AdoProjectBase> Logger { get; set; }
 
         #endregion
@@ -86,6 +89,21 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
                 Logger.LogError(ex, nameof(OnInitializedAsync));
             }
             HideLoading();
+
+            //load history                                     
+
+            try
+            {               
+                if (OperationTypeTicket != OperatioType.Create)
+                {                    
+                    var history = await AdoProjectHistoryDataService.GetItemsByParrentIdAsync(Model.Id);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, nameof(OnInitializedAsync));
+            }
+
         }
 
         //public Task OnOrganizationChanged(string value)

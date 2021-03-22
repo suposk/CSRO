@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using CSRO.Server.Ado.Api.Dtos;
 
 namespace CSRO.Server.Ado.Api.AdoAutoMapperProfiles
 {
@@ -16,7 +17,11 @@ namespace CSRO.Server.Ado.Api.AdoAutoMapperProfiles
         public IMapper Mapper { get; }
 
         public AdoProfile()
-        {
+        {           
+            CreateMap<AdoProjectHistoryDto, Entity.AdoProjectHistory>()
+                .ForMember(s => s.AdoProject, op => op.Ignore())
+                .ReverseMap();
+
             CreateMap<AdoModels.ProjectAdo, Entity.AdoProject>()                
                 .ReverseMap();
 

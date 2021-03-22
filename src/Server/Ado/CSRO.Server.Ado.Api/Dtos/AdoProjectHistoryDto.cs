@@ -1,4 +1,5 @@
 ﻿//using CSRO.Server.Domain;
+using CSRO.Server.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -68,4 +69,10 @@ namespace CSRO.Server.Ado.Api.Dtos
     //    public ProjectVisibility Visibility { get; set; }
     //    public ProjectState State { get; set; }
     //}
+
+    public class AdoProjectHistoryDto : DtoBase
+    {        
+        public int AdoProjectId { get; set; }
+        public string Operation { get; set; }
+    }
 }

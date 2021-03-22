@@ -247,10 +247,10 @@ namespace CSRO.Client.Blazor.WebApp
 
             services.AddScoped<IAuthCsroService, AuthCsroService>();
                         
-            services.AddScoped<IVersionService, VersionService>();
-            services.AddScoped<IBaseDataService<Ticket>, TicketDataService>();
-            //services.AddScoped<IBaseDataService<VmTicket>, VmTicketDataService>();            
-            services.AddScoped<IVmTicketDataService, VmTicketDataService>();
+            services.AddTransient<IVersionService, VersionService>();
+            services.AddTransient<IBaseDataService<Ticket>, TicketDataService>();
+            services.AddTransient<IBaseDataService<AdoProjectHistory>, AdoProjectHistoryDataService>();                      
+            services.AddTransient<IVmTicketDataService, VmTicketDataService>();
 
             services.AddTransient<IVmService, VmService>();
             services.AddTransient<ISubcriptionService, SubcriptionService>();

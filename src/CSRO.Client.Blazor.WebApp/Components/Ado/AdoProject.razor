@@ -85,17 +85,17 @@
                                       Disabled="@IsReadOnly"
                                       @bind-Value="Model.Description" For="@(() => Model.Description)" />
 
-                        @*@if (IsReadOnly)
-                            {
-                                <MudTextField Label="Created By:" Disabled="true"
-                                              @bind-Value="Model.CreatedBy" For="@(() => Model.CreatedBy)" />
+                        @if (IsReadOnly)
+                        {
+                            <MudTextField Label="Created By:" Disabled="true"
+                                            @bind-Value="Model.CreatedBy" For="@(() => Model.CreatedBy)" />
 
-                                <MudTextField Label="Created At:" Disabled="true"
-                                              @bind-Value="Model.CreatedAt" For="@(() => Model.CreatedAt)" />
+                            <MudTextField Label="Created At:" Disabled="true"
+                                            @bind-Value="Model.CreatedAt" For="@(() => Model.CreatedAt)" />
 
-                                <MudTextField Label="Modified At:" Disabled="true"
-                                              @bind-Value="Model.ModifiedAt" For="@(() => Model.ModifiedAt)" />
-                            }*@
+                            <MudTextField Label="Modified At:" Disabled="true"
+                                            @bind-Value="Model.ModifiedAt" For="@(() => Model.ModifiedAt)" />
+                        }
 
                     </MudCardContent>
                     @if (!IsReadOnly)
