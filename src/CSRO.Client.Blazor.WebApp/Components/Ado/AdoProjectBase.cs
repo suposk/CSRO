@@ -88,21 +88,21 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
             HideLoading();
         }
 
-        public Task OnOrganizationChanged(string value)
-        {
-            if (value != null)
-                Model.Organization = value;
+        //public Task OnOrganizationChanged(string value)
+        //{
+        //    if (value != null)
+        //        Model.Organization = value;
 
-            return Task.CompletedTask;
-        }
+        //    return Task.CompletedTask;
+        //}
 
-        public Task OnProcessNameChanged(string value)
-        {
-            if (value != null)
-                Model.ProcessName = value;
+        //public Task OnProcessNameChanged(string value)
+        //{
+        //    if (value != null)
+        //        Model.ProcessName = value;
 
-            return Task.CompletedTask;
-        }
+        //    return Task.CompletedTask;
+        //}
 
         public async Task OnValidSubmit(EditContext context)
         {
@@ -173,7 +173,7 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
 
         public void GoBack()
         {
-            NavigationManager.NavigateTo("/");
+            NavigationManager.NavigateTo("/ado/AdoRequestsList");
         }
 
     }

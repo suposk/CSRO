@@ -184,8 +184,8 @@ namespace CSRO.Client.Services
                 await base.AddAuthHeaderAsync();
 
                 var url = $"{ApiPart}";
-                var add = Mapper.Map<ProjectAdo>(item);
-                var httpcontent = new StringContent(JsonSerializer.Serialize(add, _options), Encoding.UTF8, "application/json");
+                //var add = Mapper.Map<ProjectAdo>(item);
+                var httpcontent = new StringContent(JsonSerializer.Serialize(item, _options), Encoding.UTF8, "application/json");
                 var apiData = await HttpClientBase.PutAsync(url, httpcontent).ConfigureAwait(false);
 
                 if (apiData.IsSuccessStatusCode)

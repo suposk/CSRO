@@ -34,9 +34,10 @@
                         @if (Organizations?.Count > 0)
                         {
                             <MudSelect T="@string"
+                                       Disabled="@IsReadOnly"
                                        OffsetY="true"
                                        Label="Select Organization:"
-                                       ValueChanged="(e) => OnOrganizationChanged(e)"
+                                       @bind-Value="Model.Organization"
                                        For="@(() => Model.Organization)">
                                 @foreach (var item in Organizations)
                                 {
@@ -55,9 +56,10 @@
                         @if (Processes?.Count > 0)
                         {
                             <MudSelect T="@string"
+                                       Disabled="@IsReadOnly"
                                        OffsetY="true"
                                        Label="Select Process:"
-                                       ValueChanged="(e) => OnProcessNameChanged(e)"
+                                       @bind-Value="Model.ProcessName"
                                        For="@(() => Model.ProcessName)">
                                 @foreach (var item in Processes)
                                 {
@@ -69,6 +71,7 @@
                         {
 
                             <MudTextField Label="Processes Name"
+                                          Disabled="@IsReadOnly"
                                           @bind-Value="Model.ProcessName"
                                           For="@(() => Model.ProcessName)" />
                         }
