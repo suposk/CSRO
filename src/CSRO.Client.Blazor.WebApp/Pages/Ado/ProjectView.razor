@@ -1,0 +1,14 @@
+﻿@page "/ado/ProjectView/{RequestId}"
+@using CSRO.Client.Services.Models
+
+<div style="max-width: 50%" class="m-4">
+    <AdoProject RequestId="@RequestId"
+                OperationTypeTicket="@OperatioType.View">
+
+    </AdoProject>
+</div>
+
+@code {
+    [Parameter]
+    public string RequestId { get; set; }
+}

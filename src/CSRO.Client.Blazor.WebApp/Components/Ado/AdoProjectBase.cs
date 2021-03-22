@@ -19,7 +19,7 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
         #region Params and Injects
 
         [Parameter]
-        public string TicketId { get; set; }
+        public string RequestId { get; set; }
 
         [Parameter]
         public OperatioType OperationTypeTicket { get; set; }
@@ -73,8 +73,13 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
                 if (orgs != null)
                     Organizations = orgs;
 
-                //Model = new ProjectAdo { Name = "New Project", };
-                //var ado = await AdoProjectDataService.GetItemByIdAsync(3);
+                if (OperationTypeTicket != OperatioType.Create)
+                {
+                    Model.Id = int.Parse(RequestId);
+                    var server = await AdoProjectDataService.GetItemByIdAsync(Model.Id);
+                    if (server != null)
+                        Model = server;
+                }
             }
             catch (Exception ex)
             {
@@ -120,20 +125,20 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
                             Model = added;
                         }
                     }
-                    //else if (OperationTypeTicket == OperatioType.Edit)
-                    //{
-                    //    var updated = await TicketDataService.UpdateItemAsync(Model);
-                    //    if (updated)
-                    //    {
-                    //        Success = true;
-                    //    }
-                    //    else
-                    //    {
-                    //        var ok = await CsroDialogService.ShowWarning("Update Error", $"Conflic Detected, Please refresh and try again", "Refresh");
-                    //        if (ok)
-                    //            await Load();
-                    //    }
-                    //}
+                    else if (OperationTypeTicket == OperatioType.Edit)
+                    {
+                        var updated = await AdoProjectDataService.UpdateItemAsync(Model);
+                        if (updated)
+                        {
+                            Success = true;
+                        }
+                        else
+                        {
+                            var ok = await CsroDialogService.ShowWarning("Update Error", $"Conflic Detected, Please refresh and try again", "Refresh");
+                            if (ok)
+                                await Load();
+                        }
+                    }
                     StateHasChanged();
                 }
                 catch (Exception ex)

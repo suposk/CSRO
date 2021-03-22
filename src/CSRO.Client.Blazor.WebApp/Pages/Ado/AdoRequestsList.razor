@@ -57,10 +57,10 @@
             <MudTd DataLabel="Modified At">@context.ModifiedAt</MudTd>
             <MudPaper Class="demo-grid-paper" Elevation="0">
                 <MudTooltip Text="Edit" Delayed="1">
-                    <MudIconButton Link="@($"vm/restart/edit/{context.Id}")" Icon="@Icons.Material.Filled.Edit"></MudIconButton>
+                    <MudIconButton Link="@($"ado/ProjectEdit/{context.Id}")" Icon="@Icons.Material.Filled.Edit"></MudIconButton>
                 </MudTooltip>
                 <MudTooltip Text="Details">
-                    <MudIconButton Link="@($"vm/restart/view/{context.Id}")" Icon="@Icons.Material.Filled.Info"></MudIconButton>
+                    <MudIconButton Link="@($"ado/ProjectView/{context.Id}")" Icon="@Icons.Material.Filled.Info"></MudIconButton>
                 </MudTooltip>
                 <MudTooltip Text="Delete">
                     <MudIconButton OnClick="@(e => DeleteTicketAsync(context))" Icon="@Icons.Material.Filled.Delete"></MudIconButton>

@@ -234,8 +234,7 @@ namespace CSRO.Client.Services
                 {
                     var content = await apiData.Content.ReadAsStringAsync();
                     var ser = JsonSerializer.Deserialize<ProjectAdo>(content, _options);
-                    var result = Mapper.Map<ProjectAdo>(ser);
-                    return result;
+                    return ser;
                 }
             }
             catch (Exception ex)
