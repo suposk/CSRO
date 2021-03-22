@@ -20,7 +20,7 @@ namespace CSRO.Server.Ado.Api.Commands
         private readonly IAdoProjectRepository _adoProjectRepository;
         private readonly IAdoProjectHistoryRepository _adoProjectHistoryRepository;
         private readonly IMapper _mapper;
-        private readonly ILogger<CreateApprovedAdoProjectsCommandHandler> _logger;
+        private readonly ILogger<CreateApprovedAdoProjectIdsCommandHandler> _logger;
 
         public CreateApprovedAdoProjectIdsCommandHandler
             (
@@ -28,7 +28,7 @@ namespace CSRO.Server.Ado.Api.Commands
             IAdoProjectRepository adoProjectRepository,
             IAdoProjectHistoryRepository adoProjectHistoryRepository,
             IMapper mapper,
-            ILogger<CreateApprovedAdoProjectsCommandHandler> logger
+            ILogger<CreateApprovedAdoProjectIdsCommandHandler> logger
             )
         {
             _projectAdoServices = projectAdoServices;
@@ -85,14 +85,14 @@ namespace CSRO.Server.Ado.Api.Commands
                     }
                 }
                 if (warnings.Length > 0)
-                    _logger.LogWarning($"{nameof(CreateApprovedAdoProjectsCommand)} warnings to report: {warnings}");
+                    _logger.LogWarning($"{nameof(CreateApprovedAdoProjectIdsCommandHandler)} warnings to report: {warnings}");
 
                 return created;
             }
             catch (Exception ex)
             {
                 //this shouldn't stop the API from doing else so this can be logged
-                _logger.LogError($"{nameof(CreateApprovedAdoProjectsCommand)} failed due to: {ex.Message}");
+                _logger.LogError($"{nameof(CreateApprovedAdoProjectIdsCommandHandler)} failed due to: {ex.Message}");
             }
             return null;
         }
