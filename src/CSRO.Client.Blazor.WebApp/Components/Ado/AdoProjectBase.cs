@@ -45,8 +45,8 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
         #endregion
 
         public ProjectAdo Model { get; set; } = new ProjectAdo { Status = Status.Draft };
-        protected bool IsReadOnly => OperationTypeTicket == OperatioType.View || 
-            (OperationTypeTicket == OperatioType.Edit && Model.Status > Status.Submitted);
+        //protected bool IsReadOnly => OperationTypeTicket == OperatioType.View; //for testing
+        protected bool IsReadOnly => OperationTypeTicket == OperatioType.View || (OperationTypeTicket == OperatioType.Edit && Model.Status > Status.Submitted);
         protected string Title => OperationTypeTicket.ToString() + " Project";
 
         protected List<string> Processes = new List<string>();
@@ -131,7 +131,8 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
                         var updated = await AdoProjectDataService.UpdateItemAsync(Model);
                         if (updated)
                         {
-                            Success = true;
+                            await CsroDialogService.ShowMessage("Success", $"Update Finished", "Refresh");                            
+                            await Load();
                         }
                         else
                         {

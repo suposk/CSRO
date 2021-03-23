@@ -97,7 +97,7 @@ namespace CSRO.Server.Ado.Api.Services
                 entity.Status = Status.Submitted;
                 if (!await SaveChangesAsync())
                     return null;
-                await _adoProjectHistoryRepository.Create(entity.Id, IAdoProjectHistoryRepository.Operation_RequestCreated, _userId);                
+                await _adoProjectHistoryRepository.Create(entity.Id, IAdoProjectHistoryRepository.Operation_Request_Created, _userId);                
                 return entity;
             }
             catch
@@ -177,9 +177,9 @@ namespace CSRO.Server.Ado.Api.Services
                             if (await SaveChangesAsync())
                             {
                                 if (reject)
-                                    await _adoProjectHistoryRepository.Create(entity.Id, IAdoProjectHistoryRepository.Operation_RequestRejected, _userId);                                    
+                                    await _adoProjectHistoryRepository.Create(entity.Id, IAdoProjectHistoryRepository.Operation_Request_Rejected, _userId);                                    
                                 else
-                                    await _adoProjectHistoryRepository.Create(entity.Id, IAdoProjectHistoryRepository.Operation_RequestApproved, _userId);
+                                    await _adoProjectHistoryRepository.Create(entity.Id, IAdoProjectHistoryRepository.Operation_Request_Approved, _userId);
                                 list.Add(entity);
                             }
                         }
@@ -226,6 +226,17 @@ namespace CSRO.Server.Ado.Api.Services
         {            
             base.Add(entity, _userId);
             entity.State = ProjectState.CreatePending;                        
+        }
+
+        public async override Task<AdoProject> UpdateAsync(AdoProject entity, string UserId = null)
+        {
+            if (await base.UpdateAsync(entity, _userId) != null)
+            {
+                await _adoProjectHistoryRepository.Create(entity.Id, IAdoProjectHistoryRepository.Operation_Request_Updated, _userId);
+                return entity;
+            }
+            else 
+                return null;
         }
 
         public override void Remove(AdoProject entity, string UserId = null)

@@ -188,16 +188,20 @@ namespace CSRO.Client.Services
                 var httpcontent = new StringContent(JsonSerializer.Serialize(item, _options), Encoding.UTF8, "application/json");
                 var apiData = await HttpClientBase.PutAsync(url, httpcontent).ConfigureAwait(false);
 
-                if (apiData.IsSuccessStatusCode)
-                {
+                if (apiData.IsSuccessStatusCode)                
                     return true;
+                else
+                {
+                    var content = await apiData.Content.ReadAsStringAsync();
+                    throw new Exception(content);
                 }
             }
             catch (Exception ex)
             {
                 base.HandleException(ex);
+                throw;
             }
-            return false;
+            //return false;
         }
 
         public async Task<bool> DeleteItemAsync(int id)

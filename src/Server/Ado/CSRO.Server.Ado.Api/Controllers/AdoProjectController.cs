@@ -219,15 +219,21 @@ namespace CSRO.Server.Ado.Api.Controllers
                 }
 
                 repoObj = _mapper.Map<Entity.AdoProject>(dto);
-                _repository.Update(repoObj);
-                if (await _repository.SaveChangesAsync())
-                {
-                    return NoContent();
-                }
-                else
-                {
-                    return Conflict("Conflict detected, refresh and try again.");
-                }
+                var res = await _repository.UpdateAsync(repoObj).ConfigureAwait(false);
+                if (res != null)                
+                    return NoContent();                
+                else                
+                    return Conflict("Conflict detected, refresh and try again.");                
+
+                //_repository.Update(repoObj);
+                //if (await _repository.SaveChangesAsync())
+                //{                    
+                //    return NoContent();
+                //}
+                //else
+                //{
+                //    return Conflict("Conflict detected, refresh and try again.");
+                //}
             }
             catch (Exception ex)
             {

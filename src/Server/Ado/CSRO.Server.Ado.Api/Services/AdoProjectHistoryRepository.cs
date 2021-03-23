@@ -14,11 +14,12 @@ namespace CSRO.Server.Ado.Api.Services
 {
     public interface IAdoProjectHistoryRepository: IRepository<AdoProjectHistory>
     {
-        const string Operation_RequestCreated = "Request Created";
+        const string Operation_Request_Created = "Request Created";
         const string Operation_SentEmailForApproval = "Sent Email For Approval";
-        const string Operation_RequestApproved = "Request Approved";
-        const string Operation_RequestRejected = "Request Rejected";
-        const string Operation_RequestCompleted = "Request Completed";
+        const string Operation_Request_Approved = "Request Approved";
+        const string Operation_Request_Updated = "Request Updated";
+        const string Operation_Request_Rejected = "Request Rejected";
+        const string Operation_Request_Completed = "Request Completed";
 
         Task<AdoProjectHistory> Create(int adoProjectId, string operation, string userId);
 
