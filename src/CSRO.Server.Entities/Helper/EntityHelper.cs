@@ -13,6 +13,11 @@
         //    return cond;        
         //}
 
+        /// <summary>
+        /// status == Status.Submitted || status == Status.Approved || status == Status.Completed
+        /// </summary>
+        /// <param name="status"></param>
+        /// <returns></returns>
         public static bool ForbidenStatusForDuplicatePojectNames(this Status status)
         {
             var cond = status == Status.Submitted || status == Status.Approved || status == Status.Completed;
