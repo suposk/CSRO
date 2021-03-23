@@ -70,7 +70,7 @@ namespace CSRO.Client.Services.Validation
 
             try
             {
-                var exisit = await _adoProjectDataService.ProjectExists(projectAdo.Organization, projectAdo.Name);
+                var exisit = await _adoProjectDataService.ProjectExists(projectAdo.Organization, projectAdo.Name, projectAdo.Id);
                 return !exisit;
             }
             catch (Exception ex) { _logger.LogError(ex, nameof(ProjecAlredyRequested), null); }

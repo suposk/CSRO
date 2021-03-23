@@ -70,7 +70,7 @@ namespace CSRO.Server.Ado.Api.Validation
 
             try
             {
-                var exisit = await _adoProjectRepository.ProjectExists(projectAdo.Organization, projectAdo.Name);
+                var exisit = await _adoProjectRepository.ProjectExists(projectAdo.Organization, projectAdo.Name, projectAdo.Id.ToString());
                 return !exisit;
             }
             catch (Exception ex) { _logger.LogError(ex, nameof(ProjecAlredyRequested), null); }

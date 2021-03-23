@@ -15,12 +15,12 @@ using System;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace CSRO.Server.Ado.Api.BackgroundTasks
 {
     public class AzServiceBusConsumer : BackgroundService, IServiceBusConsumer
-    {
-        private readonly string subscriptionName;        
+    {        
         private readonly IReceiverClient approvedAdoProjcetMessageReceiverClient;
         private readonly IReceiverClient rejectedAdoProjcetMessageReceiverClient;
         private readonly IQueueClient queueReceiverClient;
@@ -32,9 +32,6 @@ namespace CSRO.Server.Ado.Api.BackgroundTasks
         private readonly IAdoProjectRepository _adoProjectRepository;
         private readonly IAdoProjectHistoryRepository _adoProjectHistoryRepository;
         private readonly ILogger<AzServiceBusConsumer> _logger;
-        //private readonly string checkoutMessageTopic;
-        //private readonly string orderPaymentRequestMessageTopic;
-        //private readonly string orderPaymentUpdatedMessageTopic;
         private readonly ServiceBusConfig _serviceBusConfig;
 
         public AzServiceBusConsumer(
@@ -57,12 +54,11 @@ namespace CSRO.Server.Ado.Api.BackgroundTasks
 
             var serviceBusConnectionString = configuration.GetConnectionString("AzureServiceBus");
             _serviceBusConfig = configuration.GetSection(nameof(ServiceBusConfig)).Get<ServiceBusConfig>();
-            //var type = typeof(AzServiceBusConsumer);
-            //subscriptionName = type.Namespace; //Sub must exist in portal                      
             
             approvedAdoProjcetMessageReceiverClient = new SubscriptionClient(serviceBusConnectionString, _serviceBusConfig.ApprovedAdoProjectsTopic, _serviceBusConfig.ApprovedAdoProjectsSub);
             rejectedAdoProjcetMessageReceiverClient = new SubscriptionClient(serviceBusConnectionString, _serviceBusConfig.RejectedAdoProjectsTopic, _serviceBusConfig.RejectedAdoProjectsSub);
-            queueReceiverClient = new QueueClient(serviceBusConnectionString, _serviceBusConfig.QueueNameTest);
+            
+            //queueReceiverClient = new QueueClient(serviceBusConnectionString, _serviceBusConfig.QueueNameTest);
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -73,46 +69,61 @@ namespace CSRO.Server.Ado.Api.BackgroundTasks
 
         public void Start()
         {
-            var messageHandlerOptions = new MessageHandlerOptions(OnServiceBusException) { MaxConcurrentCalls = 4 };
+            var messageHandlerOptions = new MessageHandlerOptions(OnServiceBusException) { MaxConcurrentCalls = 5 , AutoComplete = false };
+
             approvedAdoProjcetMessageReceiverClient?.RegisterMessageHandler(OnApprovedReceived, messageHandlerOptions);
             rejectedAdoProjcetMessageReceiverClient?.RegisterMessageHandler(OnRejectedReceived, messageHandlerOptions);
 
-            var options = new MessageHandlerOptions(OnServiceBusException)
-            {
-                MaxConcurrentCalls = 4,
-                AutoComplete = false
-            };
-            queueReceiverClient?.RegisterMessageHandler(ExecuteQueueMessageProcessing, options);
+            //queueReceiverClient?.RegisterMessageHandler(ExecuteQueueMessageProcessing, messageHandlerOptions);
         }
 
         private async Task OnApprovedReceived(Message message, CancellationToken arg2)
         {
-            var body = Encoding.UTF8.GetString(message.Body);//json from service bus
-            var dto = JsonConvert.DeserializeObject<ApprovedAdoProjectsMessage>(body);
+            try
+            {
+                var body = Encoding.UTF8.GetString(message.Body);//json from service bus
+                var dto = JsonConvert.DeserializeObject<ApprovedAdoProjectsMessage>(body);
 
-            var createApprovedAdoProjectsCommand = new CreateApprovedAdoProjectIdsCommand() { Approved = dto.ApprovedAdoProjectIds, UserId = dto.UserId };
-            await _mediator.Send(createApprovedAdoProjectsCommand);
+                var createApprovedAdoProjectsCommand = new CreateApprovedAdoProjectIdsCommand() { Approved = dto.ApprovedAdoProjectIds, UserId = dto.UserId };
+                var created = await _mediator.Send(createApprovedAdoProjectsCommand);
+                if (created.IsNullOrEmptyCollection() || created.Count != dto.ApprovedAdoProjectIds.Count)                
+                    _logger.LogWarning($"{nameof(OnApprovedReceived)} Unxcepted result from {nameof(CreateApprovedAdoProjectIdsCommand)} ", created, dto);
+                
+                await approvedAdoProjcetMessageReceiverClient.CompleteAsync(message.SystemProperties.LockToken);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{nameof(OnApprovedReceived)} {ex.Message}", ex);
+            }
         }
 
-        private Task OnRejectedReceived(Message message, CancellationToken arg2)
+        private async Task OnRejectedReceived(Message message, CancellationToken arg2)
         {
-            var body = Encoding.UTF8.GetString(message.Body);//json from service bus
-            var dto = JsonConvert.DeserializeObject<RejectedAdoProjectsMessage>(body);
+            try
+            {
+                var body = Encoding.UTF8.GetString(message.Body);//json from service bus
+                var dto = JsonConvert.DeserializeObject<RejectedAdoProjectsMessage>(body);
 
-            //sent email
-            return Task.CompletedTask;
+                //TOTO sent email beack to user
+
+                await rejectedAdoProjcetMessageReceiverClient.CompleteAsync(message.SystemProperties.LockToken);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"{nameof(OnRejectedReceived)} {ex.Message}", ex);
+            }
         }
 
-        private async Task ExecuteQueueMessageProcessing(Message message, CancellationToken arg2)
-        {
-            var body = Encoding.UTF8.GetString(message.Body);//json from service bus
-            var dto = JsonConvert.DeserializeObject<ApprovedAdoProjectsMessage>(body);
+        //private async Task ExecuteQueueMessageProcessing(Message message, CancellationToken arg2)
+        //{
+        //    var body = Encoding.UTF8.GetString(message.Body);//json from service bus
+        //    var dto = JsonConvert.DeserializeObject<ApprovedAdoProjectsMessage>(body);
 
-            var createApprovedAdoProjectsCommand = new CreateApprovedAdoProjectIdsCommand() { Approved = dto.ApprovedAdoProjectIds, UserId = dto.UserId };
-            await _mediator.Send(createApprovedAdoProjectsCommand);
+        //    var createApprovedAdoProjectsCommand = new CreateApprovedAdoProjectIdsCommand() { Approved = dto.ApprovedAdoProjectIds, UserId = dto.UserId };
+        //    await _mediator.Send(createApprovedAdoProjectsCommand);
 
-            await queueReceiverClient.CompleteAsync(message.SystemProperties.LockToken);
-        }
+        //    await queueReceiverClient.CompleteAsync(message.SystemProperties.LockToken);
+        //}
 
         private Task OnServiceBusException(ExceptionReceivedEventArgs exceptionReceivedEventArgs)
         {
@@ -123,6 +134,7 @@ namespace CSRO.Server.Ado.Api.BackgroundTasks
 
         public void Stop()
         {
+
         }
     }
 }
