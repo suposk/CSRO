@@ -78,7 +78,7 @@ namespace CSRO.Server.Ado.Api.Controllers
         }
                 
         [HttpGet("{organization}/{projectName}/{projectId}", Name = nameof(ProjectExists))]
-        public async Task<ActionResult<bool>> ProjectExists(string organization, string projectName, string projectId)
+        public async Task<ActionResult<bool>> ProjectExists(string organization, string projectName, int projectId)
         {
             if (string.IsNullOrWhiteSpace(projectName) || string.IsNullOrWhiteSpace(organization))
                 return BadRequest();
@@ -132,6 +132,9 @@ namespace CSRO.Server.Ado.Api.Controllers
         {
             if (dto == null)
                 return BadRequest();
+
+            if (dto.Id > 0)
+                return BadRequest($"{dto.Id} may not be entered");
 
             try
             {

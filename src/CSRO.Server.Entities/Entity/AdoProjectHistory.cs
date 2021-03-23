@@ -12,5 +12,6 @@ namespace CSRO.Server.Entities.Entity
         public AdoProject AdoProject { get; set; }
         public int AdoProjectId { get; set; }
         public string Operation { get; set; }
+        public string Details { get; set; }
     }
 }

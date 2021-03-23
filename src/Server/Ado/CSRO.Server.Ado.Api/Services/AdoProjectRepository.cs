@@ -27,7 +27,7 @@ namespace CSRO.Server.Ado.Api.Services
         Task<List<AdoProject>> ApproveRejectAdoProjects(List<int> idList, bool reject);
         //Task<List<AdoProject>> ApproveAndCreateAdoProjects(List<int> toApprove);
         Task<AdoProject> CreateAdoProject(AdoProject entity);
-        Task<bool> ProjectExists(string organization, string projectName, string projectId);
+        Task<bool> ProjectExists(string organization, string projectName, int projectId);
         Task<CsroPagedList<AdoProject>> Search(ResourceParameters resourceParameters, string organization = null);
     }
 
@@ -65,7 +65,7 @@ namespace CSRO.Server.Ado.Api.Services
             _serviceBusConfig = configuration.GetSection(nameof(ServiceBusConfig)).Get<ServiceBusConfig>();
         }
 
-        public async Task<bool> ProjectExists(string organization, string projectName, string projectId)
+        public async Task<bool> ProjectExists(string organization, string projectName, int projectId)
         {
             if (string.IsNullOrWhiteSpace(projectName))            
                 throw new ArgumentException($"'{nameof(projectName)}' cannot be null or whitespace.", nameof(projectName));            
@@ -76,10 +76,36 @@ namespace CSRO.Server.Ado.Api.Services
             //var res = await _context.AdoProjects.FirstOrDefaultAsync(a => a.IsDeleted != true &&
             //        a.Name.Equals(projectName, StringComparison.OrdinalIgnoreCase) && a.Organization.Equals(organization, StringComparison.OrdinalIgnoreCase));
 
-            var res = await _context.AdoProjects.FirstOrDefaultAsync(a => a.IsDeleted != true &&
-                    a.Name.ToLower() == projectName.ToLower() && a.Organization.ToLower() == organization.ToLower());
+            var que = _context.AdoProjects.Where(
+                a => a.IsDeleted != true &&
+                //Model.Status > Status.Submitted
+                //a.Status == Status.
+                a.Name.ToLower() == projectName.ToLower() &&
+                a.Organization.ToLower() == organization.ToLower());
 
-            var exist = res != null && !string.Equals(projectId, res.Id.ToString());
+            //may have by accisdet or bug multiple existing
+            var res = await que.ToListAsync();
+            bool exist = false;
+            if (projectId <= 0)      
+                //new project
+                exist = res.HasAnyInCollection();            
+            else
+            {
+                exist = res.HasAnyInCollection();
+                if (exist == false)                
+                    return false;
+
+                foreach (var pr in res)
+                {
+                    //we may prform edit on existing record.
+                    if (pr.Id == projectId)
+                        continue;
+
+                    if (pr.ForbidenStatusForDuplicatePojectNames())
+                        return true;
+                }
+                //exist = res != null && projectId != res.Id;
+            }
             return exist;
         }
 
