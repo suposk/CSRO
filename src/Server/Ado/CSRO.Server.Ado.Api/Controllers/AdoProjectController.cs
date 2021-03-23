@@ -204,6 +204,9 @@ namespace CSRO.Server.Ado.Api.Controllers
             if (dto == null || dto.Id < 1)
                 return BadRequest();
 
+            if (dto.Status > Status.Submitted)
+                return BadRequest($"Can not Modify request if {nameof(dto.Status)} is {dto.Status}. Please Create new request.");
+
             try
             {
                 _logger.LogInformation(ApiLogEvents.UpdateItem, $"{nameof(UpdateAdoProjectRequest)} Started");
