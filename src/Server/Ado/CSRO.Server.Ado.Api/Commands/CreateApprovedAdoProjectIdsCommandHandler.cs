@@ -76,7 +76,7 @@ namespace CSRO.Server.Ado.Api.Commands
                         if (await _adoProjectRepository.SaveChangesAsync() && createdEntity.Status == Status.Completed)
                         {
                             //3. create record in history DB                            
-                            await _adoProjectHistoryRepository.Create(origEntity.Id, IAdoProjectHistoryRepository.Operation_RequestCompleted, request.UserId);
+                            await _adoProjectHistoryRepository.Create(origEntity.Id, IAdoProjectHistoryRepository.Operation_Request_Completed, request.UserId);
                         }
                     }
                     catch (Exception ex)
