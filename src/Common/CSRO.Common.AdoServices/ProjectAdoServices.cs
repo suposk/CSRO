@@ -163,7 +163,7 @@ namespace CSRO.Common.AdoServices
                 //ClientSampleHttpLogger.SetSuppressOutput(Context, true);
 
                 // Check the operation status every 5 seconds (for up to 30 seconds)
-                Operation completedOperation = await WaitForLongRunningOperation(connection, operation.Id, 5, 30).ConfigureAwait(false);
+                Operation completedOperation = await WaitForLongRunningOperation(connection, operation.Id, 2, 30).ConfigureAwait(false);
 
                 // Check if the operation succeeded (the project was created) or failed
                 if (completedOperation.Status == OperationStatus.Succeeded)
