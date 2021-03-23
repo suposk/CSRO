@@ -6,6 +6,7 @@ namespace CSRO.Server.Infrastructure.MessageBus
 {
     public interface IMessageBus
     {
-        Task PublishMessage(BusMessageBase message, string topicName);
+        Task PublishMessageTopic(BusMessageBase message, string topicName);
+        Task PublishMessageQueue(BusMessageBase message, string queueName);
     }
 }
