@@ -78,35 +78,27 @@ namespace CSRO.Server.Ado.Api.Services
 
             var que = _context.AdoProjects.Where(
                 a => a.IsDeleted != true &&
-                //Model.Status > Status.Submitted
-                //a.Status == Status.
                 a.Name.ToLower() == projectName.ToLower() &&
                 a.Organization.ToLower() == organization.ToLower());
 
             //may have by accisdet or bug multiple existing
             var res = await que.ToListAsync();
             bool exist = false;
-            if (projectId <= 0)      
-                //new project
-                exist = res.HasAnyInCollection();            
-            else
+
+            exist = res.HasAnyInCollection();
+            if (!exist)
+                return false;
+
+            foreach (var pr in res)
             {
-                exist = res.HasAnyInCollection();
-                if (exist == false)                
-                    return false;
+                //we may prform edit on existing record.
+                if (pr.Id == projectId)
+                    continue;
 
-                foreach (var pr in res)
-                {
-                    //we may prform edit on existing record.
-                    if (pr.Id == projectId)
-                        continue;
-
-                    if (pr.ForbidenStatusForDuplicatePojectNames())
-                        return true;
-                }
-                //exist = res != null && projectId != res.Id;
-            }
-            return exist;
+                if (pr.Status.ForbidenStatusForDuplicatePojectNames())
+                    return true;
+            }            
+            return false;
         }
 
         public override Task<List<AdoProject>> GetList()

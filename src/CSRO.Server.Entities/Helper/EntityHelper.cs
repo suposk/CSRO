@@ -7,10 +7,16 @@
         //    return source == null || source.Any() == false || source.FirstOrDefault() == null;
         //}
 
-        public static bool ForbidenStatusForDuplicatePojectNames(this AdoProject project)
+        //public static bool ForbidenStatusForDuplicatePojectNames(this AdoProject project)
+        //{
+        //    var cond = project.Status == Status.Submitted && project.Status == Status.Approved && project.Status == Status.Completed;
+        //    return cond;        
+        //}
+
+        public static bool ForbidenStatusForDuplicatePojectNames(this Status status)
         {
-            var cond = project.Status == Status.Submitted && project.Status == Status.Approved && project.Status == Status.Completed;
-            return cond;        
+            var cond = status == Status.Submitted || status == Status.Approved || status == Status.Completed;
+            return cond;
         }
     }
 }
