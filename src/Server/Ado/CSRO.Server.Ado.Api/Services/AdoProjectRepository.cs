@@ -259,12 +259,13 @@ namespace CSRO.Server.Ado.Api.Services
                 if (reject)
                 {
                     var message = new RejectedAdoProjectsMessage { RejectedAdoProjectIds = list.Select(a => a.Id).ToList(), UserId = _userId }.CreateBaseMessage();
-                    await _messageBus.PublishMessage(message, _serviceBusConfig.RejectedAdoProjectsTopic);
+                    await _messageBus.PublishMessageTopic(message, _serviceBusConfig.RejectedAdoProjectsTopic);
                 }
                 else
                 {
                     var message = new ApprovedAdoProjectsMessage { ApprovedAdoProjectIds = list.Select(a => a.Id).ToList(), UserId = _userId }.CreateBaseMessage();
-                    await _messageBus.PublishMessage(message, _serviceBusConfig.ApprovedAdoProjectsTopic);
+                    //await _messageBus.PublishMessageTopic(message, _serviceBusConfig.ApprovedAdoProjectsTopic);
+                    await _messageBus.PublishMessageQueue(message, _serviceBusConfig.QueueNameTest);
                 }
                 return list.Any() ? list : null;
             }

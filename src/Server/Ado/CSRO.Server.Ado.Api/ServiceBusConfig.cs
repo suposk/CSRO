@@ -9,9 +9,8 @@ namespace CSRO.Server.Ado.Api
     {
         public string ApprovedAdoProjectsTopic { get; set; }
         public string ApprovedAdoProjectsSub { get; set; }
-
         public string RejectedAdoProjectsTopic { get; set; }
-
         public string RejectedAdoProjectsSub { get; set; }
+        public string QueueNameTest { get; set; }
     }
 }
