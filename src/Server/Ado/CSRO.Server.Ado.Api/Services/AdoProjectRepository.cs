@@ -18,6 +18,7 @@ using Microsoft.EntityFrameworkCore;
 //using CSRO.Server.Ado.Api.Commands;
 using CSRO.Server.Infrastructure.MessageBus;
 using CSRO.Server.Ado.Api.Messaging;
+using Microsoft.Extensions.Logging;
 
 namespace CSRO.Server.Ado.Api.Services
 {
@@ -33,12 +34,11 @@ namespace CSRO.Server.Ado.Api.Services
     public class AdoProjectRepository : Repository<AdoProject>, IAdoProjectRepository
     {        
         private readonly IRepository<AdoProject> _repository;
-        private readonly AdoContext _context;
-        private readonly IProjectAdoServices _projectAdoServices;
+        private readonly AdoContext _context;        
         private readonly IAdoProjectHistoryRepository _adoProjectHistoryRepository;
         private readonly IPropertyMappingService _propertyMappingService;
         private readonly IMapper _mapper;
-       // private readonly IMediator _mediator;
+        private readonly ILogger<AdoProjectRepository> _logger;
         private readonly IMessageBus _messageBus;
         private string _userId;
         private readonly ServiceBusConfig _serviceBusConfig;
@@ -46,22 +46,20 @@ namespace CSRO.Server.Ado.Api.Services
         public AdoProjectRepository(
             IConfiguration configuration,
             IRepository<AdoProject> repository,
-            AdoContext context,                        
-            IProjectAdoServices projectAdoServices,
+            AdoContext context,                                    
             IAdoProjectHistoryRepository adoProjectHistoryRepository,
             IPropertyMappingService propertyMappingService, 
             IMapper mapper,
-           // IMediator mediator,
+            ILogger<AdoProjectRepository> logger,
             IMessageBus messageBus,
             IApiIdentity apiIdentity) : base(context, apiIdentity)
         {            
             _repository = repository;
-            _context = context;
-            _projectAdoServices = projectAdoServices;
+            _context = context;            
             _adoProjectHistoryRepository = adoProjectHistoryRepository;
             _propertyMappingService = propertyMappingService;
             _mapper = mapper;
-            //_mediator = mediator;
+            _logger = logger;
             _messageBus = messageBus;
             _userId = ApiIdentity.GetUserName();
             _serviceBusConfig = configuration.GetSection(nameof(ServiceBusConfig)).Get<ServiceBusConfig>();
@@ -145,67 +143,9 @@ namespace CSRO.Server.Ado.Api.Services
             var res = await CsroPagedList<AdoProject>.CreateAsync(collection,
                 resourceParameters.PageNumber,
                 resourceParameters.PageSize);
+            
             return res;
-
         }
-
-        ///// <summary>
-        ///// Approves and Creates ado Project
-        ///// </summary>
-        ///// <param name="toApprove"></param>
-        ///// <returns></returns>
-        //public async Task<List<AdoProject>> ApproveAndCreateAdoProjects(List<int> toApprove)
-        //{
-        //    if (toApprove is null)
-        //        throw new ArgumentNullException(nameof(toApprove));
-
-        //    try
-        //    {                         
-        //        List<AdoProject> approved = new();
-        //        StringBuilder others = new();
-
-        //        foreach (var pId in toApprove)
-        //        {
-
-        //            try
-        //            {
-        //                var entity = await _repository.GetId(pId);
-        //                if (entity != null)
-        //                {
-        //                    //only if in pending state
-        //                    if (entity.State != ProjectState.CreatePending)
-        //                        continue;
-
-        //                    //1. create Proj
-        //                    var mapped = _mapper.Map<AdoModels.ProjectAdo>(entity);                           
-        //                    var created = await _projectAdoServices.CreateProject(mapped);
-
-        //                    //2. Update Db
-        //                    entity = _mapper.Map<AdoProject>(created);
-        //                    //entity.Status = Status.Approved;
-        //                    entity.Status = Status.Completed;
-        //                    Update(entity, _userId);
-        //                    if (await SaveChangesAsync())
-        //                    {
-        //                        await _adoProjectHistoryRepository.Create(entity.Id, IAdoProjectHistoryRepository.Operation_RequestApproved, _userId);
-        //                        approved.Add(entity);
-        //                    }
-        //                }
-        //                else
-        //                    others.Append($"Id {pId} was not found, verify this Id exist or record was modified.");
-        //            }
-        //            catch (Exception ex)
-        //            {
-        //                others.Append($"Error approving Id {pId}: {ex.Message}");
-        //            }
-        //        }
-        //        return approved.Any() ? approved : null;
-        //    }
-        //    catch
-        //    {
-        //        throw;
-        //    }            
-        //}
 
         public async Task<List<AdoProject>> ApproveRejectAdoProjects(List<int> idList, bool reject)
         {
@@ -251,22 +191,28 @@ namespace CSRO.Server.Ado.Api.Services
                     }
                 }
 
-                //TODO sent message
-                //2. Send command to create projects
-                //var createApprovedAdoProjectsCommand = new CreateApprovedAdoProjectsCommand() { Approved = approved, UserId = _userId };             
-                //await _mediator.Send(createApprovedAdoProjectsCommand);
+                BusMessageBase message = null;
+                try
+                {                    
+                    if (reject)
+                    {
+                        message = new RejectedAdoProjectsMessage { RejectedAdoProjectIds = list.Select(a => a.Id).ToList(), UserId = _userId }.CreateBaseMessage();
+                        await _messageBus.PublishMessageTopic(message, _serviceBusConfig.RejectedAdoProjectsTopic);
+                    }
+                    else
+                    {
+                        message = new ApprovedAdoProjectsMessage { ApprovedAdoProjectIds = list.Select(a => a.Id).ToList(), UserId = _userId }.CreateBaseMessage();
+                        await _messageBus.PublishMessageTopic(message, _serviceBusConfig.ApprovedAdoProjectsTopic);
+                        //await _messageBus.PublishMessageQueue(message, _serviceBusConfig.QueueNameTest);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Failed to PublishMessageTopic {ex?.Message}", message);
+                }
+                if (others.Length > 0)
+                    _logger.LogWarning($"{nameof(ApproveRejectAdoProjects)} {others}", null);
 
-                if (reject)
-                {
-                    var message = new RejectedAdoProjectsMessage { RejectedAdoProjectIds = list.Select(a => a.Id).ToList(), UserId = _userId }.CreateBaseMessage();
-                    await _messageBus.PublishMessageTopic(message, _serviceBusConfig.RejectedAdoProjectsTopic);
-                }
-                else
-                {
-                    var message = new ApprovedAdoProjectsMessage { ApprovedAdoProjectIds = list.Select(a => a.Id).ToList(), UserId = _userId }.CreateBaseMessage();
-                    //await _messageBus.PublishMessageTopic(message, _serviceBusConfig.ApprovedAdoProjectsTopic);
-                    await _messageBus.PublishMessageQueue(message, _serviceBusConfig.QueueNameTest);
-                }
                 return list.Any() ? list : null;
             }
             catch(Exception ex)
