@@ -77,8 +77,8 @@ namespace CSRO.Server.Ado.Api.Controllers
             }
         }
                 
-        [HttpGet("{organization}/{projectName}", Name = nameof(ProjectExists))]
-        public async Task<ActionResult<bool>> ProjectExists(string organization, string projectName)
+        [HttpGet("{organization}/{projectName}/{projectId}", Name = nameof(ProjectExists))]
+        public async Task<ActionResult<bool>> ProjectExists(string organization, string projectName, string projectId)
         {
             if (string.IsNullOrWhiteSpace(projectName) || string.IsNullOrWhiteSpace(organization))
                 return BadRequest();
@@ -87,12 +87,12 @@ namespace CSRO.Server.Ado.Api.Controllers
             {
                 _logger.LogInformation(ApiLogEvents.GetItem, $"{nameof(ProjectExists)} with {projectName} {organization} Started");
 
-                var res = await _repository.ProjectExists(organization, projectName).ConfigureAwait(false);
+                var res = await _repository.ProjectExists(organization, projectName, projectId).ConfigureAwait(false);
                 return res ? Ok(true) : NotFound();                    
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, nameof(ProjectExists), projectName, organization);
+                _logger.LogError(ex, nameof(ProjectExists), projectName, organization, projectId);
                 return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }
         }

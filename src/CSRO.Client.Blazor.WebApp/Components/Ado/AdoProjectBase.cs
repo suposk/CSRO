@@ -126,7 +126,7 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
                             Model = added;
                         }
                     }
-                    else if (OperationTypeTicket == OperatioType.Edit)
+                    else if (valid && OperationTypeTicket == OperatioType.Edit)
                     {
                         var updated = await AdoProjectDataService.UpdateItemAsync(Model);
                         if (updated)

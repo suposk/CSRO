@@ -23,7 +23,7 @@ namespace CSRO.Client.Services
         Task<List<ProjectAdo>> ApproveAdoProject(List<int> toApprove);
         Task<List<ProjectAdo>> RejectAdoProject(List<int> toReject);
         Task<List<ProjectAdo>> GetProjectsForApproval();
-        Task<bool> ProjectExists(string organization, string projectName);
+        Task<bool> ProjectExists(string organization, string projectName, int projectId);
     }
 
     public class AdoProjectDataService : BaseDataService, IAdoProjectDataService
@@ -314,13 +314,13 @@ namespace CSRO.Client.Services
             }
         }
 
-        public async Task<bool> ProjectExists(string organization, string projectName)
+        public async Task<bool> ProjectExists(string organization, string projectName, int projectId)
         {
             try
             {
                 await base.AddAuthHeaderAsync();
 
-                var url = $"{ApiPart}{organization}/{projectName}";
+                var url = $"{ApiPart}{organization}/{projectName}/{projectId}";
                 var apiData = await HttpClientBase.GetAsync(url).ConfigureAwait(false);
 
                 if (apiData.StatusCode == System.Net.HttpStatusCode.OK)

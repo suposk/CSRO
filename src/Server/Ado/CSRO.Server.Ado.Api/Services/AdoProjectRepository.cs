@@ -27,7 +27,7 @@ namespace CSRO.Server.Ado.Api.Services
         Task<List<AdoProject>> ApproveRejectAdoProjects(List<int> idList, bool reject);
         //Task<List<AdoProject>> ApproveAndCreateAdoProjects(List<int> toApprove);
         Task<AdoProject> CreateAdoProject(AdoProject entity);
-        Task<bool> ProjectExists(string organization, string projectName);
+        Task<bool> ProjectExists(string organization, string projectName, string projectId);
         Task<CsroPagedList<AdoProject>> Search(ResourceParameters resourceParameters, string organization = null);
     }
 
@@ -65,7 +65,7 @@ namespace CSRO.Server.Ado.Api.Services
             _serviceBusConfig = configuration.GetSection(nameof(ServiceBusConfig)).Get<ServiceBusConfig>();
         }
 
-        public async Task<bool> ProjectExists(string organization, string projectName)
+        public async Task<bool> ProjectExists(string organization, string projectName, string projectId)
         {
             if (string.IsNullOrWhiteSpace(projectName))            
                 throw new ArgumentException($"'{nameof(projectName)}' cannot be null or whitespace.", nameof(projectName));            
@@ -79,7 +79,8 @@ namespace CSRO.Server.Ado.Api.Services
             var res = await _context.AdoProjects.FirstOrDefaultAsync(a => a.IsDeleted != true &&
                     a.Name.ToLower() == projectName.ToLower() && a.Organization.ToLower() == organization.ToLower());
 
-            return res != null;
+            var exist = res != null && !string.Equals(projectId, res.Id.ToString());
+            return exist;
         }
 
         public override Task<List<AdoProject>> GetList()
