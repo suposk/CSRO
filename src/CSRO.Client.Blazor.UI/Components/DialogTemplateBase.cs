@@ -25,7 +25,16 @@ namespace CSRO.Client.Blazor.UI.Components
         [Parameter] public bool ShowEntry { get; set; }
 
 
-        public void Submit() => MudDialog.Close(DialogResult.Ok(true));
+        public void Submit()
+        {
+            if (ShowEntry)
+            {
+                if (!string.IsNullOrWhiteSpace(EnteredText) && EnteredText.Length >= 4)
+                    MudDialog.Close(DialogResult.Ok(EnteredText));
+            }
+            else
+                MudDialog.Close(DialogResult.Ok(true)); 
+        }
         public void Cancel() => MudDialog.Cancel();
     }
 }

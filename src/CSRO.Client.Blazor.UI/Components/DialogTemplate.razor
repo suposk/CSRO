@@ -4,7 +4,7 @@
         <MudText>@ContentText</MudText>
         @if (ShowEntry)
         {
-            <MudTextField Label="Enter text"
+            <MudTextField Class="mt-6" Label="Enter text: (min 4 char)"
                           @bind-Value="EnteredText"
                           For="@(() => EnteredText)"
                            />

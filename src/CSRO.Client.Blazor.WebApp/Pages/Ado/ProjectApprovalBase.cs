@@ -101,7 +101,10 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Ado
                 var toBeRejected = selectedItems.Select(a => a.Id).ToList();
 
                 var text = $"Reason to Reject {toBeRejected.Count} project(s)";
-                var rejectionText = await CsroDialogService.ShowDialogWithEntry("Enter reason", text);                
+                var rejectionText = await CsroDialogService.ShowDialogWithEntry("Enter reason", text);     
+                if (string.IsNullOrWhiteSpace(rejectionText))                                  
+                    return;    //cancel pressed
+
                 ShowLoading($"Rejecting {toBeRejected.Count} project(s)");
 
                 var rejected = await AdoProjectDataService.RejectAdoProject(toBeRejected);

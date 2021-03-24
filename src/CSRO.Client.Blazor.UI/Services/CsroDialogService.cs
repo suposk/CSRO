@@ -33,15 +33,14 @@ namespace CSRO.Client.Blazor.UI.Services
             parameters.Add(nameof(DialogTemplateBase.ButtonText), okText);
             parameters.Add(nameof(DialogTemplateBase.Color), Color.Info);
 
-            string entry = null;
-            parameters.Add(nameof(DialogTemplateBase.EnteredText), entry);
+            string entryVal = null;
+            parameters.Add(nameof(DialogTemplateBase.EnteredText), entryVal);
             parameters.Add(nameof(DialogTemplateBase.ShowEntry), true);
 
             var options = new DialogOptions() { CloseButton = false, MaxWidth = MaxWidth.Small };
             var userSelect = DialogService.Show<DialogTemplate>(title, parameters, options);
             var result = await userSelect.Result;
-            var val = entry;
-            return "User entered text";
+            return result.Data?.ToString();                        
         }
 
         public async Task<bool> ShowDialog(string title, string text, string okText = "Ok")
