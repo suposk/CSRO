@@ -2,6 +2,13 @@
 <MudDialog>
     <DialogContent>
         <MudText>@ContentText</MudText>
+        @if (ShowEntry)
+        {
+            <MudTextField Label="Enter text"
+                          @bind-Value="EnteredText"
+                          For="@(() => EnteredText)"
+                           />
+        }
     </DialogContent>
     <DialogActions>
         @if (ShowCancel)

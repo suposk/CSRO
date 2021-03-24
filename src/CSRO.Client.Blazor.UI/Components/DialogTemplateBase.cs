@@ -12,6 +12,8 @@ namespace CSRO.Client.Blazor.UI.Components
     {
         [CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
+        [Parameter] public string EnteredText { get; set; }
+
         [Parameter] public string ContentText { get; set; }
 
         [Parameter] public string ButtonText { get; set; }
@@ -19,6 +21,8 @@ namespace CSRO.Client.Blazor.UI.Components
         [Parameter] public Color Color { get; set; }
 
         [Parameter] public bool ShowCancel { get; set; } = true;
+
+        [Parameter] public bool ShowEntry { get; set; }
 
 
         public void Submit() => MudDialog.Close(DialogResult.Ok(true));
