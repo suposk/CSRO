@@ -24,14 +24,14 @@ namespace CSRO.Client.Blazor.UI.Services
         }
 
         private IDialogService DialogService { get; }
+        private DialogTemplateBase DialogTemplateBase { get; }
 
         public async Task<bool> ShowDialog(string title, string text, string okText = "Ok")
         {
             var parameters = new DialogParameters();
-            parameters.Add("ContentText", text);
-            parameters.Add("ButtonText", okText);
-            parameters.Add("Color", Color.Info);
-            //parameters.Add("ShowCancel", false);
+            parameters.Add(nameof(DialogTemplateBase.ContentText), text);
+            parameters.Add(nameof(DialogTemplateBase.ButtonText), okText);
+            parameters.Add(nameof(DialogTemplateBase.Color), Color.Info);            
 
             var options = new DialogOptions() { CloseButton = false, MaxWidth = MaxWidth.Small };
             var userSelect = DialogService.Show<DialogTemplate>(title, parameters, options);
@@ -43,10 +43,9 @@ namespace CSRO.Client.Blazor.UI.Services
         public async Task<bool> ShowWarning(string title, string text, string okText = "Ok")
         {
             var parameters = new DialogParameters();
-            parameters.Add("ContentText", text);
-            parameters.Add("ButtonText", okText);
-            parameters.Add("Color", Color.Warning);
-            //parameters.Add("ShowCancel", false);
+            parameters.Add(nameof(DialogTemplateBase.ContentText), text);
+            parameters.Add(nameof(DialogTemplateBase.ButtonText), okText);
+            parameters.Add(nameof(DialogTemplateBase.Color), Color.Warning);            
 
             var options = new DialogOptions() { CloseButton = false, MaxWidth = MaxWidth.Small };
             var userSelect = DialogService.Show<DialogTemplate>(title, parameters, options);
@@ -58,10 +57,10 @@ namespace CSRO.Client.Blazor.UI.Services
         public async Task ShowMessage(string title, string text, string okText = "Ok")
         {
             var parameters = new DialogParameters();
-            parameters.Add("ContentText", text);
-            parameters.Add("ButtonText", okText);
-            parameters.Add("Color", Color.Info);
-            parameters.Add("ShowCancel", false);
+            parameters.Add(nameof(DialogTemplateBase.ContentText), text);
+            parameters.Add(nameof(DialogTemplateBase.ButtonText), okText);
+            parameters.Add(nameof(DialogTemplateBase.Color), Color.Info);
+            parameters.Add(nameof(DialogTemplateBase.ShowCancel), false);
 
             var options = new DialogOptions() { CloseButton = false, MaxWidth = MaxWidth.Small };
             var userSelect = DialogService.Show<DialogTemplate>(title, parameters, options);
@@ -72,10 +71,10 @@ namespace CSRO.Client.Blazor.UI.Services
         public async Task ShowError(string title, string text, string okText = "Close")
         {
             var parameters = new DialogParameters();
-            parameters.Add("ContentText", text);
-            parameters.Add("ButtonText", okText);
-            parameters.Add("Color", Color.Error);
-            parameters.Add("ShowCancel", false);
+            parameters.Add(nameof(DialogTemplateBase.ContentText), text);
+            parameters.Add(nameof(DialogTemplateBase.ButtonText), okText);
+            parameters.Add(nameof(DialogTemplateBase.Color), Color.Error);
+            parameters.Add(nameof(DialogTemplateBase.ShowCancel), false);
 
             var options = new DialogOptions() { CloseButton = false, MaxWidth = MaxWidth.Small };
             var userSelect = DialogService.Show<DialogTemplate>(title, parameters, options);
