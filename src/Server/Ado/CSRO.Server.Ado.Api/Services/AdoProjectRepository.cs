@@ -24,7 +24,7 @@ namespace CSRO.Server.Ado.Api.Services
 {
     public interface IAdoProjectRepository : IRepository<AdoProject>
     {
-        Task<List<AdoProject>> ApproveRejectAdoProjects(List<int> idList, bool reject);
+        Task<List<AdoProject>> ApproveRejectAdoProjects(List<int> idList, bool reject, string reason);
         //Task<List<AdoProject>> ApproveAndCreateAdoProjects(List<int> toApprove);
         Task<AdoProject> CreateAdoProject(AdoProject entity);
         Task<bool> ProjectExists(string organization, string projectName, int projectId);
@@ -166,7 +166,7 @@ namespace CSRO.Server.Ado.Api.Services
             return res;
         }
 
-        public async Task<List<AdoProject>> ApproveRejectAdoProjects(List<int> idList, bool reject)
+        public async Task<List<AdoProject>> ApproveRejectAdoProjects(List<int> idList, bool reject, string reason)
         {
             if (idList is null)
                 throw new ArgumentNullException(nameof(idList));
@@ -195,9 +195,9 @@ namespace CSRO.Server.Ado.Api.Services
                             if (await SaveChangesAsync())
                             {
                                 if (reject)
-                                    await _adoProjectHistoryRepository.Create(entity.Id, IAdoProjectHistoryRepository.Operation_Request_Rejected, _userId);                                    
+                                    await _adoProjectHistoryRepository.Create(entity.Id, IAdoProjectHistoryRepository.Operation_Request_Rejected, _userId, reason);                                    
                                 else
-                                    await _adoProjectHistoryRepository.Create(entity.Id, IAdoProjectHistoryRepository.Operation_Request_Approved, _userId);
+                                    await _adoProjectHistoryRepository.Create(entity.Id, IAdoProjectHistoryRepository.Operation_Request_Approved, _userId, reason);
                                 list.Add(entity);
                             }
                         }
@@ -215,7 +215,7 @@ namespace CSRO.Server.Ado.Api.Services
                 {                    
                     if (reject)
                     {
-                        message = new RejectedAdoProjectsMessage { RejectedAdoProjectIds = list.Select(a => a.Id).ToList(), UserId = _userId }.CreateBaseMessage();
+                        message = new RejectedAdoProjectsMessage { RejectedAdoProjectIds = list.Select(a => a.Id).ToList(), UserId = _userId, Reason = reason }.CreateBaseMessage();
                         await _messageBus.PublishMessageTopic(message, _serviceBusConfig.RejectedAdoProjectsTopic);
                     }
                     else

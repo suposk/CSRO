@@ -8,5 +8,7 @@ namespace CSRO.Server.Ado.Api.Messaging
         public List<int> RejectedAdoProjectIds { get; set; }
 
         public string UserId { get; set; }
+
+        public string Reason { get; set; }
     }
 }
