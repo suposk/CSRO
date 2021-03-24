@@ -21,7 +21,7 @@ namespace CSRO.Server.Ado.Api.Services
         const string Operation_Request_Rejected = "Request Rejected";
         const string Operation_Request_Completed = "Request Completed";
 
-        Task<AdoProjectHistory> Create(int adoProjectId, string operation, string userId);
+        Task<AdoProjectHistory> Create(int adoProjectId, string operation, string userId, string reason = null);
 
         Task<List<AdoProject>> GetPendingProjectsApproval();
 
@@ -103,7 +103,7 @@ namespace CSRO.Server.Ado.Api.Services
             #endregion
         }
 
-        public async Task<AdoProjectHistory> Create(int adoProjectId, string operation, string userId)
+        public async Task<AdoProjectHistory> Create(int adoProjectId, string operation, string userId, string reason = null)
         {
             if (string.IsNullOrEmpty(operation))            
                 throw new ArgumentException($"'{nameof(operation)}' cannot be null or empty.", nameof(operation));            
@@ -111,7 +111,12 @@ namespace CSRO.Server.Ado.Api.Services
             if (string.IsNullOrEmpty(userId))            
                 throw new ArgumentException($"'{nameof(userId)}' cannot be null or empty.", nameof(userId));
             
-            var entity = new AdoProjectHistory { Operation = operation , AdoProjectId = adoProjectId };
+            var entity = new AdoProjectHistory 
+            {
+                Operation = operation , 
+                AdoProjectId = adoProjectId, 
+                Details = reason 
+            };
             base.Add(entity, userId);
             await SaveChangesAsync();
             return entity;            

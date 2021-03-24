@@ -1,6 +1,14 @@
-﻿<MudDialog>
+﻿@inherits DialogTemplateBase
+<MudDialog>
     <DialogContent>
         <MudText>@ContentText</MudText>
+        @if (ShowEntry)
+        {
+            <MudTextField Class="mt-6" Label="Enter text: (min 4 char)"
+                          @bind-Value="EnteredText"
+                          For="@(() => EnteredText)"
+                           />
+        }
     </DialogContent>
     <DialogActions>
         @if (ShowCancel)
@@ -10,17 +18,3 @@
         <MudButton Color="@Color" Variant="Variant.Filled" OnClick="Submit">@ButtonText</MudButton>
     </DialogActions>
 </MudDialog>
-@code {
-    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
-
-    [Parameter] public string ContentText { get; set; }
-
-    [Parameter] public string ButtonText { get; set; }
-
-    [Parameter] public Color Color { get; set; }
-
-    [Parameter] public bool ShowCancel { get; set; } = true;
-
-    void Submit() => MudDialog.Close(DialogResult.Ok(true));
-    void Cancel() => MudDialog.Cancel();
-}

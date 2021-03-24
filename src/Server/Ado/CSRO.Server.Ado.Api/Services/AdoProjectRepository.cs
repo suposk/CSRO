@@ -24,10 +24,10 @@ namespace CSRO.Server.Ado.Api.Services
 {
     public interface IAdoProjectRepository : IRepository<AdoProject>
     {
-        Task<List<AdoProject>> ApproveRejectAdoProjects(List<int> idList, bool reject);
+        Task<List<AdoProject>> ApproveRejectAdoProjects(List<int> idList, bool reject, string reason);
         //Task<List<AdoProject>> ApproveAndCreateAdoProjects(List<int> toApprove);
         Task<AdoProject> CreateAdoProject(AdoProject entity);
-        Task<bool> ProjectExists(string organization, string projectName, string projectId);
+        Task<bool> ProjectExists(string organization, string projectName, int projectId);
         Task<CsroPagedList<AdoProject>> Search(ResourceParameters resourceParameters, string organization = null);
     }
 
@@ -65,7 +65,7 @@ namespace CSRO.Server.Ado.Api.Services
             _serviceBusConfig = configuration.GetSection(nameof(ServiceBusConfig)).Get<ServiceBusConfig>();
         }
 
-        public async Task<bool> ProjectExists(string organization, string projectName, string projectId)
+        public async Task<bool> ProjectExists(string organization, string projectName, int projectId)
         {
             if (string.IsNullOrWhiteSpace(projectName))            
                 throw new ArgumentException($"'{nameof(projectName)}' cannot be null or whitespace.", nameof(projectName));            
@@ -76,11 +76,29 @@ namespace CSRO.Server.Ado.Api.Services
             //var res = await _context.AdoProjects.FirstOrDefaultAsync(a => a.IsDeleted != true &&
             //        a.Name.Equals(projectName, StringComparison.OrdinalIgnoreCase) && a.Organization.Equals(organization, StringComparison.OrdinalIgnoreCase));
 
-            var res = await _context.AdoProjects.FirstOrDefaultAsync(a => a.IsDeleted != true &&
-                    a.Name.ToLower() == projectName.ToLower() && a.Organization.ToLower() == organization.ToLower());
+            var que = _context.AdoProjects.Where(
+                a => a.IsDeleted != true &&
+                a.Name.ToLower() == projectName.ToLower() &&
+                a.Organization.ToLower() == organization.ToLower());
 
-            var exist = res != null && !string.Equals(projectId, res.Id.ToString());
-            return exist;
+            //may have by accisdet or bug multiple existing
+            var res = await que.ToListAsync();
+            bool exist = false;
+
+            exist = res.HasAnyInCollection();
+            if (!exist)
+                return false;
+
+            foreach (var pr in res)
+            {
+                //we may prform edit on existing record.
+                if (pr.Id == projectId)
+                    continue;
+
+                if (pr.Status.ForbidenStatusForDuplicatePojectNames())
+                    return true;
+            }            
+            return false;
         }
 
         public override Task<List<AdoProject>> GetList()
@@ -148,7 +166,7 @@ namespace CSRO.Server.Ado.Api.Services
             return res;
         }
 
-        public async Task<List<AdoProject>> ApproveRejectAdoProjects(List<int> idList, bool reject)
+        public async Task<List<AdoProject>> ApproveRejectAdoProjects(List<int> idList, bool reject, string reason)
         {
             if (idList is null)
                 throw new ArgumentNullException(nameof(idList));
@@ -177,9 +195,9 @@ namespace CSRO.Server.Ado.Api.Services
                             if (await SaveChangesAsync())
                             {
                                 if (reject)
-                                    await _adoProjectHistoryRepository.Create(entity.Id, IAdoProjectHistoryRepository.Operation_Request_Rejected, _userId);                                    
+                                    await _adoProjectHistoryRepository.Create(entity.Id, IAdoProjectHistoryRepository.Operation_Request_Rejected, _userId, reason);                                    
                                 else
-                                    await _adoProjectHistoryRepository.Create(entity.Id, IAdoProjectHistoryRepository.Operation_Request_Approved, _userId);
+                                    await _adoProjectHistoryRepository.Create(entity.Id, IAdoProjectHistoryRepository.Operation_Request_Approved, _userId, reason);
                                 list.Add(entity);
                             }
                         }
@@ -197,7 +215,7 @@ namespace CSRO.Server.Ado.Api.Services
                 {                    
                     if (reject)
                     {
-                        message = new RejectedAdoProjectsMessage { RejectedAdoProjectIds = list.Select(a => a.Id).ToList(), UserId = _userId }.CreateBaseMessage();
+                        message = new RejectedAdoProjectsMessage { RejectedAdoProjectIds = list.Select(a => a.Id).ToList(), UserId = _userId, Reason = reason }.CreateBaseMessage();
                         await _messageBus.PublishMessageTopic(message, _serviceBusConfig.RejectedAdoProjectsTopic);
                     }
                     else

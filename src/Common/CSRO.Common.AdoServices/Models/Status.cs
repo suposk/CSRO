@@ -15,18 +15,23 @@
         /// </summary>
         Submitted = 20,
 
+        Deleted = 30,
+
         /// <summary>
         /// Rejected, ticket must be edited and resubmited
         /// </summary>
-        Rejected = 30,
+        Rejected = 40,
+
+        /// <summary>
+        /// Some error during process.
+        /// </summary>
+        Failed = 50,
 
         /// <summary>
         /// Approved. Can be executed
         /// </summary>
-        Approved = 40,
+        Approved = 60,
 
-        Completed = 50,
-
-        Deleted = 60
+        Completed = 70,
     }
 }

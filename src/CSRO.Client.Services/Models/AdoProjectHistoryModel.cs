@@ -10,5 +10,6 @@ namespace CSRO.Client.Services.Models
     {
         public int AdoProjectId { get; set; }
         public string Operation { get; set; }
+        public string Details { get; set; }
     }
 }
