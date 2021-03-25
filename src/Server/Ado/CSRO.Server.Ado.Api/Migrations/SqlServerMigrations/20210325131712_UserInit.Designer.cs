@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
 {
     [DbContext(typeof(UserContext))]
-    [Migration("20210325111047_UserInit")]
+    [Migration("20210325131712_UserInit")]
     partial class UserInit
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -20,6 +20,66 @@ namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.3")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+            modelBuilder.Entity("CSRO.Server.Entities.Entity.Role", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("UserRoles");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2021, 3, 25, 13, 17, 11, 778, DateTimeKind.Utc).AddTicks(9792),
+                            CreatedBy = "Script",
+                            Name = "Admin"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTime(2021, 3, 25, 13, 17, 11, 779, DateTimeKind.Utc).AddTicks(936),
+                            CreatedBy = "Script",
+                            Name = "Contributor"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            CreatedAt = new DateTime(2021, 3, 25, 13, 17, 11, 779, DateTimeKind.Utc).AddTicks(938),
+                            CreatedBy = "Script",
+                            Name = "User"
+                        });
+                });
 
             modelBuilder.Entity("CSRO.Server.Entities.Entity.User", b =>
                 {
@@ -165,6 +225,46 @@ namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
                         });
                 });
 
+            modelBuilder.Entity("CSRO.Server.Entities.Entity.UserRole", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("RoleId")
+                        .HasMaxLength(50)
+                        .HasColumnType("int");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserRole");
+                });
+
             modelBuilder.Entity("CSRO.Server.Entities.Entity.UserClaim", b =>
                 {
                     b.HasOne("CSRO.Server.Entities.Entity.User", "User")
@@ -176,9 +276,30 @@ namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("CSRO.Server.Entities.Entity.UserRole", b =>
+                {
+                    b.HasOne("CSRO.Server.Entities.Entity.Role", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CSRO.Server.Entities.Entity.User", "User")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Role");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("CSRO.Server.Entities.Entity.User", b =>
                 {
                     b.Navigation("Claims");
+
+                    b.Navigation("UserRoles");
                 });
 #pragma warning restore 612, 618
         }

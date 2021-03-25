@@ -34,6 +34,9 @@ namespace CSRO.Server.Entities.Entity
         public string Email { get; set; }
 
         public ICollection<UserClaim> Claims { get; set; } = new List<UserClaim>();
+
+        public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
+        
         //public ICollection<UserLogin> Logins { get; set; } = new List<UserLogin>();
     }
 }

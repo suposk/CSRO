@@ -34,8 +34,10 @@ namespace CSRO.Server.Entities
 
         public DbSet<UserClaim> UserClaims { get; set; }
 
+        public DbSet<Role> UserRoles { get; set; }
+
         //public DbSet<UserLogin> UserLogins { get; set; }
-        
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -55,10 +57,23 @@ namespace CSRO.Server.Entities
         {
             const string firstUser = "8aa6a8cb-36ed-415a-a12b-07c84af45428";
             const string secondUser = "44769cb1-cca7-4a19-8bbe-8edea9b99179";
+            Role admin = new Role { Id = 1, Name = "Admin", CreatedAt = DateTime.UtcNow, CreatedBy = "Script", };
+            Role cont = new Role { Id = 3, Name = "Contributor", CreatedAt = DateTime.UtcNow, CreatedBy = "Script", }; ;
+            Role user = new Role { Id = 5, Name = "User", CreatedAt = DateTime.UtcNow, CreatedBy = "Script", };
+            List<Role> roles = new();
+            roles.Add(admin);
+            roles.Add(cont);
+            roles.Add(user);
 
-            modelBuilder.Entity<User>()
-            .HasIndex(u => u.Username)
-            .IsUnique();
+            UserRole ur = new UserRole { Id = 1, Role = admin, RoleId = admin.Id,  UserId = 1 };
+
+            modelBuilder.Entity<User>().HasIndex(u => u.Username).IsUnique();
+
+            modelBuilder.Entity<Role>().HasIndex(a => a.Name).IsUnique();
+
+            modelBuilder.Entity<Role>().HasData(roles);
+
+            //modelBuilder.Entity<UserRole>().HasData(ur);
 
             modelBuilder.Entity<User>().HasData(
                 new User()
@@ -66,15 +81,16 @@ namespace CSRO.Server.Entities
                     Id = 1,
                     ObjectId = new Guid(firstUser),                                       
                     Username = "live.com#jan.supolik@hotmail.com",
-                    Active = true
+                    Active = true,
+                    //UserRoles = new List<UserRole> { ur },                    
                 },
                 new User()
                 {
                     Id = 2,
                     ObjectId = new Guid(secondUser),
                     Username = "read@jansupolikhotmail.onmicrosoft.com",
-                    Active = true
-                });
+                    Active = true,
+                });;
 
             modelBuilder.Entity<UserClaim>().HasData(
              //first user
