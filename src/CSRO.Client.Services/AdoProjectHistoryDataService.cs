@@ -93,10 +93,7 @@ namespace CSRO.Client.Services
                     return result;
                 }
                 else
-                {
-                    var content = await apiData.Content.ReadAsStringAsync();
-                    throw new Exception(content);
-                }
+                    throw new Exception(GetErrorText(apiData));
             }
             catch (Exception ex)
             {

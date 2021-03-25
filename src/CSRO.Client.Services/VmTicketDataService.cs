@@ -135,11 +135,7 @@ namespace CSRO.Client.Services
                     return result;
                 }
                 else
-                {
-                    var content = await apiData.Content.ReadAsStringAsync();
-                    //var ser = JsonSerializer.Deserialize<AzureManagErrorDto>(content, _options);
-                    throw new Exception(content);
-                }
+                    throw new Exception(GetErrorText(apiData));
             }
             catch (Exception ex)
             {
@@ -199,11 +195,7 @@ namespace CSRO.Client.Services
                     return result;
                 }
                 else
-                {
-                    var content = await apiData.Content.ReadAsStringAsync();
-                    //var ser = JsonSerializer.Deserialize<AzureManagErrorDto>(content, _options);
-                    throw new Exception(content);
-                }
+                    throw new Exception(GetErrorText(apiData));
             }
             catch (Exception ex)
             {
@@ -227,6 +219,8 @@ namespace CSRO.Client.Services
                 {
                     return true;
                 }
+                else
+                    throw new Exception(GetErrorText(apiData));
             }
             catch (Exception ex)
             {
@@ -244,10 +238,10 @@ namespace CSRO.Client.Services
                 var url = $"{ApiPart}{id}";
                 var apiData = await HttpClientBase.DeleteAsync(url).ConfigureAwait(false);
 
-                if (apiData.IsSuccessStatusCode)
-                {
-                    return true;
-                }
+                if (apiData.IsSuccessStatusCode)                
+                    return true;                
+                else
+                    throw new Exception(GetErrorText(apiData));
             }
             catch (Exception ex)
             {
@@ -272,6 +266,8 @@ namespace CSRO.Client.Services
                     var result = Mapper.Map<VmTicket>(ser);
                     return result;
                 }
+                else
+                    throw new Exception(GetErrorText(apiData));
             }
             catch (Exception ex)
             {
@@ -296,6 +292,8 @@ namespace CSRO.Client.Services
                     var result = Mapper.Map<List<VmTicket>>(ser);
                     return result;
                 }
+                else
+                    throw new Exception(GetErrorText(apiData));
             }
             catch (Exception ex)
             {

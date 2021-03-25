@@ -37,6 +37,9 @@ using System.Reflection;
 using MediatR;
 using CSRO.Server.Infrastructure.MessageBus;
 using CSRO.Server.Ado.Api.Extensions;
+using CSRO.Server.Services;
+using Microsoft.AspNetCore.Authentication;
+using CSRO.Server.Core;
 
 namespace CSRO.Server.Ado.Api
 {
@@ -130,11 +133,36 @@ namespace CSRO.Server.Ado.Api
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddMediatR(Assembly.GetExecutingAssembly());
 
+
+            #region Auth
+
             services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApi(Configuration, "AzureAd")
                 .EnableTokenAcquisitionToCallDownstreamApi()
                 .AddInMemoryTokenCaches();
             //.AddDistributedTokenCaches();    
+
+            services.AddAuthorization(options =>
+            {
+                // By default, all incoming requests will be authorized according to the default policy
+                //Will automatical sign in user
+                //options.FallbackPolicy = options.DefaultPolicy;
+
+                options.AddPolicy(PoliciesCsro.CanApproveAdoRequest, policy => policy.RequireClaim(ClaimTypesCsro.CanApproveAdoRequest, true.ToString()));
+            });
+
+            //todo remve after sing service to talk auth
+            string UserContextDbConnStr = Configuration.GetConnectionString("UserContextDbConnStr");
+            services.AddDbContext<UserContext>(options =>
+            {
+                options.UseSqlServer(UserContextDbConnStr, x => x.MigrationsAssembly(_namespace));
+            });
+
+            //TODO replace with rest or GRPC service
+            services.AddScoped<ILocalUserService, LocalUserService>();
+            services.AddScoped<IClaimsTransformation, AdoClaimsTransformation>();
+
+            #endregion
 
 
             services.AddControllers();

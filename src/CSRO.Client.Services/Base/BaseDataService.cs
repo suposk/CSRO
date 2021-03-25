@@ -59,6 +59,19 @@ namespace CSRO.Client.Services
             //todo read from config
         }
 
+        public string GetErrorText(HttpResponseMessage httpResponse)
+        {
+            if (httpResponse.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                return "BadRequest, Incorrect input";
+            if (httpResponse.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                return "Unauthorized, you are not autorized.";
+            if (httpResponse.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                return "Forbidden, you don't have permision to perform operation.";
+            else
+                //return $"{httpResponse.ReasonPhrase} {httpResponse.Content}";
+                return $"{httpResponse.ReasonPhrase} {httpResponse.Content.ReadAsStringAsync().Result}";
+        }
+
         public virtual void HandleException(Exception ex)
         {
             Console.WriteLine($"{nameof(HandleException)}: {ex}");
