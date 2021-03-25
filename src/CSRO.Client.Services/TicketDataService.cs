@@ -46,6 +46,8 @@ namespace CSRO.Client.Services
                     var result = Mapper.Map<Ticket>(ser);
                     return result;
                 }
+                else
+                    throw new Exception(GetErrorText(apiData));
             }
             catch (Exception ex)
             {
@@ -65,10 +67,10 @@ namespace CSRO.Client.Services
                 var httpcontent = new StringContent(JsonSerializer.Serialize(add, _options), Encoding.UTF8, "application/json");
                 var apiData = await HttpClientBase.PutAsync(url, httpcontent).ConfigureAwait(false);
 
-                if (apiData.IsSuccessStatusCode)
-                {
-                    return true;
-                }
+                if (apiData.IsSuccessStatusCode)                
+                    return true;                
+                else
+                    throw new Exception(GetErrorText(apiData));
             }
             catch (Exception ex)
             {
@@ -90,6 +92,8 @@ namespace CSRO.Client.Services
                 {
                     return true;
                 }
+                else
+                    throw new Exception(GetErrorText(apiData));
             }
             catch (Exception ex)
             {
@@ -114,6 +118,8 @@ namespace CSRO.Client.Services
                     var result = Mapper.Map<Ticket>(ser);
                     return result;
                 }
+                else
+                    throw new Exception(GetErrorText(apiData));
             }
             catch (Exception ex)
             {
@@ -139,11 +145,7 @@ namespace CSRO.Client.Services
                     return result;
                 }
                 else
-                {
-                    var content = await apiData.Content.ReadAsStringAsync();
-                    if (string.IsNullOrWhiteSpace(content)) content = apiData.ReasonPhrase;
-                    throw new Exception(content);
-                }
+                    throw new Exception(GetErrorText(apiData));
             }
             catch (Exception ex)
             {

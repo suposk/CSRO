@@ -8,6 +8,7 @@ Add-Migration AdoProjectHistoryDetails -Context AdoContext -OutputDir Migrations
 
 //User 
 Add-Migration UserInit -Context UserContext -OutputDir Migrations\SqlServerMigrations
+Add-Migration UserRoleClaim -Context UserContext -OutputDir Migrations\SqlServerMigrations
 
 //command prompt
 dotnet ef migrations add ExternalTicket --context AppVersionContext --output-dir Migrations/SqlServerMigrations

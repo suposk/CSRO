@@ -111,6 +111,14 @@ namespace CSRO.Server.Entities
                  Type = ClaimTypes.Email,
                  Value = "jan.supolik@hotmail.com"
              },
+             //role
+             new UserClaim()
+             {
+                 Id = 4,
+                 UserId = 1,                 
+                 Type = ClaimTypes.Role,
+                 Value = "Admin"
+             },
 
              //second user
              new UserClaim()

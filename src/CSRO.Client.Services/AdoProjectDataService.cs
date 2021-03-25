@@ -91,7 +91,7 @@ namespace CSRO.Client.Services
                 //var url = $"{ApiPart}";
                 var httpcontent = new StringContent(JsonSerializer.Serialize(item, _options), Encoding.UTF8, "application/json");
                 var apiData = await HttpClientBase.PostAsync(url, httpcontent).ConfigureAwait(false);
-
+                //HttpResponseMessage
                 if (apiData.IsSuccessStatusCode)
                 {
                     var content = await apiData.Content.ReadAsStringAsync();
@@ -100,11 +100,9 @@ namespace CSRO.Client.Services
                     //var result = Mapper.Map<ProjectAdo>(ser);
                     //return result;
                 }
-                else
-                {
-                    var content = await apiData.Content.ReadAsStringAsync();                    
-                    throw new Exception(content);
-                }
+                else                                                      
+                    throw new Exception(GetErrorText(apiData));
+                
             }
             catch (Exception ex)
             {
@@ -135,10 +133,7 @@ namespace CSRO.Client.Services
                     //return result;
                 }
                 else
-                {
-                    var content = await apiData.Content.ReadAsStringAsync();
-                    throw new Exception(content);
-                }
+                    throw new Exception(base.GetErrorText(apiData));
             }
             catch (Exception ex)
             {
@@ -166,10 +161,7 @@ namespace CSRO.Client.Services
                     //return result;
                 }
                 else
-                {
-                    var content = await apiData.Content.ReadAsStringAsync();
-                    throw new Exception(content);
-                }
+                    throw new Exception(base.GetErrorText(apiData));
             }
             catch (Exception ex)
             {
@@ -192,10 +184,7 @@ namespace CSRO.Client.Services
                 if (apiData.IsSuccessStatusCode)                
                     return true;
                 else
-                {
-                    var content = await apiData.Content.ReadAsStringAsync();
-                    throw new Exception(content);
-                }
+                    throw new Exception(base.GetErrorText(apiData));
             }
             catch (Exception ex)
             {
@@ -214,10 +203,10 @@ namespace CSRO.Client.Services
                 var url = $"{ApiPart}{id}";
                 var apiData = await HttpClientBase.DeleteAsync(url).ConfigureAwait(false);
 
-                if (apiData.IsSuccessStatusCode)
-                {
-                    return true;
-                }
+                if (apiData.IsSuccessStatusCode)                
+                    return true;                
+                else
+                    throw new Exception(base.GetErrorText(apiData));
             }
             catch (Exception ex)
             {
@@ -241,6 +230,8 @@ namespace CSRO.Client.Services
                     var ser = JsonSerializer.Deserialize<ProjectAdo>(content, _options);
                     return ser;
                 }
+                else
+                    throw new Exception(base.GetErrorText(apiData));
             }
             catch (Exception ex)
             {
@@ -267,10 +258,7 @@ namespace CSRO.Client.Services
                     //return result;
                 }
                 else
-                {
-                    var content = await apiData.Content.ReadAsStringAsync();
-                    throw new Exception(content);
-                }
+                    throw new Exception(base.GetErrorText(apiData));
             }
             catch (Exception ex)
             {
@@ -307,10 +295,7 @@ namespace CSRO.Client.Services
                     //return result;
                 }
                 else
-                {
-                    var content = await apiData.Content.ReadAsStringAsync();
-                    throw new Exception(content);
-                }
+                    throw new Exception(base.GetErrorText(apiData));
             }
             catch (Exception ex)
             {
@@ -333,10 +318,7 @@ namespace CSRO.Client.Services
                 else if (apiData.StatusCode == System.Net.HttpStatusCode.NotFound)
                     return false;
                 else
-                {
-                    var content = await apiData.Content.ReadAsStringAsync();
-                    throw new Exception(content);
-                }
+                    throw new Exception(base.GetErrorText(apiData));
             }
             catch (Exception ex)
             {
