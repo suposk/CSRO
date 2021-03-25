@@ -3,12 +3,12 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
 {
-    public partial class UserInit : Migration
+    public partial class UserRoleClaim3 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "UserRoles",
+                name: "Roles",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -22,7 +22,7 @@ namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserRoles", x => x.Id);
+                    table.PrimaryKey("PK_Roles", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -73,7 +73,7 @@ namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UserRole",
+                name: "UserRoles",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -88,15 +88,15 @@ namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserRole", x => x.Id);
+                    table.PrimaryKey("PK_UserRoles", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserRole_UserRoles_RoleId",
+                        name: "FK_UserRoles_Roles_RoleId",
                         column: x => x.RoleId,
-                        principalTable: "UserRoles",
+                        principalTable: "Roles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_UserRole_Users_UserId",
+                        name: "FK_UserRoles_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -104,13 +104,13 @@ namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
                 });
 
             migrationBuilder.InsertData(
-                table: "UserRoles",
+                table: "Roles",
                 columns: new[] { "Id", "CreatedAt", "CreatedBy", "ModifiedAt", "ModifiedBy", "Name" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2021, 3, 25, 13, 26, 25, 650, DateTimeKind.Utc).AddTicks(5508), "Script", null, null, "Admin" },
-                    { 3, new DateTime(2021, 3, 25, 13, 26, 25, 650, DateTimeKind.Utc).AddTicks(6674), "Script", null, null, "Contributor" },
-                    { 5, new DateTime(2021, 3, 25, 13, 26, 25, 650, DateTimeKind.Utc).AddTicks(6676), "Script", null, null, "User" }
+                    { 1, new DateTime(2021, 3, 25, 16, 6, 27, 368, DateTimeKind.Utc).AddTicks(6865), "Script", null, null, "Admin" },
+                    { 3, new DateTime(2021, 3, 25, 16, 6, 27, 368, DateTimeKind.Utc).AddTicks(8036), "Script", null, null, "Contributor" },
+                    { 5, new DateTime(2021, 3, 25, 16, 6, 27, 368, DateTimeKind.Utc).AddTicks(8039), "Script", null, null, "User" }
                 });
 
             migrationBuilder.InsertData(
@@ -130,14 +130,21 @@ namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
                     { 1, null, null, null, null, "CanApproveAdoRequest-Csro", 1, "True" },
                     { 2, null, null, null, null, "CanReadAdoRequest-Csro", 1, "True" },
                     { 3, null, null, null, null, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress", 1, "jan.supolik@hotmail.com" },
+                    { 4, null, null, null, null, "http://schemas.microsoft.com/ws/2008/06/identity/claims/role", 1, "Admin" },
                     { 21, null, null, null, null, "CanReadAdoRequest-Csro", 1, "True" },
                     { 22, null, null, null, null, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress", 2, "fake@someprovider.com" }
                 });
 
             migrationBuilder.InsertData(
-                table: "UserRole",
+                table: "UserRoles",
                 columns: new[] { "Id", "CreatedAt", "CreatedBy", "ModifiedAt", "ModifiedBy", "RoleId", "UserId" },
                 values: new object[] { 1, null, null, null, null, 1, 1 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Roles_Name",
+                table: "Roles",
+                column: "Name",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserClaims_UserId",
@@ -145,20 +152,14 @@ namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserRole_RoleId",
-                table: "UserRole",
+                name: "IX_UserRoles_RoleId",
+                table: "UserRoles",
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserRole_UserId",
-                table: "UserRole",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UserRoles_Name",
+                name: "IX_UserRoles_UserId",
                 table: "UserRoles",
-                column: "Name",
-                unique: true);
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_Username",
@@ -174,10 +175,10 @@ namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
                 name: "UserClaims");
 
             migrationBuilder.DropTable(
-                name: "UserRole");
+                name: "UserRoles");
 
             migrationBuilder.DropTable(
-                name: "UserRoles");
+                name: "Roles");
 
             migrationBuilder.DropTable(
                 name: "Users");

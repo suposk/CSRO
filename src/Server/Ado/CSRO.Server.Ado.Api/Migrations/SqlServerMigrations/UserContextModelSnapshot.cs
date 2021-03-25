@@ -53,27 +53,27 @@ namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("UserRoles");
+                    b.ToTable("Roles");
 
                     b.HasData(
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2021, 3, 25, 13, 40, 52, 42, DateTimeKind.Utc).AddTicks(6148),
+                            CreatedAt = new DateTime(2021, 3, 25, 16, 6, 27, 368, DateTimeKind.Utc).AddTicks(6865),
                             CreatedBy = "Script",
                             Name = "Admin"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2021, 3, 25, 13, 40, 52, 42, DateTimeKind.Utc).AddTicks(7599),
+                            CreatedAt = new DateTime(2021, 3, 25, 16, 6, 27, 368, DateTimeKind.Utc).AddTicks(8036),
                             CreatedBy = "Script",
                             Name = "Contributor"
                         },
                         new
                         {
                             Id = 5,
-                            CreatedAt = new DateTime(2021, 3, 25, 13, 40, 52, 42, DateTimeKind.Utc).AddTicks(7604),
+                            CreatedAt = new DateTime(2021, 3, 25, 16, 6, 27, 368, DateTimeKind.Utc).AddTicks(8039),
                             CreatedBy = "Script",
                             Name = "User"
                         });
@@ -266,7 +266,7 @@ namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserRole");
+                    b.ToTable("UserRoles");
 
                     b.HasData(
                         new
