@@ -65,16 +65,11 @@ namespace CSRO.Server.Entities
             roles.Add(cont);
             roles.Add(user);
 
-            UserRole ur = new UserRole { Id = 1, Role = admin, RoleId = admin.Id,  UserId = 1 };
+            UserRole ur = new UserRole { Id = 1, RoleId = 1,  UserId = 1 };
+            List<UserRole> urlist = new List<UserRole>();
+            urlist.Add(ur);
 
             modelBuilder.Entity<User>().HasIndex(u => u.Username).IsUnique();
-
-            modelBuilder.Entity<Role>().HasIndex(a => a.Name).IsUnique();
-
-            modelBuilder.Entity<Role>().HasData(roles);
-
-            //modelBuilder.Entity<UserRole>().HasData(ur);
-
             modelBuilder.Entity<User>().HasData(
                 new User()
                 {
@@ -82,7 +77,7 @@ namespace CSRO.Server.Entities
                     ObjectId = new Guid(firstUser),                                       
                     Username = "live.com#jan.supolik@hotmail.com",
                     Active = true,
-                    //UserRoles = new List<UserRole> { ur },                    
+                    //UserRoles = urlist
                 },
                 new User()
                 {
@@ -133,6 +128,11 @@ namespace CSRO.Server.Entities
                  Value = "fake@someprovider.com"
              }
              );
+
+            modelBuilder.Entity<Role>().HasIndex(a => a.Name).IsUnique();
+            modelBuilder.Entity<Role>().HasData(roles);
+
+            modelBuilder.Entity<UserRole>().HasData(ur);
         }
 
     }

@@ -78,7 +78,7 @@ namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    RoleId = table.Column<int>(type: "int", maxLength: 50, nullable: false),
+                    RoleId = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -108,9 +108,9 @@ namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
                 columns: new[] { "Id", "CreatedAt", "CreatedBy", "ModifiedAt", "ModifiedBy", "Name" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2021, 3, 25, 13, 17, 11, 778, DateTimeKind.Utc).AddTicks(9792), "Script", null, null, "Admin" },
-                    { 3, new DateTime(2021, 3, 25, 13, 17, 11, 779, DateTimeKind.Utc).AddTicks(936), "Script", null, null, "Contributor" },
-                    { 5, new DateTime(2021, 3, 25, 13, 17, 11, 779, DateTimeKind.Utc).AddTicks(938), "Script", null, null, "User" }
+                    { 1, new DateTime(2021, 3, 25, 13, 26, 25, 650, DateTimeKind.Utc).AddTicks(5508), "Script", null, null, "Admin" },
+                    { 3, new DateTime(2021, 3, 25, 13, 26, 25, 650, DateTimeKind.Utc).AddTicks(6674), "Script", null, null, "Contributor" },
+                    { 5, new DateTime(2021, 3, 25, 13, 26, 25, 650, DateTimeKind.Utc).AddTicks(6676), "Script", null, null, "User" }
                 });
 
             migrationBuilder.InsertData(
@@ -133,6 +133,11 @@ namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
                     { 21, null, null, null, null, "CanReadAdoRequest-Csro", 1, "True" },
                     { 22, null, null, null, null, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress", 2, "fake@someprovider.com" }
                 });
+
+            migrationBuilder.InsertData(
+                table: "UserRole",
+                columns: new[] { "Id", "CreatedAt", "CreatedBy", "ModifiedAt", "ModifiedBy", "RoleId", "UserId" },
+                values: new object[] { 1, null, null, null, null, 1, 1 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserClaims_UserId",

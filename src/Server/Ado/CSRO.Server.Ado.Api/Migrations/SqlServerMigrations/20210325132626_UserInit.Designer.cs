@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
 {
     [DbContext(typeof(UserContext))]
-    [Migration("20210325131712_UserInit")]
+    [Migration("20210325132626_UserInit")]
     partial class UserInit
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -61,21 +61,21 @@ namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2021, 3, 25, 13, 17, 11, 778, DateTimeKind.Utc).AddTicks(9792),
+                            CreatedAt = new DateTime(2021, 3, 25, 13, 26, 25, 650, DateTimeKind.Utc).AddTicks(5508),
                             CreatedBy = "Script",
                             Name = "Admin"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2021, 3, 25, 13, 17, 11, 779, DateTimeKind.Utc).AddTicks(936),
+                            CreatedAt = new DateTime(2021, 3, 25, 13, 26, 25, 650, DateTimeKind.Utc).AddTicks(6674),
                             CreatedBy = "Script",
                             Name = "Contributor"
                         },
                         new
                         {
                             Id = 5,
-                            CreatedAt = new DateTime(2021, 3, 25, 13, 17, 11, 779, DateTimeKind.Utc).AddTicks(938),
+                            CreatedAt = new DateTime(2021, 3, 25, 13, 26, 25, 650, DateTimeKind.Utc).AddTicks(6676),
                             CreatedBy = "Script",
                             Name = "User"
                         });
@@ -245,7 +245,6 @@ namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("RoleId")
-                        .HasMaxLength(50)
                         .HasColumnType("int");
 
                     b.Property<byte[]>("RowVersion")
@@ -263,6 +262,14 @@ namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
                     b.HasIndex("UserId");
 
                     b.ToTable("UserRole");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            RoleId = 1,
+                            UserId = 1
+                        });
                 });
 
             modelBuilder.Entity("CSRO.Server.Entities.Entity.UserClaim", b =>
