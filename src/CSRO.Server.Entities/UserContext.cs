@@ -60,14 +60,14 @@ namespace CSRO.Server.Entities
                 new User()
                 {
                     Id = 1,
-                    GuidId = new Guid(firstUser),                                       
+                    ObjectId = new Guid(firstUser),                                       
                     Username = "live.com#jan.supolik@hotmail.com",
                     Active = true
                 },
                 new User()
                 {
                     Id = 2,
-                    GuidId = new Guid(secondUser),
+                    ObjectId = new Guid(secondUser),
                     Username = "read@jansupolikhotmail.onmicrosoft.com",
                     Active = true
                 });
@@ -85,16 +85,14 @@ namespace CSRO.Server.Entities
              new UserClaim()
              {
                  Id = 2,
-                 UserId = 1,
-                 //UserGuidId = new Guid(firstUser),
+                 UserId = 1,                 
                  Type = ClaimTypesCsro.CanReadAdoRequest,
                  Value = "True"
              },
              new UserClaim()
              {
                  Id = 3,
-                 UserId = 1,
-                 //UserGuidId = new Guid(firstUser),
+                 UserId = 1,                 
                  Type = ClaimTypes.Email,
                  Value = "jan.supolik@hotmail.com"
              },
@@ -103,16 +101,14 @@ namespace CSRO.Server.Entities
              new UserClaim()
              {
                  Id = 21,
-                 UserId = 1,
-                 //UserGuidId = new Guid(secondUser),
+                 UserId = 1,                 
                  Type = ClaimTypesCsro.CanReadAdoRequest,
                  Value = "True"
              },
              new UserClaim()
              {
                  Id = 22,
-                 UserId = 2,
-                 //UserGuidId = new Guid(secondUser),
+                 UserId = 2,                 
                  Type = ClaimTypes.Email,
                  Value = "fake@someprovider.com"
              }

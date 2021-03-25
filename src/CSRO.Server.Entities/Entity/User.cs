@@ -19,7 +19,7 @@ namespace CSRO.Server.Entities.Entity
         /// <summary>
         /// this is Identity Object ID
         /// </summary>
-        public Guid GuidId { get; set; }
+        public Guid ObjectId { get; set; }
 
         /// <summary>
         /// Posible UserId, UPN
