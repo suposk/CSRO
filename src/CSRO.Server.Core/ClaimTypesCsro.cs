@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CSRO.Server.Infrastructure
+namespace CSRO.Server.Core
 {
     public static class ClaimTypesCsro
     {

@@ -39,6 +39,7 @@ using CSRO.Server.Infrastructure.MessageBus;
 using CSRO.Server.Ado.Api.Extensions;
 using CSRO.Server.Services;
 using Microsoft.AspNetCore.Authentication;
+using CSRO.Server.Core;
 
 namespace CSRO.Server.Ado.Api
 {
@@ -141,6 +142,14 @@ namespace CSRO.Server.Ado.Api
                 .AddInMemoryTokenCaches();
             //.AddDistributedTokenCaches();    
 
+            services.AddAuthorization(options =>
+            {
+                // By default, all incoming requests will be authorized according to the default policy
+                //Will automatical sign in user
+                //options.FallbackPolicy = options.DefaultPolicy;
+
+                options.AddPolicy(PoliciesCsro.CanApproveAdoRequest, policy => policy.RequireClaim(ClaimTypesCsro.CanApproveAdoRequest, true.ToString()));
+            });
 
             //todo remve after sing service to talk auth
             string UserContextDbConnStr = Configuration.GetConnectionString("UserContextDbConnStr");

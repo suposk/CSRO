@@ -21,7 +21,7 @@ namespace CSRO.Server.Ado.Api
         {
             if (principal.Identity.IsAuthenticated)
             {
-                var aditionalClaims = await _localUserService.GetUserClaimsByUserNameAsync(principal.Identity.Name);
+                var aditionalClaims = await _localUserService.GetClaimsByUserNameAsync(principal.Identity.Name);
                 if (aditionalClaims.HasAnyInCollection())
                 {
                     var identity = principal.Identity as ClaimsIdentity;
@@ -30,14 +30,7 @@ namespace CSRO.Server.Ado.Api
                         //throw ex
                         return principal;
                     }
-
-                    //
-                    foreach(var cl in aditionalClaims)
-                    {
-                        var claim = new Claim(cl.Type, cl.Value);
-                        if (!principal.Claims.Contains(claim))
-                            identity.AddClaim(claim);
-                    }
+                    identity.AddClaims(aditionalClaims);
                 }
             }
             return principal;

@@ -10,21 +10,10 @@ namespace CSRO.Server.Services
 {
     public interface ILocalUserService
     {
-        Task<List<UserClaim>> GetUserClaimsByUserNameAsync(
-            string userName);
-        Task<User> GetUserByUserNameAsync(
-            string userName);
-        //Task<User> GetUserBySubjectAsync(
-        //    string subject);
-        //void AddUser
-        //    (User userToAdd);
-        void AddUser(
-            User userToAdd,
-            string password);
-        //Task<bool> IsUserActive(
-        //    string subject);
-        //Task<bool> ActivateUser(
-        //    string securityCode);
+        Task<List<UserClaim>> GetUserClaimsByUserNameAsync(string userName);
+        Task<List<Claim>> GetClaimsByUserNameAsync(string userName);        
+        Task<User> GetUserByUserNameAsync(string userName);
+        void AddUser(User userToAdd, string password);
         Task<bool> SaveChangesAsync();
     }
 }

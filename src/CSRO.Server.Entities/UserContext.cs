@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Text;
+using CSRO.Server.Core;
 using CSRO.Server.Entities.Entity;
-using CSRO.Server.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

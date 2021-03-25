@@ -21,8 +21,7 @@ namespace CSRO.Server.Services
             //IPasswordHasher<User> passwordHasher
             )
         {
-            _context = context
-                ?? throw new ArgumentNullException(nameof(context));
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
 
@@ -46,10 +45,8 @@ namespace CSRO.Server.Services
 
         public async Task<User> GetUserByUserNameAsync(string userName)
         {
-            if (string.IsNullOrWhiteSpace(userName))
-            {
-                throw new ArgumentNullException(nameof(userName));
-            }
+            if (string.IsNullOrWhiteSpace(userName))            
+                throw new ArgumentNullException(nameof(userName));            
 
             return await _context.Users
                  .FirstOrDefaultAsync(u => u.Username == userName);
@@ -63,15 +60,17 @@ namespace CSRO.Server.Services
             return await _context.UserClaims.Where(u => u.User.Username == userName).ToListAsync();
         }
 
-        //public async Task<User> GetUserBySubjectAsync(string subject)
-        //{
-        //    if (string.IsNullOrWhiteSpace(subject))
-        //    {
-        //        throw new ArgumentNullException(nameof(subject));
-        //    }
-
-        //    return await _context.Users.FirstOrDefaultAsync(u => u.Subject == subject);
-        //}
+        public async Task<List<Claim>> GetClaimsByUserNameAsync(string userName)
+        {
+            var userDbClaims = await GetUserClaimsByUserNameAsync(userName);
+            if (userDbClaims.HasAnyInCollection())
+            {
+                List<Claim> list = new();
+                userDbClaims.ForEach(a => list.Add(new Claim(a.Type, a.Value)));
+                return list;
+            }
+            else return null;
+        }
 
         public void AddUser(User userToAdd, string password)
         {
