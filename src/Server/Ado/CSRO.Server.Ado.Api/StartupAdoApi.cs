@@ -38,6 +38,7 @@ using MediatR;
 using CSRO.Server.Infrastructure.MessageBus;
 using CSRO.Server.Ado.Api.Extensions;
 using CSRO.Server.Services;
+using Microsoft.AspNetCore.Authentication;
 
 namespace CSRO.Server.Ado.Api
 {
@@ -150,6 +151,7 @@ namespace CSRO.Server.Ado.Api
 
             //TODO replace with rest or GRPC service
             services.AddScoped<ILocalUserService, LocalUserService>();
+            services.AddScoped<IClaimsTransformation, AdoClaimsTransformation>();
 
             #endregion
 
