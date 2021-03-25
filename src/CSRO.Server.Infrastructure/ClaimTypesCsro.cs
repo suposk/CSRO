@@ -1,0 +1,16 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace CSRO.Server.Infrastructure
+{
+    public static class ClaimTypesCsro
+    {
+        /// <summary>
+        /// Can approve Add project
+        /// </summary>
+        public const string CanApproveAdoRequest = "CanApproveAdoRequest-Csro";        
+    }
+}
