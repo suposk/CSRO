@@ -15,7 +15,10 @@ namespace CSRO.Server.Entities.Entity
         /// </summary>
         public new int Id { get; set; }
 
-        
+
+        /// <summary>
+        /// this is Identity Object ID
+        /// </summary>
         public Guid GuidId { get; set; }
 
         /// <summary>

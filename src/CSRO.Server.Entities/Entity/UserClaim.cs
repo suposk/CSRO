@@ -20,8 +20,8 @@ namespace CSRO.Server.Entities.Entity
         [Required]
         public int UserId { get; set; }
 
-        [Required]
-        public Guid UserGuidId { get; set; }
+        //[Required]
+        //public Guid UserGuidId { get; set; }
 
         public User User { get; set; }
     }

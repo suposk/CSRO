@@ -49,8 +49,8 @@ namespace CSRO.Server.Entities
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            const string firstUser = "13229d33-99e0-41b3-b18d-4f72127e3971";
-            const string secondUser = "96053525-f4a5-47ee-855e-0ea77fa6c55a";
+            const string firstUser = "8aa6a8cb-36ed-415a-a12b-07c84af45428";
+            const string secondUser = "44769cb1-cca7-4a19-8bbe-8edea9b99179";
 
             modelBuilder.Entity<User>()
             .HasIndex(u => u.Username)
@@ -61,7 +61,7 @@ namespace CSRO.Server.Entities
                 {
                     Id = 1,
                     GuidId = new Guid(firstUser),                                       
-                    Username = "jan.supolik_hotmail.com#EXT#@jansupolikhotmail.onmicrosoft.com",
+                    Username = "live.com#jan.supolik@hotmail.com",
                     Active = true
                 },
                 new User()
@@ -73,37 +73,46 @@ namespace CSRO.Server.Entities
                 });
 
             modelBuilder.Entity<UserClaim>().HasData(
-                //first user
+             //first user
              new UserClaim()
              {
                  Id = 1,
                  UserId = 1,
-                 UserGuidId = new Guid(firstUser),
+                 //UserGuidId = new Guid(firstUser),
                  Type = ClaimTypesCsro.CanApproveAdoRequest,
-                 Value = "Frank"
+                 Value = "True"
              },
              new UserClaim()
              {
                  Id = 2,
                  UserId = 1,
-                 UserGuidId = new Guid(firstUser),
+                 //UserGuidId = new Guid(firstUser),
+                 Type = ClaimTypesCsro.CanReadAdoRequest,
+                 Value = "True"
+             },
+             new UserClaim()
+             {
+                 Id = 3,
+                 UserId = 1,
+                 //UserGuidId = new Guid(firstUser),
                  Type = ClaimTypes.Email,
                  Value = "jan.supolik@hotmail.com"
              },
+
              //second user
-             //new UserClaim()
-             //{
-             //    Id = 20,
-             //    UserId = 2,
-             //    UserGuidId = new Guid(secondUser),
-             //    Type = "given_name",
-             //    Value = "Claire"
-             //},
              new UserClaim()
              {
                  Id = 21,
+                 UserId = 1,
+                 //UserGuidId = new Guid(secondUser),
+                 Type = ClaimTypesCsro.CanReadAdoRequest,
+                 Value = "True"
+             },
+             new UserClaim()
+             {
+                 Id = 22,
                  UserId = 2,
-                 UserGuidId = new Guid(secondUser),
+                 //UserGuidId = new Guid(secondUser),
                  Type = ClaimTypes.Email,
                  Value = "fake@someprovider.com"
              }
