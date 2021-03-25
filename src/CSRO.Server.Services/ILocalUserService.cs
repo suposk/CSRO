@@ -10,14 +10,8 @@ namespace CSRO.Server.Services
 {
     public interface ILocalUserService
     {
-        //Task<bool> ValidateClearTextCredentialsAsync(
-        //    string userName, 
-        //    string password);
-        //Task<bool> ValidateCredentialsAsync(
-        //    string userName,
-        //    string password);
-        //Task<IEnumerable<UserClaim>> GetUserClaimsBySubjectAsync(
-        //    string subject);
+        Task<List<UserClaim>> GetUserClaimsByUserNameAsync(
+            string userName);
         Task<User> GetUserByUserNameAsync(
             string userName);
         //Task<User> GetUserBySubjectAsync(
@@ -32,30 +26,5 @@ namespace CSRO.Server.Services
         //Task<bool> ActivateUser(
         //    string securityCode);
         Task<bool> SaveChangesAsync();
-        //Task<string> InitiatePasswordResetRequest(
-        //    string email);
-        //Task<bool> SetPassword(
-        //    string securityCode,
-        //    string password);
-        //Task<User> GetUserByExternalProvider(
-        //    string provider,
-        //    string providerIdentityKey);
-        //User ProvisionUserFromExternalIdentity(
-        //    string provider,
-        //    string providerIdentityKey,
-        //    IEnumerable<Claim> claims);
-        //Task AddExternalProviderToUser(
-        //    string subject,
-        //    string provider,
-        //    string providerIdentityKey);
-        //Task<bool> AddUserSecret(
-        //    string subject,
-        //    string name,
-        //    string secret);
-        //Task<UserSecret> GetUserSecret(
-        //    string subject,
-        //    string name);
-        //Task<bool> UserHasRegisteredTotpSecret(
-        //    string subject);
     }
 }
