@@ -6,6 +6,7 @@ using CSRO.Client.Services.Dtos.AzureDtos;
 using CSRO.Client.Services.Models;
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -24,6 +25,7 @@ namespace CSRO.Client.Services.AzureRestServices
         Task<Subscription> GetSubcription(string subscriptionId, CancellationToken cancelToken = default);
         Task<List<TagNameWithValueList>> GetTags(string subscriptionId, CancellationToken cancelToken = default);
         Task<DefaultTags> GetDefualtTags(string subscriptionId, CancellationToken cancelToken = default);
+        Task<Dictionary<string, DefaultTags>> GetTags(List<string> subscriptionIds, CancellationToken cancelToken = default);
     }
 
     public class SubcriptionService : BaseDataService, ISubcriptionService
@@ -174,6 +176,59 @@ namespace CSRO.Client.Services.AzureRestServices
                 return result;
             }
             return null;
+        }
+
+        public async Task<Dictionary<string, DefaultTags>> GetTags(List<string> subscriptionIds, CancellationToken cancelToken = default)
+        {
+            ConcurrentDictionary<string, DefaultTags> concDic = new();
+            try
+            {
+                if (subscriptionIds?.Count <= 0)
+                    throw new Exception($"missing {nameof(subscriptionIds)} parameter");
+
+                Parallel.ForEach(subscriptionIds, (subscriptionId) =>
+                {
+                    try
+                    {
+                        //var tags = await GetTags(subscriptionId, cancelToken).ConfigureAwait(false);
+                        GetTags(subscriptionId, cancelToken).Wait();
+                        var tags = GetTags(subscriptionId, cancelToken).Result;
+                        if (tags?.Count > 0)
+                        {
+                            var result = new DefaultTags();
+                            foreach (var item in tags)
+                            {
+                                switch (item.TagName)
+                                {
+                                    case nameof(DefaultTag.billingReference):
+                                        result.BillingReferenceList.AddRange(item.Values);
+                                        break;
+                                    case nameof(DefaultTag.cmdbReference):
+                                        result.CmdbRerenceList.AddRange(item.Values);
+                                        break;
+                                    case nameof(DefaultTag.opEnvironment):
+                                        result.OpEnvironmentList.AddRange(item.Values);
+                                        break;
+                                }
+                            }
+                            if (tags?.Count > 0)
+                                //concDic.TryAdd(subscriptionId, result);
+                                concDic.AddOrUpdate(subscriptionId, result, (key, oldValue) => result);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        throw;
+                    }
+                });
+
+                Dictionary<string, DefaultTags> d = concDic.ToDictionary(pair => pair.Key, pair => pair.Value);
+                return d;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public async Task<bool> SubcriptionExist(string subscriptionId, CancellationToken cancelToken = default)
