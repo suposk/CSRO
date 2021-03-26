@@ -84,7 +84,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
                 //await SubcriptionIdChanged.InvokeAsync(Model.SubcriptionId);
                 await LoadLocations();
                 //var tags = await SubcriptionService.GetTags(Model.SubcriptionId);
-                //var defaulTags = await SubcriptionService.GetDefualtTags(Model.SubcriptionId);
+                var defaulTags = await SubcriptionService.GetDefualtTags(Model.SubcriptionId);
                 HideLoading();
             }
         }
@@ -115,7 +115,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
             {
                 ShowLoading();
                 //var tags = await SubcriptionService.GetTags(new List<string> { "33fb38df-688e-4ca1-8dd8-b46e26262ff8" });
-                var tags = await SubcriptionService.GetTags(SelectedSubs.Select(a => a.Id).ToList());
+                var tags = await SubcriptionService.GetTags(SelectedSubs.Select(a => a.Id).ToList()).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
