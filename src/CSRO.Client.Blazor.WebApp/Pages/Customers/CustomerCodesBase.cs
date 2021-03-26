@@ -62,6 +62,9 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
         protected bool IsRgDisabled => IsLocDisabled | ResourceGroups?.Count == 0;
         protected bool IsNewRgDisabled => IsLocDisabled | string.IsNullOrWhiteSpace(Model.Location);
 
+        protected IdNameSdk SelectedSub { get; set; } = new();
+        protected HashSet<IdNameSdk> SelectedSubs { get; set; } = new();
+
         protected async override Task OnInitializedAsync()
         {
             editContext ??= new EditContext(Model);
@@ -106,6 +109,22 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
                 Locations = await LocationsService.GetLocations();
         }
 
+        public async Task Search()
+        {
+            try
+            {
+                ShowLoading();
+                //var tags = await SubcriptionService.GetTags(new List<string> { "33fb38df-688e-4ca1-8dd8-b46e26262ff8" });
+                var tags = await SubcriptionService.GetTags(SelectedSubs.Select(a => a.Id).ToList());
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, nameof(OnInitializedAsync));
+                await CsroDialogService.ShowError("Error", $"Detail error: {ex.Message}");
+            }
+            HideLoading();
+        }
+
         async Task LoadRg(string subcriptionId, string location)
         {
             ResourceGroups?.Clear();
@@ -125,7 +144,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
 
                 //var tags = SubcriptionSdkService.GetTags(new List<string> { "33fb38df-688e-4ca1-8dd8-b46e26262ff8", "634e6b93-264e-44f0-9e87-3606169fee2f" });
                 //var tags = await SubcriptionSdkService.GetTags(new List<string> { "33fb38df-688e-4ca1-8dd8-b46e26262ff8" });
-                var tags = await SubcriptionService.GetTags(new List<string> { "33fb38df-688e-4ca1-8dd8-b46e26262ff8" });
+                //var tags = await SubcriptionService.GetTags(new List<string> { "33fb38df-688e-4ca1-8dd8-b46e26262ff8" });
 
                 Subscripions?.Clear();
                 Subscripions = await SubcriptionSdkService.GetAllSubcriptions();
