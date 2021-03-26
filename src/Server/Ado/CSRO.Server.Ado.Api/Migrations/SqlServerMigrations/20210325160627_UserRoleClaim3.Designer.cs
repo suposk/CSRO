@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
 {
     [DbContext(typeof(UserContext))]
-    [Migration("20210325132626_UserInit")]
-    partial class UserInit
+    [Migration("20210325160627_UserRoleClaim3")]
+    partial class UserRoleClaim3
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -55,27 +55,27 @@ namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("UserRoles");
+                    b.ToTable("Roles");
 
                     b.HasData(
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2021, 3, 25, 13, 26, 25, 650, DateTimeKind.Utc).AddTicks(5508),
+                            CreatedAt = new DateTime(2021, 3, 25, 16, 6, 27, 368, DateTimeKind.Utc).AddTicks(6865),
                             CreatedBy = "Script",
                             Name = "Admin"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2021, 3, 25, 13, 26, 25, 650, DateTimeKind.Utc).AddTicks(6674),
+                            CreatedAt = new DateTime(2021, 3, 25, 16, 6, 27, 368, DateTimeKind.Utc).AddTicks(8036),
                             CreatedBy = "Script",
                             Name = "Contributor"
                         },
                         new
                         {
                             Id = 5,
-                            CreatedAt = new DateTime(2021, 3, 25, 13, 26, 25, 650, DateTimeKind.Utc).AddTicks(6676),
+                            CreatedAt = new DateTime(2021, 3, 25, 16, 6, 27, 368, DateTimeKind.Utc).AddTicks(8039),
                             CreatedBy = "Script",
                             Name = "User"
                         });
@@ -211,6 +211,13 @@ namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
                         },
                         new
                         {
+                            Id = 4,
+                            Type = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role",
+                            UserId = 1,
+                            Value = "Admin"
+                        },
+                        new
+                        {
                             Id = 21,
                             Type = "CanReadAdoRequest-Csro",
                             UserId = 1,
@@ -261,7 +268,7 @@ namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserRole");
+                    b.ToTable("UserRoles");
 
                     b.HasData(
                         new

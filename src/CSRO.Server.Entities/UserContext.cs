@@ -34,7 +34,9 @@ namespace CSRO.Server.Entities
 
         public DbSet<UserClaim> UserClaims { get; set; }
 
-        public DbSet<Role> UserRoles { get; set; }
+        public DbSet<Role> Roles { get; set; }
+
+        public DbSet<UserRole> UserRoles { get; set; }
 
         //public DbSet<UserLogin> UserLogins { get; set; }
 

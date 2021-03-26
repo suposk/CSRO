@@ -3,6 +3,7 @@ using CSRO.Client.Services.Dtos;
 using CSRO.Client.Services.Dtos.AzureDtos;
 using Models = CSRO.Client.Services.Models;
 using AdoModels = CSRO.Common.AdoServices.Models;
+using SdkModels = CSRO.Common.AzureSdkServices.Models;
 using AdoDtos = CSRO.Common.AdoServices.Dtos;
 using System;
 using System.Collections.Generic;
@@ -32,6 +33,20 @@ namespace CSRO.Client.Blazor.WebApp.AutoMapperProfiles
 
             CreateMap<SubscriptionDto, Models.Subscription>()
                 .ReverseMap();
+
+            CreateMap<Models.Subscription, Azure.ResourceManager.Resources.Models.Subscription>()
+                .ForMember(s => s.AuthorizationSource, op => op.Ignore())
+                //.ForMember(s => s.TenantId, op => op.Ignore())
+                .ForMember(s => s.ManagedByTenants, op => op.Ignore())
+                .ForMember(s => s.SubscriptionPolicies, op => op.Ignore())
+                .ReverseMap();
+
+            //CreateMap<SdkModels.SubscriptionSdk, Azure.ResourceManager.Resources.Models.Subscription>()
+            //    .ForMember(s => s.AuthorizationSource, op => op.Ignore())
+            //    .ForMember(s => s.TenantId, op => op.Ignore())
+            //    .ForMember(s => s.ManagedByTenants, op => op.Ignore())
+            //    .ForMember(s => s.SubscriptionPolicies, op => op.Ignore())
+            //    .ReverseMap();                        
 
             CreateMap<PropertiesDto, Models.Properties>()
                 .ReverseMap();
