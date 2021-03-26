@@ -1,4 +1,51 @@
 ﻿@page "/Customers/CustomerCodes"
 @inherits CustomerCodesBase
 
-<h3>CustomerCodes</h3>
+
+<MudContainer>
+    <div>
+        <MudText Typo="Typo.h5" Class="mt-2" GutterBottom="true">Customer Search</MudText>
+        @if (IsLoading)
+        {
+            <MudGrid>
+                <MudItem>
+                    <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+                </MudItem>
+                <MudItem>
+                    <MudText Align="Align.Center">@LoadingMessage</MudText>
+                </MudItem>
+            </MudGrid>
+        }
+
+        <MudCard>
+            <MudCardContent>
+                <MudAutocomplete ResetValueOnEmptyText="true"
+                                 T="@IdNameSdk"
+                                 Label="Subcription:"
+                                 ValueChanged="(e) => OnSubscriptionValueChanged(e)"
+                                 For="@(() => Model.SubscripionIdName)"
+                                 SearchFunc="@SearchSubs" />
+
+            </MudCardContent>
+        </MudCard>
+
+        <MudCard>
+            @*<MudTable Items="Tickets"
+                      Hover="true" SortLabel="Sort By" Elevation="0">
+                <HeaderContent>
+                    <MudTh><MudTableSortLabel SortBy="new Func<ProjectAdo, object>(x=>x.Id)">Id</MudTableSortLabel></MudTh>
+                    <MudTh><MudTableSortLabel SortBy="new Func<ProjectAdo, object>(x=>x.Status)">Status</MudTableSortLabel></MudTh>
+                    <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<ProjectAdo, object>(x=>x.CreatedAt)">Created At</MudTableSortLabel></MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Id">@context.Id</MudTd>
+                    <MudTd DataLabel="Status">@context.Status</MudTd>
+                </RowTemplate>
+                <PagerContent>
+                    <MudTablePager PageSizeOptions="new int[]{10, 20, 50}" />
+                </PagerContent>
+            </MudTable>*@
+
+        </MudCard>
+    </div>
+</MudContainer>

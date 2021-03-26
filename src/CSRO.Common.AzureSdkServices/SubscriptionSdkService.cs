@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Collections.Concurrent;
 
 namespace CSRO.Common.AzureSdkServices
 {
@@ -16,6 +17,7 @@ namespace CSRO.Common.AzureSdkServices
     {
         Task<List<IdNameSdk>> GetAllSubcriptions(string subscriptionId = null, CancellationToken cancelToken = default);
         Task<IReadOnlyDictionary<string, string>> GetTags(string subscriptionId, CancellationToken cancelToken = default);
+        Task<IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>>> GetTags(List<string> subscriptionIds, CancellationToken cancelToken = default);
     }
 
     public class SubscriptionSdkService : ISubscriptionSdkService
@@ -69,6 +71,48 @@ namespace CSRO.Common.AzureSdkServices
             {
                 throw;
             }
+        }
+
+        public async Task<IReadOnlyDictionary<string, IReadOnlyDictionary<string, string>>> GetTags(List<string> subscriptionIds, CancellationToken cancelToken = default)
+        {
+            ConcurrentDictionary<string, IReadOnlyDictionary<string, string>> result = new();            
+            try
+            {
+                if (subscriptionIds?.Count <= 0)
+                    throw new Exception($"missing {nameof(subscriptionIds)} parameter");
+
+                Parallel.ForEach(subscriptionIds, (subscriptionId) =>
+                {
+                    try
+                    {
+                        var resourcesClient = new ResourcesManagementClient(subscriptionId, _tokenCredential);
+                        var resourceGroupClient = resourcesClient.Subscriptions;
+
+                        //var info = resourceGroupClient.GetAsync(subscriptionId, cancelToken).Result; //freeze
+                        resourceGroupClient.GetAsync(subscriptionId, cancelToken).Wait();
+                        var info = resourceGroupClient.GetAsync(subscriptionId, cancelToken).Result;
+                        var tags = info?.Value?.Tags;
+
+                        //cd.AddOrUpdate(1, 1, (key, oldValue) => oldValue + 1);
+                        //var sessionId = a.Session.SessionID.ToString();
+                        //userDic.AddOrUpdate(authUser.UserId, sessionId, (key, oldValue) => sessionId);
+                        if (tags?.Count > 0)
+                            //result.TryAdd(subscriptionId, tags);
+                            result.AddOrUpdate(subscriptionId, tags, (key, oldValue) => tags);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw;
+                    }
+                });
+
+                Dictionary<string, IReadOnlyDictionary<string, string>> d = result.ToDictionary(pair => pair.Key, pair => pair.Value);
+                return d;
+            }
+            catch (Exception)
+            {
+                throw;
+            }            
         }
     }
 }
