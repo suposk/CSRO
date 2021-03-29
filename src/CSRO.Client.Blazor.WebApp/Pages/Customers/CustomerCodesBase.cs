@@ -50,17 +50,20 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
 
         protected EditContext editContext { get; private set; }
 
-        protected ResourceGroupModel Model { get; set; } = new ResourceGroupModel();
+        protected ResourceGroupModel Model { get; set; } = new();
 
         //protected string Title => "Hosting Settings";
 
-        protected List<IdNameSdk> Subscripions { get; set; } = new List<IdNameSdk>();
+        protected List<IdNameSdk> Subscripions { get; set; } = new();
 
-        protected List<IdNameSdk> SubscripionsFiltered { get; set; } = new List<IdNameSdk>();
+        protected List<IdNameSdk> SubscripionsFiltered { get; set; } = new();
 
-        
-        protected List<IdName> Locations { get; set; } = new List<IdName>();
-        protected List<string> ResourceGroups { get; set; } = new List<string>();
+        protected List<Customer> Customers = new();
+
+
+
+        protected List<IdName> Locations { get; set; } = new();
+        protected List<string> ResourceGroups { get; set; } = new();
 
 
         protected bool IsLocDisabled => string.IsNullOrWhiteSpace(Model?.SubcriptionId) || Locations?.Count == 0;
@@ -119,10 +122,48 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
         {
             try
             {
+                Customers.Clear();
                 ShowLoading("Please wait ...");
-                await Task.Delay(100);
-                //var tags = await SubcriptionService.GetTags(new List<string> { "33fb38df-688e-4ca1-8dd8-b46e26262ff8" });                            
-                var tags = await SubcriptionService.GetTags(SelectedSubs.Select(a => a.Id).ToList()).ConfigureAwait(false);
+
+                await Task.Delay(1);
+
+                var keypair = await SubcriptionService.GetDefualtTags(SelectedSubs.Select(a => a.Id).ToList()).ConfigureAwait(false);
+                //var keypair = await SubcriptionService.GetTags(SelectedSubs.Select(a => a.Id).ToList()).ConfigureAwait(false);
+                if (keypair?.Count > 0)
+                {
+                    List<Customer> customersList = new();
+                    foreach (var key in keypair)
+                    {
+                        var sub = Subscripions.FirstOrDefault(a => a.Id == key.Key);
+                        if (sub != null)
+                        {
+                            Customer customer = new Customer
+                            {
+                                SubscriptionId = sub.Id,
+                                SubscriptionName = sub.Name,
+                                DefaultTags = new(),
+                            };
+                            //foreach (var item in key.Value)
+                            //{
+
+                            //    switch (item.TagName)
+                            //    {
+                            //        case nameof(DefaultTag.billingReference):
+                            //            result.BillingReferenceList.AddRange(item.Values);
+                            //            break;
+                            //        case nameof(DefaultTag.cmdbReference):
+                            //            result.CmdbRerenceList.AddRange(item.Values);
+                            //            break;
+                            //        case nameof(DefaultTag.opEnvironment):
+                            //            result.OpEnvironmentList.AddRange(item.Values);
+                            //            break;
+                            //    }
+                            //}
+                            customersList.Add(customer);
+                        }
+                    }
+                    Customers = customersList;
+                }
             }
             catch (Exception ex)
             {
@@ -214,6 +255,13 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
             else
                 IsFilterAutofocused = true;
             return Subscripions.IsNullOrEmptyCollection() ? null : SubscripionsFiltered;
+        }
+
+        public void ShowBtnPress(string id)
+        {
+            Customer tmpCust = Customers.FirstOrDefault(f => f.SubscriptionId == id);
+            if (tmpCust != null)
+                tmpCust.ShowDetails = !tmpCust.ShowDetails;
         }
 
         public void GoBack()

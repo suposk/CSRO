@@ -25,7 +25,8 @@ namespace CSRO.Client.Services.AzureRestServices
         Task<Subscription> GetSubcription(string subscriptionId, CancellationToken cancelToken = default);
         Task<List<TagNameWithValueList>> GetTags(string subscriptionId, CancellationToken cancelToken = default);
         Task<DefaultTags> GetDefualtTags(string subscriptionId, CancellationToken cancelToken = default);
-        Task<Dictionary<string, DefaultTags>> GetTags(List<string> subscriptionIds, CancellationToken cancelToken = default);
+        Task<Dictionary<string, DefaultTags>> GetDefualtTags(List<string> subscriptionIds, CancellationToken cancelToken = default);
+        Task<Dictionary<string, List<TagNameWithValueList>>> GetTags(List<string> subscriptionIds, CancellationToken cancelToken = default);
     }
 
     public class SubcriptionService : BaseDataService, ISubcriptionService
@@ -178,7 +179,43 @@ namespace CSRO.Client.Services.AzureRestServices
             return null;
         }
 
-        public async Task<Dictionary<string, DefaultTags>> GetTags(List<string> subscriptionIds, CancellationToken cancelToken = default)
+        public async Task<Dictionary<string, List<TagNameWithValueList>>> GetTags(List<string> subscriptionIds, CancellationToken cancelToken = default)
+        {
+            try
+            {
+                if (subscriptionIds?.Count <= 0)
+                    throw new Exception($"missing {nameof(subscriptionIds)} parameter");
+
+                Dictionary<string, Task<List<TagNameWithValueList>>> tasks = new();
+                try
+                {
+                    foreach (var subscriptionId in subscriptionIds)
+                    {
+                        //var tags = await GetTags(subscriptionId, cancelToken).ConfigureAwait(false);
+                        var t = GetTags(subscriptionId, cancelToken);
+                        tasks.Add(subscriptionId, t);
+                    }
+                    await Task.WhenAll(tasks.Values.ToList());
+                }
+                catch (Exception ex)
+                {
+                    throw;
+                }
+
+                Dictionary<string, List<TagNameWithValueList>> d = new();
+                foreach (var task in tasks)
+                {
+                    d.Add(task.Key, task.Value.Result);
+                }
+                return d;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<Dictionary<string, DefaultTags>> GetDefualtTags(List<string> subscriptionIds, CancellationToken cancelToken = default)
         {            
             try
             {
@@ -259,7 +296,6 @@ namespace CSRO.Client.Services.AzureRestServices
             var res = await GetSubcription(subscriptionId, cancelToken);
             return res != null;
         }
-
     }
 
 }
