@@ -59,7 +59,9 @@
     </MudCard>
 
     <MudCard>
-        <MudTable Items="@Customers" Hover="true" Breakpoint="Breakpoint.Sm">
+        <MudTable Items="@Customers" 
+                  Hover="true" 
+                  Breakpoint="Breakpoint.Sm">
             <ColGroup>                
                 <col />
                 <col />
@@ -84,40 +86,30 @@
             <ChildRowContent>
                 @if (context.ShowDetails)
                 {
-                    <MudTr>
-                        <td colspan="4">
-                            <MudCard Elevation="0">
-                                <MudCardHeader>
-                                    <CardHeaderContent>
-                                        <MudText Typo="Typo.body1">opEnvironment List for <strong>@context.SubscriptionName</strong></MudText>
-                                    </CardHeaderContent>
-                                </MudCardHeader>
-                                <MudCardContent Class="pa-0">
-
-                                    <MudExpansionPanels>
-                                        <MudExpansionPanel IsExpanded="false" Text="Show opEnvironment">
-                                            <MudTable Items="@context.opEnvironmentList"
-                                                      Context="enContext">
-                                                <ColGroup>
-                                                    <col />
-                                                    <col />
-                                                </ColGroup>
-                                                <HeaderContent>
-                                                    <MudTh>opEnvironment</MudTh>
-                                                    <MudTh>Value</MudTh>
-                                                </HeaderContent>
-                                                <RowTemplate>
-                                                    <MudTd DataLabel="opEnvironment">@enContext.Value</MudTd>
-                                                    <MudTd DataLabel="Value">@enContext.Value</MudTd>
-                                                </RowTemplate>
-                                            </MudTable>
-                                        </MudExpansionPanel>
-                                    </MudExpansionPanels>
-
-                                </MudCardContent>
-                            </MudCard>
+                    @*<MudTr>
+                        <td colspan="4"> 
+                            <MudExpansionPanels>
+                                <MudExpansionPanel IsExpanded="true" Text="Show opEnvironment">
+                                    <MudTable Items="@context.opEnvironmentList"
+                                              Context="enContext"
+                                              Breakpoint="Breakpoint.Sm" Elevation="0">
+                                        <ColGroup>
+                                            <col />
+                                            <col />
+                                        </ColGroup>
+                                        <HeaderContent>
+                                            <MudTh>opEnvironment</MudTh>
+                                            <MudTh>Value</MudTh>
+                                        </HeaderContent>
+                                        <RowTemplate>
+                                            <MudTd DataLabel="opEnvironment">@enContext.Value</MudTd>
+                                            <MudTd DataLabel="Value">@enContext.Value</MudTd>
+                                        </RowTemplate>
+                                    </MudTable>
+                                </MudExpansionPanel>
+                            </MudExpansionPanels>
                         </td>
-                    </MudTr>
+                    </MudTr>*@
 
                     <MudTr>
                         <td colspan="4">
