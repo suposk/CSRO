@@ -35,22 +35,19 @@
                 <MudItem xs="12" md="12">
                     <MudSelect T="@IdNameSdk"
                                Label="All Subscriptions"
-                               HelperText="Pick your Subscription"
+                               HelperText="Pick your Subscription"                               
                                MultiSelection="true"
                                @bind-Value="SelectedSub"
                                @bind-SelectedValues="SelectedSubs"
                                >
-                        @foreach (var sub in Subscripions)
+                        @foreach (var sub in SubscripionsFiltered)
                         {
                             <MudSelectItem T="IdNameSdk" Value="@sub">@sub</MudSelectItem>
                         }
                     </MudSelect>
                 </MudItem>
                 <MudItem xs="12" md="6">
-                    <MudText Typo="Typo.body2">MudSelect.Value: "@SelectedSub"</MudText>
-                </MudItem>
-                <MudItem xs="12" md="6">
-                    <MudText Typo="Typo.body2">MudSelect.SelectedValues: HashSet&lt;string&gt; { @(SelectedSub) }</MudText>
+                    <MudText Typo="Typo.body2">MudSelect.SelectedValues: { @(string.Join(", ", SelectedSubs.Select(x=>$"\"{x}\""))) }</MudText>
                 </MudItem>
                 <MudItem xs="12" md="6">
                     <MudButton Class="mt-4" OnClick="Search" Variant="Variant.Filled" Color="Color.Primary">Search</MudButton>

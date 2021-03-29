@@ -55,6 +55,10 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
         //protected string Title => "Hosting Settings";
 
         protected List<IdNameSdk> Subscripions { get; set; } = new List<IdNameSdk>();
+
+        protected IEnumerable<IdNameSdk> SubscripionsFiltered { get; set; } = new List<IdNameSdk>();
+
+        
         protected List<IdName> Locations { get; set; } = new List<IdName>();
         protected List<string> ResourceGroups { get; set; } = new List<string>();
 
@@ -198,7 +202,8 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
             if (string.IsNullOrEmpty(value))
                 return Subscripions;
 
-            return Subscripions == null ? null : Subscripions.Where(x => x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+            SubscripionsFiltered = Subscripions.Where(x => x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+            return Subscripions.IsNullOrEmptyCollection() ? null : SubscripionsFiltered;
         }
 
         public void GoBack()
