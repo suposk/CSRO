@@ -56,7 +56,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
 
         protected List<IdNameSdk> Subscripions { get; set; } = new List<IdNameSdk>();
 
-        protected IEnumerable<IdNameSdk> SubscripionsFiltered { get; set; } = new List<IdNameSdk>();
+        protected List<IdNameSdk> SubscripionsFiltered { get; set; } = new List<IdNameSdk>();
 
         
         protected List<IdName> Locations { get; set; } = new List<IdName>();
@@ -69,6 +69,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
 
         protected IdNameSdk SelectedSub { get; set; } = new();
         protected HashSet<IdNameSdk> SelectedSubs { get; set; } = new();
+        protected bool IsFilterAutofocused { get; set; } = false;
 
         protected async override Task OnInitializedAsync()
         {
@@ -81,16 +82,16 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
         {
             if (value != null)
             {
-                Model.SubcriptionId = value.Id;
-                Model.SubcriptionName = value.Name;
+                //Model.SubcriptionId = value.Id;
+                //Model.SubcriptionName = value.Name;
 
-                ShowLoading();
+                //ShowLoading();
 
-                //await SubcriptionIdChanged.InvokeAsync(Model.SubcriptionId);
-                await LoadLocations();
-                //var tags = await SubcriptionService.GetTags(Model.SubcriptionId);
-                var defaulTags = await SubcriptionService.GetDefualtTags(Model.SubcriptionId);
-                HideLoading();
+                ////await SubcriptionIdChanged.InvokeAsync(Model.SubcriptionId);
+                //await LoadLocations();
+                ////var tags = await SubcriptionService.GetTags(Model.SubcriptionId);
+                //var defaulTags = await SubcriptionService.GetDefualtTags(Model.SubcriptionId);
+                //HideLoading();
             }
         }
 
@@ -153,19 +154,25 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
                 //var tags = await SubcriptionService.GetTags(new List<string> { "33fb38df-688e-4ca1-8dd8-b46e26262ff8" });
 
                 Subscripions?.Clear();
+                SubscripionsFiltered?.Clear();
+                SelectedSubs?.Clear();
+
                 Subscripions = await SubcriptionSdkService.GetAllSubcriptions();
                 //var restSubs = await SubcriptionService.GetSubcriptions();
-                if (Subscripions == null || Subscripions.Count == 0)
-                {
-                    var other = await SubcriptionService.GetSubcriptions();
-                    if (other?.Count > 0)
-                    {
-                        await CsroDialogService.ShowWarning("Info", "sdk method found no subs");
-                        List<IdNameSdk> list = new List<IdNameSdk>();
-                        other.ForEach(a => list.Add(new IdNameSdk { Id = a.Id, Name = a.Name }));
-                        Subscripions = list;
-                    }
-                }
+
+                //if (Subscripions == null || Subscripions.Count == 0)
+                //{
+                //    var other = await SubcriptionService.GetSubcriptions();
+                //    if (other?.Count > 0)
+                //    {
+                //        await CsroDialogService.ShowWarning("Info", "sdk method found no subs");
+                //        List<IdNameSdk> list = new List<IdNameSdk>();
+                //        other.ForEach(a => list.Add(new IdNameSdk { Id = a.Id, Name = a.Name }));
+                //        Subscripions = list;                        
+                //    }
+                //}
+
+                SubscripionsFiltered = Subscripions;
 
 #if DEBUG
 
@@ -178,10 +185,8 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
                         Subscripions.Add(new IdNameSdk(Guid.NewGuid().ToString(), $"fake sub name {i}"));
                     }
                 }
-                //Model.ResorceGroup = "dev-VMS";
-                //Model.VmName = "VmDelete";
-
 #endif
+
             }
             catch (Exception ex)
             {
@@ -201,8 +206,13 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
             // if text is null or empty, show complete list
             if (string.IsNullOrEmpty(value))
                 return Subscripions;
-
-            SubscripionsFiltered = Subscripions.Where(x => x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+                        
+            IsFilterAutofocused = false;
+            SubscripionsFiltered = Subscripions.Where(x => x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase)).ToList();
+            if (SubscripionsFiltered.IsNullOrEmptyCollection())
+                SubscripionsFiltered = Subscripions;
+            else
+                IsFilterAutofocused = true;
             return Subscripions.IsNullOrEmptyCollection() ? null : SubscripionsFiltered;
         }
 

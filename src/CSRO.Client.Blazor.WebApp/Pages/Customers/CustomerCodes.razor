@@ -17,60 +17,64 @@
             </MudGrid>
         }
 
-        <MudCard>
-            <MudCardContent>
-                <MudAutocomplete ResetValueOnEmptyText="true"
-                                 T="@IdNameSdk"
-                                 Label="Subcription:"
-                                 ValueChanged="(e) => OnSubscriptionValueChanged(e)"
-                                 For="@(() => Model.SubscripionIdName)"
-                                 SearchFunc="@SearchSubs" />
+    <MudCard>
+        <MudGrid>
+            <MudItem xs="6" sm="3" Class="d-flex align-center justify-center mud-width-full py-8">                
+                <MudCardContent>
+                    <MudAutocomplete ResetValueOnEmptyText="true"
+                                        T="@IdNameSdk"
+                                        Label="All Subscriptions"
+                                        ValueChanged="(e) => OnSubscriptionValueChanged(e)"
+                                        For="@(() => Model.SubscripionIdName)"
+                                        SearchFunc="@SearchSubs" />
 
-            </MudCardContent>
-        </MudCard>
+                </MudCardContent>                
+            </MudItem>
 
-        <MudCard>
+            <MudItem xs="6" sm="3" Class="d-flex align-center justify-center mud-width-full py-8">                
+                    <MudItem xs="12" md="12">
+                        <MudSelect T="@IdNameSdk"                                   
+                                   HelperText="Pick your filtered Subscription"
+                                   MultiSelection="true"   
+                                   OffsetY="@IsFilterAutofocused"
+                                   @bind-SelectedValues="SelectedSubs">
+                            @foreach (var sub in SubscripionsFiltered)
+                            {
+                                <MudSelectItem T="IdNameSdk" Value="@sub">@sub</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudItem>                
+            </MudItem>
+            
+            <MudItem xs="6" sm="3" Class="d-flex align-center justify-center mud-width-full py-8">                
+                    col 3                
+            </MudItem>
 
-            <MudGrid>
-                <MudItem xs="12" md="12">
-                    <MudSelect T="@IdNameSdk"
-                               Label="All Subscriptions"
-                               HelperText="Pick your Subscription"                               
-                               MultiSelection="true"
-                               @bind-Value="SelectedSub"
-                               @bind-SelectedValues="SelectedSubs"
-                               >
-                        @foreach (var sub in SubscripionsFiltered)
-                        {
-                            <MudSelectItem T="IdNameSdk" Value="@sub">@sub</MudSelectItem>
-                        }
-                    </MudSelect>
-                </MudItem>
-                <MudItem xs="12" md="6">
-                    <MudText Typo="Typo.body2">MudSelect.SelectedValues: { @(string.Join(", ", SelectedSubs.Select(x=>$"\"{x}\""))) }</MudText>
-                </MudItem>
-                <MudItem xs="12" md="6">
-                    <MudButton Class="mt-4" OnClick="Search" Variant="Variant.Filled" Color="Color.Primary">Search</MudButton>
-                </MudItem>
-            </MudGrid>
+            <MudItem xs="6" sm="3">                                   
+                <MudText Typo="Typo.body2">MudSelect.SelectedValues: { @(string.Join(", ", SelectedSubs.Select(x=>$"\"{x}\""))) }</MudText>                                        
+                <MudButton Class="mt-4" OnClick="Search" Variant="Variant.Filled" Color="Color.Primary">Search</MudButton>                                 
+            </MudItem>
+        </MudGrid>
+    </MudCard>
 
+    <MudCard>
 
-            @*<MudTable Items="Tickets"
-                      Hover="true" SortLabel="Sort By" Elevation="0">
-                <HeaderContent>
-                    <MudTh><MudTableSortLabel SortBy="new Func<ProjectAdo, object>(x=>x.Id)">Id</MudTableSortLabel></MudTh>
-                    <MudTh><MudTableSortLabel SortBy="new Func<ProjectAdo, object>(x=>x.Status)">Status</MudTableSortLabel></MudTh>
-                    <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<ProjectAdo, object>(x=>x.CreatedAt)">Created At</MudTableSortLabel></MudTh>
-                </HeaderContent>
-                <RowTemplate>
-                    <MudTd DataLabel="Id">@context.Id</MudTd>
-                    <MudTd DataLabel="Status">@context.Status</MudTd>
-                </RowTemplate>
-                <PagerContent>
-                    <MudTablePager PageSizeOptions="new int[]{10, 20, 50}" />
-                </PagerContent>
-            </MudTable>*@
+        @*<MudTable Items="Tickets"
+                    Hover="true" SortLabel="Sort By" Elevation="0">
+            <HeaderContent>
+                <MudTh><MudTableSortLabel SortBy="new Func<ProjectAdo, object>(x=>x.Id)">Id</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<ProjectAdo, object>(x=>x.Status)">Status</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<ProjectAdo, object>(x=>x.CreatedAt)">Created At</MudTableSortLabel></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Id">@context.Id</MudTd>
+                <MudTd DataLabel="Status">@context.Status</MudTd>
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager PageSizeOptions="new int[]{10, 20, 50}" />
+            </PagerContent>
+        </MudTable>*@
 
-        </MudCard>
+    </MudCard>
     </div>
 </MudContainer>
