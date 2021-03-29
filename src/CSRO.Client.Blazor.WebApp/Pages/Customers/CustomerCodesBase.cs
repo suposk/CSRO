@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace CSRO.Client.Blazor.WebApp.Pages.Customers
@@ -49,13 +50,20 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
 
         protected EditContext editContext { get; private set; }
 
-        protected ResourceGroupModel Model { get; set; } = new ResourceGroupModel();
+        protected ResourceGroupModel Model { get; set; } = new();
 
         //protected string Title => "Hosting Settings";
 
-        protected List<IdNameSdk> Subscripions { get; set; } = new List<IdNameSdk>();
-        protected List<IdName> Locations { get; set; } = new List<IdName>();
-        protected List<string> ResourceGroups { get; set; } = new List<string>();
+        protected List<IdNameSdk> Subscripions { get; set; } = new();
+
+        protected List<IdNameSdk> SubscripionsFiltered { get; set; } = new();
+
+        protected List<Customer> Customers = new();
+
+
+
+        protected List<IdName> Locations { get; set; } = new();
+        protected List<string> ResourceGroups { get; set; } = new();
 
 
         protected bool IsLocDisabled => string.IsNullOrWhiteSpace(Model?.SubcriptionId) || Locations?.Count == 0;
@@ -64,6 +72,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
 
         protected IdNameSdk SelectedSub { get; set; } = new();
         protected HashSet<IdNameSdk> SelectedSubs { get; set; } = new();
+        protected bool IsFilterAutofocused { get; set; } = false;
 
         protected async override Task OnInitializedAsync()
         {
@@ -76,16 +85,16 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
         {
             if (value != null)
             {
-                Model.SubcriptionId = value.Id;
-                Model.SubcriptionName = value.Name;
+                //Model.SubcriptionId = value.Id;
+                //Model.SubcriptionName = value.Name;
 
-                ShowLoading();
+                //ShowLoading();
 
-                //await SubcriptionIdChanged.InvokeAsync(Model.SubcriptionId);
-                await LoadLocations();
-                //var tags = await SubcriptionService.GetTags(Model.SubcriptionId);
+                ////await SubcriptionIdChanged.InvokeAsync(Model.SubcriptionId);
+                //await LoadLocations();
+                ////var tags = await SubcriptionService.GetTags(Model.SubcriptionId);
                 //var defaulTags = await SubcriptionService.GetDefualtTags(Model.SubcriptionId);
-                HideLoading();
+                //HideLoading();
             }
         }
 
@@ -113,9 +122,48 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
         {
             try
             {
-                ShowLoading();
-                //var tags = await SubcriptionService.GetTags(new List<string> { "33fb38df-688e-4ca1-8dd8-b46e26262ff8" });
-                var tags = await SubcriptionService.GetTags(SelectedSubs.Select(a => a.Id).ToList());
+                Customers.Clear();
+                ShowLoading("Please wait ...");
+
+                await Task.Delay(1);
+
+                var keypair = await SubcriptionService.GetDefualtTags(SelectedSubs.Select(a => a.Id).ToList()).ConfigureAwait(false);
+                //var keypair = await SubcriptionService.GetTags(SelectedSubs.Select(a => a.Id).ToList()).ConfigureAwait(false);
+                if (keypair?.Count > 0)
+                {
+                    List<Customer> customersList = new();
+                    foreach (var key in keypair)
+                    {
+                        var sub = Subscripions.FirstOrDefault(a => a.Id == key.Key);
+                        if (sub != null)
+                        {
+                            Customer customer = new Customer
+                            {
+                                SubscriptionId = sub.Id,
+                                SubscriptionName = sub.Name,
+                                DefaultTags = new(),
+                            };
+                            //foreach (var item in key.Value)
+                            //{
+
+                            //    switch (item.TagName)
+                            //    {
+                            //        case nameof(DefaultTag.billingReference):
+                            //            result.BillingReferenceList.AddRange(item.Values);
+                            //            break;
+                            //        case nameof(DefaultTag.cmdbReference):
+                            //            result.CmdbRerenceList.AddRange(item.Values);
+                            //            break;
+                            //        case nameof(DefaultTag.opEnvironment):
+                            //            result.OpEnvironmentList.AddRange(item.Values);
+                            //            break;
+                            //    }
+                            //}
+                            customersList.Add(customer);
+                        }
+                    }
+                    Customers = customersList;
+                }
             }
             catch (Exception ex)
             {
@@ -147,19 +195,25 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
                 //var tags = await SubcriptionService.GetTags(new List<string> { "33fb38df-688e-4ca1-8dd8-b46e26262ff8" });
 
                 Subscripions?.Clear();
+                SubscripionsFiltered?.Clear();
+                SelectedSubs?.Clear();
+
                 Subscripions = await SubcriptionSdkService.GetAllSubcriptions();
                 //var restSubs = await SubcriptionService.GetSubcriptions();
-                if (Subscripions == null || Subscripions.Count == 0)
-                {
-                    var other = await SubcriptionService.GetSubcriptions();
-                    if (other?.Count > 0)
-                    {
-                        await CsroDialogService.ShowWarning("Info", "sdk method found no subs");
-                        List<IdNameSdk> list = new List<IdNameSdk>();
-                        other.ForEach(a => list.Add(new IdNameSdk { Id = a.Id, Name = a.Name }));
-                        Subscripions = list;
-                    }
-                }
+
+                //if (Subscripions == null || Subscripions.Count == 0)
+                //{
+                //    var other = await SubcriptionService.GetSubcriptions();
+                //    if (other?.Count > 0)
+                //    {
+                //        await CsroDialogService.ShowWarning("Info", "sdk method found no subs");
+                //        List<IdNameSdk> list = new List<IdNameSdk>();
+                //        other.ForEach(a => list.Add(new IdNameSdk { Id = a.Id, Name = a.Name }));
+                //        Subscripions = list;                        
+                //    }
+                //}
+
+                SubscripionsFiltered = Subscripions;
 
 #if DEBUG
 
@@ -172,10 +226,8 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
                         Subscripions.Add(new IdNameSdk(Guid.NewGuid().ToString(), $"fake sub name {i}"));
                     }
                 }
-                //Model.ResorceGroup = "dev-VMS";
-                //Model.VmName = "VmDelete";
-
 #endif
+
             }
             catch (Exception ex)
             {
@@ -195,8 +247,21 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
             // if text is null or empty, show complete list
             if (string.IsNullOrEmpty(value))
                 return Subscripions;
+                        
+            IsFilterAutofocused = false;
+            SubscripionsFiltered = Subscripions.Where(x => x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase)).ToList();
+            if (SubscripionsFiltered.IsNullOrEmptyCollection())
+                SubscripionsFiltered = Subscripions;
+            else
+                IsFilterAutofocused = true;
+            return Subscripions.IsNullOrEmptyCollection() ? null : SubscripionsFiltered;
+        }
 
-            return Subscripions == null ? null : Subscripions.Where(x => x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+        public void ShowBtnPress(string id)
+        {
+            Customer tmpCust = Customers.FirstOrDefault(f => f.SubscriptionId == id);
+            if (tmpCust != null)
+                tmpCust.ShowDetails = !tmpCust.ShowDetails;
         }
 
         public void GoBack()

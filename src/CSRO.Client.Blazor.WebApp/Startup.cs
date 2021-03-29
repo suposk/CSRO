@@ -245,12 +245,12 @@ namespace CSRO.Client.Blazor.WebApp
             services.AddServerSideBlazor()
                 .AddMicrosoftIdentityConsentHandler();
 
-            services.AddScoped<IAuthCsroService, AuthCsroService>();
+            services.AddTransient<IAuthCsroService, AuthCsroService>();
                         
-            services.AddScoped<IVersionService, VersionService>();
-            services.AddScoped<IBaseDataService<Ticket>, TicketDataService>();
-            services.AddScoped<IAdoProjectHistoryDataService, AdoProjectHistoryDataService>();                      
-            services.AddScoped<IVmTicketDataService, VmTicketDataService>();
+            services.AddTransient<IVersionService, VersionService>();
+            services.AddTransient<IBaseDataService<Ticket>, TicketDataService>();
+            services.AddTransient<IAdoProjectHistoryDataService, AdoProjectHistoryDataService>();                      
+            services.AddTransient<IVmTicketDataService, VmTicketDataService>();
 
             services.AddTransient<IVmService, VmService>();
             services.AddTransient<ISubcriptionService, SubcriptionService>();
