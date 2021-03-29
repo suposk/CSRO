@@ -127,40 +127,22 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
 
                 await Task.Delay(1);
 
-                var keypair = await SubcriptionService.GetDefualtTags(SelectedSubs.Select(a => a.Id).ToList()).ConfigureAwait(false);
-                //var keypair = await SubcriptionService.GetTags(SelectedSubs.Select(a => a.Id).ToList()).ConfigureAwait(false);
-                if (keypair?.Count > 0)
+                //var keypair = await SubcriptionService.GetDefualtTags(SelectedSubs.Select(a => a.Id).ToList()).ConfigureAwait(false);
+                var customers = await SubcriptionService.GetTags(SelectedSubs.Select(a => a.Id).ToList()).ConfigureAwait(false);
+                if (customers?.Count > 0)
                 {
                     List<Customer> customersList = new();
-                    foreach (var key in keypair)
+                    foreach (var cust in customers)
                     {
-                        var sub = Subscripions.FirstOrDefault(a => a.Id == key.Key);
-                        if (sub != null)
+                        var sub = Subscripions.FirstOrDefault(a => a.Id == cust.SubscriptionId);
+                        if (sub != null && string.IsNullOrWhiteSpace(cust.SubscriptionName))                             
                         {
-                            Customer customer = new Customer
-                            {
-                                SubscriptionId = sub.Id,
-                                SubscriptionName = sub.Name,
-                                DefaultTags = new(),
-                            };
-                            //foreach (var item in key.Value)
-                            //{
-
-                            //    switch (item.TagName)
-                            //    {
-                            //        case nameof(DefaultTag.billingReference):
-                            //            result.BillingReferenceList.AddRange(item.Values);
-                            //            break;
-                            //        case nameof(DefaultTag.cmdbReference):
-                            //            result.CmdbRerenceList.AddRange(item.Values);
-                            //            break;
-                            //        case nameof(DefaultTag.opEnvironment):
-                            //            result.OpEnvironmentList.AddRange(item.Values);
-                            //            break;
-                            //    }
-                            //}
-                            customersList.Add(customer);
+                            //only if sub name is missing
+                            cust.SubscriptionName = sub.Name;
+                            customersList.Add(cust);
                         }
+                        else
+                            customersList.Add(cust);
                     }
                     Customers = customersList;
                 }
