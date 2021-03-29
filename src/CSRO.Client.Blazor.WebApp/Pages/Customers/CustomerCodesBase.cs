@@ -60,6 +60,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
 
         protected List<Customer> Customers = new();
 
+        List<Customer> _customersCache = new();
 
 
         protected List<IdName> Locations { get; set; } = new();
@@ -123,6 +124,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
             try
             {
                 Customers.Clear();
+                _customersCache.Clear();
                 ShowLoading("Please wait ...");
 
                 await Task.Delay(1);
@@ -130,8 +132,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
                 //var keypair = await SubcriptionService.GetDefualtTags(SelectedSubs.Select(a => a.Id).ToList()).ConfigureAwait(false);
                 var customers = await SubcriptionService.GetTags(SelectedSubs.Select(a => a.Id).ToList()).ConfigureAwait(false);
                 if (customers?.Count > 0)
-                {
-                    List<Customer> customersList = new();
+                {                    
                     foreach (var cust in customers)
                     {
                         var sub = Subscripions.FirstOrDefault(a => a.Id == cust.SubscriptionId);
@@ -139,12 +140,12 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
                         {
                             //only if sub name is missing
                             cust.SubscriptionName = sub.Name;
-                            customersList.Add(cust);
+                            _customersCache.Add(cust);
                         }
                         else
-                            customersList.Add(cust);
+                            _customersCache.Add(cust);
                     }
-                    Customers = customersList;
+                    Customers = _customersCache;
                 }
             }
             catch (Exception ex)
