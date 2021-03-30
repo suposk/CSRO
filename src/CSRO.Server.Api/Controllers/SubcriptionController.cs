@@ -1,6 +1,11 @@
-﻿using CSRO.Server.Domain;
+﻿using AutoMapper;
+using CSRO.Server.Api.Services;
+using CSRO.Server.Domain;
+using CSRO.Server.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,15 +20,37 @@ namespace CSRO.Server.Api.Controllers
     [ApiController]
     public class SubcriptionController : ControllerBase
     {
-        // GET: api/<SubcriptionController>
-        [HttpGet]
-        public IEnumerable<IdNameDto> Get()
+        private readonly ILogger<SubcriptionController> _logger;
+        private readonly ISubcriptionRepository _repository;
+        private readonly IMapper _mapper;
+
+        public SubcriptionController(
+            ILogger<SubcriptionController> logger,
+            ISubcriptionRepository repository,
+            IMapper mapper)
         {
-            return new IdNameDto[] 
+            _logger = logger;
+            _repository = repository;
+            _mapper = mapper;
+        }
+        
+
+        [HttpGet]
+        public async Task<ActionResult<List<IdNameDto>>> Get()
+        {
+            try
             {
-                new IdNameDto { Id = Guid.NewGuid().ToString(), Name = "value 1" },
-                new IdNameDto { Id = Guid.NewGuid().ToString(), Name = "value 2" },
-            };
+                _logger.LogInformation(ApiLogEvents.GetAllItems, $"{nameof(Get)} Started");
+
+                var all = await _repository.GetSubcriptions().ConfigureAwait(false);
+                var result = _mapper.Map<List<IdNameDto>>(all);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, nameof(Get), null);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
+            }
         }
 
         //// GET api/<SubcriptionController>/5

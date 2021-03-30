@@ -99,10 +99,9 @@ namespace CSRO.Client.Services.AzureRestServices
                 var apiData = await HttpClientBase.GetAsync(url, cancelToken).ConfigureAwait(false);
 
                 if (apiData.IsSuccessStatusCode)
-                {
-                    var content = await apiData.Content.ReadAsStringAsync();
-                    //var ser = JsonSerializer.Deserialize<SubscriptionsDto>(content, _options);
-                    var ser = JsonSerializer.Deserialize<SubscriptionsIdNameDto>(content, _options);
+                {                                                           
+                    var stream = await apiData.Content.ReadAsStreamAsync();
+                    var ser = await JsonSerializer.DeserializeAsync<SubscriptionsIdNameDto>(stream, _options);
                     if (ser?.Value?.Count > 0)
                     {
                         //"VM running"

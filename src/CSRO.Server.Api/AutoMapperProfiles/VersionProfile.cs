@@ -35,6 +35,8 @@ namespace CSRO.Server.Api.AutoMapperProfiles
             CreateMap<ResourceGroupDto, ResourceGroup>()
                 .ReverseMap();
 
+            CreateMap<IdNameDto, IdName>()
+                .ReverseMap();
         }
     }
 }
