@@ -1,4 +1,5 @@
-﻿using CSRO.Server.Domain;
+﻿using CSRO.Common;
+using CSRO.Server.Domain;
 using CSRO.Server.Services.AzureRestServices;
 using CSRO.Server.Services.Models;
 using System;
@@ -18,15 +19,23 @@ namespace CSRO.Server.Api.Services
     public class SubcriptionRepository : ISubcriptionRepository
     {
         private readonly ISubcriptionService _subcriptionService;
+        private readonly ICacheProvider _cacheProvider;
+        const string cacheKeyProcess = nameof(IdName);
 
-        public SubcriptionRepository(ISubcriptionService subcriptionService)
+        public SubcriptionRepository(ISubcriptionService subcriptionService, ICacheProvider cacheProvider)
         {
             _subcriptionService = subcriptionService;
+            _cacheProvider = cacheProvider;
         }
 
         public async Task<List<IdName>> GetSubcriptions(CancellationToken cancelToken = default)
         {
+            var cache = _cacheProvider.GetFromCache<List<IdName>>(cacheKeyProcess);
+            if (cache?.Count > 0)
+                return cache;
+
             var subs = await _subcriptionService.GetSubcriptions(cancelToken);
+            _cacheProvider.SetCache(cacheKeyProcess, subs, Core.ConstatCsro.CacheSettings.DefaultDuration);
             return subs;
         }
 

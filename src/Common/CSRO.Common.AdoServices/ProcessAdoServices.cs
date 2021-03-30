@@ -71,9 +71,9 @@ namespace CSRO.Common.AdoServices
             VssConnection connection = null;
             try
             {               
-                var processAdos = _cacheProvider.GetFromCache<List<ProcessAdo>>(cacheKeyProcess);
-                if (processAdos?.Count > 0)
-                    return processAdos;
+                var cache = _cacheProvider.GetFromCache<List<ProcessAdo>>(cacheKeyProcess);
+                if (cache?.Count > 0)
+                    return cache;
 
                 string url = $"https://dev.azure.com/{organization}";
                 if (_adoConfig.UsePta)
@@ -87,10 +87,10 @@ namespace CSRO.Common.AdoServices
                 var prs = await processClient.GetProcessesAsync().ConfigureAwait(false);
                 if (prs?.Count > 0)
                 {
-                    processAdos = _mapper.Map<List<ProcessAdo>>(prs);
-                    _cacheProvider.SetCache(cacheKeyProcess, processAdos);
+                    cache = _mapper.Map<List<ProcessAdo>>(prs);
+                    _cacheProvider.SetCache(cacheKeyProcess, cache);
                 }
-                return processAdos;
+                return cache;
             }
             catch (Exception ex)
             {

@@ -184,6 +184,8 @@ namespace CSRO.Server.Api
             services.AddTransient<IResourceGroupervice, ResourceGroupervice>();
             services.AddTransient<ISubcriptionRepository, SubcriptionRepository>();
 
+            services.AddSingleton<ICacheProvider, CacheProvider>(); //testing
+
             services.AddApplicationInsightsTelemetry(Configuration["APPINSIGHTS_CONNECTIONSTRING"]);
 
             //services.AddControllers(options => options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
