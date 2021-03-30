@@ -59,62 +59,92 @@
     </MudCard>
 
     <MudCard>
-        <MudTable Items="@Customers" Hover="true" Breakpoint="Breakpoint.Sm">
-            <ColGroup>
-                <col style="width:200px;" />
-                <col style="width:100px;" />
+        <MudTable Items="@Customers" 
+                  Hover="true" 
+                  Breakpoint="Breakpoint.Sm">
+            <ColGroup>                
                 <col />
+                <col />
+                <col />
+                <col style="width:100px;" />
                 <col style="width:100px;" />
             </ColGroup>
             <HeaderContent>
-                <MudTh></MudTh>
-                <MudTh>Nr</MudTh>
+                <MudTh>Show Details</MudTh>
+                <MudTh>Subscription Id</MudTh>
                 <MudTh>Name</MudTh>
-                <MudTh>Age</MudTh>
+                <MudTh>CmdbRerence Count</MudTh>
+                <MudTh>OpEnvironment Count</MudTh>
             </HeaderContent>
             <RowTemplate>
-                <MudTd><MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="@(() => ShowBtnPress(context.SubscriptionId))">@((context.ShowDetails == true)? "Hide" : "Show") Address Details</MudButton></MudTd>
+                <MudTd><MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="@(() => ShowBtnPress(context.SubscriptionId))">@((context.ShowDetails == true)? "Hide" : "Show") Details</MudButton></MudTd>
                 <MudTd DataLabel="Subscription Id">@context.SubscriptionId</MudTd>
-                <MudTd DataLabel="Name">@context.SubscriptionName</MudTd>
-                @*<MudTd DataLabel="BillingReference Count">@context.DefaultTags.BillingReferenceList.Count</MudTd>
-                <MudTd DataLabel="CmdbRerence Count">@context.DefaultTags.CmdbRerenceList.Count</MudTd>
-                <MudTd DataLabel="OpEnvironment Count">@context.DefaultTags.OpEnvironmentList.Count</MudTd>*@
+                <MudTd DataLabel="Name">@context.SubscriptionName</MudTd>                
+                <MudTd DataLabel="CmdbRerence Count">@context.cmdbReferenceList.Count</MudTd>
+                <MudTooltip Text="@(string.Join(", ", context.opEnvironmentList.Select(x=>$"\"{x}\"")))">
+                    <MudTd DataLabel="OpEnvironment Count">@context.opEnvironmentList.Count</MudTd>
+                </MudTooltip>                
             </RowTemplate>
             <ChildRowContent>
                 @if (context.ShowDetails)
                 {
-                    <MudTr>
-                        <td colspan="4">
-                            <MudCard Elevation="0">
-                                <MudCardHeader>
-                                    <CardHeaderContent>
-                                        <MudText Typo="Typo.body1">Details for <strong>@context.SubscriptionName</strong></MudText>
-                                    </CardHeaderContent>
-                                </MudCardHeader>
-                                <MudCardContent Class="pa-0">
-                                    <MudTable Items="@context.DefaultTags" 
-                                              Context="DefaultTagsContext" Hover="true" 
+                    @*<MudTr>
+                        <td colspan="4"> 
+                            <MudExpansionPanels>
+                                <MudExpansionPanel IsExpanded="true" Text="Show opEnvironment">
+                                    <MudTable Items="@context.opEnvironmentList"
+                                              Context="enContext"
                                               Breakpoint="Breakpoint.Sm" Elevation="0">
                                         <ColGroup>
                                             <col />
                                             <col />
+                                        </ColGroup>
+                                        <HeaderContent>
+                                            <MudTh>opEnvironment</MudTh>
+                                            <MudTh>Value</MudTh>
+                                        </HeaderContent>
+                                        <RowTemplate>
+                                            <MudTd DataLabel="opEnvironment">@enContext.Value</MudTd>
+                                            <MudTd DataLabel="Value">@enContext.Value</MudTd>
+                                        </RowTemplate>
+                                    </MudTable>
+                                </MudExpansionPanel>
+                            </MudExpansionPanels>
+                        </td>
+                    </MudTr>*@
+
+                    <MudTr>
+                        <td colspan="4">
+                            <MudCard>
+                                <MudCardHeader>
+                                    <CardHeaderContent>
+                                        <MudText Typo="Typo.body1">AT Codes for <strong>@context.SubscriptionName</strong></MudText>
+                                    </CardHeaderContent>
+                                </MudCardHeader>
+                                <MudCardContent Class="p-4">
+
+                                    <MudTable Items="@context.cmdbReferenceList"
+                                              Context="cmdbContext" Hover="true"
+                                              Breakpoint="Breakpoint.Sm" Elevation="0">
+                                        <ColGroup>
+                                            <col />
                                             <col />
                                         </ColGroup>
                                         <HeaderContent>
-                                            <MudTh>billingReference</MudTh>
-                                            <MudTh>cmdbReference</MudTh>
-                                            <MudTh>opEnvironment</MudTh>
+                                            <MudTh>AT Code</MudTh>
+                                            <MudTh>Email</MudTh>
                                         </HeaderContent>
                                         <RowTemplate>
-                                            <MudTd DataLabel="billingReference">@DefaultTagsContext.billingReference</MudTd>
-                                            <MudTd DataLabel="cmdbReference">@DefaultTagsContext.cmdbReference</MudTd>
-                                            <MudTd DataLabel="opEnvironment">@DefaultTagsContext.opEnvironment</MudTd>
+                                            <MudTd DataLabel="billingReference">@cmdbContext.AtCode</MudTd>
+                                            <MudTd DataLabel="cmdbReference">@cmdbContext.Email</MudTd>
                                         </RowTemplate>
                                     </MudTable>
                                 </MudCardContent>
                             </MudCard>
                         </td>
-                    </MudTr>}
+                    </MudTr>
+
+                }
             </ChildRowContent>
         </MudTable>
 
