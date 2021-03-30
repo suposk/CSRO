@@ -36,7 +36,8 @@ namespace CSRO.Server.Api.Controllers
         }
         
 
-        [HttpGet]
+        [HttpGet]        
+        [ResponseCache(Duration = Core.ConstatCsro.CacheSettings.DefaultDuration, Location = ResponseCacheLocation.Any, NoStore = false)]
         public async Task<ActionResult<List<IdNameDto>>> Get()
         {
             try
@@ -57,8 +58,7 @@ namespace CSRO.Server.Api.Controllers
             }
         }
                 
-        [HttpGet("{subscriptionIds}", Name = nameof(GetTags))]
-        //[HttpGet, Route(nameof(GetTags))]
+        [HttpGet("{subscriptionIds}", Name = nameof(GetTags))]        
         public async Task<ActionResult<List<CustomerDto>>> GetTags(List<string> subscriptionIds)
         {
             try
