@@ -41,8 +41,8 @@ namespace CSRO.Client.Services
 
                 if (apiData.IsSuccessStatusCode)
                 {
-                    var content = await apiData.Content.ReadAsStringAsync();
-                    var ser = JsonSerializer.Deserialize<TicketDto>(content, _options);
+                    var stream = await apiData.Content.ReadAsStreamAsync();
+                    var ser = await JsonSerializer.DeserializeAsync<TicketDto>(stream, _options);
                     var result = Mapper.Map<Ticket>(ser);
                     return result;
                 }
@@ -113,8 +113,8 @@ namespace CSRO.Client.Services
 
                 if (apiData.IsSuccessStatusCode)
                 {
-                    var content = await apiData.Content.ReadAsStringAsync();
-                    var ser = JsonSerializer.Deserialize<TicketDto>(content, _options);
+                    var stream = await apiData.Content.ReadAsStreamAsync();
+                    var ser = await JsonSerializer.DeserializeAsync<TicketDto>(stream, _options);
                     var result = Mapper.Map<Ticket>(ser);
                     return result;
                 }
@@ -138,9 +138,9 @@ namespace CSRO.Client.Services
                 var apiData = await HttpClientBase.GetAsync(url).ConfigureAwait(false);
 
                 if (apiData.IsSuccessStatusCode)
-                {
-                    var content = await apiData.Content.ReadAsStringAsync();
-                    var ser = JsonSerializer.Deserialize<List<TicketDto>>(content, _options);
+                {                    
+                    var stream = await apiData.Content.ReadAsStreamAsync();
+                    var ser = await JsonSerializer.DeserializeAsync<List<TicketDto>>(stream, _options);
                     var result = Mapper.Map<List<Ticket>>(ser);
                     return result;
                 }

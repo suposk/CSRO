@@ -32,6 +32,7 @@ using CSRO.Common;
 using CSRO.Server.Services.AzureRestServices;
 using MediatR;
 using System.Reflection;
+using CSRO.Server.Api.Services;
 
 namespace CSRO.Server.Api
 {
@@ -174,13 +175,14 @@ namespace CSRO.Server.Api
             .AddFluentValidation(options =>
             {
                 //options.RegisterValidatorsFromAssemblyContaining<Startup>();
-                options.RegisterValidatorsFromAssemblyContaining<Services.Validation.BaseAbstractValidator>();
+                options.RegisterValidatorsFromAssemblyContaining<Server.Services.Validation.BaseAbstractValidator>();
             });
 
             services.AddScoped<IApiIdentity, ApiIdentity>();            
             services.AddTransient<IAzureVmManagementService, AzureVmManagementService>();
             services.AddTransient<ISubcriptionService, SubcriptionService>();
             services.AddTransient<IResourceGroupervice, ResourceGroupervice>();
+            services.AddTransient<ISubcriptionRepository, SubcriptionRepository>();
 
             services.AddApplicationInsightsTelemetry(Configuration["APPINSIGHTS_CONNECTIONSTRING"]);
 

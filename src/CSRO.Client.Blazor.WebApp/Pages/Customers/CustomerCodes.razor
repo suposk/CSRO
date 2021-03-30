@@ -22,11 +22,11 @@
             <MudItem xs="6" sm="3" Class="d-flex align-center justify-center mud-width-full py-8">                
                 <MudCardContent>
                     <MudAutocomplete ResetValueOnEmptyText="true"
-                                        T="@IdNameSdk"
+                                        T="@IdName"
                                         Dense="true"
                                         Label="All Subscriptions"
                                         ValueChanged="(e) => OnSubscriptionValueChanged(e)"
-                                        For="@(() => Model.SubscripionIdName)"
+                                        
                                         SearchFunc="@SearchSubs" />
 
                 </MudCardContent>                
@@ -34,15 +34,15 @@
 
             <MudItem xs="6" sm="3" Class="d-flex align-center justify-center mud-width-full py-8">                
                     <MudItem xs="12" md="12">
-                        <MudSelect T="@IdNameSdk"                                   
+                        <MudSelect T="@IdName"                                   
                                    HelperText="Pick your filtered Subscription"
                                    MultiSelection="true"   
                                    Dense="true"
-                                   OffsetY="@IsFilterAutofocused"
+                                   OffsetY="true"
                                    @bind-SelectedValues="SelectedSubs">
                             @foreach (var sub in SubscripionsFiltered)
                             {
-                                <MudSelectItem T="IdNameSdk" Value="@sub">@sub</MudSelectItem>
+                                <MudSelectItem T="IdName" Value="@sub">@sub</MudSelectItem>
                             }
                         </MudSelect>
                     </MudItem>                

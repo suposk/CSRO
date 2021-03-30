@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CSRO.Server.Domain.AzureDtos;
 using CSRO.Server.Domain;
+using CSRO.Server.Services.Models;
 
 namespace CSRO.Server.Api.AutoMapperProfiles
 {
@@ -35,6 +36,19 @@ namespace CSRO.Server.Api.AutoMapperProfiles
             CreateMap<ResourceGroupDto, ResourceGroup>()
                 .ReverseMap();
 
+            CreateMap<IdNameDto, IdName>()
+                .ReverseMap();
+                        
+            CreateMap<CustomerDto, Customer>()
+                .ReverseMap();
+                        
+            CreateMap<cmdbReferenceDto, cmdbReference>()
+                .ReverseMap();
+
+            CreateMap<opEnvironmentDto, opEnvironment>()
+                .ReverseMap();
+
+            
         }
     }
 }

@@ -251,9 +251,10 @@ namespace CSRO.Client.Blazor.WebApp
             services.AddTransient<IBaseDataService<Ticket>, TicketDataService>();
             services.AddTransient<IAdoProjectHistoryDataService, AdoProjectHistoryDataService>();                      
             services.AddTransient<IVmTicketDataService, VmTicketDataService>();
+            services.AddTransient<ISubcriptionDataService, SubcriptionDataService>();
 
             services.AddTransient<IVmService, VmService>();
-            services.AddTransient<ISubcriptionService, SubcriptionService>();
+            services.AddTransient<ISubcriptionService, SubcriptionService>(); //TODO remove
             services.AddTransient<IResourceGroupService, ResourceGroupService>();
             services.AddTransient<INetworkService, NetworkService>();
             services.AddSingleton<ILocationsService, LocationsService>();

@@ -6,6 +6,14 @@ namespace CSRO.Server.Core
 {
     public static class ConstatCsro
     {
+        public static class CacheSettings
+        {
+            /// <summary>
+            /// This is basic Reponce Cache
+            /// </summary>
+            public const int DefaultDuration = 120;
+        }
+
         public static class ClientNames
         {
             /// <summary>
