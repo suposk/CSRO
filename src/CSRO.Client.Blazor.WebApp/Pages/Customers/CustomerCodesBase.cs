@@ -145,6 +145,10 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
                         else
                             _customersCache.Add(cust);
                     }
+                    //open first sub
+                    var first = _customersCache.FirstOrDefault();
+                    if (first != null)
+                        first.ShowDetails = true;
                     Customers = _customersCache;
                 }
             }
