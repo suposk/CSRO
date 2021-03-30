@@ -32,6 +32,9 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
         public ISubcriptionService SubcriptionService { get; set; }
 
         [Inject]
+        public ISubcriptionDataService SubcriptionDataService { get; set; }
+
+        [Inject]
         public IResourceGroupService ResourceGroupervice { get; set; }
 
         [Inject]
@@ -54,9 +57,9 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
 
         //protected string Title => "Hosting Settings";
 
-        protected List<IdNameSdk> Subscripions { get; set; } = new();
+        protected List<IdName> Subscripions { get; set; } = new();
 
-        protected List<IdNameSdk> SubscripionsFiltered { get; set; } = new();
+        protected List<IdName> SubscripionsFiltered { get; set; } = new();
 
         protected List<Customer> Customers = new();
 
@@ -71,8 +74,8 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
         protected bool IsRgDisabled => IsLocDisabled | ResourceGroups?.Count == 0;
         protected bool IsNewRgDisabled => IsLocDisabled | string.IsNullOrWhiteSpace(Model.Location);
 
-        protected IdNameSdk SelectedSub { get; set; } = new();
-        protected HashSet<IdNameSdk> SelectedSubs { get; set; } = new();
+        protected IdName SelectedSub { get; set; } = new();
+        protected HashSet<IdName> SelectedSubs { get; set; } = new();
         protected bool IsFilterAutofocused { get; set; } = false;
 
         protected async override Task OnInitializedAsync()
@@ -82,7 +85,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
         }
 
 
-        public async Task OnSubscriptionValueChanged(IdNameSdk value)
+        public async Task OnSubscriptionValueChanged(IdName value)
         {
             if (value != null)
             {
@@ -181,16 +184,12 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
                 //Subscripions = await SubcriptionSdkService.GetAllSubcriptions();   not working properly
                 if (Subscripions.IsNullOrEmptyCollection() || Subscripions.Count <= 10)
                 {
-                    var restSubs = await SubcriptionService.GetSubcriptions();
-                    if (restSubs?.Count > 0)
-                    {                        
-                        List<IdNameSdk> list = new();
-                        restSubs.ForEach(a => list.Add(new IdNameSdk { Id = a.Id, Name = a.Name }));
-                        Subscripions = list;
-                    }
+                    //var restSubs = await SubcriptionService.GetSubcriptions();
+                    var restSubs = await SubcriptionDataService.GetSubcriptions();
+                    if (restSubs?.Count > 0)                                            
+                        Subscripions = restSubs;                    
                 }
                 SubscripionsFiltered = Subscripions;
-
 #if DEBUG
 
                 //dubug only
@@ -199,7 +198,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
                 {
                     for (int i = 1; i <= 3; i++)
                     {
-                        Subscripions.Add(new IdNameSdk(Guid.NewGuid().ToString(), $"fake sub name {i}"));
+                        Subscripions.Add(new IdName(Guid.NewGuid().ToString(), $"fake sub name {i}"));
                     }
                 }
 #endif
@@ -216,7 +215,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
             }
         }
 
-        public async Task<IEnumerable<IdNameSdk>> SearchSubs(string value)
+        public async Task<IEnumerable<IdName>> SearchSubs(string value)
         {
             // In real life use an asynchronous function for fetching data from an api.
             await Task.Delay(50);

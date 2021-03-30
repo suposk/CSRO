@@ -28,6 +28,9 @@ namespace CSRO.Client.Blazor.WebApp.AutoMapperProfiles
                 .ForMember(s => s.Id, op => op.MapFrom(ss => ss.Id))
                 .ForMember(s => s.Name, op => op.MapFrom(ss => ss.Name))                                
                 .ReverseMap();
+                        
+            CreateMap<IdNameDto, Core.Models.IdName>()
+                .ReverseMap();
 
             CreateMap<TicketDto, Models.Ticket>()                
                 .ReverseMap();
