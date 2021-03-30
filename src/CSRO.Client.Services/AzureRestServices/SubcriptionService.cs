@@ -209,8 +209,11 @@ namespace CSRO.Client.Services.AzureRestServices
                     {
                         SubscriptionId = task.Key
                     };                    
-                    task.Value.Result.CmdbRerenceList.ForEach(a => customer.cmdbReferenceList.Add(new cmdbReference { AtCode = a, Email = "N/A" }));
-                    task.Value.Result.OpEnvironmentList.ForEach(a => customer.opEnvironmentList.Add(new opEnvironment { Value = a }));
+                    if (task.Value.Result.CmdbRerenceList.HasAnyInCollection())
+                        task.Value.Result.CmdbRerenceList.ForEach(a => customer.cmdbReferenceList.Add(new cmdbReference { AtCode = a, Email = "N/A" }));
+                    if (task.Value.Result.OpEnvironmentList.HasAnyInCollection())
+                        task.Value.Result.OpEnvironmentList.ForEach(a => customer.opEnvironmentList.Add(new opEnvironment { Value = a }));
+
                     list.Add(customer);
                 }
                 return list;

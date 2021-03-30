@@ -136,14 +136,12 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
                     foreach (var cust in customers)
                     {
                         var sub = Subscripions.FirstOrDefault(a => a.Id == cust.SubscriptionId);
-                        if (sub != null && string.IsNullOrWhiteSpace(cust.SubscriptionName))                             
+                        if (sub != null && string.IsNullOrWhiteSpace(cust.SubscriptionName))
                         {
                             //only if sub name is missing
                             cust.SubscriptionName = sub.Name;
-                            _customersCache.Add(cust);
-                        }
-                        else
-                            _customersCache.Add(cust);
+                        }                                                                          
+                        _customersCache.Add(cust);
                     }
                     //open first sub
                     var first = _customersCache.FirstOrDefault();
