@@ -2,6 +2,7 @@
 using CSRO.Server.Api.Services;
 using CSRO.Server.Domain;
 using CSRO.Server.Infrastructure;
+using CSRO.Server.Services.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -43,12 +44,37 @@ namespace CSRO.Server.Api.Controllers
                 _logger.LogInformation(ApiLogEvents.GetAllItems, $"{nameof(Get)} Started");
 
                 var all = await _repository.GetSubcriptions().ConfigureAwait(false);
+                if (all.IsNullOrEmptyCollection())
+                    return null;
+
                 var result = _mapper.Map<List<IdNameDto>>(all);
                 return result;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, nameof(Get), null);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
+            }
+        }
+                
+        [HttpGet("{subscriptionIds}", Name = nameof(GetTags))]
+        //[HttpGet, Route(nameof(GetTags))]
+        public async Task<ActionResult<List<CustomerDto>>> GetTags(List<string> subscriptionIds)
+        {
+            try
+            {                
+                _logger.LogInformation(ApiLogEvents.GetAllItems, $"{nameof(GetTags)} Started");
+
+                var all = await _repository.GetTags(subscriptionIds).ConfigureAwait(false);
+                if (all.IsNullOrEmptyCollection())
+                    return null;
+
+                var result = _mapper.Map<List<CustomerDto>>(all);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, nameof(GetTags), null);
                 return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }
         }

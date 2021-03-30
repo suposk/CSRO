@@ -18,9 +18,7 @@ namespace CSRO.Client.Services
     public interface ISubcriptionDataService
     {
         Task<bool> SubcriptionExist(string subscriptionId, CancellationToken cancelToken = default);
-
         Task<List<IdName>> GetSubcriptions(CancellationToken cancelToken = default);
-
         Task<Subscription> GetSubcription(string subscriptionId, CancellationToken cancelToken = default);
         Task<List<TagNameWithValueList>> GetTags(string subscriptionId, CancellationToken cancelToken = default);
         Task<DefaultTags> GetDefualtTags(string subscriptionId, CancellationToken cancelToken = default);
@@ -86,9 +84,32 @@ namespace CSRO.Client.Services
             throw new NotImplementedException();
         }
 
-        public Task<List<Customer>> GetTags(List<string> subscriptionIds, CancellationToken cancelToken = default)
+        public async Task<List<Customer>> GetTags(List<string> subscriptionIds, CancellationToken cancelToken = default)
         {
-            throw new NotImplementedException();
+            try
+            {
+                await base.AddAuthHeaderAsync();
+
+                var url = $"{ApiPart}GetTags";                
+                var httpcontent = new StringContent(JsonSerializer.Serialize(subscriptionIds, _options), Encoding.UTF8, "application/json");
+                HttpRequestMessage requestMessage = new HttpRequestMessage { Method = HttpMethod.Get, Content = httpcontent, RequestUri = new Uri(HttpClientBase.BaseAddress + url)};
+                var apiData = await HttpClientBase.SendAsync(requestMessage, cancelToken).ConfigureAwait(false);
+
+                if (apiData.IsSuccessStatusCode)
+                {
+                    var stream = await apiData.Content.ReadAsStreamAsync();
+                    var ser = await JsonSerializer.DeserializeAsync<List<CustomerDto>>(stream, _options);
+                    var result = Mapper.Map<List<Customer>>(ser);
+                    return result;
+                }
+                else
+                    throw new Exception(GetErrorText(apiData));
+            }
+            catch (Exception ex)
+            {
+                base.HandleException(ex);
+                throw;
+            }
         }
 
         public Task<bool> SubcriptionExist(string subscriptionId, CancellationToken cancelToken = default)

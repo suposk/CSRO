@@ -132,8 +132,8 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
 
                 await Task.Delay(1);
 
-                //var keypair = await SubcriptionService.GetDefualtTags(SelectedSubs.Select(a => a.Id).ToList()).ConfigureAwait(false);
-                var customers = await SubcriptionService.GetTags(SelectedSubs.Select(a => a.Id).ToList()).ConfigureAwait(false);
+                //var customers = await SubcriptionService.GetTags(SelectedSubs.Select(a => a.Id).ToList()).ConfigureAwait(false);
+                var customers = await SubcriptionDataService.GetTags(SelectedSubs.Select(a => a.Id).ToList()).ConfigureAwait(false);
                 if (customers?.Count > 0)
                 {                    
                     foreach (var cust in customers)
