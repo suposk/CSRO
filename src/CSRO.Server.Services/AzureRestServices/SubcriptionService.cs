@@ -6,6 +6,7 @@ using CSRO.Server.Services.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Identity.Web;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -179,33 +180,73 @@ namespace CSRO.Server.Services.AzureRestServices
                 if (subscriptionIds?.Count <= 0)
                     throw new Exception($"missing {nameof(subscriptionIds)} parameter");
 
-                Dictionary<string, Task<DefaultTags>> tasks = new();
-                try
+                #region Task.WhenAll
+                //Dictionary<string, Task<DefaultTags>> tasks = new();
+                //try
+                //{
+                //    foreach (var subscriptionId in subscriptionIds)
+                //    {
+                //        //var tags = await GetTags(subscriptionId, cancelToken).ConfigureAwait(false);
+                //        var t = GetDefualtTags(subscriptionId, cancelToken);
+                //        tasks.Add(subscriptionId, t);
+                //    }
+                //    await Task.WhenAll(tasks.Values.ToList());
+                //}
+                //catch (Exception ex)
+                //{
+                //    throw;
+                //}
+
+                //List<Customer> list = new();
+                //foreach (var task in tasks)
+                //{
+                //    Customer customer = new Customer
+                //    {
+                //        SubscriptionId = task.Key
+                //    };
+                //    if (task.Value.Result.CmdbRerenceList.HasAnyInCollection())
+                //        task.Value.Result.CmdbRerenceList.ForEach(a => customer.cmdbReferenceList.Add(new cmdbReference { AtCode = a, Email = "N/A" }));
+                //    if (task.Value.Result.OpEnvironmentList.HasAnyInCollection())
+                //        task.Value.Result.OpEnvironmentList.ForEach(a => customer.opEnvironmentList.Add(new opEnvironment { Value = a }));
+
+                //    list.Add(customer);
+                //}
+                //return list;
+                #endregion
+
+                ConcurrentDictionary<string, DefaultTags> concDic = new();
+                Parallel.ForEach(subscriptionIds, (subscriptionId) =>
                 {
-                    foreach (var subscriptionId in subscriptionIds)
-                    {
-                        //var tags = await GetTags(subscriptionId, cancelToken).ConfigureAwait(false);
+                    try
+                    {                        
                         var t = GetDefualtTags(subscriptionId, cancelToken);
-                        tasks.Add(subscriptionId, t);
+                        t.Wait();
+                        var result = t.Result;
+                        if (result != null)
+                        {                            
+                            //concDic.TryAdd(subscriptionId, result);
+                            concDic.AddOrUpdate(subscriptionId, result, (key, oldValue) => result);
+                        }
                     }
-                    await Task.WhenAll(tasks.Values.ToList());
-                }
-                catch (Exception ex)
-                {
-                    throw;
-                }
+                    catch (Exception ex)
+                    {
+                        throw;
+                    }
+                });
+                if (concDic?.Count == 0)
+                    return null;
 
                 List<Customer> list = new();
-                foreach (var task in tasks)
+                foreach(var pair in concDic)
                 {
                     Customer customer = new Customer
                     {
-                        SubscriptionId = task.Key
+                        SubscriptionId = pair.Key
                     };
-                    if (task.Value.Result.CmdbRerenceList.HasAnyInCollection())
-                        task.Value.Result.CmdbRerenceList.ForEach(a => customer.cmdbReferenceList.Add(new cmdbReference { AtCode = a, Email = "N/A" }));
-                    if (task.Value.Result.OpEnvironmentList.HasAnyInCollection())
-                        task.Value.Result.OpEnvironmentList.ForEach(a => customer.opEnvironmentList.Add(new opEnvironment { Value = a }));
+                    if (pair.Value.CmdbRerenceList.HasAnyInCollection())
+                        pair.Value.CmdbRerenceList.ForEach(a => customer.cmdbReferenceList.Add(new cmdbReference { AtCode = a, Email = "N/A" }));
+                    if (pair.Value.OpEnvironmentList.HasAnyInCollection())
+                        pair.Value.OpEnvironmentList.ForEach(a => customer.opEnvironmentList.Add(new opEnvironment { Value = a }));
 
                     list.Add(customer);
                 }
@@ -223,6 +264,8 @@ namespace CSRO.Server.Services.AzureRestServices
             {
                 if (subscriptionIds?.Count <= 0)
                     throw new Exception($"missing {nameof(subscriptionIds)} parameter");
+
+                #region Parallel.ForEach
 
                 //ConcurrentDictionary<string, DefaultTags> concDic = new();
                 //Parallel.ForEach(subscriptionIds, (subscriptionId) =>
@@ -263,6 +306,7 @@ namespace CSRO.Server.Services.AzureRestServices
                 //});
                 //Dictionary<string, DefaultTags> d = concDic.ToDictionary(pair => pair.Key, pair => pair.Value);
                 //return d;
+                #endregion
 
                 Dictionary<string, Task<DefaultTags>> tasks = new();
                 try
