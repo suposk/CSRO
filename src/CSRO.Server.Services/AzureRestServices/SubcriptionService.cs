@@ -39,15 +39,14 @@ namespace CSRO.Server.Services.AzureRestServices
             IConfiguration configuration)
             : base(httpClientFactory, tokenAcquisition, configuration)
         {
-            ApiPart = "--";
-            //Scope = "api://ee2f0320-29c3-432a-bf84-a5d4277ce052/user_impersonation";
-            Scope = Core.ConstatCsro.Scopes.MANAGEMENT_AZURE_SCOPE;
-            //ClientName = "api";
+            Mapper = mapper;
+
+            ApiPart = "--";            
+            Scope = Core.ConstatCsro.Scopes.MANAGEMENT_AZURE_SCOPE;            
             ClientName = Core.ConstatCsro.ClientNames.MANAGEMENT_AZURE_EndPoint;
 
             base.Init();
-
-            Mapper = mapper;
+            
         }
 
         public IMapper Mapper { get; }
@@ -126,8 +125,8 @@ namespace CSRO.Server.Services.AzureRestServices
 
                 if (apiData.IsSuccessStatusCode)
                 {
-                    var content = await apiData.Content.ReadAsStringAsync();
-                    var ser = JsonSerializer.Deserialize<TagsDto>(content, _options);
+                    var stream = await apiData.Content.ReadAsStreamAsync();
+                    var ser = await JsonSerializer.DeserializeAsync<TagsDto>(stream, _options);
                     if (ser?.Value?.Count > 0)
                     {
                         var result = new List<TagNameWithValueList>();
@@ -173,7 +172,7 @@ namespace CSRO.Server.Services.AzureRestServices
             return null;
         }
 
-        public async Task<List<Customer>> GetTags(List<string> subscriptionIds, CancellationToken cancelToken = default)
+        public Task<List<Customer>> GetTags(List<string> subscriptionIds, CancellationToken cancelToken = default)
         {
             try
             {
@@ -313,7 +312,6 @@ namespace CSRO.Server.Services.AzureRestServices
                 {
                     foreach (var subscriptionId in subscriptionIds)
                     {
-                        //var tags = await GetTags(subscriptionId, cancelToken).ConfigureAwait(false);
                         var t = GetDefualtTags(subscriptionId, cancelToken);
                         tasks.Add(subscriptionId, t);
                     }
