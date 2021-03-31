@@ -249,7 +249,7 @@ namespace CSRO.Server.Services.AzureRestServices
 
                     list.Add(customer);
                 }
-                return list;
+                return Task.FromResult(list);
             }
             catch (Exception)
             {
