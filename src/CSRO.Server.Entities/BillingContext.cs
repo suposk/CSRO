@@ -48,11 +48,20 @@ namespace CSRO.Server.Entities
                 new AtCodecmdbReference()
                 {
                     Id = 1,                                        
-                    AtCode = "25815",
-                    Email = "ferko.mrkvicka@bla.com",
+                    AtCode = "AT25813",
+                    Email = "jozo.mrkvicka@bla.com",
                     CreatedAt = new DateTime(2020, 11, 25, 11, 0, 0),
                     CreatedBy = "Mig Script",
-                });
+                },
+                new AtCodecmdbReference()
+                {
+                    Id = 2,
+                    AtCode = "AT25815",
+                    Email = "ferko.mrkvicka@bla.com",
+                    CreatedAt = new DateTime(2020, 12, 28, 11, 0, 0),
+                    CreatedBy = "Mig Script",
+                })
+                ;
         }
 
     }
