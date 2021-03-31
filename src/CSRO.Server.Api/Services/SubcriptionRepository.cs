@@ -31,7 +31,7 @@ namespace CSRO.Server.Api.Services
         public async Task<List<IdName>> GetSubcriptions(CancellationToken cancelToken = default)
         {
             var cache = _cacheProvider.GetFromCache<List<IdName>>(cacheKeyProcess);
-            if (cache?.Count > 0)
+            if (cache.HasAnyInCollection())
                 return cache;
 
             var subs = await _subcriptionService.GetSubcriptions(cancelToken);
