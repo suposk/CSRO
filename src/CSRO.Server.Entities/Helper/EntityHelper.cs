@@ -1,4 +1,6 @@
-﻿namespace CSRO.Server.Entities.Entity
+﻿using CSRO.Server.Entities.Enums;
+
+namespace CSRO.Server.Entities.Entity
 {
     public static class EntityHelper
     {

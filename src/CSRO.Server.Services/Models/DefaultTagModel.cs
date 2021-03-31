@@ -3,7 +3,7 @@
     /// <summary>
     /// only to look for prop tag names
     /// </summary>
-    public class DefaultTag
+    public class DefaultTagModel
     {
         public string opEnvironment { get; set; }
 

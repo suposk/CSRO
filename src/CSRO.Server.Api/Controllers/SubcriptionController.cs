@@ -37,7 +37,7 @@ namespace CSRO.Server.Api.Controllers
         
 
         [HttpGet]        
-        [ResponseCache(Duration = Core.ConstatCsro.CacheSettings.DefaultDuration, Location = ResponseCacheLocation.Any, NoStore = false)]
+        //[ResponseCache(Duration = Core.ConstatCsro.CacheSettings.DefaultDuration, Location = ResponseCacheLocation.Any, NoStore = false)] not working
         public async Task<ActionResult<List<IdNameDto>>> Get()
         {
             try

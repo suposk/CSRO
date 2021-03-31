@@ -2,6 +2,7 @@
 using CSRO.Common.AdoServices;
 using CSRO.Server.Ado.Api.Services;
 using CSRO.Server.Entities.Entity;
+using CSRO.Server.Entities.Enums;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using System;

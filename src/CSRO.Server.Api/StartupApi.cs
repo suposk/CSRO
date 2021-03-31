@@ -184,6 +184,8 @@ namespace CSRO.Server.Api
             services.AddTransient<IResourceGroupervice, ResourceGroupervice>();
             services.AddTransient<ISubcriptionRepository, SubcriptionRepository>();
 
+            services.AddSingleton<ICacheProvider, CacheProvider>(); //testing
+
             services.AddApplicationInsightsTelemetry(Configuration["APPINSIGHTS_CONNECTIONSTRING"]);
 
             //services.AddControllers(options => options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
@@ -225,6 +227,14 @@ namespace CSRO.Server.Api
                 else                                                   
                     options.UseSqlServer(SqlConnString, x => x.MigrationsAssembly(_namespace));                                
             });
+                        
+            services.AddDbContext<BillingContext>(options =>
+            {
+                if (UseSqlLiteDb)
+                    options.UseSqlite(Configuration.GetConnectionString("SqlLiteConnString"), x => x.MigrationsAssembly(_namespace));
+                else
+                    options.UseSqlServer(SqlConnString, x => x.MigrationsAssembly(_namespace));
+            });
 
             services.AddDbContext<TokenCacheContext>(options =>
             {
@@ -242,6 +252,7 @@ namespace CSRO.Server.Api
             services.AddScoped<IVersionRepository, VersionRepository>();
             services.AddScoped<IVmTicketRepository, VmTicketRepository>();
             services.AddScoped<ITicketRepository, TicketRepository>();
+            services.AddScoped<IAtCodecmdbReferenceRepository, AtCodecmdbReferenceRepository>();
 
             var serviceProvider = services.BuildServiceProvider();
 
@@ -252,7 +263,6 @@ namespace CSRO.Server.Api
                 IRepository<AppVersion> obj = new Repository<AppVersion>(ctx, apiIdentity);
                 return obj;
             });
-
             
             services.AddScoped<IRepository<VmTicket>>(sp =>
             {
@@ -260,12 +270,21 @@ namespace CSRO.Server.Api
                 var ctx = serviceProvider.GetService<AppVersionContext>();
                 IRepository<VmTicket> obj = new Repository<VmTicket>(ctx, apiIdentity);
                 return obj;
-            });            
+            });     
+            
             services.AddScoped<IRepository<Ticket>>(sp =>
             {
                 var apiIdentity = serviceProvider.GetService<IApiIdentity>();
                 var ctx = serviceProvider.GetService<AppVersionContext>();
                 IRepository<Ticket> obj = new Repository<Ticket>(ctx, apiIdentity);
+                return obj;
+            });
+
+            services.AddScoped<IRepository<AtCodecmdbReference>>(sp =>
+            {
+                var apiIdentity = serviceProvider.GetService<IApiIdentity>();
+                var ctx = serviceProvider.GetService<AppVersionContext>();
+                IRepository<AtCodecmdbReference> obj = new Repository<AtCodecmdbReference>(ctx, apiIdentity);
                 return obj;
             });
 

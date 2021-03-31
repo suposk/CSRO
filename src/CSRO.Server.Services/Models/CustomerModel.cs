@@ -6,19 +6,19 @@ using System.Threading.Tasks;
 
 namespace CSRO.Server.Services.Models
 {
-    public class Customer
+    public class CustomerModel
     {
         public string SubscriptionId { get; set; }
         public string SubscriptionName { get; set; }
-        public List<cmdbReference> cmdbReferenceList { get; set; } = new();
-        public List<opEnvironment> opEnvironmentList { get; set; } = new();
+        public List<cmdbReferenceModel> cmdbReferenceList { get; set; } = new();
+        public List<opEnvironmentModel> opEnvironmentList { get; set; } = new();
         //public bool ShowDetails { get; set; }
     }
 
     /// <summary>
     /// AT Code and Email
     /// </summary>
-    public class cmdbReference
+    public class cmdbReferenceModel
     {
         public string AtCode { get; set; }
         public string Email { get; set; }
@@ -27,7 +27,7 @@ namespace CSRO.Server.Services.Models
     /// <summary>
     /// Value DEV, PROD
     /// </summary>
-    public class opEnvironment
+    public class opEnvironmentModel
     {
         //public string Name { get; set; }
 

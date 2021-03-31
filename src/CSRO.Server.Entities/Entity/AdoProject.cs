@@ -1,4 +1,5 @@
-﻿using CSRO.Server.Infrastructure;
+﻿using CSRO.Server.Entities.Enums;
+using CSRO.Server.Infrastructure;
 using System;
 using System.Collections.Generic;
 

@@ -39,13 +39,13 @@ namespace CSRO.Server.Api.AutoMapperProfiles
             CreateMap<IdNameDto, IdName>()
                 .ReverseMap();
                         
-            CreateMap<CustomerDto, Customer>()
+            CreateMap<CustomerDto, CustomerModel>()
                 .ReverseMap();
                         
-            CreateMap<cmdbReferenceDto, cmdbReference>()
+            CreateMap<cmdbReferenceDto, cmdbReferenceModel>()
                 .ReverseMap();
 
-            CreateMap<opEnvironmentDto, opEnvironment>()
+            CreateMap<opEnvironmentDto, opEnvironmentModel>()
                 .ReverseMap();
 
             

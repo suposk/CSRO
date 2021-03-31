@@ -1,6 +1,8 @@
 ﻿//package manager console
 Add-Migration Init -Context AppVersionContext -OutputDir Migrations\SqlServerMigrations
 Add-Migration ExternalTicket -Context AppVersionContext -OutputDir Migrations\SqlServerMigrations
+Add-Migration BillingContextAtcode -Context BillingContext -OutputDir Migrations\SqlServerMigrations
+Add-Migration BillingContextAtcode2 -Context BillingContext -OutputDir Migrations\SqlServerMigrations
 
 //ADO
 Add-Migration Init -Context AdoContext -OutputDir Migrations\SqlServerMigrations

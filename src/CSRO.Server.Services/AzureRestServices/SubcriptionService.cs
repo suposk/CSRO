@@ -22,10 +22,11 @@ namespace CSRO.Server.Services.AzureRestServices
         Task<bool> SubcriptionExist(string subscriptionId, CancellationToken cancelToken = default);
         Task<List<IdName>> GetSubcriptions(CancellationToken cancelToken = default);
         Task<Subscription> GetSubcription(string subscriptionId, CancellationToken cancelToken = default);
-        Task<List<TagNameWithValueList>> GetTags(string subscriptionId, CancellationToken cancelToken = default);
-        Task<DefaultTags> GetDefualtTags(string subscriptionId, CancellationToken cancelToken = default);
-        Task<Dictionary<string, DefaultTags>> GetDefualtTags(List<string> subscriptionIds, CancellationToken cancelToken = default);
-        Task<List<Customer>> GetTags(List<string> subscriptionIds, CancellationToken cancelToken = default);
+        Task<List<TagNameWithValueListModel>> GetTags(string subscriptionId, CancellationToken cancelToken = default);
+        Task<DefaultTagsModel> GetDefualtTags(string subscriptionId, CancellationToken cancelToken = default);
+        Task<Dictionary<string, DefaultTagsModel>> GetDefualtTags(List<string> subscriptionIds, CancellationToken cancelToken = default);
+        Task<List<CustomerModel>> GetTags(List<string> subscriptionIds, CancellationToken cancelToken = default);
+        Task<Dictionary<string,CustomerModel>> GetTagsDictionary(List<string> subscriptionIds, CancellationToken cancelToken = default);
     }
 
     public class SubcriptionService : BaseDataService, ISubcriptionService
@@ -39,15 +40,14 @@ namespace CSRO.Server.Services.AzureRestServices
             IConfiguration configuration)
             : base(httpClientFactory, tokenAcquisition, configuration)
         {
-            ApiPart = "--";
-            //Scope = "api://ee2f0320-29c3-432a-bf84-a5d4277ce052/user_impersonation";
-            Scope = Core.ConstatCsro.Scopes.MANAGEMENT_AZURE_SCOPE;
-            //ClientName = "api";
+            Mapper = mapper;
+
+            ApiPart = "--";            
+            Scope = Core.ConstatCsro.Scopes.MANAGEMENT_AZURE_SCOPE;            
             ClientName = Core.ConstatCsro.ClientNames.MANAGEMENT_AZURE_EndPoint;
 
             base.Init();
-
-            Mapper = mapper;
+            
         }
 
         public IMapper Mapper { get; }
@@ -113,7 +113,7 @@ namespace CSRO.Server.Services.AzureRestServices
             return null;
         }
 
-        public async Task<List<TagNameWithValueList>> GetTags(string subscriptionId, CancellationToken cancelToken = default)
+        public async Task<List<TagNameWithValueListModel>> GetTags(string subscriptionId, CancellationToken cancelToken = default)
         {
             try
             {
@@ -126,15 +126,15 @@ namespace CSRO.Server.Services.AzureRestServices
 
                 if (apiData.IsSuccessStatusCode)
                 {
-                    var content = await apiData.Content.ReadAsStringAsync();
-                    var ser = JsonSerializer.Deserialize<TagsDto>(content, _options);
+                    var stream = await apiData.Content.ReadAsStreamAsync();
+                    var ser = await JsonSerializer.DeserializeAsync<TagsDto>(stream, _options);
                     if (ser?.Value?.Count > 0)
                     {
-                        var result = new List<TagNameWithValueList>();
+                        var result = new List<TagNameWithValueListModel>();
                         foreach (var item in ser.Value)
                         {
                             //result.Add(new TagNameWithValueList { TagName = item.TagName, Values = item.Values.Select(a => a.TagValue).ToList()});
-                            result.Add(new TagNameWithValueList { TagName = item.TagName.Trim(), Values = item.Values.Where(a => !string.IsNullOrWhiteSpace(a.TagValue)).Select(a => a.TagValue).ToList() });
+                            result.Add(new TagNameWithValueListModel { TagName = item.TagName.Trim(), Values = item.Values.Where(a => !string.IsNullOrWhiteSpace(a.TagValue)).Select(a => a.TagValue).ToList() });
                         }
                         return result;
                     }
@@ -147,23 +147,23 @@ namespace CSRO.Server.Services.AzureRestServices
             return null;
         }
 
-        public async Task<DefaultTags> GetDefualtTags(string subscriptionId, CancellationToken cancelToken = default)
+        public async Task<DefaultTagsModel> GetDefualtTags(string subscriptionId, CancellationToken cancelToken = default)
         {
             var tags = await GetTags(subscriptionId, cancelToken).ConfigureAwait(false);
             if (tags?.Count > 0)
             {
-                var result = new DefaultTags();
+                var result = new DefaultTagsModel();
                 foreach (var item in tags)
                 {
                     switch (item.TagName)
                     {
-                        case nameof(DefaultTag.billingReference):
+                        case nameof(DefaultTagModel.billingReference):
                             result.BillingReferenceList.AddRange(item.Values);
                             break;
-                        case nameof(DefaultTag.cmdbReference):
+                        case nameof(DefaultTagModel.cmdbReference):
                             result.CmdbRerenceList.AddRange(item.Values);
                             break;
-                        case nameof(DefaultTag.opEnvironment):
+                        case nameof(DefaultTagModel.opEnvironment):
                             result.OpEnvironmentList.AddRange(item.Values);
                             break;
                     }
@@ -173,7 +173,7 @@ namespace CSRO.Server.Services.AzureRestServices
             return null;
         }
 
-        public async Task<List<Customer>> GetTags(List<string> subscriptionIds, CancellationToken cancelToken = default)
+        public Task<List<CustomerModel>> GetTags(List<string> subscriptionIds, CancellationToken cancelToken = default)
         {
             try
             {
@@ -214,51 +214,84 @@ namespace CSRO.Server.Services.AzureRestServices
                 //return list;
                 #endregion
 
-                ConcurrentDictionary<string, DefaultTags> concDic = new();
-                Parallel.ForEach(subscriptionIds, (subscriptionId) =>
-                {
-                    try
-                    {                        
-                        var t = GetDefualtTags(subscriptionId, cancelToken);
-                        t.Wait();
-                        var result = t.Result;
-                        if (result != null)
-                        {                            
-                            //concDic.TryAdd(subscriptionId, result);
-                            concDic.AddOrUpdate(subscriptionId, result, (key, oldValue) => result);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        throw;
-                    }
-                });
+                ConcurrentDictionary<string, DefaultTagsModel> concDic = GetTagsParallel(subscriptionIds, cancelToken);
                 if (concDic?.Count == 0)
                     return null;
 
-                List<Customer> list = new();
-                foreach(var pair in concDic)
+                List<CustomerModel> list = new();
+                foreach (var pair in concDic)
                 {
-                    Customer customer = new Customer
+                    CustomerModel customer = new CustomerModel
                     {
                         SubscriptionId = pair.Key
                     };
                     if (pair.Value.CmdbRerenceList.HasAnyInCollection())
-                        pair.Value.CmdbRerenceList.ForEach(a => customer.cmdbReferenceList.Add(new cmdbReference { AtCode = a, Email = "N/A" }));
+                        //pair.Value.CmdbRerenceList.ForEach(a => customer.cmdbReferenceList.Add(new cmdbReferenceModel { AtCode = a, Email = "N/A" }));
+                        pair.Value.CmdbRerenceList.ForEach(a => customer.cmdbReferenceList.Add(new cmdbReferenceModel { AtCode = a }));
                     if (pair.Value.OpEnvironmentList.HasAnyInCollection())
-                        pair.Value.OpEnvironmentList.ForEach(a => customer.opEnvironmentList.Add(new opEnvironment { Value = a }));
+                        pair.Value.OpEnvironmentList.ForEach(a => customer.opEnvironmentList.Add(new opEnvironmentModel { Value = a }));
 
                     list.Add(customer);
                 }
-                return list;
+                return Task.FromResult(list);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw;
             }
         }
 
-        public async Task<Dictionary<string, DefaultTags>> GetDefualtTags(List<string> subscriptionIds, CancellationToken cancelToken = default)
+        public Task<Dictionary<string, CustomerModel>> GetTagsDictionary(List<string> subscriptionIds, CancellationToken cancelToken = default)
+        {
+            if (subscriptionIds?.Count <= 0)
+                throw new Exception($"missing {nameof(subscriptionIds)} parameter");
+
+            ConcurrentDictionary<string, DefaultTagsModel> concDic = GetTagsParallel(subscriptionIds, cancelToken);
+            if (concDic?.Count == 0)
+                return null;
+
+            Dictionary<string, CustomerModel> d = new();
+            foreach (var pair in concDic)
+            {
+                CustomerModel customer = new CustomerModel
+                {
+                    SubscriptionId = pair.Key
+                };
+                if (pair.Value.CmdbRerenceList.HasAnyInCollection())
+                    //pair.Value.CmdbRerenceList.ForEach(a => customer.cmdbReferenceList.Add(new cmdbReferenceModel { AtCode = a, Email = "N/A" }));
+                    pair.Value.CmdbRerenceList.ForEach(a => customer.cmdbReferenceList.Add(new cmdbReferenceModel { AtCode = a }));
+                if (pair.Value.OpEnvironmentList.HasAnyInCollection())
+                    pair.Value.OpEnvironmentList.ForEach(a => customer.opEnvironmentList.Add(new opEnvironmentModel { Value = a }));
+                d.Add(customer.SubscriptionId, customer);
+            }
+            return Task.FromResult(d);
+        }
+
+        private ConcurrentDictionary<string, DefaultTagsModel> GetTagsParallel(List<string> subscriptionIds, CancellationToken cancelToken)
+        {
+            ConcurrentDictionary<string, DefaultTagsModel> concDic = new();
+            Parallel.ForEach(subscriptionIds, (subscriptionId) =>
+            {
+                try
+                {
+                    var t = GetDefualtTags(subscriptionId, cancelToken);
+                    t.Wait();
+                    var result = t.Result;
+                    if (result != null)
+                    {
+                        //concDic.TryAdd(subscriptionId, result);
+                        concDic.AddOrUpdate(subscriptionId, result, (key, oldValue) => result);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw;
+                }
+            });
+            return concDic;
+        }
+
+        public async Task<Dictionary<string, DefaultTagsModel>> GetDefualtTags(List<string> subscriptionIds, CancellationToken cancelToken = default)
         {
             try
             {
@@ -308,12 +341,11 @@ namespace CSRO.Server.Services.AzureRestServices
                 //return d;
                 #endregion
 
-                Dictionary<string, Task<DefaultTags>> tasks = new();
+                Dictionary<string, Task<DefaultTagsModel>> tasks = new();
                 try
                 {
                     foreach (var subscriptionId in subscriptionIds)
                     {
-                        //var tags = await GetTags(subscriptionId, cancelToken).ConfigureAwait(false);
                         var t = GetDefualtTags(subscriptionId, cancelToken);
                         tasks.Add(subscriptionId, t);
                     }
@@ -324,7 +356,7 @@ namespace CSRO.Server.Services.AzureRestServices
                     throw;
                 }
 
-                Dictionary<string, DefaultTags> d = new();
+                Dictionary<string, DefaultTagsModel> d = new();
                 foreach (var task in tasks)
                 {
                     d.Add(task.Key, task.Value.Result);

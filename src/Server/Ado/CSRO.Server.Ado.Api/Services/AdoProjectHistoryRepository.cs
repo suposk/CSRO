@@ -63,7 +63,7 @@ namespace CSRO.Server.Ado.Api.Services
                     a =>
                     a.IsDeleted != true &&
                     a.State == ProjectState.CreatePending && 
-                    a.Status == Entities.Entity.Status.Submitted &&
+                    a.Status == Entities.Enums.Status.Submitted &&
                     //a.AdoProjectHistoryList.Count == 1 //not ideal, only count
                     //a.AdoProjectHistoryList.FirstOrDefault(a => a.Operation != IAdoProjectHistoryRepository.Operation_SentEmailForApproval) != null //error                    
                     a.AdoProjectHistoryList.FirstOrDefault(a => a.Operation == IAdoProjectHistoryRepository.Operation_SentEmailForApproval) == null //works

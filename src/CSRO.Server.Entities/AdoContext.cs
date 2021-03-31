@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using CSRO.Server.Entities.Entity;
+using CSRO.Server.Entities.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

@@ -37,38 +37,46 @@ namespace CSRO.Server.Api
                 {
                     logger?.LogInformation($"CreateHostBuilder Started {nameof(AppVersionContext)} ");
 
-                    context = scope.ServiceProvider.GetService<AppVersionContext>();
-
-                    // for demo purposes, delete the database & migrate on startup so we can start with a clean slate                   
-                    //context.Database.EnsureDeleted(); logger?.LogInformation("Called EnsureDeleted");
-                    //context?.Database.EnsureCreated(); logger?.LogInformation("Called EnsureCreated");
-                    context?.Database.Migrate(); logger?.LogInformation("Called Migrate");
+                    context = scope.ServiceProvider.GetService<AppVersionContext>();                                                            
+                    context?.Database.Migrate(); 
+                    logger?.LogInformation($"Called Migrate on {nameof(AppVersionContext)}");
                 }
                 catch (Exception ex)
                 {
                     logger?.LogError(ex, $"An error occurred while migrating the database {nameof(AppVersionContext)}");
-
-                    try
-                    {
-                        //context?.Database.EnsureDeleted(); logger?.LogInformation("Called EnsureCreated");
-                        context?.Database.Migrate(); logger?.LogInformation("Called Migrate");
-                    }
-                    catch (Exception e)
-                    {
-                        logger?.LogError(e, "An error occurred while migrating the database.");
-                    }
+                    //try
+                    //{
+                    //    //context?.Database.EnsureDeleted(); logger?.LogInformation("Called EnsureCreated");
+                    //    context?.Database.Migrate(); logger?.LogInformation("Called Migrate");
+                    //}
+                    //catch (Exception e)
+                    //{
+                    //    logger?.LogError(e, "An error occurred while migrating the database.");
+                    //}
                 }
 
                 try
-                {
-                    logger?.LogInformation($"CreateHostBuilder Started {nameof(TokenCacheContext)} ");
-
+                {                    
                     tokenCache = scope.ServiceProvider.GetService<TokenCacheContext>();
-                    tokenCache?.Database.Migrate(); logger?.LogInformation("Called Migrate");
+                    tokenCache?.Database.Migrate();                     
+                    logger?.LogInformation($"Called Migrate on {nameof(TokenCacheContext)}");
+
                 }
                 catch (Exception ex)
                 {
                     logger?.LogError(ex, $"An error occurred while migrating the database {nameof(TokenCacheContext)} .");
+                }
+
+                try
+                {
+                    //TODO MOVE 
+                    var billingContext = scope.ServiceProvider.GetService<BillingContext>();
+                    billingContext?.Database.Migrate();
+                    logger?.LogInformation($"Called Migrate on {nameof(BillingContext)}");                   
+                }
+                catch (Exception ex)
+                {
+                    logger?.LogError(ex, $"An error occurred while migrating the database {nameof(BillingContext)} .");
                 }
 
                 // run the web app
