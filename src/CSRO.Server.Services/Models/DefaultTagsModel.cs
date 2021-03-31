@@ -2,9 +2,9 @@
 
 namespace CSRO.Server.Services.Models
 {
-    public class DefaultTags
+    public class DefaultTagsModel
     {
-        public DefaultTags()
+        public DefaultTagsModel()
         {
             OpEnvironmentList = new List<string>();
             CmdbRerenceList = new List<string>();

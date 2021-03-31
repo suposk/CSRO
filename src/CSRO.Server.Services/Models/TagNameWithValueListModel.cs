@@ -2,7 +2,7 @@
 
 namespace CSRO.Server.Services.Models
 {
-    public class TagNameWithValueList
+    public class TagNameWithValueListModel
     {
         public string TagName { get; set; }
 

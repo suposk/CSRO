@@ -13,7 +13,7 @@ namespace CSRO.Server.Api.Services
     public interface ISubcriptionRepository 
     {
         Task<List<IdName>> GetSubcriptions(CancellationToken cancelToken = default);
-        Task<List<Customer>> GetTags(List<string> subscriptionIds, CancellationToken cancelToken = default);
+        Task<List<CustomerModel>> GetTags(List<string> subscriptionIds, CancellationToken cancelToken = default);
     }
 
     public class SubcriptionRepository : ISubcriptionRepository
@@ -39,7 +39,7 @@ namespace CSRO.Server.Api.Services
             return subs;
         }
 
-        public async Task<List<Customer>> GetTags(List<string> subscriptionIds, CancellationToken cancelToken = default)
+        public async Task<List<CustomerModel>> GetTags(List<string> subscriptionIds, CancellationToken cancelToken = default)
         {
             try
             {

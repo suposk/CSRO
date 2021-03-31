@@ -22,10 +22,10 @@ namespace CSRO.Server.Services.AzureRestServices
         Task<bool> SubcriptionExist(string subscriptionId, CancellationToken cancelToken = default);
         Task<List<IdName>> GetSubcriptions(CancellationToken cancelToken = default);
         Task<Subscription> GetSubcription(string subscriptionId, CancellationToken cancelToken = default);
-        Task<List<TagNameWithValueList>> GetTags(string subscriptionId, CancellationToken cancelToken = default);
-        Task<DefaultTags> GetDefualtTags(string subscriptionId, CancellationToken cancelToken = default);
-        Task<Dictionary<string, DefaultTags>> GetDefualtTags(List<string> subscriptionIds, CancellationToken cancelToken = default);
-        Task<List<Customer>> GetTags(List<string> subscriptionIds, CancellationToken cancelToken = default);
+        Task<List<TagNameWithValueListModel>> GetTags(string subscriptionId, CancellationToken cancelToken = default);
+        Task<DefaultTagsModel> GetDefualtTags(string subscriptionId, CancellationToken cancelToken = default);
+        Task<Dictionary<string, DefaultTagsModel>> GetDefualtTags(List<string> subscriptionIds, CancellationToken cancelToken = default);
+        Task<List<CustomerModel>> GetTags(List<string> subscriptionIds, CancellationToken cancelToken = default);
     }
 
     public class SubcriptionService : BaseDataService, ISubcriptionService
@@ -112,7 +112,7 @@ namespace CSRO.Server.Services.AzureRestServices
             return null;
         }
 
-        public async Task<List<TagNameWithValueList>> GetTags(string subscriptionId, CancellationToken cancelToken = default)
+        public async Task<List<TagNameWithValueListModel>> GetTags(string subscriptionId, CancellationToken cancelToken = default)
         {
             try
             {
@@ -129,11 +129,11 @@ namespace CSRO.Server.Services.AzureRestServices
                     var ser = await JsonSerializer.DeserializeAsync<TagsDto>(stream, _options);
                     if (ser?.Value?.Count > 0)
                     {
-                        var result = new List<TagNameWithValueList>();
+                        var result = new List<TagNameWithValueListModel>();
                         foreach (var item in ser.Value)
                         {
                             //result.Add(new TagNameWithValueList { TagName = item.TagName, Values = item.Values.Select(a => a.TagValue).ToList()});
-                            result.Add(new TagNameWithValueList { TagName = item.TagName.Trim(), Values = item.Values.Where(a => !string.IsNullOrWhiteSpace(a.TagValue)).Select(a => a.TagValue).ToList() });
+                            result.Add(new TagNameWithValueListModel { TagName = item.TagName.Trim(), Values = item.Values.Where(a => !string.IsNullOrWhiteSpace(a.TagValue)).Select(a => a.TagValue).ToList() });
                         }
                         return result;
                     }
@@ -146,23 +146,23 @@ namespace CSRO.Server.Services.AzureRestServices
             return null;
         }
 
-        public async Task<DefaultTags> GetDefualtTags(string subscriptionId, CancellationToken cancelToken = default)
+        public async Task<DefaultTagsModel> GetDefualtTags(string subscriptionId, CancellationToken cancelToken = default)
         {
             var tags = await GetTags(subscriptionId, cancelToken).ConfigureAwait(false);
             if (tags?.Count > 0)
             {
-                var result = new DefaultTags();
+                var result = new DefaultTagsModel();
                 foreach (var item in tags)
                 {
                     switch (item.TagName)
                     {
-                        case nameof(DefaultTag.billingReference):
+                        case nameof(DefaultTagModel.billingReference):
                             result.BillingReferenceList.AddRange(item.Values);
                             break;
-                        case nameof(DefaultTag.cmdbReference):
+                        case nameof(DefaultTagModel.cmdbReference):
                             result.CmdbRerenceList.AddRange(item.Values);
                             break;
-                        case nameof(DefaultTag.opEnvironment):
+                        case nameof(DefaultTagModel.opEnvironment):
                             result.OpEnvironmentList.AddRange(item.Values);
                             break;
                     }
@@ -172,7 +172,7 @@ namespace CSRO.Server.Services.AzureRestServices
             return null;
         }
 
-        public Task<List<Customer>> GetTags(List<string> subscriptionIds, CancellationToken cancelToken = default)
+        public Task<List<CustomerModel>> GetTags(List<string> subscriptionIds, CancellationToken cancelToken = default)
         {
             try
             {
@@ -213,7 +213,7 @@ namespace CSRO.Server.Services.AzureRestServices
                 //return list;
                 #endregion
 
-                ConcurrentDictionary<string, DefaultTags> concDic = new();
+                ConcurrentDictionary<string, DefaultTagsModel> concDic = new();
                 Parallel.ForEach(subscriptionIds, (subscriptionId) =>
                 {
                     try
@@ -235,17 +235,17 @@ namespace CSRO.Server.Services.AzureRestServices
                 if (concDic?.Count == 0)
                     return null;
 
-                List<Customer> list = new();
+                List<CustomerModel> list = new();
                 foreach(var pair in concDic)
                 {
-                    Customer customer = new Customer
+                    CustomerModel customer = new CustomerModel
                     {
                         SubscriptionId = pair.Key
                     };
                     if (pair.Value.CmdbRerenceList.HasAnyInCollection())
-                        pair.Value.CmdbRerenceList.ForEach(a => customer.cmdbReferenceList.Add(new cmdbReference { AtCode = a, Email = "N/A" }));
+                        pair.Value.CmdbRerenceList.ForEach(a => customer.cmdbReferenceList.Add(new cmdbReferenceModel { AtCode = a, Email = "N/A" }));
                     if (pair.Value.OpEnvironmentList.HasAnyInCollection())
-                        pair.Value.OpEnvironmentList.ForEach(a => customer.opEnvironmentList.Add(new opEnvironment { Value = a }));
+                        pair.Value.OpEnvironmentList.ForEach(a => customer.opEnvironmentList.Add(new opEnvironmentModel { Value = a }));
 
                     list.Add(customer);
                 }
@@ -257,7 +257,7 @@ namespace CSRO.Server.Services.AzureRestServices
             }
         }
 
-        public async Task<Dictionary<string, DefaultTags>> GetDefualtTags(List<string> subscriptionIds, CancellationToken cancelToken = default)
+        public async Task<Dictionary<string, DefaultTagsModel>> GetDefualtTags(List<string> subscriptionIds, CancellationToken cancelToken = default)
         {
             try
             {
@@ -307,7 +307,7 @@ namespace CSRO.Server.Services.AzureRestServices
                 //return d;
                 #endregion
 
-                Dictionary<string, Task<DefaultTags>> tasks = new();
+                Dictionary<string, Task<DefaultTagsModel>> tasks = new();
                 try
                 {
                     foreach (var subscriptionId in subscriptionIds)
@@ -322,7 +322,7 @@ namespace CSRO.Server.Services.AzureRestServices
                     throw;
                 }
 
-                Dictionary<string, DefaultTags> d = new();
+                Dictionary<string, DefaultTagsModel> d = new();
                 foreach (var task in tasks)
                 {
                     d.Add(task.Key, task.Value.Result);
