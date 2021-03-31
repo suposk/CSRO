@@ -227,6 +227,14 @@ namespace CSRO.Server.Api
                 else                                                   
                     options.UseSqlServer(SqlConnString, x => x.MigrationsAssembly(_namespace));                                
             });
+                        
+            services.AddDbContext<BillingContext>(options =>
+            {
+                if (UseSqlLiteDb)
+                    options.UseSqlite(Configuration.GetConnectionString("SqlLiteConnString"), x => x.MigrationsAssembly(_namespace));
+                else
+                    options.UseSqlServer(SqlConnString, x => x.MigrationsAssembly(_namespace));
+            });
 
             services.AddDbContext<TokenCacheContext>(options =>
             {
