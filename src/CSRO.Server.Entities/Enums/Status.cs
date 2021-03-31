@@ -1,14 +1,14 @@
-﻿namespace CSRO.Server.Entities.Entity
+﻿namespace CSRO.Server.Entities.Enums
 {
     /// <summary>
     /// Status of Ado Ticket
     /// </summary>
-    public enum Status 
-    {        
+    public enum Status
+    {
         /// <summary>
         /// Saved only ticket, not submited
         /// </summary>
-        Draft = 10,              
+        Draft = 10,
 
         /// <summary>
         /// Awaiting Approval 
@@ -32,6 +32,6 @@
         /// </summary>
         Approved = 60,
 
-        Completed = 70,        
+        Completed = 70,
     }
 }

@@ -19,6 +19,7 @@ using Microsoft.EntityFrameworkCore;
 using CSRO.Server.Infrastructure.MessageBus;
 using CSRO.Server.Ado.Api.Messaging;
 using Microsoft.Extensions.Logging;
+using CSRO.Server.Entities.Enums;
 
 namespace CSRO.Server.Ado.Api.Services
 {

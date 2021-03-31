@@ -1,19 +1,11 @@
-﻿using CSRO.Server.Infrastructure;
+﻿using CSRO.Server.Entities.Enums;
+using CSRO.Server.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace CSRO.Server.Entities.Entity
 {
-    public enum RecomendedAction
-    {
-        Unknown = 0,
-        None = 1,
-        Warning = 2,
-        CloseApplication = 3
-    }
-
-
     public class AppVersion: EntityBase
     {
         public RecomendedAction RecomendedAction { get; set; }
