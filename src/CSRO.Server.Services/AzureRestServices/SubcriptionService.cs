@@ -26,6 +26,7 @@ namespace CSRO.Server.Services.AzureRestServices
         Task<DefaultTagsModel> GetDefualtTags(string subscriptionId, CancellationToken cancelToken = default);
         Task<Dictionary<string, DefaultTagsModel>> GetDefualtTags(List<string> subscriptionIds, CancellationToken cancelToken = default);
         Task<List<CustomerModel>> GetTags(List<string> subscriptionIds, CancellationToken cancelToken = default);
+        Task<Dictionary<string,CustomerModel>> GetTagsDictionary(List<string> subscriptionIds, CancellationToken cancelToken = default);
     }
 
     public class SubcriptionService : BaseDataService, ISubcriptionService
@@ -213,30 +214,12 @@ namespace CSRO.Server.Services.AzureRestServices
                 //return list;
                 #endregion
 
-                ConcurrentDictionary<string, DefaultTagsModel> concDic = new();
-                Parallel.ForEach(subscriptionIds, (subscriptionId) =>
-                {
-                    try
-                    {                        
-                        var t = GetDefualtTags(subscriptionId, cancelToken);
-                        t.Wait();
-                        var result = t.Result;
-                        if (result != null)
-                        {                            
-                            //concDic.TryAdd(subscriptionId, result);
-                            concDic.AddOrUpdate(subscriptionId, result, (key, oldValue) => result);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        throw;
-                    }
-                });
+                ConcurrentDictionary<string, DefaultTagsModel> concDic = GetTagsParallel(subscriptionIds, cancelToken);
                 if (concDic?.Count == 0)
                     return null;
 
                 List<CustomerModel> list = new();
-                foreach(var pair in concDic)
+                foreach (var pair in concDic)
                 {
                     CustomerModel customer = new CustomerModel
                     {
@@ -256,6 +239,56 @@ namespace CSRO.Server.Services.AzureRestServices
             {
                 throw;
             }
+        }
+
+        public Task<Dictionary<string, CustomerModel>> GetTagsDictionary(List<string> subscriptionIds, CancellationToken cancelToken = default)
+        {
+            if (subscriptionIds?.Count <= 0)
+                throw new Exception($"missing {nameof(subscriptionIds)} parameter");
+
+            ConcurrentDictionary<string, DefaultTagsModel> concDic = GetTagsParallel(subscriptionIds, cancelToken);
+            if (concDic?.Count == 0)
+                return null;
+
+            Dictionary<string, CustomerModel> d = new();
+            foreach (var pair in concDic)
+            {
+                CustomerModel customer = new CustomerModel
+                {
+                    SubscriptionId = pair.Key
+                };
+                if (pair.Value.CmdbRerenceList.HasAnyInCollection())
+                    //pair.Value.CmdbRerenceList.ForEach(a => customer.cmdbReferenceList.Add(new cmdbReferenceModel { AtCode = a, Email = "N/A" }));
+                    pair.Value.CmdbRerenceList.ForEach(a => customer.cmdbReferenceList.Add(new cmdbReferenceModel { AtCode = a }));
+                if (pair.Value.OpEnvironmentList.HasAnyInCollection())
+                    pair.Value.OpEnvironmentList.ForEach(a => customer.opEnvironmentList.Add(new opEnvironmentModel { Value = a }));
+                d.Add(customer.SubscriptionId, customer);
+            }
+            return Task.FromResult(d);
+        }
+
+        private ConcurrentDictionary<string, DefaultTagsModel> GetTagsParallel(List<string> subscriptionIds, CancellationToken cancelToken)
+        {
+            ConcurrentDictionary<string, DefaultTagsModel> concDic = new();
+            Parallel.ForEach(subscriptionIds, (subscriptionId) =>
+            {
+                try
+                {
+                    var t = GetDefualtTags(subscriptionId, cancelToken);
+                    t.Wait();
+                    var result = t.Result;
+                    if (result != null)
+                    {
+                        //concDic.TryAdd(subscriptionId, result);
+                        concDic.AddOrUpdate(subscriptionId, result, (key, oldValue) => result);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw;
+                }
+            });
+            return concDic;
         }
 
         public async Task<Dictionary<string, DefaultTagsModel>> GetDefualtTags(List<string> subscriptionIds, CancellationToken cancelToken = default)
