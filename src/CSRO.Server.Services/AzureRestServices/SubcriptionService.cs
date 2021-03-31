@@ -243,7 +243,8 @@ namespace CSRO.Server.Services.AzureRestServices
                         SubscriptionId = pair.Key
                     };
                     if (pair.Value.CmdbRerenceList.HasAnyInCollection())
-                        pair.Value.CmdbRerenceList.ForEach(a => customer.cmdbReferenceList.Add(new cmdbReferenceModel { AtCode = a, Email = "N/A" }));
+                        //pair.Value.CmdbRerenceList.ForEach(a => customer.cmdbReferenceList.Add(new cmdbReferenceModel { AtCode = a, Email = "N/A" }));
+                        pair.Value.CmdbRerenceList.ForEach(a => customer.cmdbReferenceList.Add(new cmdbReferenceModel { AtCode = a }));
                     if (pair.Value.OpEnvironmentList.HasAnyInCollection())
                         pair.Value.OpEnvironmentList.ForEach(a => customer.opEnvironmentList.Add(new opEnvironmentModel { Value = a }));
 
@@ -251,7 +252,7 @@ namespace CSRO.Server.Services.AzureRestServices
                 }
                 return Task.FromResult(list);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw;
             }

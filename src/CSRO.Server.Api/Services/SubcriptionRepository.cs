@@ -1,5 +1,6 @@
 ﻿using CSRO.Common;
 using CSRO.Server.Domain;
+using CSRO.Server.Services;
 using CSRO.Server.Services.AzureRestServices;
 using CSRO.Server.Services.Models;
 using System;
@@ -19,12 +20,17 @@ namespace CSRO.Server.Api.Services
     public class SubcriptionRepository : ISubcriptionRepository
     {
         private readonly ISubcriptionService _subcriptionService;
+        private readonly IAtCodecmdbReferenceRepository _atCodecmdbReferenceRepository;
         private readonly ICacheProvider _cacheProvider;
         const string cacheKeyProcess = nameof(IdName);
 
-        public SubcriptionRepository(ISubcriptionService subcriptionService, ICacheProvider cacheProvider)
+        public SubcriptionRepository(
+            ISubcriptionService subcriptionService,
+            IAtCodecmdbReferenceRepository atCodecmdbReferenceRepository,
+            ICacheProvider cacheProvider)
         {
             _subcriptionService = subcriptionService;
+            _atCodecmdbReferenceRepository = atCodecmdbReferenceRepository;
             _cacheProvider = cacheProvider;
         }
 
