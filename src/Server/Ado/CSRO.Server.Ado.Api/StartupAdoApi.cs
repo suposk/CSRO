@@ -222,29 +222,31 @@ namespace CSRO.Server.Ado.Api
 
             #region Repositories
 
+            services.AddScoped(typeof(IRepository<>), typeof(AdoRepository<>));
             services.AddScoped<IAdoProjectHistoryRepository, AdoProjectHistoryRepository>();
             services.AddScoped<IAdoProjectRepository, AdoProjectRepository>();
 
-            var serviceProvider = services.BuildServiceProvider();
+            //var serviceProvider = services.BuildServiceProvider();
 
-            //services.AddScoped(typeof(IRepository<AdoProject>), typeof(Repository<AdoProject>));
-            //services.AddScoped<IRepository<AdoProject>>();
-            services.AddScoped<IRepository<AdoProject>>(sp => 
-            {               
+            ////services.AddScoped(typeof(IRepository<AdoProject>), typeof(Repository<AdoProject>));
+            ////services.AddScoped<IRepository<AdoProject>>();
+            //services.AddScoped<IRepository<AdoProject>>(sp => 
+            //{               
                 
-                var apiIdentity = serviceProvider.GetService<IApiIdentity>();
-                var ctx = serviceProvider.GetService<AdoContext>();
-                IRepository<AdoProject> obj = new Repository<AdoProject>(ctx, apiIdentity);
-                return obj;
-            });
+            //    var apiIdentity = serviceProvider.GetService<IApiIdentity>();
+            //    var ctx = serviceProvider.GetService<AdoContext>();
+            //    IRepository<AdoProject> obj = new Repository<AdoProject>(ctx, apiIdentity);
+            //    return obj;
+            //});
 
-            services.AddScoped<IRepository<AdoProjectHistory>>(sp =>
-            {
-                var apiIdentity = serviceProvider.GetService<IApiIdentity>();
-                var ctx = serviceProvider.GetService<AdoContext>();
-                IRepository<AdoProjectHistory> obj = new Repository<AdoProjectHistory>(ctx, apiIdentity);
-                return obj;
-            });
+            //services.AddScoped<IRepository<AdoProjectHistory>>(sp =>
+            //{
+            //    var apiIdentity = serviceProvider.GetService<IApiIdentity>();
+            //    var ctx = serviceProvider.GetService<AdoContext>();
+            //    IRepository<AdoProjectHistory> obj = new Repository<AdoProjectHistory>(ctx, apiIdentity);
+            //    return obj;
+            //});
+
             #endregion  
             
             //should be last to hav all dependencies
