@@ -55,7 +55,9 @@
             <MudItem xs="6" sm="3">
                 <MudText Typo="Typo.body2">MudSelect.SelectedValues:</MudText>
                 <MudText Typo="Typo.body2">{ @(string.Join(", ", SelectedSubs.Select(x=>$"\"{x}\""))) }</MudText>
-                <MudButton Class="mt-4" OnClick="Search" Variant="Variant.Filled" Color="Color.Primary">Search</MudButton>
+                <MudButton Disabled="@SelectedSubs.IsNullOrEmptyCollection()"
+                           Class="mt-4" 
+                           OnClick="Search" Variant="Variant.Filled" Color="Color.Primary">Search</MudButton>
             </MudItem>
         </MudGrid>
     </MudCard>
