@@ -64,27 +64,25 @@ namespace CSRO.Server.Api.Services
                     return null;
                 else
                 {                    
-                    List<string> atCodes = new();
+                    List<string> modelAtCodes = new();
                     foreach(var item in dic.Values)
                     {
                         var codes = item.cmdbReferenceList.Select(a => a.AtCode);
                         if (codes.HasAnyInCollection())
-                            atCodes.AddRange(codes);
+                            modelAtCodes.AddRange(codes);
                     }
-                    //TODO pass all at codes
-                    //var q = _context.AtCodecmdbReferences.Where(a => a.AtCode.Contains(atCodes));                    
-                    //var q = _context.AtCodecmdbReferences.ToListAsync();
-                    //var all = await q;
+
+                    //pass all at codes
+                    var q = _context.AtCodecmdbReferences.Where(a => modelAtCodes.Contains(a.AtCode)).ToListAsync();                                        
+                    var dbAtCodes = await q;
 
                     foreach(var cus in dic.Values)
                     {
                         foreach(var item in cus.cmdbReferenceList)
-                        {
-                            var refCode = await _context.AtCodecmdbReferences.FirstOrDefaultAsync(a => a.AtCode == item.AtCode);
-                            if (refCode != null)
-                            {
-                                item.Email = refCode.Email;
-                            }
+                        {                            
+                            var found = dbAtCodes.FirstOrDefault(a => a.AtCode == item.AtCode);
+                            if (found != null)                            
+                                item.Email = found.Email;                            
                         }    
                     }
                     return dic.Values.ToList();
