@@ -33,6 +33,7 @@ using CSRO.Server.Services.AzureRestServices;
 using MediatR;
 using System.Reflection;
 using CSRO.Server.Api.Services;
+using CSRO.Server.Services.Base;
 
 namespace CSRO.Server.Api
 {
@@ -248,45 +249,46 @@ namespace CSRO.Server.Api
             #endregion           
 
             #region Repositories
-            
-            services.AddScoped<IVersionRepository, VersionRepository>();
-            services.AddScoped<IVmTicketRepository, VmTicketRepository>();
+            services.AddScoped(typeof(IRepository<>), typeof(AppRepository<>));
+
             services.AddScoped<ITicketRepository, TicketRepository>();
+            services.AddScoped<IVersionRepository, VersionRepository>();
+            services.AddScoped<IVmTicketRepository, VmTicketRepository>();            
             services.AddScoped<IAtCodecmdbReferenceRepository, AtCodecmdbReferenceRepository>();
 
-            var serviceProvider = services.BuildServiceProvider();
+            //var serviceProvider = services.BuildServiceProvider();
 
-            services.AddScoped<IRepository<AppVersion>>(sp =>
-            {
-                var apiIdentity = serviceProvider.GetService<IApiIdentity>();
-                var ctx = serviceProvider.GetService<AppVersionContext>();
-                IRepository<AppVersion> obj = new Repository<AppVersion>(ctx, apiIdentity);
-                return obj;
-            });
-            
-            services.AddScoped<IRepository<VmTicket>>(sp =>
-            {
-                var apiIdentity = serviceProvider.GetService<IApiIdentity>();
-                var ctx = serviceProvider.GetService<AppVersionContext>();
-                IRepository<VmTicket> obj = new Repository<VmTicket>(ctx, apiIdentity);
-                return obj;
-            });     
-            
-            services.AddScoped<IRepository<Ticket>>(sp =>
-            {
-                var apiIdentity = serviceProvider.GetService<IApiIdentity>();
-                var ctx = serviceProvider.GetService<AppVersionContext>();
-                IRepository<Ticket> obj = new Repository<Ticket>(ctx, apiIdentity);
-                return obj;
-            });
+            //services.AddScoped<IRepository<AppVersion>>(sp =>
+            //{
+            //    var apiIdentity = serviceProvider.GetService<IApiIdentity>();
+            //    var ctx = serviceProvider.GetService<AppVersionContext>();
+            //    IRepository<AppVersion> obj = new Repository<AppVersion>(ctx, apiIdentity);
+            //    return obj;
+            //});
 
-            services.AddScoped<IRepository<AtCodecmdbReference>>(sp =>
-            {
-                var apiIdentity = serviceProvider.GetService<IApiIdentity>();
-                var ctx = serviceProvider.GetService<AppVersionContext>();
-                IRepository<AtCodecmdbReference> obj = new Repository<AtCodecmdbReference>(ctx, apiIdentity);
-                return obj;
-            });
+            //services.AddScoped<IRepository<Ticket>>(sp =>
+            //{
+            //    var apiIdentity = serviceProvider.GetService<IApiIdentity>();
+            //    var ctx = serviceProvider.GetService<AppVersionContext>();
+            //    IRepository<Ticket> obj = new Repository<Ticket>(ctx, apiIdentity);
+            //    return obj;
+            //});
+
+            //services.AddScoped<IRepository<VmTicket>>(sp =>
+            //{
+            //    var apiIdentity = serviceProvider.GetService<IApiIdentity>();
+            //    var ctx = serviceProvider.GetService<AppVersionContext>();
+            //    IRepository<VmTicket> obj = new Repository<VmTicket>(ctx, apiIdentity);
+            //    return obj;
+            //});
+
+            //services.AddScoped<IRepository<AtCodecmdbReference>>(sp =>
+            //{
+            //    var apiIdentity = serviceProvider.GetService<IApiIdentity>();
+            //    var ctx = serviceProvider.GetService<AppVersionContext>();
+            //    IRepository<AtCodecmdbReference> obj = new Repository<AtCodecmdbReference>(ctx, apiIdentity);
+            //    return obj;
+            //});
 
             #endregion
         }
