@@ -15,15 +15,17 @@ using Microsoft.Extensions.Configuration;
 using AutoMapper;
 using Microsoft.Extensions.Logging;
 using System.Linq;
+using Microsoft.VisualStudio.Services.Security.Client;
+using Microsoft.VisualStudio.Services.Security;
 
 namespace CSRO.Common.AdoServices
 {
     public interface IProjectAdoServices
     {
         Task<ProjectAdo> CreateProject(ProjectAdo projectAdoCreate);
-        Task<bool> ProjectExistInAdo(string organization, string projectName);
+        Task<bool> ProjectExistInAdo(string organization, string projectName);        
 
-        //Task<bool> ProjectDoesNotExistInAdo(string organization, string projectName);
+        Task<List<string>> GetPermissions(string organization, string projectName);
     }
 
     public class ProjectAdoServices : IProjectAdoServices
@@ -46,12 +48,6 @@ namespace CSRO.Common.AdoServices
             _logger = logger;
             _adoConfig = configuration.GetSection(nameof(AdoConfig)).Get<AdoConfig>();            
         }
-
-        //public async Task<bool> ProjectDoesNotExistInAdo(string organization, string projectName)
-        //{
-        //    var exist = await ProjectDoesNotExistInAdo(organization, projectName);
-        //    return !exist;
-        //}
 
         public async Task<bool> ProjectExistInAdo(string organization, string projectName)
         {
@@ -220,6 +216,66 @@ namespace CSRO.Common.AdoServices
                 }
                 else                
                     return operation;                
+            }
+        }
+
+        public async Task<List<string>> GetPermissions(string organization, string projectName)
+        {
+            if (string.IsNullOrWhiteSpace(organization))
+                throw new ArgumentException($"'{nameof(organization)}' cannot be null or whitespace.", nameof(organization));
+
+            if (string.IsNullOrWhiteSpace(projectName))
+                throw new ArgumentException($"'{nameof(projectName)}' cannot be null or whitespace.", nameof(projectName));
+
+            VssConnection connection = null;
+            Guid GitSecurityNamespace = Guid.Parse("2e9eb7ed-3c0a-47d4-87c1-0ffdd275fd87");
+            try
+            {
+                string url = $"https://dev.azure.com/{organization}";
+
+                if (_adoConfig.UsePta)
+                    connection = new VssConnection(new Uri(url), new VssBasicCredential(string.Empty, _adoConfig.AdoPersonalAccessToken));
+                else
+                    //connection = new VssConnection(new Uri(url), new VssCredentials(true));
+                    connection = new VssConnection(new Uri(url), new VssClientCredentials(true));
+
+                projectName = "First-Ado";
+
+                TeamHttpClient teamClient = connection.GetClient<TeamHttpClient>();
+                var allteams = await teamClient.GetTeamsAsync(projectName);                
+
+                //var defteam = allteams?.FirstOrDefault(a => a.Description.ToLower().Contains("default"));
+                var defteam = allteams?.FirstOrDefault(a => a.Name.Contains($"{projectName} Team"));
+                if (defteam != null)
+                {
+                    var members = await teamClient.GetTeamMembersWithExtendedPropertiesAsync(projectName, defteam.Id.ToString());                    
+                }
+
+                // Get a client            
+                SecurityHttpClient httpClient = connection.GetClient<SecurityHttpClient>();
+
+                //IEnumerable<SecurityNamespaceDescription> namespaces = await httpClient.QuerySecurityNamespacesAsync(Guid.Empty);
+                //var an = namespaces.ToList();
+                //SecurityNamespaceDescription gitNamespace = an.FirstOrDefault(a => a.NamespaceId.ToString() == "11238e09-49f2-40c7-94d0-8f0307204ce4");
+
+                IEnumerable<SecurityNamespaceDescription> namespaces = await httpClient.QuerySecurityNamespacesAsync(GitSecurityNamespace);                
+                SecurityNamespaceDescription gitNamespace = namespaces.FirstOrDefault();
+
+                Dictionary<int, string> permission = new Dictionary<int, string>();
+                foreach (ActionDefinition actionDef in gitNamespace.Actions)
+                {
+                    permission[actionDef.Bit] = actionDef.DisplayName;
+                }
+                return permission.Values?.ToList();
+            }
+            catch (Exception ex)
+            {
+                //Console.WriteLine("Exception during create project: ", ex.Message);
+                throw;
+            }
+            finally
+            {
+                connection?.Dispose();
             }
         }
     }
