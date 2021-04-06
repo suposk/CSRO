@@ -17,6 +17,7 @@ using Microsoft.Extensions.Logging;
 using System.Linq;
 using Microsoft.VisualStudio.Services.Security.Client;
 using Microsoft.VisualStudio.Services.Security;
+using Microsoft.VisualStudio.Services.Graph.Client;
 
 namespace CSRO.Common.AdoServices
 {
@@ -228,6 +229,9 @@ namespace CSRO.Common.AdoServices
                 throw new ArgumentException($"'{nameof(projectName)}' cannot be null or whitespace.", nameof(projectName));
 
             VssConnection connection = null;
+            GraphHttpClient graphHttpClient = null;
+            TeamHttpClient teamClient = null;
+
             Guid GitSecurityNamespace = Guid.Parse("2e9eb7ed-3c0a-47d4-87c1-0ffdd275fd87");
             try
             {
@@ -241,23 +245,25 @@ namespace CSRO.Common.AdoServices
 
                 projectName = "First-Ado";
 
-                TeamHttpClient teamClient = connection.GetClient<TeamHttpClient>();
-                var allteams = await teamClient.GetTeamsAsync(projectName);                
+                teamClient = connection.GetClient<TeamHttpClient>();
+                var allteams = await teamClient.GetTeamsAsync(projectName, null, null, null, true);
 
-                //var defteam = allteams?.FirstOrDefault(a => a.Description.ToLower().Contains("default"));
-                var defteam = allteams?.FirstOrDefault(a => a.Name.Contains($"{projectName} Team"));
-                if (defteam != null)
+                var defTeamGroupName = $"{projectName} Team";
+                var defTeam = allteams?.FirstOrDefault(a => a.Name.Contains(defTeamGroupName));
+                if (defTeam != null)
                 {
-                    var members = await teamClient.GetTeamMembersWithExtendedPropertiesAsync(projectName, defteam.Id.ToString());                    
+                    var members = await teamClient.GetTeamMembersWithExtendedPropertiesAsync(projectName, defTeam.Id.ToString());                    
+                    graphHttpClient = connection.GetClient<GraphHttpClient>();
+                    List<SubjectDescriptor> groupSubjectDescriptors = new();
+                    groupSubjectDescriptors.Add(SubjectDescriptor.FromString(defTeam.Identity.Descriptor.Identifier));
+                    var contextCreate = new GraphUserPrincipalNameCreationContext {  PrincipalName = "dev@jansupolikhotmail.onmicrosoft.com"};
+                    var added = await graphHttpClient.CreateUserAsync(contextCreate, groupSubjectDescriptors);
+
+                    var membersAfter = await teamClient.GetTeamMembersWithExtendedPropertiesAsync(projectName, defTeam.Id.ToString());                    
                 }
 
                 // Get a client            
                 SecurityHttpClient httpClient = connection.GetClient<SecurityHttpClient>();
-
-                //IEnumerable<SecurityNamespaceDescription> namespaces = await httpClient.QuerySecurityNamespacesAsync(Guid.Empty);
-                //var an = namespaces.ToList();
-                //SecurityNamespaceDescription gitNamespace = an.FirstOrDefault(a => a.NamespaceId.ToString() == "11238e09-49f2-40c7-94d0-8f0307204ce4");
-
                 IEnumerable<SecurityNamespaceDescription> namespaces = await httpClient.QuerySecurityNamespacesAsync(GitSecurityNamespace);                
                 SecurityNamespaceDescription gitNamespace = namespaces.FirstOrDefault();
 
@@ -276,6 +282,8 @@ namespace CSRO.Common.AdoServices
             finally
             {
                 connection?.Dispose();
+                graphHttpClient?.Dispose();
+                teamClient?.Dispose();
             }
         }
     }
