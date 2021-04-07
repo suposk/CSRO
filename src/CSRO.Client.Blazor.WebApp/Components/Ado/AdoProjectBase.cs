@@ -4,6 +4,7 @@ using CSRO.Client.Services;
 using CSRO.Client.Services.Models;
 using CSRO.Common.AdoServices;
 using CSRO.Common.AdoServices.Models;
+using AdoModels = CSRO.Common.AdoServices.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.Logging;
@@ -44,9 +45,9 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
 
         #endregion
 
-        public ProjectAdo Model { get; set; } = new ProjectAdo { Status = Status.Draft };
+        public ProjectAdo Model { get; set; } = new ProjectAdo { Status = AdoModels.Status.Draft };
         //protected bool IsReadOnly => OperationTypeTicket == OperatioType.View; //for testing
-        protected bool IsReadOnly => OperationTypeTicket == OperatioType.View || (OperationTypeTicket == OperatioType.Edit && Model.Status > Status.Submitted);
+        protected bool IsReadOnly => OperationTypeTicket == OperatioType.View || (OperationTypeTicket == OperatioType.Edit && Model.Status > AdoModels.Status.Submitted);
         protected string Title => OperationTypeTicket.ToString() + " Project";
 
         protected List<string> Processes = new List<string>();
@@ -118,7 +119,7 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
 
                     if (valid && OperationTypeTicket == OperatioType.Create)
                     {
-                        Model.Status = Status.Submitted;
+                        Model.Status = AdoModels.Status.Submitted;
                         var added = await AdoProjectDataService.AddItemAsync(Model);
                         if (added != null)
                         {
@@ -158,7 +159,7 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
             try
             {
                 ShowLoading("Saving...");
-                Model.Status = Status.Draft;
+                Model.Status = AdoModels.Status.Draft;
                 var saved = await AdoProjectDataService.AddItemAsync(Model);
                 if (saved != null)
                     await CsroDialogService.ShowMessage("Success", $"Request was saved.");

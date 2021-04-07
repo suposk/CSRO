@@ -1,11 +1,8 @@
 ﻿using AutoMapper;
 using CSRO.Client.Core;
-using CSRO.Client.Services;
 using CSRO.Client.Services.Dtos;
-using CSRO.Common.AdoServices.Models;
+using CSRO.Client.Services.Models;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Identity.Web;
-using Microsoft.TeamFoundation.Core.WebApi;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,40 +13,31 @@ using System.Threading.Tasks;
 
 namespace CSRO.Client.Services
 {
-
-    public interface IAdoProjectDataService : IBaseDataService<ProjectAdo>
+    public class AdoProjectAccessDataService : BaseDataService, IAdoProjectAccessDataService
     {
-        Task<List<ProjectAdo>> ApproveAdoProject(List<int> toApprove);
-        Task<List<ProjectAdo>> RejectAdoProject(List<int> toReject, string rejectReason);
-        Task<List<ProjectAdo>> GetProjectsForApproval();
-        Task<bool> ProjectExists(string organization, string projectName, int projectId);
-    }
 
-    public class AdoProjectDataService : BaseDataService, IAdoProjectDataService
-    {        
-
-        public AdoProjectDataService(            
-            IHttpClientFactory httpClientFactory, 
-            IAuthCsroService authCsroService, 
-            IMapper mapper, 
+        public AdoProjectAccessDataService(
+            IHttpClientFactory httpClientFactory,
+            IAuthCsroService authCsroService,
+            IMapper mapper,
             IConfiguration configuration)
             : base(httpClientFactory, authCsroService, mapper, configuration)
         {
-            ApiPart = "api/adoproject/";            
+            ApiPart = "api/adoprojectaccess/";
             Scope = Configuration.GetValue<string>(ConstatCsro.Scopes.Scope_Ado_Api);
             ClientName = ConstatCsro.EndPoints.ApiEndpointAdo;
 
-            base.Init();                        
+            base.Init();
         }
 
-        public async Task<ProjectAdo> AddItemAsync(ProjectAdo item)
+        public async Task<AdoProjectAccessModel> AddItemAsync(AdoProjectAccessModel item)
         {
             try
             {
                 await base.AddAuthHeaderAsync();
 
                 string url = null;
-                if (item.Status == Common.AdoServices.Models.Status.Draft)
+                if (item.Status == Models.Status.Draft)
                     url = $"{ApiPart}SaveDraftAdoProject";
                 else
                     url = $"{ApiPart}RequestAdoProject";
@@ -60,14 +48,14 @@ namespace CSRO.Client.Services
                 if (apiData.IsSuccessStatusCode)
                 {
                     var content = await apiData.Content.ReadAsStringAsync();
-                    var ser = JsonSerializer.Deserialize<ProjectAdo>(content, _options);
+                    var ser = JsonSerializer.Deserialize<AdoProjectAccessModel>(content, _options);
                     return ser;
                     //var result = Mapper.Map<ProjectAdo>(ser);
                     //return result;
                 }
-                else                                                      
+                else
                     throw new Exception(GetErrorText(apiData));
-                
+
             }
             catch (Exception ex)
             {
@@ -78,7 +66,7 @@ namespace CSRO.Client.Services
 
         //RejectAdoProject
 
-        public async Task<List<ProjectAdo>> RejectAdoProject(List<int> toReject, string rejectReason)
+        public async Task<List<AdoProjectAccessModel>> RejectAdoProject(List<int> toReject, string rejectReason)
         {
             try
             {
@@ -92,7 +80,7 @@ namespace CSRO.Client.Services
                 if (apiData.IsSuccessStatusCode)
                 {
                     var content = await apiData.Content.ReadAsStringAsync();
-                    var ser = JsonSerializer.Deserialize<List<ProjectAdo>>(content, _options);
+                    var ser = JsonSerializer.Deserialize<List<AdoProjectAccessModel>>(content, _options);
                     return ser;
                     //var result = Mapper.Map<List<ProjectAdo>>(ser);
                     //return result;
@@ -107,7 +95,7 @@ namespace CSRO.Client.Services
             }
         }
 
-        public async Task<List<ProjectAdo>> ApproveAdoProject(List<int> toApprove)
+        public async Task<List<AdoProjectAccessModel>> ApproveAdoProject(List<int> toApprove)
         {
             try
             {
@@ -120,7 +108,7 @@ namespace CSRO.Client.Services
                 if (apiData.IsSuccessStatusCode)
                 {
                     var content = await apiData.Content.ReadAsStringAsync();
-                    var ser = JsonSerializer.Deserialize<List<ProjectAdo>>(content, _options);
+                    var ser = JsonSerializer.Deserialize<List<AdoProjectAccessModel>>(content, _options);
                     return ser;
                     //var result = Mapper.Map<List<ProjectAdo>>(ser);
                     //return result;
@@ -135,7 +123,7 @@ namespace CSRO.Client.Services
             }
         }
 
-        public async Task<bool> UpdateItemAsync(ProjectAdo item)
+        public async Task<bool> UpdateItemAsync(AdoProjectAccessModel item)
         {
             try
             {
@@ -146,7 +134,7 @@ namespace CSRO.Client.Services
                 var httpcontent = new StringContent(JsonSerializer.Serialize(item, _options), Encoding.UTF8, "application/json");
                 var apiData = await HttpClientBase.PutAsync(url, httpcontent).ConfigureAwait(false);
 
-                if (apiData.IsSuccessStatusCode)                
+                if (apiData.IsSuccessStatusCode)
                     return true;
                 else
                     throw new Exception(base.GetErrorText(apiData));
@@ -168,8 +156,8 @@ namespace CSRO.Client.Services
                 var url = $"{ApiPart}{id}";
                 var apiData = await HttpClientBase.DeleteAsync(url).ConfigureAwait(false);
 
-                if (apiData.IsSuccessStatusCode)                
-                    return true;                
+                if (apiData.IsSuccessStatusCode)
+                    return true;
                 else
                     throw new Exception(base.GetErrorText(apiData));
             }
@@ -180,7 +168,7 @@ namespace CSRO.Client.Services
             return false;
         }
 
-        public async Task<ProjectAdo> GetItemByIdAsync(int id)
+        public async Task<AdoProjectAccessModel> GetItemByIdAsync(int id)
         {
             try
             {
@@ -192,7 +180,7 @@ namespace CSRO.Client.Services
                 if (apiData.IsSuccessStatusCode)
                 {
                     var content = await apiData.Content.ReadAsStringAsync();
-                    var ser = JsonSerializer.Deserialize<ProjectAdo>(content, _options);
+                    var ser = JsonSerializer.Deserialize<AdoProjectAccessModel>(content, _options);
                     return ser;
                 }
                 else
@@ -205,7 +193,7 @@ namespace CSRO.Client.Services
             return null;
         }
 
-        public async Task<List<ProjectAdo>> GetItemsAsync()
+        public async Task<List<AdoProjectAccessModel>> GetItemsAsync()
         {
             try
             {
@@ -217,7 +205,7 @@ namespace CSRO.Client.Services
                 if (apiData.IsSuccessStatusCode)
                 {
                     var content = await apiData.Content.ReadAsStringAsync();
-                    var ser = JsonSerializer.Deserialize<List<ProjectAdo>>(content, _options);
+                    var ser = JsonSerializer.Deserialize<List<AdoProjectAccessModel>>(content, _options);
                     return ser;
                     //var result = Mapper.Map<List<ProjectAdo>>(ser);
                     //return result;
@@ -229,20 +217,20 @@ namespace CSRO.Client.Services
             {
                 base.HandleException(ex);
                 throw;
-            }            
+            }
         }
 
-        public Task<List<ProjectAdo>> GetItemsByParrentIdAsync(int parrentId)
+        public Task<List<AdoProjectAccessModel>> GetItemsByParrentIdAsync(int parrentId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<List<ProjectAdo>> GetItemsByTypeAsync(string type)
+        public Task<List<AdoProjectAccessModel>> GetItemsByTypeAsync(string type)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<List<ProjectAdo>> GetProjectsForApproval()
+        public async Task<List<AdoProjectAccessModel>> GetProjectsForApproval()
         {
             try
             {
@@ -254,34 +242,11 @@ namespace CSRO.Client.Services
                 if (apiData.IsSuccessStatusCode)
                 {
                     var content = await apiData.Content.ReadAsStringAsync();
-                    var ser = JsonSerializer.Deserialize<List<ProjectAdo>>(content, _options);
-                    return ser?.Where(a => a.State == ProjectState.CreatePending && a.Status == Common.AdoServices.Models.Status.Submitted)?.ToList();
+                    var ser = JsonSerializer.Deserialize<List<AdoProjectAccessModel>>(content, _options);
+                    return ser?.Where(a => a.Status == Models.Status.Submitted)?.ToList();
                     //var result = Mapper.Map<List<ProjectAdo>>(ser);
                     //return result;
                 }
-                else
-                    throw new Exception(base.GetErrorText(apiData));
-            }
-            catch (Exception ex)
-            {
-                base.HandleException(ex);
-                throw;
-            }
-        }
-
-        public async Task<bool> ProjectExists(string organization, string projectName, int projectId)
-        {
-            try
-            {
-                await base.AddAuthHeaderAsync();
-
-                var url = $"{ApiPart}{organization}/{projectName}/{projectId}";
-                var apiData = await HttpClientBase.GetAsync(url).ConfigureAwait(false);
-
-                if (apiData.StatusCode == System.Net.HttpStatusCode.OK)
-                    return true;
-                else if (apiData.StatusCode == System.Net.HttpStatusCode.NotFound)
-                    return false;
                 else
                     throw new Exception(base.GetErrorText(apiData));
             }

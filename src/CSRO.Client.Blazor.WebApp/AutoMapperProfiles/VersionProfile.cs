@@ -91,6 +91,9 @@ namespace CSRO.Client.Blazor.WebApp.AutoMapperProfiles
             CreateMap<opEnvironmentDto, Models.opEnvironment>()
                 .ReverseMap();
 
+            CreateMap<AdoProjectAccessDto, Models.AdoProjectAccessModel>()
+                .ReverseMap();
+
         }        
     }
 }

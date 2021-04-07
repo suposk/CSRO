@@ -3,7 +3,6 @@ using CSRO.Client.Blazor.UI.Services;
 using CSRO.Client.Services;
 using CSRO.Client.Services.Models;
 using CSRO.Common.AdoServices;
-using CSRO.Common.AdoServices.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.Logging;
@@ -28,7 +27,7 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
         public NavigationManager NavigationManager { get; set; }
 
         [Inject]
-        public IAdoProjectDataService AdoProjectDataService { get; set; }
+        public IAdoProjectAccessDataService AdoProjectAccessDataService { get; set; }
 
         [Inject]
         public IProjectAdoServices ProjectAdoServices { get; set; }
@@ -44,7 +43,7 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
 
         #endregion
 
-        public ProjectAdo Model { get; set; } = new ProjectAdo { Status = Status.Draft };
+        public AdoProjectAccessModel Model { get; set; } = new AdoProjectAccessModel { Status = Status.Draft };
         //protected bool IsReadOnly => OperationTypeTicket == OperatioType.View; //for testing
         protected bool IsReadOnly => OperationTypeTicket == OperatioType.View || (OperationTypeTicket == OperatioType.Edit && Model.Status > Status.Submitted);
         protected string Title => OperationTypeTicket.ToString() + " Access to Project";
@@ -73,7 +72,7 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
                 if (OperationTypeTicket != OperatioType.Create)
                 {
                     Model.Id = int.Parse(RequestId);
-                    var server = await AdoProjectDataService.GetItemByIdAsync(Model.Id);
+                    var server = await AdoProjectAccessDataService.GetItemByIdAsync(Model.Id);
                     if (server != null)
                         Model = server;
                 }
@@ -117,7 +116,7 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
                     if (valid && OperationTypeTicket == OperatioType.Create)
                     {
                         Model.Status = Status.Submitted;
-                        var added = await AdoProjectDataService.AddItemAsync(Model);
+                        var added = await AdoProjectAccessDataService.AddItemAsync(Model);
                         if (added != null)
                         {
                             Success = true;
@@ -126,7 +125,7 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
                     }
                     else if (valid && OperationTypeTicket == OperatioType.Edit)
                     {
-                        var updated = await AdoProjectDataService.UpdateItemAsync(Model);
+                        var updated = await AdoProjectAccessDataService.UpdateItemAsync(Model);
                         if (updated)
                         {
                             await CsroDialogService.ShowMessage("Success", $"Update Finished", "Refresh");
