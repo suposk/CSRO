@@ -62,10 +62,10 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
             try
             {
                 ShowLoading();
-
-                var orgs = await ProcessAdoServices.GetOrganizationNames();
                 Organizations.Clear();
                 ProjectNames.Clear();
+
+                var orgs = await ProcessAdoServices.GetOrganizationNames();
                 if (orgs != null)
                     Organizations = orgs;
 
@@ -101,9 +101,6 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
 
         public async Task OnValidSubmit(EditContext context)
         {
-            //var perm = await ProjectAdoServices.GetPermissions(Model.Organization, Model.Name);
-            var prn = await ProjectAdoServices.GetProjectNames(Model.Organization);
-
             ShowProcessing();
             var valid = context.Validate();
             if (valid)
