@@ -121,8 +121,7 @@ namespace CSRO.Server.Ado.Api.Controllers
 
             try
             {
-                _logger.LogInformation(ApiLogEvents.ApproveItem, $"{nameof(ApproveAdoProjectAccess)} Started");
-                //var approved = await _repository.ApproveAndCreateAdoProjects(toApprove).ConfigureAwait(false);
+                _logger.LogInformation(ApiLogEvents.ApproveItem, $"{nameof(ApproveAdoProjectAccess)} Started");                
                 var approved = await _repository.ApproveRejectAdoProjects(toApprove, false, null).ConfigureAwait(false);
                 var result = _mapper.Map<List<AdoProjectAccessDto>>(approved);
                 return result;
@@ -144,8 +143,8 @@ namespace CSRO.Server.Ado.Api.Controllers
             try
             {
                 _logger.LogInformation(ApiLogEvents.ApproveItem, $"{nameof(RejectAdoProjectAccess)} Started");
-                var approved = await _repository.ApproveRejectAdoProjects(toReject.ToReject, true, toReject.Reason).ConfigureAwait(false);
-                var result = _mapper.Map<List<AdoProjectAccessDto>>(approved);
+                var rejected = await _repository.ApproveRejectAdoProjects(toReject.ToReject, true, toReject.Reason).ConfigureAwait(false);
+                var result = _mapper.Map<List<AdoProjectAccessDto>>(rejected);
                 return result;
             }
             catch (Exception ex)
