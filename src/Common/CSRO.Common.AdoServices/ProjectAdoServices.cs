@@ -65,11 +65,6 @@ namespace CSRO.Common.AdoServices
             {
                 string url = $"https://dev.azure.com/{organization}";
 
-                // Setup version control properties
-                Dictionary<string, string> versionControlProperties = new();
-                versionControlProperties[TeamProjectCapabilitiesConstants.VersionControlCapabilityAttributeName] =
-                    SourceControlTypes.Git.ToString();
-
                 if (_adoConfig.UsePta)
                     connection = new VssConnection(new Uri(url), new VssBasicCredential(string.Empty, _adoConfig.AdoPersonalAccessToken));
                 else
@@ -172,14 +167,26 @@ namespace CSRO.Common.AdoServices
                                 includeHistory: true);
                                         
                     _logger?.LogDebug("Project created (ID: {0})", project.Id);
-
-                    // Save the newly created project (other sample methods will use it)
-                    //Context.SetValue<TeamProject>("$newProject", project);
+                                        
                     result = _mapper.Map<ProjectAdo>(project);
                     result.Organization = organization;
-                    result.ProcessName = processName;                    
+                    result.ProcessName = processName;
+
+                    //original props
                     result.Id = projectAdoCreate.Id;
-                    result.RowVersion = projectAdoCreate.RowVersion;                    
+                    result.RowVersion = projectAdoCreate.RowVersion;
+                    result.CreatedAt = projectAdoCreate.CreatedAt;
+                    result.CreatedBy = projectAdoCreate.CreatedBy;
+                    result.ModifiedAt = projectAdoCreate.ModifiedAt;
+                    result.ModifiedBy = projectAdoCreate.ModifiedBy;
+                    result.IsDeleted = projectAdoCreate.IsDeleted;
+
+                    //projectAdoCreate.Description = project.Description;
+                    //projectAdoCreate.AdoId = project.Id;                    
+                    //projectAdoCreate.Url = project.Url;
+                    //projectAdoCreate.State = project.State;
+                    //projectAdoCreate.Visibility = project.Visibility;
+                    //return projectAdoCreate;
                 }
                 else                                    
                     _logger?.LogError("Project creation operation failed: " + completedOperation.ResultMessage);                
