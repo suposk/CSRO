@@ -190,6 +190,7 @@ namespace CSRO.Server.Ado.Api
 
             services.AddScoped<IAdoProjectApproverService, AdoProjectApproverService>();
             services.AddScoped<IGenerateEmailForApprovalService, GenerateEmailForApprovalService>();
+            services.AddScoped<IAdoProjectAccessRepository, AdoProjectAccessRepository>();
 
             //services.AddControllers(options => options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
             services.AddSwaggerGen(c =>

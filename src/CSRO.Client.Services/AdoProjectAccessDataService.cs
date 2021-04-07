@@ -38,9 +38,9 @@ namespace CSRO.Client.Services
 
                 string url = null;
                 if (item.Status == Models.Status.Draft)
-                    url = $"{ApiPart}SaveDraftAdoProject";
+                    url = $"{ApiPart}SaveDraftAdoProjectAccess";
                 else
-                    url = $"{ApiPart}RequestAdoProject";
+                    url = $"{ApiPart}RequestAdoProjectAccess";
                 //var url = $"{ApiPart}";
                 var httpcontent = new StringContent(JsonSerializer.Serialize(item, _options), Encoding.UTF8, "application/json");
                 var apiData = await HttpClientBase.PostAsync(url, httpcontent).ConfigureAwait(false);
@@ -73,7 +73,7 @@ namespace CSRO.Client.Services
                 await base.AddAuthHeaderAsync();
                 var data = new RejectededListDto { ToReject = toReject, Reason = rejectReason };
 
-                var url = $"{ApiPart}RejectAdoProject";
+                var url = $"{ApiPart}RejectAdoProjectAccess";
                 var httpcontent = new StringContent(JsonSerializer.Serialize(data, _options), Encoding.UTF8, "application/json");
                 var apiData = await HttpClientBase.PostAsync(url, httpcontent).ConfigureAwait(false);
 
@@ -101,7 +101,7 @@ namespace CSRO.Client.Services
             {
                 await base.AddAuthHeaderAsync();
 
-                var url = $"{ApiPart}ApproveAdoProject";
+                var url = $"{ApiPart}ApproveAdoProjectAccess";
                 var httpcontent = new StringContent(JsonSerializer.Serialize(toApprove, _options), Encoding.UTF8, "application/json");
                 var apiData = await HttpClientBase.PostAsync(url, httpcontent).ConfigureAwait(false);
 
