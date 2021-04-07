@@ -109,10 +109,8 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
             if (valid)
             {
                 try
-                {
-                    await Task.Delay(1 * 1000); // todo fix workaround
-                    valid = context.Validate();
-
+                {                    
+                    //valid = context.Validate();
                     if (valid && OperationTypeTicket == OperatioType.Create)
                     {
                         Model.Status = Status.Submitted;
