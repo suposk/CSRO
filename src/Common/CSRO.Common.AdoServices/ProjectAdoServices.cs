@@ -18,15 +18,16 @@ using System.Linq;
 using Microsoft.VisualStudio.Services.Security.Client;
 using Microsoft.VisualStudio.Services.Security;
 using Microsoft.VisualStudio.Services.Graph.Client;
+using CSRO.Common.Helpers;
 
 namespace CSRO.Common.AdoServices
 {
     public interface IProjectAdoServices
     {
         Task<ProjectAdo> CreateProject(ProjectAdo projectAdoCreate);
-        Task<bool> ProjectExistInAdo(string organization, string projectName);        
-
+        Task<bool> ProjectExistInAdo(string organization, string projectName);       
         Task<List<string>> GetPermissions(string organization, string projectName);
+        Task<List<string>> GetProjectNames(string organization);
     }
 
     public class ProjectAdoServices : IProjectAdoServices
@@ -48,6 +49,40 @@ namespace CSRO.Common.AdoServices
             _processAdoServices = processAdoServices;
             _logger = logger;
             _adoConfig = configuration.GetSection(nameof(AdoConfig)).Get<AdoConfig>();            
+        }
+
+        public async Task<List<string>> GetProjectNames(string organization)
+        {
+            if (string.IsNullOrWhiteSpace(organization))
+                throw new ArgumentException($"'{nameof(organization)}' cannot be null or whitespace.", nameof(organization));
+
+            VssConnection connection = null;
+            try
+            {
+                string url = $"https://dev.azure.com/{organization}";
+
+                if (_adoConfig.UsePta)
+                    connection = new VssConnection(new Uri(url), new VssBasicCredential(string.Empty, _adoConfig.AdoPersonalAccessToken));
+                else
+                    //connection = new VssConnection(new Uri(url), new VssCredentials(true));
+                    connection = new VssConnection(new Uri(url), new VssClientCredentials(true));
+
+                // Get a client            
+                ProjectHttpClient projectClient = connection.GetClient<ProjectHttpClient>();
+                var all = await projectClient.GetProjects();
+                if (all.IsNullOrEmptyCollection())
+                    return null;
+                else
+                    return all.OrderBy(a => a.Name).Select(a => a.Name).ToList();
+            }
+            catch (Exception ex)
+            {                
+                throw;
+            }
+            finally
+            {
+                connection?.Dispose();
+            }
         }
 
         public async Task<bool> ProjectExistInAdo(string organization, string projectName)
@@ -74,7 +109,7 @@ namespace CSRO.Common.AdoServices
                 // Get a client            
                 ProjectHttpClient projectClient = connection.GetClient<ProjectHttpClient>();
                 var all = await projectClient.GetProjects();
-                if (all?.Any() == false)
+                if (all.IsNullOrEmptyCollection())
                     return false;
 
                 var exist = all.Any(a => string.Equals(a.Name, projectName, StringComparison.OrdinalIgnoreCase));
