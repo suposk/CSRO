@@ -259,6 +259,7 @@ namespace CSRO.Client.Blazor.WebApp
             services.AddTransient<INetworkService, NetworkService>();
             services.AddSingleton<ILocationsService, LocationsService>();
             services.AddTransient<IAdoProjectDataService, AdoProjectDataService>();
+            services.AddTransient<IAdoProjectAccessDataService, AdoProjectAccessDataService>();
 
             #region SDK services      
             

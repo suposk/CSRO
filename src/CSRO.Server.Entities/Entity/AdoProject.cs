@@ -75,4 +75,5 @@ namespace CSRO.Server.Entities.Entity
         public ProjectVisibility Visibility { get; set; }
         public ProjectState State { get; set; }
     }
+
 }

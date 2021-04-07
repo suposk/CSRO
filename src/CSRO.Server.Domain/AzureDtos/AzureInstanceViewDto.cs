@@ -14,16 +14,16 @@ namespace CSRO.Server.Domain
         public VmAgent VmAgent { get; set; }
         public List<Disk> Disks { get; set; }
         public string HyperVGeneration { get; set; }
-        public List<Status> Statuses { get; set; }
+        public List<StatusDto> Statuses { get; set; }
     }
 
     public partial class Disk
     {
         public string Name { get; set; }
-        public List<Status> Statuses { get; set; }
+        public List<StatusDto> Statuses { get; set; }
     }
 
-    public partial class Status
+    public partial class StatusDto
     {
         public string Code { get; set; }
         public string Level { get; set; }
@@ -35,7 +35,7 @@ namespace CSRO.Server.Domain
     public partial class VmAgent
     {
         public string VmAgentVersion { get; set; }
-        public List<Status> Statuses { get; set; }
+        public List<StatusDto> Statuses { get; set; }
     }
 
 }

@@ -7,6 +7,7 @@ Add-Migration BillingContextAtcode2 -Context BillingContext -OutputDir Migration
 //ADO
 Add-Migration Init -Context AdoContext -OutputDir Migrations\SqlServerMigrations
 Add-Migration AdoProjectHistoryDetails -Context AdoContext -OutputDir Migrations\SqlServerMigrations
+Add-Migration AdoProjectAccess -Context AdoContext -OutputDir Migrations\SqlServerMigrations
 
 //User 
 Add-Migration UserRoleClaim3 -Context UserContext -OutputDir Migrations\SqlServerMigrations

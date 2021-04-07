@@ -188,7 +188,7 @@ namespace CSRO.Server.Ado.Api.Services
                             if (entity.State != ProjectState.CreatePending)
                                 continue;
                             
-                            var mapped = _mapper.Map<AdoModels.ProjectAdo>(entity);
+                            //var mapped = _mapper.Map<AdoModels.ProjectAdo>(entity);
                             //1. Update Db
                             //entity.Status = Status.Approved;                            
                             entity.Status = (reject) ? Status.Rejected : Status.Approved;

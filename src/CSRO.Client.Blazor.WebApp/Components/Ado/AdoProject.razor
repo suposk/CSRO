@@ -2,8 +2,7 @@
 @using CSRO.Client.Services.Models
 @using Blazored.FluentValidation
 
-<MudContainer>
-    <div>
+<MudContainer>    
         <MudText Typo="Typo.h4" GutterBottom="true">@Title</MudText>
         @if (IsLoading)
         {
@@ -136,6 +135,5 @@
         {
             <MudText Color="Color.Success" Typo="Typo.h4">Success</MudText>
         }
-        <MudButton Class="mt-4" OnClick="GoBack" Variant="Variant.Filled" Color="Color.Primary">Go Back</MudButton>
-    </div>
+        <MudButton Class="mt-4" OnClick="GoBack" Variant="Variant.Filled" Color="Color.Primary">Go Back</MudButton>    
 </MudContainer>

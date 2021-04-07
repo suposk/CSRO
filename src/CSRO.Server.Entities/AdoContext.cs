@@ -31,6 +31,7 @@ namespace CSRO.Server.Entities
         }
         public DbSet<AdoProject> AdoProjects { get; set; }
         public DbSet<AdoProjectHistory> AdoProjectHistorys { get; set; }
+        public DbSet<AdoProjectAccess> AdoProjectAccesses { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

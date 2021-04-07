@@ -22,6 +22,9 @@ namespace CSRO.Server.Ado.Api.AdoAutoMapperProfiles
                 .ForMember(s => s.AdoProject, op => op.Ignore())
                 .ReverseMap();
 
+            CreateMap<AdoProjectAccessDto, Entity.AdoProjectAccess>()                
+                .ReverseMap();
+
             CreateMap<AdoModels.ProjectAdo, Entity.AdoProject>()                
                 .ReverseMap();
 

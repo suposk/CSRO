@@ -4,14 +4,16 @@ using CSRO.Server.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
 {
     [DbContext(typeof(AdoContext))]
-    partial class AdoContextModelSnapshot : ModelSnapshot
+    [Migration("20210407142444_AdoProjectAccess")]
+    partial class AdoProjectAccess
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

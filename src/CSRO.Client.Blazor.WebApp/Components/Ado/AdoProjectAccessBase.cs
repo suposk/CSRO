@@ -3,8 +3,6 @@ using CSRO.Client.Blazor.UI.Services;
 using CSRO.Client.Services;
 using CSRO.Client.Services.Models;
 using CSRO.Common.AdoServices;
-using CSRO.Common.AdoServices.Models;
-using AdoModels = CSRO.Common.AdoServices.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.Logging;
@@ -15,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace CSRO.Client.Blazor.WebApp.Components.Ado
 {
-    public class AdoProjectBase : CsroComponentBase
+    public class AdoProjectAccessBase : CsroComponentBase
     {
         #region Params and Injects
 
@@ -29,7 +27,7 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
         public NavigationManager NavigationManager { get; set; }
 
         [Inject]
-        public IAdoProjectDataService AdoProjectDataService { get; set; }
+        public IAdoProjectAccessDataService AdoProjectAccessDataService { get; set; }
 
         [Inject]
         public IProjectAdoServices ProjectAdoServices { get; set; }
@@ -41,18 +39,18 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
         public IProcessAdoServices ProcessAdoServices { get; set; }
 
         [Inject]
-        public ILogger<AdoProjectBase> Logger { get; set; }
+        public ILogger<AdoProjectAccessBase> Logger { get; set; }
 
         #endregion
 
-        public ProjectAdo Model { get; set; } = new ProjectAdo { Status = AdoModels.Status.Draft };
+        public AdoProjectAccessModel Model { get; set; } = new AdoProjectAccessModel { Status = Status.Draft };
         //protected bool IsReadOnly => OperationTypeTicket == OperatioType.View; //for testing
-        protected bool IsReadOnly => OperationTypeTicket == OperatioType.View || (OperationTypeTicket == OperatioType.Edit && Model.Status > AdoModels.Status.Submitted);
-        protected string Title => OperationTypeTicket.ToString() + " Project";
+        protected bool IsReadOnly => OperationTypeTicket == OperatioType.View || (OperationTypeTicket == OperatioType.Edit && Model.Status > Status.Submitted);
+        protected string Title => OperationTypeTicket.ToString() + " Access to Project";
 
-        protected List<string> Processes = new List<string>();
+        protected List<string> Organizations = new();
+        protected List<string> ProjectNames = new();
 
-        protected List<string> Organizations = new List<string>();
 
         protected async override Task OnInitializedAsync()
         {
@@ -65,20 +63,16 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
             {
                 ShowLoading();
 
-                var prs = await ProcessAdoServices.GetAdoProcessesName(null);
-                Processes.Clear();
-                if (prs != null)
-                    Processes = prs;
-
                 var orgs = await ProcessAdoServices.GetOrganizationNames();
                 Organizations.Clear();
+                ProjectNames.Clear();
                 if (orgs != null)
                     Organizations = orgs;
 
                 if (OperationTypeTicket != OperatioType.Create)
                 {
                     Model.Id = int.Parse(RequestId);
-                    var server = await AdoProjectDataService.GetItemByIdAsync(Model.Id);
+                    var server = await AdoProjectAccessDataService.GetItemByIdAsync(Model.Id);
                     if (server != null)
                         Model = server;
                 }
@@ -90,24 +84,26 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
             HideLoading();
         }
 
-        //public Task OnOrganizationChanged(string value)
-        //{
-        //    if (value != null)
-        //        Model.Organization = value;
+        public async Task OnOrganizationChanged(string value)
+        {
+            ShowLoading();
 
-        //    return Task.CompletedTask;
-        //}
+            if (value != null)
+                Model.Organization = value;
 
-        //public Task OnProcessNameChanged(string value)
-        //{
-        //    if (value != null)
-        //        Model.ProcessName = value;
+            ProjectNames?.Clear();
+            var prs = await ProjectAdoServices.GetProjectNames(Model.Organization);
+            if (prs.HasAnyInCollection())
+                ProjectNames = prs;
 
-        //    return Task.CompletedTask;
-        //}
+            HideLoading();
+        }
 
         public async Task OnValidSubmit(EditContext context)
         {
+            //var perm = await ProjectAdoServices.GetPermissions(Model.Organization, Model.Name);
+            var prn = await ProjectAdoServices.GetProjectNames(Model.Organization);
+
             ShowProcessing();
             var valid = context.Validate();
             if (valid)
@@ -119,8 +115,8 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
 
                     if (valid && OperationTypeTicket == OperatioType.Create)
                     {
-                        Model.Status = AdoModels.Status.Submitted;
-                        var added = await AdoProjectDataService.AddItemAsync(Model);
+                        Model.Status = Status.Submitted;
+                        var added = await AdoProjectAccessDataService.AddItemAsync(Model);
                         if (added != null)
                         {
                             Success = true;
@@ -129,10 +125,10 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
                     }
                     else if (valid && OperationTypeTicket == OperatioType.Edit)
                     {
-                        var updated = await AdoProjectDataService.UpdateItemAsync(Model);
+                        var updated = await AdoProjectAccessDataService.UpdateItemAsync(Model);
                         if (updated)
                         {
-                            await CsroDialogService.ShowMessage("Success", $"Update Finished", "Refresh");                            
+                            await CsroDialogService.ShowMessage("Success", $"Update Finished", "Refresh");
                             await Load();
                         }
                         else
@@ -150,26 +146,6 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
                     await CsroDialogService.ShowError("Error", $"Detail error: {ex.Message}");
                 }
 
-            }
-            HideLoading();
-        }
-
-        public async Task SaveAsDraftAsync()
-        {
-            try
-            {
-                ShowLoading("Saving...");
-                Model.Status = AdoModels.Status.Draft;
-                var saved = await AdoProjectDataService.AddItemAsync(Model);
-                if (saved != null)
-                    await CsroDialogService.ShowMessage("Success", $"Request was saved.");
-
-                //await Load();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError(ex, nameof(OnInitializedAsync));
-                await CsroDialogService.ShowError("Error", $"Detail error: {ex.Message}");
             }
             HideLoading();
         }
