@@ -44,8 +44,7 @@
             <MudTh><MudTableSortLabel SortBy="new Func<ProjectAdo, object>(x=>x.Description)">Description</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortBy="new Func<ProjectAdo, object>(x=>x.ProcessName)">Process</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortBy="new Func<ProjectAdo, object>(x=>x.CreatedBy)">Created By</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<ProjectAdo, object>(x=>x.CreatedAt)">Created At</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<ProjectAdo, object>(x=>x.ModifiedAt)">ModifiedAt At</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<ProjectAdo, object>(x=>x.CreatedAt)">Created At</MudTableSortLabel></MudTh>            
         </HeaderContent>
         <RowTemplate>
             <MudTd DataLabel="Id">@context.Id</MudTd>
@@ -55,8 +54,7 @@
             <MudTd DataLabel="Description">@context.Description</MudTd>
             <MudTd DataLabel="Process">@context.ProcessName</MudTd>
             <MudTd DataLabel="Created By">@context.CreatedBy</MudTd>
-            <MudTd DataLabel="Created At">@context.CreatedAt</MudTd>
-            <MudTd DataLabel="Modified At">@context.ModifiedAt</MudTd>
+            <MudTd DataLabel="Created At">@context.CreatedAt</MudTd>            
         </RowTemplate>
         <PagerContent>
             <MudTablePager PageSizeOptions="new int[]{10, 20, 50}" />

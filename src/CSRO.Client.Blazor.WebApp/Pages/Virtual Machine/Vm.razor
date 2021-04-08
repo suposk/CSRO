@@ -34,8 +34,7 @@
                 @*<MudTh><MudTableSortLabel SortBy="new Func<VmTicket, object>(x=>x.SubcriptionId)">Subcription Id</MudTableSortLabel></MudTh>
                     <MudTh><MudTableSortLabel SortBy="new Func<VmTicket, object>(x=>x.ResorceGroup)">Resorce Group</MudTableSortLabel></MudTh>*@
                 <MudTh><MudTableSortLabel SortBy="new Func<VmTicket, object>(x=>x.Note)">Note</MudTableSortLabel></MudTh>
-                <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<VmTicket, object>(x=>x.CreatedAt)">Created At</MudTableSortLabel></MudTh>
-                <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<VmTicket, object>(x=>x.ModifiedAt)">ModifiedAt At</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<VmTicket, object>(x=>x.CreatedAt)">Created At</MudTableSortLabel></MudTh>                
             </HeaderContent>
             <RowTemplate>
                 <MudTd DataLabel="Id">@context.Id</MudTd>
@@ -45,8 +44,7 @@
                 @*<MudTd DataLabel="Subcription Id">@context.SubcriptionId</MudTd>
                     <MudTd DataLabel="Resorce Group">@context.ResorceGroup</MudTd>*@
                 <MudTd DataLabel="Note">@context.Note</MudTd>
-                <MudTd DataLabel="Created At">@context.CreatedAt</MudTd>
-                <MudTd DataLabel="Modified At">@context.ModifiedAt</MudTd>
+                <MudTd DataLabel="Created At">@context.CreatedAt</MudTd>                
                 <MudPaper Class="demo-grid-paper" Elevation="0">
                     <MudTooltip Text="Edit" Delayed="1">
                         <MudIconButton Link="@($"vm/restart/edit/{context.Id}")" Icon="@Icons.Material.Filled.Edit"></MudIconButton>
