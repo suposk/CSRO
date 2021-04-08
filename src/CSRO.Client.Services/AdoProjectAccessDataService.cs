@@ -217,16 +217,6 @@ namespace CSRO.Client.Services
             }
         }
 
-        public Task<List<AdoProjectAccessModel>> GetItemsByParrentIdAsync(int parrentId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<List<AdoProjectAccessModel>> GetItemsByTypeAsync(string type)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<List<AdoProjectAccessModel>> GetProjectsForApproval()
         {
             try

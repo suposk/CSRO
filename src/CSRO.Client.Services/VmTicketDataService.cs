@@ -301,15 +301,5 @@ namespace CSRO.Client.Services
             }
             return null;
         }
-
-        public Task<List<VmTicket>> GetItemsByParrentIdAsync(int parrentId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<List<VmTicket>> GetItemsByTypeAsync(string type)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

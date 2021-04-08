@@ -103,11 +103,6 @@ namespace CSRO.Client.Services
 
         }
 
-        public Task<List<AdoProjectHistoryModel>> GetItemsByTypeAsync(string type)
-        {
-            throw new NotImplementedException();
-        }
-
         public override void HandleException(Exception ex)
         {
             base.HandleException(ex);
