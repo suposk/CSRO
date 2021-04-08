@@ -36,19 +36,52 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
 
         #endregion
 
-        public List<AdoProjectAccessModel> Requests { get; set; } = new List<AdoProjectAccessModel>();
+        protected List<AdoProjectAccessModel> Requests { get; set; } = new List<AdoProjectAccessModel>();
+
+
+        /// <summary>
+        /// Only for DEV
+        /// </summary>
+        private bool _CanApprove = false;
+        public bool CanApprove
+        {
+            get { return _CanApprove; }
+            set 
+            {
+                _CanApprove = value;
+                CallLoad();
+            }
+        }
+
 
         protected async override Task OnInitializedAsync()
         {
+            await Load();            
+        }
 
+        /// <summary>
+        /// Only for DEV
+        /// </summary>
+        async void CallLoad()
+        {
+            await Load();
+            StateHasChanged(); //must be here refresh state to bind
+        }
+
+        private async Task Load()
+        {
             try
             {
                 ShowLoading();
                 Requests.Clear();
                 //if admin
-                Requests = await AdoProjectAccessDataService.GetItemsAsync();
-                //else
-                //Requests = await AdoProjectAccessDataService.GetItemsByUserId(await AuthCsroService.GetCurrentUserId());
+                if (CanApprove)
+                {
+                    var all = await AdoProjectAccessDataService.GetItemsAsync();
+                    Requests = all?.FindAll(a => a.Status == Status.Submitted);
+                }
+                else
+                    Requests = await AdoProjectAccessDataService.GetItemsByUserId(await AuthCsroService.GetCurrentUserId());
             }
             catch (Exception ex)
             {
@@ -58,7 +91,13 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
             HideLoading();
         }
 
-        public async Task DeleteTicketAsync(AdoProjectAccessModel ticket)
+        public Task CanApproveChecked(bool value)
+        {
+            CanApprove = value;
+            return Task.CompletedTask;
+        }
+
+        public async Task DeleteRequestAsync(AdoProjectAccessModel ticket)
         {
             var ok = await CsroDialogService.ShowDialog("Delete Ticket", $"Do you really want to delete these record Id: {ticket.Id}?", "Delete");
             if (ok)

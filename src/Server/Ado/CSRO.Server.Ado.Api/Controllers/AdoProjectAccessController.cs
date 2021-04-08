@@ -188,10 +188,36 @@ namespace CSRO.Server.Ado.Api.Controllers
         //{
         //}
 
-        //// DELETE api/<AdoProjectAccessController>/5
-        //[HttpDelete("{id}")]
-        //public void Delete(int id)
-        //{
-        //}
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteAdoProjectAccessRequest(int id)
+        {
+            if (id < 1)
+                return BadRequest();
+
+            try
+            {
+                _logger.LogInformation(ApiLogEvents.DeleteItem, $"{nameof(DeleteAdoProjectAccessRequest)} Started");
+
+                var repoObj = await _repository.GetId(id).ConfigureAwait(false);
+                if (repoObj == null)
+                {
+                    _logger.LogWarning(ApiLogEvents.DeleteItemNotFound, $"{nameof(DeleteAdoProjectAccessRequest)} not found");
+                    return NotFound();
+                }
+
+                _repository.Remove(repoObj);
+                if (await _repository.SaveChangesAsync())
+                {
+                    return NoContent();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, nameof(DeleteAdoProjectAccessRequest), id);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
+            }
+            return null;
+        }
     }
 }

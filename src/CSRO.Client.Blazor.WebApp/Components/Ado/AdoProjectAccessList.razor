@@ -18,17 +18,23 @@
     else
     {
         @*<MudTooltip Text="Add New" Delayed="1">
-            <MudGrid>
-                <MudItem>
-                    <MudIconButton Link="/ticketcreate" Icon="@Icons.Material.Filled.Add">Request restart</MudIconButton>
-                </MudItem>
-            </MudGrid>
-        </MudTooltip>*@
+                <MudGrid>
+                    <MudItem>
+                        <MudIconButton Link="/ticketcreate" Icon="@Icons.Material.Filled.Add">Request restart</MudIconButton>
+                    </MudItem>
+                </MudGrid>
+            </MudTooltip>*@        
+        
+        <MudCheckBox Label="I am Admin" 
+                     @bind-Checked="@CanApprove"                     
+                      />
+
         <MudTable Items="Requests" Hover="true" SortLabel="Sort By" Elevation="0">
             <HeaderContent>
                 <MudTh><MudTableSortLabel SortBy="new Func<AdoProjectAccessModel, object>(x => x.Id)">Id</MudTableSortLabel></MudTh>
                 <MudTh><MudTableSortLabel SortBy="new Func<AdoProjectAccessModel, object>(x => x.Organization)">Organization</MudTableSortLabel></MudTh>
                 <MudTh><MudTableSortLabel SortBy="new Func<AdoProjectAccessModel, object>(x => x.Name)">Name</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<AdoProjectAccessModel, object>(x => x.Status)">Status</MudTableSortLabel></MudTh>
                 <MudTh><MudTableSortLabel SortBy="new Func<AdoProjectAccessModel, object>(x => x.CreatedBy)">Created By</MudTableSortLabel></MudTh>
                 <MudTh><MudTableSortLabel SortBy="new Func<AdoProjectAccessModel, object>(x => x.Justification)">Justification</MudTableSortLabel></MudTh>
                 <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<AdoProjectAccessModel, object>(x => x.CreatedAt)">Created At</MudTableSortLabel></MudTh>
@@ -37,6 +43,7 @@
                 <MudTd DataLabel="Id">@context.Id</MudTd>
                 <MudTd DataLabel="Organization">@context.Organization</MudTd>
                 <MudTd DataLabel="Name">@context.Name</MudTd>
+                <MudTd DataLabel="Status">@context.Status</MudTd>
                 <MudTd DataLabel="Created By">@context.CreatedBy</MudTd>
                 <MudTd DataLabel="Justification">@context.Justification</MudTd>
                 <MudTd DataLabel="Created At">@context.CreatedAt</MudTd>
@@ -48,7 +55,7 @@
                 <MudIconButton Link="@($"ticketview/{context.Id}")" Icon="@Icons.Material.Filled.Info"></MudIconButton>
             </MudTooltip>*@
                     <MudTooltip Text="Delete">
-                        <MudIconButton OnClick="@(e => DeleteTicketAsync(context))" Icon="@Icons.Material.Filled.Delete"></MudIconButton>
+                        <MudIconButton OnClick="@(e => DeleteRequestAsync(context))" Icon="@Icons.Material.Filled.Delete"></MudIconButton>
                     </MudTooltip>
                 </MudPaper>
                 @*<div>
