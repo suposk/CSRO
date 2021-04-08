@@ -153,15 +153,5 @@ namespace CSRO.Client.Services
                 throw;
             }
         }
-
-        public Task<List<Ticket>> GetItemsByParrentIdAsync(int parrentId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<List<Ticket>> GetItemsByTypeAsync(string type)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

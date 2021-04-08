@@ -128,12 +128,12 @@
                                 <MudCardContent
                                      Class="p-4">
                                     <MudTable Items="@context.cmdbReferenceList"
-                                              Dense="true" 
-                                              Striped="true"        
+                                              Dense="true"
+                                              Striped="true"
                                               Hover="true"
                                               RowsPerPage="10"
-                                              Context="cmdbContext" 
-                                              Breakpoint="Breakpoint.Sm" 
+                                              Context="cmdbContext"
+                                              Breakpoint="Breakpoint.Sm"
                                               Elevation="2">
                                         <ColGroup>
                                             <col />
@@ -147,6 +147,9 @@
                                             <MudTd DataLabel="billingReference">@cmdbContext.AtCode</MudTd>
                                             <MudTd DataLabel="cmdbReference">@cmdbContext.Email</MudTd>
                                         </RowTemplate>
+                                        <PagerContent>
+                                            <MudTablePager PageSizeOptions="new int[]{10, 20, 50}" />
+                                        </PagerContent>
                                     </MudTable>
                                 </MudCardContent>
                             </MudCard>

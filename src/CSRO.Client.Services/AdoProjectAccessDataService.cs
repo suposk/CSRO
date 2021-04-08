@@ -47,11 +47,10 @@ namespace CSRO.Client.Services
                 //HttpResponseMessage
                 if (apiData.IsSuccessStatusCode)
                 {
-                    var content = await apiData.Content.ReadAsStringAsync();
-                    var ser = JsonSerializer.Deserialize<AdoProjectAccessModel>(content, _options);
-                    return ser;
-                    //var result = Mapper.Map<ProjectAdo>(ser);
-                    //return result;
+                    var stream = await apiData.Content.ReadAsStreamAsync();
+                    var ser = await JsonSerializer.DeserializeAsync<AdoProjectAccessDto>(stream, _options);
+                    var result = Mapper.Map<AdoProjectAccessModel>(ser);
+                    return result;
                 }
                 else
                     throw new Exception(GetErrorText(apiData));
@@ -79,11 +78,10 @@ namespace CSRO.Client.Services
 
                 if (apiData.IsSuccessStatusCode)
                 {
-                    var content = await apiData.Content.ReadAsStringAsync();
-                    var ser = JsonSerializer.Deserialize<List<AdoProjectAccessModel>>(content, _options);
-                    return ser;
-                    //var result = Mapper.Map<List<ProjectAdo>>(ser);
-                    //return result;
+                    var stream = await apiData.Content.ReadAsStreamAsync();
+                    var ser = await JsonSerializer.DeserializeAsync<List<AdoProjectAccessDto>>(stream, _options);
+                    var result = Mapper.Map<List<AdoProjectAccessModel>>(ser);
+                    return result;                    
                 }
                 else
                     throw new Exception(base.GetErrorText(apiData));
@@ -107,11 +105,10 @@ namespace CSRO.Client.Services
 
                 if (apiData.IsSuccessStatusCode)
                 {
-                    var content = await apiData.Content.ReadAsStringAsync();
-                    var ser = JsonSerializer.Deserialize<List<AdoProjectAccessModel>>(content, _options);
-                    return ser;
-                    //var result = Mapper.Map<List<ProjectAdo>>(ser);
-                    //return result;
+                    var stream = await apiData.Content.ReadAsStreamAsync();
+                    var ser = await JsonSerializer.DeserializeAsync<List<AdoProjectAccessDto>>(stream, _options);                    
+                    var result = Mapper.Map<List<AdoProjectAccessModel>>(ser);
+                    return result;
                 }
                 else
                     throw new Exception(base.GetErrorText(apiData));
@@ -179,9 +176,10 @@ namespace CSRO.Client.Services
 
                 if (apiData.IsSuccessStatusCode)
                 {
-                    var content = await apiData.Content.ReadAsStringAsync();
-                    var ser = JsonSerializer.Deserialize<AdoProjectAccessModel>(content, _options);
-                    return ser;
+                    var stream = await apiData.Content.ReadAsStreamAsync();
+                    var ser = await JsonSerializer.DeserializeAsync<AdoProjectAccessDto>(stream, _options);
+                    var result = Mapper.Map<AdoProjectAccessModel>(ser);
+                    return result;
                 }
                 else
                     throw new Exception(base.GetErrorText(apiData));
@@ -204,11 +202,10 @@ namespace CSRO.Client.Services
 
                 if (apiData.IsSuccessStatusCode)
                 {
-                    var content = await apiData.Content.ReadAsStringAsync();
-                    var ser = JsonSerializer.Deserialize<List<AdoProjectAccessModel>>(content, _options);
-                    return ser;
-                    //var result = Mapper.Map<List<ProjectAdo>>(ser);
-                    //return result;
+                    var stream = await apiData.Content.ReadAsStreamAsync();
+                    var ser = await JsonSerializer.DeserializeAsync<List<AdoProjectAccessDto>>(stream, _options);                    
+                    var result = Mapper.Map<List<AdoProjectAccessModel>>(ser);
+                    return result;
                 }
                 else
                     throw new Exception(base.GetErrorText(apiData));
@@ -220,14 +217,31 @@ namespace CSRO.Client.Services
             }
         }
 
-        public Task<List<AdoProjectAccessModel>> GetItemsByParrentIdAsync(int parrentId)
+        public async Task<List<AdoProjectAccessModel>> GetItemsByUserId(string userId) 
         {
-            throw new NotImplementedException();
-        }
+            try
+            {
+                await base.AddAuthHeaderAsync();
+                //var test = await GetItemByIdAsync(2);
 
-        public Task<List<AdoProjectAccessModel>> GetItemsByTypeAsync(string type)
-        {
-            throw new NotImplementedException();
+                var url = $"{ApiPart}GetByUserId/{userId}";
+                var apiData = await HttpClientBase.GetAsync(url).ConfigureAwait(false);
+
+                if (apiData.IsSuccessStatusCode)
+                {
+                    var stream = await apiData.Content.ReadAsStreamAsync();
+                    var ser = await JsonSerializer.DeserializeAsync<List<AdoProjectAccessDto>>(stream, _options);
+                    var result = Mapper.Map<List<AdoProjectAccessModel>>(ser);
+                    return result;
+                }
+                else
+                    throw new Exception(base.GetErrorText(apiData));
+            }
+            catch (Exception ex)
+            {
+                base.HandleException(ex);
+                throw;
+            }
         }
 
         public async Task<List<AdoProjectAccessModel>> GetProjectsForApproval()
@@ -241,11 +255,10 @@ namespace CSRO.Client.Services
 
                 if (apiData.IsSuccessStatusCode)
                 {
-                    var content = await apiData.Content.ReadAsStringAsync();
-                    var ser = JsonSerializer.Deserialize<List<AdoProjectAccessModel>>(content, _options);
-                    return ser?.Where(a => a.Status == Models.Status.Submitted)?.ToList();
-                    //var result = Mapper.Map<List<ProjectAdo>>(ser);
-                    //return result;
+                    var stream = await apiData.Content.ReadAsStreamAsync();
+                    var ser = await JsonSerializer.DeserializeAsync<List<AdoProjectAccessDto>>(stream, _options);                    
+                    var result = Mapper.Map<List<AdoProjectAccessModel>>(ser);
+                    return result.Where(a => a.Status == Models.Status.Submitted)?.ToList();
                 }
                 else
                     throw new Exception(base.GetErrorText(apiData));

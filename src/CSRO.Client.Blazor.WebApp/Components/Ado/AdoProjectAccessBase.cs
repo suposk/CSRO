@@ -62,10 +62,10 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
             try
             {
                 ShowLoading();
-
-                var orgs = await ProcessAdoServices.GetOrganizationNames();
                 Organizations.Clear();
                 ProjectNames.Clear();
+
+                var orgs = await ProcessAdoServices.GetOrganizationNames();
                 if (orgs != null)
                     Organizations = orgs;
 
@@ -101,19 +101,13 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
 
         public async Task OnValidSubmit(EditContext context)
         {
-            //var perm = await ProjectAdoServices.GetPermissions(Model.Organization, Model.Name);
-            var prn = await ProjectAdoServices.GetProjectNames(Model.Organization);
-
             ShowProcessing();
             var valid = context.Validate();
             if (valid)
             {
                 try
-                {
-                    await Task.Delay(1 * 1000); // todo fix workaround
-                    valid = context.Validate();
-
-                    if (valid && OperationTypeTicket == OperatioType.Create)
+                {                                       
+                    if (OperationTypeTicket == OperatioType.Create)
                     {
                         Model.Status = Status.Submitted;
                         var added = await AdoProjectAccessDataService.AddItemAsync(Model);
@@ -123,7 +117,7 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
                             Model = added;
                         }
                     }
-                    else if (valid && OperationTypeTicket == OperatioType.Edit)
+                    else if (OperationTypeTicket == OperatioType.Edit)
                     {
                         var updated = await AdoProjectAccessDataService.UpdateItemAsync(Model);
                         if (updated)
