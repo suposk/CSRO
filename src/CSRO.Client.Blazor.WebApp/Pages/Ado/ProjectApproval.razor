@@ -33,6 +33,7 @@
                 Inline="true">Selected items: @(selectedItems==null ? "" : string.Join(", ", selectedItems.OrderBy(x=>x.Name).Select(x=>x.Name)))</MudText>
 
     <MudTable MultiSelection="true"
+              Dense="true"
                 @bind-SelectedItems="selectedItems"
                 Items="Tickets"
                 Hover="true" SortLabel="Sort By" Elevation="0">

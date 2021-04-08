@@ -38,17 +38,19 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
 
         protected List<AdoProjectAccessModel> Requests { get; set; } = new List<AdoProjectAccessModel>();
 
+        protected HashSet<AdoProjectAccessModel> selectedItems = new();
+        protected bool IsButtonDisabled => IsLoading || selectedItems.Count == 0;
 
         /// <summary>
         /// Only for DEV
         /// </summary>
-        private bool _CanApprove = false;
-        public bool CanApprove
+        private bool _AdminMode = false;
+        public bool AdminMode
         {
-            get { return _CanApprove; }
+            get { return _AdminMode; }
             set 
             {
-                _CanApprove = value;
+                _AdminMode = value;
                 CallLoad();
             }
         }
@@ -75,7 +77,7 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
                 ShowLoading();
                 Requests.Clear();
                 //if admin
-                if (CanApprove)
+                if (AdminMode)
                 {
                     var all = await AdoProjectAccessDataService.GetItemsAsync();
                     Requests = all?.FindAll(a => a.Status == Status.Submitted);
@@ -91,10 +93,69 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
             HideLoading();
         }
 
-        public Task CanApproveChecked(bool value)
+        //public Task CanApproveChecked(bool value)
+        //{
+        //    CanApprove = value;
+        //    return Task.CompletedTask;
+        //}
+
+        public async Task ApproveAsync()
         {
-            CanApprove = value;
-            return Task.CompletedTask;
+            try
+            {
+                if (selectedItems?.Count == 0)
+                    return;
+
+                var toBeApproved = selectedItems.Select(a => a.Id).ToList();
+                ShowLoading($"Approving {toBeApproved.Count} project(s)");
+
+                var approved = await AdoProjectAccessDataService.ApproveAdoProject(toBeApproved);
+                if (toBeApproved.Count == approved?.Count)
+                    await CsroDialogService.ShowMessage("Success", $"All {toBeApproved.Count} project(s) were approved.");
+                else
+                    await CsroDialogService.ShowMessage("Partial Success", $"Only {approved.Count} out of {toBeApproved.Count} project(s) were approved.");
+
+                await Load();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, nameof(OnInitializedAsync));
+                await CsroDialogService.ShowError("Error", $"Detail error: {ex.Message}");
+            }
+            HideLoading();
+        }
+
+
+        public async Task RejectAsync()
+        {
+            try
+            {
+                if (selectedItems?.Count == 0)
+                    return;
+
+                var toBeRejected = selectedItems.Select(a => a.Id).ToList();
+
+                var text = $"Reason to Reject {toBeRejected.Count} project(s)";
+                var rejectReason = await CsroDialogService.ShowDialogWithEntry("Enter reason", text);
+                if (string.IsNullOrWhiteSpace(rejectReason))
+                    return;    //cancel pressed
+
+                ShowLoading($"Rejecting {toBeRejected.Count} project(s)");
+
+                var rejected = await AdoProjectAccessDataService.RejectAdoProject(toBeRejected, rejectReason);
+                if (toBeRejected.Count == rejected?.Count)
+                    await CsroDialogService.ShowMessage("Success", $"All {toBeRejected.Count} project(s) were rejected.");
+                else
+                    await CsroDialogService.ShowMessage("Partial Success", $"Only {rejected.Count} out of {toBeRejected.Count} project(s) were rejected.");
+
+                await Load();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError(ex, nameof(OnInitializedAsync));
+                await CsroDialogService.ShowError("Error", $"Detail error: {ex.Message}");
+            }
+            HideLoading();
         }
 
         public async Task DeleteRequestAsync(AdoProjectAccessModel ticket)
