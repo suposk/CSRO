@@ -106,9 +106,8 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
             if (valid)
             {
                 try
-                {                    
-                    //valid = context.Validate();
-                    if (valid && OperationTypeTicket == OperatioType.Create)
+                {                                       
+                    if (OperationTypeTicket == OperatioType.Create)
                     {
                         Model.Status = Status.Submitted;
                         var added = await AdoProjectAccessDataService.AddItemAsync(Model);
@@ -118,7 +117,7 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
                             Model = added;
                         }
                     }
-                    else if (valid && OperationTypeTicket == OperatioType.Edit)
+                    else if (OperationTypeTicket == OperatioType.Edit)
                     {
                         var updated = await AdoProjectAccessDataService.UpdateItemAsync(Model);
                         if (updated)
