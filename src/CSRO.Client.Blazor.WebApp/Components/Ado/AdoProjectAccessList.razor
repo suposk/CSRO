@@ -1,3 +1,72 @@
 ﻿@inherits AdoProjectAccessListBase
 @using CSRO.Client.Services.Models
 @using Blazored.FluentValidation
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-6">
+    <MudText Typo="Typo.h4" GutterBottom="true">Requests count: @Requests?.Count</MudText>
+    @if (IsLoading)
+    {
+        <MudGrid>
+            <MudItem>
+                <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+            </MudItem>
+            <MudItem>
+                <MudText>@LoadingMessage</MudText>
+            </MudItem>
+        </MudGrid>
+    }
+    else
+    {
+        @*<MudTooltip Text="Add New" Delayed="1">
+            <MudGrid>
+                <MudItem>
+                    <MudIconButton Link="/ticketcreate" Icon="@Icons.Material.Filled.Add">Request restart</MudIconButton>
+                </MudItem>
+            </MudGrid>
+        </MudTooltip>*@
+        <MudTable Items="Requests" Hover="true" SortLabel="Sort By" Elevation="0">
+            <HeaderContent>
+                <MudTh><MudTableSortLabel SortBy="new Func<AdoProjectAccessModel, object>(x => x.Id)">Id</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<AdoProjectAccessModel, object>(x => x.Organization)">Organization</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<AdoProjectAccessModel, object>(x => x.Name)">Name</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<AdoProjectAccessModel, object>(x => x.CreatedBy)">Created By</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<AdoProjectAccessModel, object>(x => x.Justification)">Justification</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<AdoProjectAccessModel, object>(x => x.CreatedAt)">Created At</MudTableSortLabel></MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Id">@context.Id</MudTd>
+                <MudTd DataLabel="Organization">@context.Organization</MudTd>
+                <MudTd DataLabel="Name">@context.Name</MudTd>
+                <MudTd DataLabel="Created By">@context.CreatedBy</MudTd>
+                <MudTd DataLabel="Justification">@context.Justification</MudTd>
+                <MudTd DataLabel="Created At">@context.CreatedAt</MudTd>
+                <MudPaper Class="demo-grid-paper" Elevation="0">
+                    @*<MudTooltip Text="Edit" Delayed="1">
+                <MudIconButton Link="@($"ticketedit/{context.Id}")" Icon="@Icons.Material.Filled.Edit"></MudIconButton>
+            </MudTooltip>
+            <MudTooltip Text="Details">
+                <MudIconButton Link="@($"ticketview/{context.Id}")" Icon="@Icons.Material.Filled.Info"></MudIconButton>
+            </MudTooltip>*@
+                    <MudTooltip Text="Delete">
+                        <MudIconButton OnClick="@(e => DeleteTicketAsync(context))" Icon="@Icons.Material.Filled.Delete"></MudIconButton>
+                    </MudTooltip>
+                </MudPaper>
+                @*<div>
+            <div class="d-inline pa-2">
+                <MudTooltip Text="Edit" Delayed="1">
+                    <MudNavLink Href="@($"ticketedit/{context.Id}")" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Edit"></MudNavLink>
+                </MudTooltip>
+            </div>
+            <div class="d-inline pa-2">
+                <MudTooltip Text="Details">
+                    <MudNavLink Href="@($"ticketedit/{context.Id}")" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Info"></MudNavLink>
+                </MudTooltip>
+            </div>
+        </div>*@
+            </RowTemplate>
+            <PagerContent>
+                <MudTablePager PageSizeOptions="new int[] { 10, 20, 50 }" />
+            </PagerContent>
+        </MudTable>
+    }
+</MudContainer>
