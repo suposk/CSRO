@@ -92,5 +92,14 @@ namespace CSRO.Client.Services
         {
             _navigationManager.NavigateTo("/MicrosoftIdentity/Account/SignIn", true);
         }
+
+        public async Task<string> GetCurrentUserId()
+        {
+            var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+            if (authState.User?.Identity?.IsAuthenticated == false)
+                return null;
+            else
+                return string.IsNullOrWhiteSpace(authState.User.Identity.Name) ? null : authState.User.Identity.Name;            
+        }
     }
 }

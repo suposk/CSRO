@@ -29,6 +29,9 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
         public IAdoProjectAccessDataService AdoProjectAccessDataService { get; set; }
 
         [Inject]
+        public IAuthCsroService AuthCsroService { get; set; }
+
+        [Inject]
         public ILogger<AdoProjectAccessListBase> Logger { get; set; }
 
         #endregion
@@ -42,7 +45,8 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
             {
                 ShowLoading();
                 Requests.Clear();
-                Requests = await AdoProjectAccessDataService.GetItemsAsync();
+                //Requests = await AdoProjectAccessDataService.GetItemsAsync();
+                Requests = await AdoProjectAccessDataService.GetItemsByUserId(await AuthCsroService.GetCurrentUserId());
             }
             catch (Exception ex)
             {

@@ -217,6 +217,32 @@ namespace CSRO.Client.Services
             }
         }
 
+        public async Task<List<AdoProjectAccessModel>> GetItemsByUserId(string userId) 
+        {
+            try
+            {
+                await base.AddAuthHeaderAsync();
+
+                var url = $"{ApiPart}";
+                var apiData = await HttpClientBase.GetAsync(url).ConfigureAwait(false);
+
+                if (apiData.IsSuccessStatusCode)
+                {
+                    var stream = await apiData.Content.ReadAsStreamAsync();
+                    var ser = await JsonSerializer.DeserializeAsync<List<AdoProjectAccessDto>>(stream, _options);
+                    var result = Mapper.Map<List<AdoProjectAccessModel>>(ser);
+                    return result;
+                }
+                else
+                    throw new Exception(base.GetErrorText(apiData));
+            }
+            catch (Exception ex)
+            {
+                base.HandleException(ex);
+                throw;
+            }
+        }
+
         public async Task<List<AdoProjectAccessModel>> GetProjectsForApproval()
         {
             try
