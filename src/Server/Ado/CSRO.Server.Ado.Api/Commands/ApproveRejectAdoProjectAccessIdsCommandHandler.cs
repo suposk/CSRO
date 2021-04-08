@@ -38,6 +38,7 @@ namespace CSRO.Server.Ado.Api.Commands
             _mapper = mapper;
             _userId = apiIdentity.GetUserName();
             _logger = logger;
+            //com 5 06
         }
 
         public async Task<List<AdoProjectAccess>> Handle(ApproveRejectAdoProjectAccessIdsCommand request, CancellationToken cancellationToken)
