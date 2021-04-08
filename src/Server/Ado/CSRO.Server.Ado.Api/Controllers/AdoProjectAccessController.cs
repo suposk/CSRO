@@ -54,7 +54,8 @@ namespace CSRO.Server.Ado.Api.Controllers
         }
 
         // GET api/<AdoProjectAccessController>/5
-        [HttpGet("{id}", Name = nameof(GetRequestAdoProjectAccess))]
+        [HttpGet("{id}", Name = nameof(GetRequestAdoProjectAccess))]        
+        //[HttpGet("GetRequestAdoProjectAccess/{id}")]        
         public async Task<ActionResult<AdoProjectAccessDto>> GetRequestAdoProjectAccess(int id)
         {
             if (id < 1)
@@ -75,6 +76,26 @@ namespace CSRO.Server.Ado.Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, nameof(GetRequestAdoProjectAccess), id);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
+            }
+        }
+
+        [HttpGet("GetByUserId/{userId}")]        
+        public async Task<ActionResult<List<AdoProjectAccessDto>>> GetByUserId(string userId)
+        {
+            if (string.IsNullOrWhiteSpace(userId))
+                return BadRequest();
+
+            try
+            {
+                _logger.LogInformation(ApiLogEvents.GetAllItems, $"{nameof(GetByUserId)} Started");
+                var all = await _repository.GetListFilter(a => a.CreatedBy == userId).ConfigureAwait(false);
+                var result = _mapper.Map<List<AdoProjectAccessDto>>(all);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, nameof(GetByUserId), null);
                 return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }
         }

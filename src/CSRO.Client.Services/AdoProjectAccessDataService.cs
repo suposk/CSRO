@@ -222,8 +222,9 @@ namespace CSRO.Client.Services
             try
             {
                 await base.AddAuthHeaderAsync();
+                //var test = await GetItemByIdAsync(2);
 
-                var url = $"{ApiPart}";
+                var url = $"{ApiPart}GetByUserId/{userId}";
                 var apiData = await HttpClientBase.GetAsync(url).ConfigureAwait(false);
 
                 if (apiData.IsSuccessStatusCode)
