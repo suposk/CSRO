@@ -28,6 +28,7 @@ namespace CSRO.Common.AdoServices
         Task<bool> ProjectExistInAdo(string organization, string projectName);       
         Task<List<string>> GetPermissions(string organization, string projectName);
         Task<List<string>> GetProjectNames(string organization);
+        Task<bool> AddUser(string organization, string projectName, string userId);
     }
 
     public class ProjectAdoServices : IProjectAdoServices
@@ -285,24 +286,23 @@ namespace CSRO.Common.AdoServices
                     //connection = new VssConnection(new Uri(url), new VssCredentials(true));
                     connection = new VssConnection(new Uri(url), new VssClientCredentials(true));
 
-                projectName = "First-Ado";
+                //projectName = "First-Ado";
+                //teamClient = connection.GetClient<TeamHttpClient>();
+                //var allteams = await teamClient.GetTeamsAsync(projectName, null, null, null, true);
 
-                teamClient = connection.GetClient<TeamHttpClient>();
-                var allteams = await teamClient.GetTeamsAsync(projectName, null, null, null, true);
+                //var defTeamGroupName = $"{projectName} Team";
+                //var defTeam = allteams?.FirstOrDefault(a => a.Name.Contains(defTeamGroupName));
+                //if (defTeam != null)
+                //{
+                //    var members = await teamClient.GetTeamMembersWithExtendedPropertiesAsync(projectName, defTeam.Id.ToString());                    
+                //    graphHttpClient = connection.GetClient<GraphHttpClient>();
+                //    List<SubjectDescriptor> groupSubjectDescriptors = new();
+                //    groupSubjectDescriptors.Add(SubjectDescriptor.FromString(defTeam.Identity.Descriptor.Identifier));
+                //    var contextCreate = new GraphUserPrincipalNameCreationContext {  PrincipalName = "dev@jansupolikhotmail.onmicrosoft.com"};
+                //    var added = await graphHttpClient.CreateUserAsync(contextCreate, groupSubjectDescriptors);
 
-                var defTeamGroupName = $"{projectName} Team";
-                var defTeam = allteams?.FirstOrDefault(a => a.Name.Contains(defTeamGroupName));
-                if (defTeam != null)
-                {
-                    var members = await teamClient.GetTeamMembersWithExtendedPropertiesAsync(projectName, defTeam.Id.ToString());                    
-                    graphHttpClient = connection.GetClient<GraphHttpClient>();
-                    List<SubjectDescriptor> groupSubjectDescriptors = new();
-                    groupSubjectDescriptors.Add(SubjectDescriptor.FromString(defTeam.Identity.Descriptor.Identifier));
-                    var contextCreate = new GraphUserPrincipalNameCreationContext {  PrincipalName = "dev@jansupolikhotmail.onmicrosoft.com"};
-                    var added = await graphHttpClient.CreateUserAsync(contextCreate, groupSubjectDescriptors);
-
-                    var membersAfter = await teamClient.GetTeamMembersWithExtendedPropertiesAsync(projectName, defTeam.Id.ToString());                    
-                }
+                //    var membersAfter = await teamClient.GetTeamMembersWithExtendedPropertiesAsync(projectName, defTeam.Id.ToString());                    
+                //}
 
                 // Get a client            
                 SecurityHttpClient httpClient = connection.GetClient<SecurityHttpClient>();
@@ -327,6 +327,64 @@ namespace CSRO.Common.AdoServices
                 graphHttpClient?.Dispose();
                 teamClient?.Dispose();
             }
+        }
+
+        public async Task<bool> AddUser(string organization, string projectName, string userId)
+        {
+            if (string.IsNullOrWhiteSpace(organization))
+                throw new ArgumentException($"'{nameof(organization)}' cannot be null or whitespace.", nameof(organization));
+
+            if (string.IsNullOrWhiteSpace(projectName))
+                throw new ArgumentException($"'{nameof(projectName)}' cannot be null or whitespace.", nameof(projectName));
+            
+            if (string.IsNullOrWhiteSpace(userId))            
+                throw new ArgumentException($"'{nameof(userId)}' cannot be null or whitespace.", nameof(userId));            
+
+            VssConnection connection = null;
+            GraphHttpClient graphHttpClient = null;
+            TeamHttpClient teamClient = null;
+            var result = false;
+
+            try
+            {
+                string url = $"https://dev.azure.com/{organization}";
+                if (_adoConfig.UsePta)
+                    connection = new VssConnection(new Uri(url), new VssBasicCredential(string.Empty, _adoConfig.AdoPersonalAccessToken));
+                else
+                    //connection = new VssConnection(new Uri(url), new VssCredentials(true));
+                    connection = new VssConnection(new Uri(url), new VssClientCredentials(true));
+
+                //projectName = "First-Ado";
+                teamClient = connection.GetClient<TeamHttpClient>();
+                var allteams = await teamClient.GetTeamsAsync(projectName, null, null, null, true);
+
+                var defTeamGroupName = $"{projectName} Team";
+                var defTeam = allteams?.FirstOrDefault(a => a.Name.Contains(defTeamGroupName));
+                if (defTeam != null)
+                {
+                    var members = await teamClient.GetTeamMembersWithExtendedPropertiesAsync(projectName, defTeam.Id.ToString());
+                    graphHttpClient = connection.GetClient<GraphHttpClient>();
+                    List<SubjectDescriptor> groupSubjectDescriptors = new();
+                    groupSubjectDescriptors.Add(SubjectDescriptor.FromString(defTeam.Identity.Descriptor.Identifier));
+                    var contextCreate = new GraphUserPrincipalNameCreationContext { PrincipalName = userId };
+                    var added = await graphHttpClient.CreateUserAsync(contextCreate, groupSubjectDescriptors);
+
+                    var membersAfter = await teamClient.GetTeamMembersWithExtendedPropertiesAsync(projectName, defTeam.Id.ToString());
+                    result = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                //Console.WriteLine("Exception during create project: ", ex.Message);
+                throw;
+            }
+            finally
+            {
+                connection?.Dispose();
+                graphHttpClient?.Dispose();
+                teamClient?.Dispose();                
+            }
+            return result;
         }
     }
 }
