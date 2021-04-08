@@ -45,8 +45,10 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
             {
                 ShowLoading();
                 Requests.Clear();
-                //Requests = await AdoProjectAccessDataService.GetItemsAsync();
-                Requests = await AdoProjectAccessDataService.GetItemsByUserId(await AuthCsroService.GetCurrentUserId());
+                //if admin
+                Requests = await AdoProjectAccessDataService.GetItemsAsync();
+                //else
+                //Requests = await AdoProjectAccessDataService.GetItemsByUserId(await AuthCsroService.GetCurrentUserId());
             }
             catch (Exception ex)
             {

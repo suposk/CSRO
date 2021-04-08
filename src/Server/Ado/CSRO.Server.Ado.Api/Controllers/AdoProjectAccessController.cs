@@ -89,7 +89,8 @@ namespace CSRO.Server.Ado.Api.Controllers
             try
             {
                 _logger.LogInformation(ApiLogEvents.GetAllItems, $"{nameof(GetByUserId)} Started");
-                var all = await _repository.GetListFilter(a => a.CreatedBy == userId).ConfigureAwait(false);
+                //var all = await _repository.GetListFilter(a => a.IsDeleted != true && a.CreatedBy == userId).ConfigureAwait(false);
+                var all = await _repository.GetListFilter(a => a.IsDeleted != true && a.CreatedBy.Contains(userId)).ConfigureAwait(false);
                 var result = _mapper.Map<List<AdoProjectAccessDto>>(all);
                 return result;
             }
