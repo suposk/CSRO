@@ -39,13 +39,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Common\CSRO.Common\CSRO.Common.csproj" />
-    <ProjectReference Include="..\CSRO.Common.AzureSdkServices\CSRO.Common.AzureSdkServices.csproj" />
-    <ProjectReference Include="..\CSRO.Server.Core\CSRO.Server.Core.csproj" />
-    <ProjectReference Include="..\CSRO.Server.Domain\CSRO.Server.Domain.csproj" />
-    <ProjectReference Include="..\CSRO.Server.Entities\CSRO.Server.Entities.csproj" />
-    <ProjectReference Include="..\CSRO.Server.Infrastructure\CSRO.Server.Infrastructure.csproj" />
-    <ProjectReference Include="..\CSRO.Server.Services\CSRO.Server.Services.csproj" />
+    <ProjectReference Include="..\..\..\Common\CSRO.Common\CSRO.Common.csproj" />
+    <ProjectReference Include="..\..\..\CSRO.Common.AzureSdkServices\CSRO.Common.AzureSdkServices.csproj" />
+    <ProjectReference Include="..\..\..\CSRO.Server.Core\CSRO.Server.Core.csproj" />
+    <ProjectReference Include="..\..\..\CSRO.Server.Domain\CSRO.Server.Domain.csproj" />
+    <ProjectReference Include="..\..\..\CSRO.Server.Entities\CSRO.Server.Entities.csproj" />
+    <ProjectReference Include="..\..\..\CSRO.Server.Infrastructure\CSRO.Server.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\..\CSRO.Server.Services\CSRO.Server.Services.csproj" />
   </ItemGroup>
 
 </Project>
