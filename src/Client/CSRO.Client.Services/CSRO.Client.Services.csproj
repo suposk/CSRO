@@ -19,8 +19,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Common\CSRO.Common.AdoServices\CSRO.Common.AdoServices.csproj" />
-    <ProjectReference Include="..\Common\CSRO.Common.AzureSdkServices\CSRO.Common.AzureSdkServices.csproj" />
+    <ProjectReference Include="..\..\Common\CSRO.Common.AdoServices\CSRO.Common.AdoServices.csproj" />
+    <ProjectReference Include="..\..\Common\CSRO.Common.AzureSdkServices\CSRO.Common.AzureSdkServices.csproj" />
     <ProjectReference Include="..\CSRO.Client.Core\CSRO.Client.Core.csproj" />
   </ItemGroup>
   
