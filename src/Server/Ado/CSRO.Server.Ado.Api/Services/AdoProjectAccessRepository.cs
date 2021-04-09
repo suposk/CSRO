@@ -61,6 +61,11 @@ namespace CSRO.Server.Ado.Api.Services
             return _context.AdoProjectAccesses.Where(a => a.IsDeleted != true).OrderByDescending(a => a.CreatedAt).ToListAsync();
         }
 
+        public override Task<List<AdoProjectAccess>> GetByUserId(string userId)
+        {
+            return _context.AdoProjectAccesses.Where(a => a.IsDeleted != true && a.CreatedBy.Contains(userId)).OrderByDescending(a => a.CreatedAt).ToListAsync();
+        }
+
         public async Task<AdoProjectAccess> CreateAdoProjectAccess(AdoProjectAccess entity)
         {
             try

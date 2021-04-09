@@ -77,7 +77,7 @@ namespace CSRO.Server.Infrastructure
 
         public virtual Task<List<TModel>> GetList()
         {
-            return DatabaseContext.Set<TModel>().ToListAsync();
+            return DatabaseContext.Set<TModel>().OrderByDescending(a => a.CreatedAt).ToListAsync();
         }
 
         public virtual async Task<TModel> GetId(int id)
@@ -85,9 +85,22 @@ namespace CSRO.Server.Infrastructure
             return await DatabaseContext.Set<TModel>().FindAsync(id).ConfigureAwait(false);
         }
 
+        public virtual Task<List<TModel>> GetByUserId(string userId)
+        {
+            //var softDelete = entity as EntitySoftDeleteBase;
+            //if (softDelete != null)
+            //    //return DatabaseContext.Set<TModel>().Where(a => softDelete.IsDeleted != true && softDelete.CreatedBy.Contains(userId)).ToListAsync();
+            //    return DatabaseContext.Set<TModel>().Where(a => a.CreatedBy.Contains(userId)).ToListAsync();
+
+            //var b = entity as EntityBase;
+            //if (b != null)
+                return DatabaseContext.Set<TModel>().Where(a => a.CreatedBy.Contains(userId)).OrderByDescending(a => a.CreatedAt).ToListAsync();
+            //return null;
+        }
+
         public virtual Task<List<TModel>> GetListFilter(Expression<Func<TModel, bool>> expression)
         {
-            return DatabaseContext.Set<TModel>().Where(expression).ToListAsync();
+            return DatabaseContext.Set<TModel>().Where(expression).OrderByDescending(a => a.CreatedAt).ToListAsync();
         }
 
         public virtual Task<List<TModel>> GetListFilter(Expression<Func<TModel, bool>> expression, params Expression<Func<TModel, object>>[] includes)

@@ -11,8 +11,8 @@ namespace CSRO.Server.Infrastructure
     {
         DbContext DatabaseContext { get; }                
 
-        Task<TModel> GetId(int id);        
-
+        Task<TModel> GetId(int id);
+        virtual Task<List<TModel>> GetByUserId(string userId) { throw new NotImplementedException(); }
         Task<List<TModel>> GetList();
         void Add(TModel entity, string UserId = null);
         void Remove(TModel entity, string UserId = null);
