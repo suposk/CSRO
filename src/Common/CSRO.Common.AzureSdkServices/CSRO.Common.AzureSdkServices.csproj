@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Common\CSRO.Common\CSRO.Common.csproj" />
+    <ProjectReference Include="..\CSRO.Common\CSRO.Common.csproj" />
   </ItemGroup>
 
 </Project>

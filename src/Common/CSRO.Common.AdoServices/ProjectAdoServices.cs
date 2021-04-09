@@ -354,7 +354,6 @@ namespace CSRO.Common.AdoServices
                     //connection = new VssConnection(new Uri(url), new VssCredentials(true));
                     connection = new VssConnection(new Uri(url), new VssClientCredentials(true));
 
-                //projectName = "First-Ado";
                 teamClient = connection.GetClient<TeamHttpClient>();
                 var allteams = await teamClient.GetTeamsAsync(projectName, null, null, null, true);
 
@@ -362,14 +361,13 @@ namespace CSRO.Common.AdoServices
                 var defTeam = allteams?.FirstOrDefault(a => a.Name.Contains(defTeamGroupName));
                 if (defTeam != null)
                 {
-                    var members = await teamClient.GetTeamMembersWithExtendedPropertiesAsync(projectName, defTeam.Id.ToString());
+                    //var members = await teamClient.GetTeamMembersWithExtendedPropertiesAsync(projectName, defTeam.Id.ToString());
                     graphHttpClient = connection.GetClient<GraphHttpClient>();
                     List<SubjectDescriptor> groupSubjectDescriptors = new();
                     groupSubjectDescriptors.Add(SubjectDescriptor.FromString(defTeam.Identity.Descriptor.Identifier));
                     var contextCreate = new GraphUserPrincipalNameCreationContext { PrincipalName = userId };
                     var added = await graphHttpClient.CreateUserAsync(contextCreate, groupSubjectDescriptors);
-
-                    var membersAfter = await teamClient.GetTeamMembersWithExtendedPropertiesAsync(projectName, defTeam.Id.ToString());
+                    //var membersAfter = await teamClient.GetTeamMembersWithExtendedPropertiesAsync(projectName, defTeam.Id.ToString());
                     result = true;
                 }
             }
