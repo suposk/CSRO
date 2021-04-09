@@ -12,11 +12,11 @@ using System.Threading.Tasks;
 
 namespace CSRO.Server.Services
 {
-    public class LocalUserService : ILocalUserService
+    public class DbUserService : ILocalUserService
     {
         private readonly UserContext _context;        
 
-        public LocalUserService(
+        public DbUserService(
             UserContext context
             //IPasswordHasher<User> passwordHasher
             )
