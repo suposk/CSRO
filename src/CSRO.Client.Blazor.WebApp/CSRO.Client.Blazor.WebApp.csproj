@@ -34,10 +34,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Common\CSRO.Common.AdoServices\CSRO.Common.AdoServices.csproj" />
+    <ProjectReference Include="..\Common\CSRO.Common.AzureSdkServices\CSRO.Common.AzureSdkServices.csproj" />
     <ProjectReference Include="..\CSRO.Client.Blazor.UI\CSRO.Client.Blazor.UI.csproj" />
     <ProjectReference Include="..\CSRO.Client.Core\CSRO.Client.Core.csproj" />
     <ProjectReference Include="..\CSRO.Client.Services\CSRO.Client.Services.csproj" />
-    <ProjectReference Include="..\CSRO.Common.AzureSdkServices\CSRO.Common.AzureSdkServices.csproj" />
   </ItemGroup>
 
 </Project>

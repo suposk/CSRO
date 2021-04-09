@@ -36,7 +36,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSRO.Client.Blazor.UI", "CS
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{F1718260-95F7-45D8-A9F1-0BF01E712A43}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSRO.Common.AzureSdkServices", "CSRO.Common.AzureSdkServices\CSRO.Common.AzureSdkServices.csproj", "{138E5221-FA6A-455A-B778-C1A26431EB24}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSRO.Common.AzureSdkServices", "Common\CSRO.Common.AzureSdkServices\CSRO.Common.AzureSdkServices.csproj", "{138E5221-FA6A-455A-B778-C1A26431EB24}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSRO.Server.Ado.Api", "Server\Ado\CSRO.Server.Ado.Api\CSRO.Server.Ado.Api.csproj", "{3DEE3391-4189-4F3F-81AC-909714340B97}"
 EndProject
