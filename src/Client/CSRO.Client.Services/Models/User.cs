@@ -46,7 +46,7 @@ namespace CSRO.Client.Services.Models
 
         public int UserId { get; set; }
 
-        public User User { get; set; }
+        //public User User { get; set; }
     }
 
     public class Role : ModelBase

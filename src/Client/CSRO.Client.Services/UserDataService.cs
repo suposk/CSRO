@@ -166,7 +166,7 @@ namespace CSRO.Client.Services
         {
             try
             {
-                //await base.AddAuthHeaderAsync();                
+                await base.AddAuthHeaderAsync();                
 
                 //var url = $"{ApiPart}GetByUserId/{userId}";
                 var url = $"{ApiPart}{userId}";
@@ -174,6 +174,7 @@ namespace CSRO.Client.Services
 
                 if (apiData.IsSuccessStatusCode)
                 {
+                    var com = await apiData.Content.ReadAsStringAsync();
                     var stream = await apiData.Content.ReadAsStreamAsync();
                     var ser = await JsonSerializer.DeserializeAsync<List<UserDto>>(stream, _options);
                     var result = Mapper.Map<List<User>>(ser);

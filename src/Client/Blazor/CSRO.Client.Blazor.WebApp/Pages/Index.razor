@@ -24,7 +24,7 @@
                 //    var us = await UserDataService.GetItemsByUserId("");
                 //}
 
-                var us = await UserDataService.GetItemsByUserId("");
+                var us = await UserDataService.GetItemsByUserId("live.com#jan.supolik@hotmail.com");
                 if (us == null)
                 {
                     var t = await TicketDataService.GetItemByIdAsync(1);
