@@ -109,14 +109,6 @@ namespace CSRO.Server.Ado.Api
 
             #region Distributed Token Caches
 
-            //services.AddCosmosCache((CosmosCacheOptions cacheOptions) =>
-            //{
-            //    cacheOptions.ContainerName = Configuration["CosmosCache:ContainerName"];
-            //    cacheOptions.DatabaseName = Configuration["CosmosCache:DatabaseName"];
-            //    cacheOptions.ClientBuilder = new CosmosClientBuilder(Configuration["CosmosCache:ConnectionString"]);
-            //    cacheOptions.CreateIfNotExists = true;
-            //});
-
             services.AddDistributedSqlServerCache(options =>
             {
                 //LogSecretVariableValueStartValue(nameof(TokenCacheDbConnStr), TokenCacheDbConnStr);
@@ -132,7 +124,6 @@ namespace CSRO.Server.Ado.Api
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddMediatR(Assembly.GetExecutingAssembly());
-
 
             #region Auth
 
@@ -163,7 +154,6 @@ namespace CSRO.Server.Ado.Api
             services.AddScoped<IClaimsTransformation, AdoClaimsTransformation>();
 
             #endregion
-
 
             services.AddControllers();
             services.AddMvc(options =>

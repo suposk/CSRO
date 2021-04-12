@@ -106,14 +106,6 @@ namespace CSRO.Server.Auth.Api
 
             #region Distributed Token Caches
 
-            //services.AddCosmosCache((CosmosCacheOptions cacheOptions) =>
-            //{
-            //    cacheOptions.ContainerName = Configuration["CosmosCache:ContainerName"];
-            //    cacheOptions.DatabaseName = Configuration["CosmosCache:DatabaseName"];
-            //    cacheOptions.ClientBuilder = new CosmosClientBuilder(Configuration["CosmosCache:ConnectionString"]);
-            //    cacheOptions.CreateIfNotExists = true;
-            //});
-
             services.AddDistributedSqlServerCache(options =>
             {
                 //LogSecretVariableValueStartValue(nameof(TokenCacheDbConnStr), TokenCacheDbConnStr);
@@ -131,7 +123,42 @@ namespace CSRO.Server.Auth.Api
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddMediatR(Assembly.GetExecutingAssembly());
 
+
+            #region Auth
+
+            services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)
+                .AddMicrosoftIdentityWebApi(Configuration, "AzureAd")
+                .EnableTokenAcquisitionToCallDownstreamApi()
+                .AddInMemoryTokenCaches();
+            //.AddDistributedTokenCaches();    
+
+            services.AddAuthorization(options =>
+            {
+                // By default, all incoming requests will be authorized according to the default policy
+                //Will automatical sign in user
+                //options.FallbackPolicy = options.DefaultPolicy;
+
+                //options.AddPolicy(PoliciesCsro.CanApproveAdoRequest, policy => policy.RequireClaim(ClaimTypesCsro.CanApproveAdoRequest, true.ToString()));
+            });
+
+            //TODO replace with rest or GRPC service
+            services.AddScoped<ILocalUserService, DbUserService>();
+            services.AddScoped<IClaimsTransformation, AuthClaimsTransformation>();
+
+            #endregion
+
+
             services.AddControllers();
+            services.AddMvc(options =>
+            {
+                options.Filters.Add(new CsroValidationFilter());
+            })
+            .AddFluentValidation(options =>
+            {
+                //options.RegisterValidatorsFromAssemblyContaining<Startup>();
+                //options.RegisterValidatorsFromAssemblyContaining<Validation.BaseAdoAbstractValidator>();
+            });
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "CSRO.Server.Auth.Api", Version = "v1" });
