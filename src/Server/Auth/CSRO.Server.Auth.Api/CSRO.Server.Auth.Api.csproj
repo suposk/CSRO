@@ -40,7 +40,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
     <ProjectReference Include="..\..\Shared\CSRO.Server.Domain\CSRO.Server.Domain.csproj" />
     <ProjectReference Include="..\..\Shared\CSRO.Server.Entities\CSRO.Server.Entities.csproj" />
     <ProjectReference Include="..\..\Shared\CSRO.Server.Infrastructure\CSRO.Server.Infrastructure.csproj" />

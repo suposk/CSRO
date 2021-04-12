@@ -18,6 +18,7 @@ namespace CSRO.Client.Core
         {
             public const string ApiEndpoint = "ApiEndpoint";
             public const string ApiEndpointAdo = "ApiEndpointAdo";
+            public const string ApiEndpointAuth = "ApiEndpointAuth";
         }
 
         public static class Scopes 

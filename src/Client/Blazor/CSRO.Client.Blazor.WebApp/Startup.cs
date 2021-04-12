@@ -168,6 +168,25 @@ namespace CSRO.Client.Blazor.WebApp
             .AddPolicyHandler(PollyHelper.GetRetryPolicy());
             ;
 
+            string ApiEndpointAuth = Configuration.GetValue<string>(ConstatCsro.EndPoints.ApiEndpointAuth);
+            services.AddHttpClient(ConstatCsro.EndPoints.ApiEndpointAuth, (client) =>
+            {
+                client.Timeout = TimeSpan.FromMinutes(ConstatCsro.ClientNames.API_TimeOut_Mins);
+                client.BaseAddress = new Uri(ApiEndpointAuth);
+                client.DefaultRequestHeaders.Add("Accept", "application/json");
+            }).ConfigurePrimaryHttpMessageHandler(() =>
+            {
+                return new HttpClientHandler()
+                {
+                    AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip | DecompressionMethods.Brotli,
+                    UseCookies = false
+                };
+            })
+            .SetHandlerLifetime(TimeSpan.FromMinutes(5))
+            .AddPolicyHandler(PollyHelper.GetRetryPolicy())
+            .AddPolicyHandler(PollyHelper.GetRetryPolicy());
+            ;
+
             services.AddHttpClient(ConstatCsro.ClientNames.MANAGEMENT_AZURE_EndPoint, (client) =>
             {
                 client.Timeout = TimeSpan.FromMinutes(ConstatCsro.ClientNames.MANAGEMENT_TimeOut_Mins);
@@ -246,7 +265,8 @@ namespace CSRO.Client.Blazor.WebApp
                 .AddMicrosoftIdentityConsentHandler();
 
             services.AddTransient<IAuthCsroService, AuthCsroService>();
-                        
+            services.AddTransient<IUserDataService, UserDataService>();
+
             services.AddTransient<IVersionService, VersionService>();
             services.AddTransient<IBaseDataService<Ticket>, TicketDataService>();
             services.AddTransient<IAdoProjectHistoryDataService, AdoProjectHistoryDataService>();                      

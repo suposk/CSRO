@@ -141,6 +141,8 @@ namespace CSRO.Server.Auth.Api
                 //options.AddPolicy(PoliciesCsro.CanApproveAdoRequest, policy => policy.RequireClaim(ClaimTypesCsro.CanApproveAdoRequest, true.ToString()));
             });
 
+            services.AddScoped<IApiIdentity, ApiIdentity>();
+
             //TODO replace with rest or GRPC service
             services.AddScoped<ILocalUserService, DbUserService>();
             services.AddScoped<IClaimsTransformation, AuthClaimsTransformation>();
