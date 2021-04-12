@@ -16,7 +16,7 @@ namespace CSRO.Client.Services
 
     public interface IUserDataService : IBaseDataService<User>
     {
-
+        Task<User> GetUserByUserName(string userName);
     }
 
     public class UserDataService : BaseDataService, IUserDataService
@@ -162,22 +162,23 @@ namespace CSRO.Client.Services
             }
         }
 
-        public async Task<List<User>> GetItemsByUserId(string userId)
+        public async Task<User> GetUserByUserName(string userName)
         {
             try
             {
-                await base.AddAuthHeaderAsync();                
+                await base.AddAuthHeaderAsync();
 
-                //var url = $"{ApiPart}GetByUserId/{userId}";
-                var url = $"{ApiPart}{userId}";
+                //var url = $"{ApiPart}GetByUserId/{userName}";
+                var url = $"{ApiPart}{userName}";
                 var apiData = await HttpClientBase.GetAsync(url).ConfigureAwait(false);
 
                 if (apiData.IsSuccessStatusCode)
                 {
-                    var com = await apiData.Content.ReadAsStringAsync();
+                    //var content = await apiData.Content.ReadAsStringAsync();
+                    //var ser = JsonSerializer.Deserialize<UserDto>(content, _options);
                     var stream = await apiData.Content.ReadAsStreamAsync();
-                    var ser = await JsonSerializer.DeserializeAsync<List<UserDto>>(stream, _options);
-                    var result = Mapper.Map<List<User>>(ser);
+                    var ser = await JsonSerializer.DeserializeAsync<UserDto>(stream, _options);
+                    var result = Mapper.Map<User>(ser);
                     return result;
                 }
                 else

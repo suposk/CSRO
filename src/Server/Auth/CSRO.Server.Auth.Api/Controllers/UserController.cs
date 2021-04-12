@@ -38,7 +38,7 @@ namespace CSRO.Server.Auth.Api.Controllers
         [HttpGet]
         public IEnumerable<string> Get()
         {
-            return new string[] { "value 1", "value 2" };
+            return new string[] { "user 1", "user 2" };
         }
 
         // GET api/<AdoProjectAccessController>/5

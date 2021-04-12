@@ -52,7 +52,7 @@ namespace CSRO.Server.Services
             userName = CheckUserName(userName);
             return await _context.Users
                 .Include(a => a.UserRoles)                
-                .FirstOrDefaultAsync(u => u.Username == userName);
+                .FirstOrDefaultAsync(u => u.Username.Contains(userName));
         }
 
         private string CheckUserName(string userName)

@@ -28,7 +28,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages
         public ICsroDialogService CsroDialogService { get; set; }
 
         [Inject]
-        IVmTicketDataService VmTicketDataService { get; set; }
+        public IUserDataService UserDataService { get; set; }
 
         [Inject]
         public ILogger<WebSettingsBase> Logger { get; set; }
@@ -63,6 +63,8 @@ namespace CSRO.Client.Blazor.WebApp.Pages
                     if (auth.User.Identity.Name.Contains("supolik"))
                     {
                         CanView = true;
+
+                        var userAuth = await UserDataService.GetUserByUserName(auth.User.Identity.Name);
 
                         var azureAdOptions = Configuration.GetSection(nameof(AzureAd)).Get<AzureAd>();
                         var dic = DictionaryOfPropertiesFromInstance(azureAdOptions);
