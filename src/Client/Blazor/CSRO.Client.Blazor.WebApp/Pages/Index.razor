@@ -6,24 +6,40 @@
 </MudContainer>
 
 @code { 
-    @using Microsoft.AspNetCore.Components.Authorization
-    @using CSRO.Client.Services
-    @using CSRO.Client.Services.Models
-    @inject IBaseDataService<Ticket> TicketDataService
-    @inject NavigationManager NavigationManager
+        @using Microsoft.AspNetCore.Components.Authorization
+        @using CSRO.Client.Services
+        @using CSRO.Client.Services.Models
+        @inject IBaseDataService<Ticket> TicketDataService
+        @inject IUserDataService UserDataService
+        @inject NavigationManager NavigationManager
 
-    protected async override Task OnInitializedAsync()
-    {
-
-        try
-        {
-            await TicketDataService.GetItemByIdAsync(0);
-            //NavigationManager.NavigateTo("/MicrosoftIdentity/Account/SignIn", false);
-        }
-        catch (Exception ex)
+        protected async override Task OnInitializedAsync()
         {
 
+            try
+            {
+                //var t = await TicketDataService.GetItemByIdAsync(0);
+                //if (t != null)
+                //{
+                //    var us = await UserDataService.GetItemsByUserId("");
+                //}
+
+                var us = await UserDataService.GetItemsByUserId("");
+                if (us == null)
+                {
+                    var t = await TicketDataService.GetItemByIdAsync(1);
+                    if (t != null)
+                    {
+                        us = await UserDataService.GetItemsByUserId("live.com#jan.supolik@hotmail.com");
+                    }
+                }
+
+                //NavigationManager.NavigateTo("/MicrosoftIdentity/Account/SignIn", false);
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
+
     }
-
-}
