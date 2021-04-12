@@ -25,6 +25,7 @@ namespace CSRO.Client.Core
             public const string MANAGEMENT_AZURE_SCOPE = "https://management.azure.com//.default";
             public const string Scope_Api = "Scope_Api";
             public const string Scope_Ado_Api = "Scope_Ado_Api";
+            public const string Scope_Auth_Api = "Scope_Auth_Api";
             //added comment in suposk
         }
     }
