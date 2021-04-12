@@ -1,5 +1,6 @@
 ﻿using CSRO.Server.Entities;
 using CSRO.Server.Entities.Entity;
+using CSRO.Server.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -12,16 +13,19 @@ using System.Threading.Tasks;
 
 namespace CSRO.Server.Services
 {
-    public class LocalUserService : ILocalUserService
+    public class DbUserService : ILocalUserService
     {
-        private readonly UserContext _context;        
+        private readonly UserContext _context;
+        private readonly IApiIdentity _apiIdentity;
 
-        public LocalUserService(
-            UserContext context
+        public DbUserService(
+            UserContext context,
+            IApiIdentity apiIdentity
             //IPasswordHasher<User> passwordHasher
             )
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
+            _apiIdentity = apiIdentity;
         }
 
 
@@ -45,23 +49,33 @@ namespace CSRO.Server.Services
 
         public async Task<User> GetUserByUserNameAsync(string userName)
         {
-            if (string.IsNullOrWhiteSpace(userName))            
-                throw new ArgumentNullException(nameof(userName));            
-
+            userName = CheckUserName(userName);
             return await _context.Users
-                 .FirstOrDefaultAsync(u => u.Username == userName);
+                .Include(a => a.UserRoles)                
+                .FirstOrDefaultAsync(u => u.Username.Contains(userName));
+        }
+
+        private string CheckUserName(string userName)
+        {
+            if (string.IsNullOrWhiteSpace(userName))
+            {
+                //get from current loggied in user
+                var userId = _apiIdentity.GetUserName();
+                userName = string.IsNullOrWhiteSpace(userId) ? throw new ArgumentNullException(nameof(userName)) : userId;
+            }
+
+            return userName;
         }
 
         public async Task<List<UserClaim>> GetUserClaimsByUserNameAsync(string userName)
         {
-            if (string.IsNullOrWhiteSpace(userName))            
-                throw new ArgumentNullException(nameof(userName));            
-
+            userName = CheckUserName(userName);
             return await _context.UserClaims.Where(u => u.User.Username == userName).ToListAsync();
         }
 
         public async Task<List<Claim>> GetClaimsByUserNameAsync(string userName)
         {
+            userName = CheckUserName(userName);
             var userDbClaims = await GetUserClaimsByUserNameAsync(userName);
             if (userDbClaims.HasAnyInCollection())
             {

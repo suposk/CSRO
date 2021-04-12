@@ -27,31 +27,28 @@ using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Azure.KeyVault;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using CSRO.Common;
-using CSRO.Server.Ado.Api.Services;
-using CSRO.Common.AdoServices;
-using CSRO.Server.Ado.Api.BackgroundTasks;
 using CSRO.Server.Services.Utils;
 using CSRO.Server.Services.Ado;
 using CSRO.Server.Infrastructure.Search;
 using System.Reflection;
 using MediatR;
 using CSRO.Server.Infrastructure.MessageBus;
-using CSRO.Server.Ado.Api.Extensions;
 using CSRO.Server.Services;
 using Microsoft.AspNetCore.Authentication;
 using CSRO.Server.Core;
+using CSRO.Server.Auth.Api.Services;
 
-namespace CSRO.Server.Ado.Api
+namespace CSRO.Server.Auth.Api
 {
-    public class StartupAdoApi
+    public class StartupAuthApi
     {
-        public StartupAdoApi(
+        public StartupAuthApi(
             IConfiguration configuration,
             IWebHostEnvironment env)
         {
             Configuration = configuration;
             _env = env;
-            var myType = typeof(StartupAdoApi);
+            var myType = typeof(StartupAuthApi);
             _namespace = myType.Namespace;
 
             using var loggerFactory = LoggerFactory.Create(builder =>
@@ -60,8 +57,8 @@ namespace CSRO.Server.Ado.Api
                 builder.AddConsole();
                 builder.AddEventSourceLogger();
             });
-            _logger = loggerFactory.CreateLogger(nameof(StartupAdoApi));
-            _logger.LogInformation($"Created {nameof(StartupAdoApi)} _logger");
+            _logger = loggerFactory.CreateLogger(nameof(StartupAuthApi));
+            _logger.LogInformation($"Created {nameof(StartupAuthApi)} _logger");
         }
 
         public IConfiguration Configuration { get; }
@@ -120,10 +117,12 @@ namespace CSRO.Server.Ado.Api
                 //def is 2 minutes
                 options.DefaultSlidingExpiration = TimeSpan.FromMinutes(30);
             });
+
             #endregion
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddMediatR(Assembly.GetExecutingAssembly());
+
 
             #region Auth
 
@@ -139,21 +138,17 @@ namespace CSRO.Server.Ado.Api
                 //Will automatical sign in user
                 //options.FallbackPolicy = options.DefaultPolicy;
 
-                options.AddPolicy(PoliciesCsro.CanApproveAdoRequest, policy => policy.RequireClaim(ClaimTypesCsro.CanApproveAdoRequest, true.ToString()));
+                //options.AddPolicy(PoliciesCsro.CanApproveAdoRequest, policy => policy.RequireClaim(ClaimTypesCsro.CanApproveAdoRequest, true.ToString()));
             });
 
-            //todo remve after sing service to talk auth
-            string UserContextDbConnStr = Configuration.GetConnectionString("UserContextDbConnStr");
-            services.AddDbContext<UserContext>(options =>
-            {
-                options.UseSqlServer(UserContextDbConnStr, x => x.MigrationsAssembly(_namespace));
-            });
+            services.AddScoped<IApiIdentity, ApiIdentity>();
 
             //TODO replace with rest or GRPC service
             services.AddScoped<ILocalUserService, DbUserService>();
-            services.AddScoped<IClaimsTransformation, AdoClaimsTransformation>();
+            services.AddScoped<IClaimsTransformation, AuthClaimsTransformation>();
 
             #endregion
+
 
             services.AddControllers();
             services.AddMvc(options =>
@@ -163,36 +158,19 @@ namespace CSRO.Server.Ado.Api
             .AddFluentValidation(options =>
             {
                 //options.RegisterValidatorsFromAssemblyContaining<Startup>();
-                options.RegisterValidatorsFromAssemblyContaining<Validation.BaseAdoAbstractValidator>();
+                //options.RegisterValidatorsFromAssemblyContaining<Validation.BaseAdoAbstractValidator>();
             });
 
-
-            services.AddScoped<IApiIdentity, ApiIdentity>();
-            services.AddScoped<IEmailService, EmailService>();
-
-            services.AddTransient<IProjectAdoServices, ProjectAdoServices>();
-            services.AddTransient<IProcessAdoServices, ProcessAdoServices>();
-            services.AddSingleton<ICacheProvider, CacheProvider>(); //testing
-            services.AddTransient<IPropertyMappingService, AdoPropertyMappingService>();
-
-            services.AddSingleton<IMessageBus, AzServiceBusMessageBus>();
-            //services.AddSingleton<IServiceBusConsumer, AzServiceBusConsumer>();
-
-            services.AddScoped<IAdoProjectApproverService, AdoProjectApproverService>();
-            services.AddScoped<IGenerateEmailForApprovalService, GenerateEmailForApprovalService>();
-            services.AddScoped<IAdoProjectAccessRepository, AdoProjectAccessRepository>();
-
-            //services.AddControllers(options => options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = _namespace, Version = "v1" });
-            });            
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "CSRO.Server.Auth.Api", Version = "v1" });
+            });
 
             #region DbContext
 
             var UseSqlLiteDb = Configuration.GetValue<bool>("UseSqlLiteDb");
 
-            services.AddDbContext<AdoContext>(options =>
+            services.AddDbContext<UserContext>(options =>
             {
                 if (UseSqlLiteDb)
                     options.UseSqlite(Configuration.GetConnectionString("SqlLiteConnString"), x => x.MigrationsAssembly(_namespace));
@@ -200,57 +178,13 @@ namespace CSRO.Server.Ado.Api
                     options.UseSqlServer(SqlConnString, x => x.MigrationsAssembly(_namespace));
             });
 
-            services.AddDbContext<TokenCacheContext>(options =>
-            {
-                if (UseSqlLiteDb)
-                    options.UseSqlite(Configuration.GetConnectionString("SqlLiteConnString"));
-                else
-                    options.UseSqlServer(TokenCacheDbConnStr);
-
-            });
-
             #endregion
 
             #region Repositories
 
-            services.AddScoped(typeof(IRepository<>), typeof(AdoRepository<>));
-            services.AddScoped<IAdoProjectHistoryRepository, AdoProjectHistoryRepository>();
-            services.AddScoped<IAdoProjectRepository, AdoProjectRepository>();
+            services.AddScoped(typeof(IRepository<>), typeof(AuthRepository<>));
 
             #endregion  
-            
-            //should be last to hav all dependencies
-            services.AddHostedService<ProjectApprovalHostedService>(sp =>
-            {
-                var serviceProvider = services.BuildServiceProvider();
-                var apiIdentity = serviceProvider.GetService<IApiIdentity>();
-                var ctx = serviceProvider.GetService<AdoContext>();
-                IRepository<AdoProject> obj = new Repository<AdoProject>(ctx, apiIdentity);
-                var logger = sp.GetService<ILogger<ProjectApprovalHostedService>>();
-                IGenerateEmailForApprovalService generateEmailForApprovalService = serviceProvider.GetService<IGenerateEmailForApprovalService>();
-                return new ProjectApprovalHostedService(generateEmailForApprovalService, logger);
-            });
-
-            services.AddHostedService<AzServiceBusConsumer>(sp =>
-            {
-                var serviceProvider = services.BuildServiceProvider();
-                //var serviceProvider = sp;
-                var apiIdentity = serviceProvider.GetService<IApiIdentity>();
-                var ctx = serviceProvider.GetService<AdoContext>();
-                IRepository<AdoProject> obj = new Repository<AdoProject>(ctx, apiIdentity);                                             
-
-                IConfiguration configuration = serviceProvider.GetService<IConfiguration>();
-                IMessageBus messageBus = serviceProvider.GetService<IMessageBus>();
-                IMediator mediator = serviceProvider.GetService<IMediator>();
-                IProjectAdoServices projectAdoServices = serviceProvider.GetService<IProjectAdoServices>();
-                IAdoProjectRepository adoProjectRepository = serviceProvider.GetService<IAdoProjectRepository>();
-                IAdoProjectHistoryRepository adoProjectHistoryRepository = serviceProvider.GetService<IAdoProjectHistoryRepository>();
-                IMapper mapper = serviceProvider.GetService<IMapper>();
-                ILogger<AzServiceBusConsumer> logger = serviceProvider.GetService<ILogger<AzServiceBusConsumer>>();
-                return new AzServiceBusConsumer(configuration, messageBus, mediator, projectAdoServices, adoProjectRepository, adoProjectHistoryRepository, mapper, logger);
-            });
-
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -260,7 +194,7 @@ namespace CSRO.Server.Ado.Api
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", $"{_namespace} v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CSRO.Server.Auth.Api v1"));
             }
 
             app.UseHttpsRedirection();
@@ -274,8 +208,6 @@ namespace CSRO.Server.Ado.Api
             {
                 endpoints.MapControllers();
             });
-
-            //app.UseAzServiceBusConsumer();
         }
     }
 }

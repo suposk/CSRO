@@ -14,8 +14,6 @@ namespace CSRO.Server.Ado.Api.AdoAutoMapperProfiles
 {
     public class AdoProfile : Profile
     {
-        public IMapper Mapper { get; }
-
         public AdoProfile()
         {           
             CreateMap<AdoProjectHistoryDto, Entity.AdoProjectHistory>()
