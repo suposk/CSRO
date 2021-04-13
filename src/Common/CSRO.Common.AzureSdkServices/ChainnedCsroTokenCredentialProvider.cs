@@ -28,7 +28,7 @@ namespace CSRO.Common.AzureSdkServices
                     !string.IsNullOrEmpty(spnAdOptions.ClientSecret))
                 {
                     return new ChainedTokenCredential(
-                        new ManagedIdentityCredential(),
+                        //new ManagedIdentityCredential(), //don;t use for SPN
                         new ClientSecretCredential(
                             spnAdOptions.TenantId,
                             spnAdOptions.ClientId,

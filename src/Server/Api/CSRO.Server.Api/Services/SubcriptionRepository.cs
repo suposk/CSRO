@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using CSRO.Common.AzureSdkServices;
 
 namespace CSRO.Server.Api.Services
 {
@@ -22,6 +23,7 @@ namespace CSRO.Server.Api.Services
     public class SubcriptionRepository : ISubcriptionRepository
     {
         private readonly ISubcriptionService _subcriptionService;
+        private readonly ISubscriptionSdkService _subscriptionSdkService;
         private readonly IAtCodecmdbReferenceRepository _atCodecmdbReferenceRepository;
         private readonly ICacheProvider _cacheProvider;
         const string cacheKeyProcess = nameof(IdName);
@@ -29,10 +31,12 @@ namespace CSRO.Server.Api.Services
 
         public SubcriptionRepository(
             ISubcriptionService subcriptionService,
+            ISubscriptionSdkService subscriptionSdkService,
             IAtCodecmdbReferenceRepository atCodecmdbReferenceRepository,
             ICacheProvider cacheProvider)
         {
-            _subcriptionService = subcriptionService;            
+            _subcriptionService = subcriptionService;
+            _subscriptionSdkService = subscriptionSdkService;
             _cacheProvider = cacheProvider;
             _atCodecmdbReferenceRepository = atCodecmdbReferenceRepository;
             _context = _atCodecmdbReferenceRepository.DatabaseContext as BillingContext;
@@ -44,6 +48,7 @@ namespace CSRO.Server.Api.Services
             if (cache.HasAnyInCollection())
                 return cache;
 
+            var subsSdk = await _subscriptionSdkService.GetAllSubcriptions(null, cancelToken).ConfigureAwait(false);
             var subs = await _subcriptionService.GetSubcriptions(cancelToken);
             _cacheProvider.SetCache(cacheKeyProcess, subs, Core.ConstatCsro.CacheSettings.DefaultDuration);
             return subs;
