@@ -34,12 +34,12 @@ namespace CSRO.Server.Auth.Api.Controllers
             _mapper = mapper;
         }
 
-        // GET: api/<UserController>
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "user 1", "user 2" };
-        }
+        //// GET: api/<UserController>
+        //[HttpGet]
+        //public IEnumerable<string> Get()
+        //{
+        //    return new string[] { "user 1", "user 2" };
+        //}
 
         // GET api/<AdoProjectAccessController>/5
         [HttpGet("{userName}", Name = nameof(GetUserbyUserName))]        
@@ -62,23 +62,5 @@ namespace CSRO.Server.Auth.Api.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }
         }
-
-        //// POST api/<UserController>
-        //[HttpPost]
-        //public void Post([FromBody] string value)
-        //{
-        //}
-
-        //// PUT api/<UserController>/5
-        //[HttpPut("{id}")]
-        //public void Put(int id, [FromBody] string value)
-        //{
-        //}
-
-        //// DELETE api/<UserController>/5
-        //[HttpDelete("{id}")]
-        //public void Delete(int id)
-        //{
-        //}
     }
 }
