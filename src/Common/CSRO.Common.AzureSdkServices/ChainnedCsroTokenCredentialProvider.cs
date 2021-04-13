@@ -19,19 +19,38 @@ namespace CSRO.Common.AzureSdkServices
         public TokenCredential GetCredential()
         {
             // Bind the configuration section to an instance of AzureAdAuthenticationOptions
-            var azureAdOptions = _configuration.GetSection(nameof(AzureAd)).Get<AzureAd>(); 
-
-            // If all three values are present, use both the Managed Identity and client secret credentials
-            if (!string.IsNullOrEmpty(azureAdOptions.TenantId) &&
-                !string.IsNullOrEmpty(azureAdOptions.ClientId) &&
-                !string.IsNullOrEmpty(azureAdOptions.ClientSecret))
+            var spnAdOptions = _configuration.GetSection(nameof(SpnAd)).Get<SpnAd>();
+            if (spnAdOptions != null)
             {
-                return new ChainedTokenCredential(
-                    new ManagedIdentityCredential(),
-                    new ClientSecretCredential(
-                        azureAdOptions.TenantId,
-                        azureAdOptions.ClientId,
-                        azureAdOptions.ClientSecret));
+                // If all three values are present, use both the Managed Identity and client secret credentials
+                if (!string.IsNullOrEmpty(spnAdOptions.TenantId) &&
+                    !string.IsNullOrEmpty(spnAdOptions.ClientId) &&
+                    !string.IsNullOrEmpty(spnAdOptions.ClientSecret))
+                {
+                    return new ChainedTokenCredential(
+                        new ManagedIdentityCredential(),
+                        new ClientSecretCredential(
+                            spnAdOptions.TenantId,
+                            spnAdOptions.ClientId,
+                            spnAdOptions.ClientSecret));
+                }
+            }
+            else
+            {
+                var azureAdOptions = _configuration.GetSection(nameof(AzureAd)).Get<AzureAd>();
+
+                // If all three values are present, use both the Managed Identity and client secret credentials
+                if (!string.IsNullOrEmpty(azureAdOptions.TenantId) &&
+                    !string.IsNullOrEmpty(azureAdOptions.ClientId) &&
+                    !string.IsNullOrEmpty(azureAdOptions.ClientSecret))
+                {
+                    return new ChainedTokenCredential(
+                        new ManagedIdentityCredential(),
+                        new ClientSecretCredential(
+                            azureAdOptions.TenantId,
+                            azureAdOptions.ClientId,
+                            azureAdOptions.ClientSecret));
+                }
             }
 
             // Otherwise, only use the Managed Identity credential
