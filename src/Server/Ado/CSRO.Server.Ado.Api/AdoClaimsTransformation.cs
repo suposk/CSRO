@@ -10,18 +10,25 @@ namespace CSRO.Server.Ado.Api
 {
     public class AdoClaimsTransformation : IClaimsTransformation
     {
-        private readonly ILocalUserService _localUserService;
+        private readonly IRestUserService _restUserService;
 
-        public AdoClaimsTransformation(ILocalUserService localUserService)
+        //private readonly ILocalUserService _localUserService;
+
+        public AdoClaimsTransformation(
+            //ILocalUserService localUserService
+            IRestUserService restUserService
+            )
         {
-            _localUserService = localUserService;
+            _restUserService = restUserService;
+            //_localUserService = localUserService;
         }
 
         public async Task<ClaimsPrincipal> TransformAsync(ClaimsPrincipal principal)
         {
             if (principal.Identity.IsAuthenticated)
             {
-                var aditionalClaims = await _localUserService.GetClaimsByUserNameAsync(principal.Identity.Name);
+                //var aditionalClaims = await _localUserService.GetClaimsByUserNameAsync(principal.Identity.Name);
+                var aditionalClaims = await _restUserService.GetClaimsByUserNameAsync(principal.Identity.Name);
                 if (aditionalClaims.HasAnyInCollection())
                 {
                     var identity = principal.Identity as ClaimsIdentity;
