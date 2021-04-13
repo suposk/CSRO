@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
+namespace CSRO.Server.Auth.Api.Migrations.SqlServerMigrations
 {
     [DbContext(typeof(UserContext))]
     partial class UserContextModelSnapshot : ModelSnapshot
@@ -16,7 +16,7 @@ namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.3")
+                .HasAnnotation("ProductVersion", "5.0.4")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("CSRO.Server.Entities.Entity.Role", b =>
@@ -59,21 +59,21 @@ namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2021, 3, 25, 16, 6, 27, 368, DateTimeKind.Utc).AddTicks(6865),
+                            CreatedAt = new DateTime(2021, 4, 13, 7, 18, 38, 178, DateTimeKind.Utc).AddTicks(5227),
                             CreatedBy = "Script",
                             Name = "Admin"
                         },
                         new
                         {
                             Id = 3,
-                            CreatedAt = new DateTime(2021, 3, 25, 16, 6, 27, 368, DateTimeKind.Utc).AddTicks(8036),
+                            CreatedAt = new DateTime(2021, 4, 13, 7, 18, 38, 178, DateTimeKind.Utc).AddTicks(6460),
                             CreatedBy = "Script",
                             Name = "Contributor"
                         },
                         new
                         {
                             Id = 5,
-                            CreatedAt = new DateTime(2021, 3, 25, 16, 6, 27, 368, DateTimeKind.Utc).AddTicks(8039),
+                            CreatedAt = new DateTime(2021, 4, 13, 7, 18, 38, 178, DateTimeKind.Utc).AddTicks(6465),
                             CreatedBy = "Script",
                             Name = "User"
                         });
@@ -114,14 +114,14 @@ namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
                         .HasColumnType("rowversion");
 
                     b.Property<string>("Username")
+                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("Username")
-                        .IsUnique()
-                        .HasFilter("[Username] IS NOT NULL");
+                        .IsUnique();
 
                     b.ToTable("Users");
 
@@ -171,8 +171,9 @@ namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
                         .HasMaxLength(250)
                         .HasColumnType("nvarchar(250)");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("Value")
                         .IsRequired()
@@ -181,7 +182,7 @@ namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserName");
 
                     b.ToTable("UserClaims");
 
@@ -190,43 +191,43 @@ namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
                         {
                             Id = 1,
                             Type = "CanApproveAdoRequest-Csro",
-                            UserId = 1,
+                            UserName = "live.com#jan.supolik@hotmail.com",
                             Value = "True"
                         },
                         new
                         {
                             Id = 2,
                             Type = "CanReadAdoRequest-Csro",
-                            UserId = 1,
+                            UserName = "live.com#jan.supolik@hotmail.com",
                             Value = "True"
                         },
                         new
                         {
                             Id = 3,
                             Type = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress",
-                            UserId = 1,
+                            UserName = "live.com#jan.supolik@hotmail.com",
                             Value = "jan.supolik@hotmail.com"
                         },
                         new
                         {
                             Id = 4,
                             Type = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role",
-                            UserId = 1,
+                            UserName = "live.com#jan.supolik@hotmail.com",
                             Value = "Admin"
                         },
                         new
                         {
                             Id = 21,
                             Type = "CanReadAdoRequest-Csro",
-                            UserId = 1,
+                            UserName = "read@jansupolikhotmail.onmicrosoft.com",
                             Value = "True"
                         },
                         new
                         {
                             Id = 22,
                             Type = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress",
-                            UserId = 2,
-                            Value = "fake@someprovider.com"
+                            UserName = "read@jansupolikhotmail.onmicrosoft.com",
+                            Value = "read@someprovider.com"
                         });
                 });
 
@@ -257,14 +258,14 @@ namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<string>("UserName")
+                        .HasColumnType("nvarchar(200)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("RoleId");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserName");
 
                     b.ToTable("UserRoles");
 
@@ -273,15 +274,16 @@ namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
                         {
                             Id = 1,
                             RoleId = 1,
-                            UserId = 1
+                            UserName = "live.com#jan.supolik@hotmail.com"
                         });
                 });
 
             modelBuilder.Entity("CSRO.Server.Entities.Entity.UserClaim", b =>
                 {
                     b.HasOne("CSRO.Server.Entities.Entity.User", "User")
-                        .WithMany("Claims")
-                        .HasForeignKey("UserId")
+                        .WithMany("UserClaims")
+                        .HasForeignKey("UserName")
+                        .HasPrincipalKey("Username")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -298,9 +300,8 @@ namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
 
                     b.HasOne("CSRO.Server.Entities.Entity.User", "User")
                         .WithMany("UserRoles")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserName")
+                        .HasPrincipalKey("Username");
 
                     b.Navigation("Role");
 
@@ -309,7 +310,7 @@ namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
 
             modelBuilder.Entity("CSRO.Server.Entities.Entity.User", b =>
                 {
-                    b.Navigation("Claims");
+                    b.Navigation("UserClaims");
 
                     b.Navigation("UserRoles");
                 });

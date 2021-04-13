@@ -39,7 +39,7 @@ namespace CSRO.Server.Auth.Api.AuthAutoMapperProfiles
                 .ForMember(s => s.ModifiedAt, op => op.Ignore())
                 .ForMember(s => s.ModifiedBy, op => op.Ignore())
                 .ForMember(s => s.RowVersion, op => op.Ignore())                                
-                .ForMember(s => s.Claims, op => op.Ignore())            
+                .ForMember(s => s.UserClaims, op => op.Ignore())            
                 .ReverseMap();
 
         }

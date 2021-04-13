@@ -10,10 +10,10 @@ namespace CSRO.Server.Entities.Entity
 {
     public class User : EntityBase
     {
-        /// <summary>
-        /// this Should by GPN
-        /// </summary>
-        public new int Id { get; set; }
+        ///// <summary>
+        ///// this Should by GPN
+        ///// </summary>
+        //public new int Id { get; set; }
 
 
         /// <summary>
@@ -33,7 +33,7 @@ namespace CSRO.Server.Entities.Entity
         [MaxLength(200)]
         public string Email { get; set; }
 
-        public ICollection<UserClaim> Claims { get; set; } = new List<UserClaim>();
+        public ICollection<UserClaim> UserClaims { get; set; } = new List<UserClaim>();
 
         public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
         

@@ -19,7 +19,7 @@
     "Auth.Api localhost": {
       "commandName": "Project",
       "launchUrl": "swagger",
-      "launchBrowser": false,
+      "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
