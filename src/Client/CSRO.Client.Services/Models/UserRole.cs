@@ -1,13 +1,8 @@
 ﻿namespace CSRO.Client.Services.Models
 {
-    public class UserRole : ModelBase
+    public class UserRole
     {
-        public int RoleId { get; set; }
-
-        public Role Role { get; set; }
-
-        public int UserId { get; set; }
-
-        //public User User { get; set; }
+        public string RoleName { get; set; }
+        public string UserName { get; set; }
     }
 }

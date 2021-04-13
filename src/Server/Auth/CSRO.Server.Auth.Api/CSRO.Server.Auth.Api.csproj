@@ -47,4 +47,8 @@
     <ProjectReference Include="..\..\Shared\CSRO.Server.Core\CSRO.Server.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Migrations\SqlServerMigrations\" />
+  </ItemGroup>
+
 </Project>

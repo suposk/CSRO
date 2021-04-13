@@ -18,7 +18,7 @@ namespace CSRO.Server.Entities.Entity
         public string Value { get; set; }
 
         [Required]
-        public int UserId { get; set; }
+        public string UserName { get; set; }
 
         //[Required]
         //public Guid UserGuidId { get; set; }

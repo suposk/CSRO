@@ -1,9 +1,9 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
+namespace CSRO.Server.Auth.Api.Migrations.SqlServerMigrations
 {
-    public partial class UserRoleClaim3 : Migration
+    public partial class User1 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -11,9 +11,8 @@ namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
                 name: "Roles",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -22,7 +21,7 @@ namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Roles", x => x.Id);
+                    table.PrimaryKey("PK_Roles", x => x.Name);
                 });
 
             migrationBuilder.CreateTable(
@@ -32,7 +31,7 @@ namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ObjectId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Username = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    Username = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Active = table.Column<bool>(type: "bit", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -44,6 +43,7 @@ namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Users", x => x.Id);
+                    table.UniqueConstraint("AK_Users_Username", x => x.Username);
                 });
 
             migrationBuilder.CreateTable(
@@ -54,7 +54,7 @@ namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Type = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
                     Value = table.Column<string>(type: "nvarchar(250)", maxLength: 250, nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false),
+                    UserName = table.Column<string>(type: "nvarchar(200)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -65,10 +65,10 @@ namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
                 {
                     table.PrimaryKey("PK_UserClaims", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserClaims_Users_UserId",
-                        column: x => x.UserId,
+                        name: "FK_UserClaims_Users_UserName",
+                        column: x => x.UserName,
                         principalTable: "Users",
-                        principalColumn: "Id",
+                        principalColumn: "Username",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -78,8 +78,8 @@ namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    RoleId = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false),
+                    RoleName = table.Column<string>(type: "nvarchar(50)", nullable: true),
+                    UserName = table.Column<string>(type: "nvarchar(200)", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -90,27 +90,27 @@ namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
                 {
                     table.PrimaryKey("PK_UserRoles", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserRoles_Roles_RoleId",
-                        column: x => x.RoleId,
+                        name: "FK_UserRoles_Roles_RoleName",
+                        column: x => x.RoleName,
                         principalTable: "Roles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Name",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_UserRoles_Users_UserId",
-                        column: x => x.UserId,
+                        name: "FK_UserRoles_Users_UserName",
+                        column: x => x.UserName,
                         principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Username",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.InsertData(
                 table: "Roles",
-                columns: new[] { "Id", "CreatedAt", "CreatedBy", "ModifiedAt", "ModifiedBy", "Name" },
+                columns: new[] { "Name", "CreatedAt", "CreatedBy", "Id", "ModifiedAt", "ModifiedBy" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2021, 3, 25, 16, 6, 27, 368, DateTimeKind.Utc).AddTicks(6865), "Script", null, null, "Admin" },
-                    { 3, new DateTime(2021, 3, 25, 16, 6, 27, 368, DateTimeKind.Utc).AddTicks(8036), "Script", null, null, "Contributor" },
-                    { 5, new DateTime(2021, 3, 25, 16, 6, 27, 368, DateTimeKind.Utc).AddTicks(8039), "Script", null, null, "User" }
+                    { "Admin", new DateTime(2021, 4, 13, 7, 43, 12, 645, DateTimeKind.Utc).AddTicks(3505), "Script", 1, null, null },
+                    { "Contributor", new DateTime(2021, 4, 13, 7, 43, 12, 645, DateTimeKind.Utc).AddTicks(4627), "Script", 3, null, null },
+                    { "User", new DateTime(2021, 4, 13, 7, 43, 12, 645, DateTimeKind.Utc).AddTicks(4630), "Script", 5, null, null }
                 });
 
             migrationBuilder.InsertData(
@@ -124,21 +124,21 @@ namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
 
             migrationBuilder.InsertData(
                 table: "UserClaims",
-                columns: new[] { "Id", "CreatedAt", "CreatedBy", "ModifiedAt", "ModifiedBy", "Type", "UserId", "Value" },
+                columns: new[] { "Id", "CreatedAt", "CreatedBy", "ModifiedAt", "ModifiedBy", "Type", "UserName", "Value" },
                 values: new object[,]
                 {
-                    { 1, null, null, null, null, "CanApproveAdoRequest-Csro", 1, "True" },
-                    { 2, null, null, null, null, "CanReadAdoRequest-Csro", 1, "True" },
-                    { 3, null, null, null, null, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress", 1, "jan.supolik@hotmail.com" },
-                    { 4, null, null, null, null, "http://schemas.microsoft.com/ws/2008/06/identity/claims/role", 1, "Admin" },
-                    { 21, null, null, null, null, "CanReadAdoRequest-Csro", 1, "True" },
-                    { 22, null, null, null, null, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress", 2, "fake@someprovider.com" }
+                    { 1, null, null, null, null, "CanApproveAdoRequest-Csro", "live.com#jan.supolik@hotmail.com", "True" },
+                    { 2, null, null, null, null, "CanReadAdoRequest-Csro", "live.com#jan.supolik@hotmail.com", "True" },
+                    { 3, null, null, null, null, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress", "live.com#jan.supolik@hotmail.com", "jan.supolik@hotmail.com" },
+                    { 4, null, null, null, null, "http://schemas.microsoft.com/ws/2008/06/identity/claims/role", "live.com#jan.supolik@hotmail.com", "Admin" },
+                    { 21, null, null, null, null, "CanReadAdoRequest-Csro", "read@jansupolikhotmail.onmicrosoft.com", "True" },
+                    { 22, null, null, null, null, "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress", "read@jansupolikhotmail.onmicrosoft.com", "read@someprovider.com" }
                 });
 
             migrationBuilder.InsertData(
                 table: "UserRoles",
-                columns: new[] { "Id", "CreatedAt", "CreatedBy", "ModifiedAt", "ModifiedBy", "RoleId", "UserId" },
-                values: new object[] { 1, null, null, null, null, 1, 1 });
+                columns: new[] { "Id", "CreatedAt", "CreatedBy", "ModifiedAt", "ModifiedBy", "RoleName", "UserName" },
+                values: new object[] { 1, null, null, null, null, "Admin", "live.com#jan.supolik@hotmail.com" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Roles_Name",
@@ -147,26 +147,25 @@ namespace CSRO.Server.Ado.Api.Migrations.SqlServerMigrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserClaims_UserId",
+                name: "IX_UserClaims_UserName",
                 table: "UserClaims",
-                column: "UserId");
+                column: "UserName");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserRoles_RoleId",
+                name: "IX_UserRoles_RoleName",
                 table: "UserRoles",
-                column: "RoleId");
+                column: "RoleName");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserRoles_UserId",
+                name: "IX_UserRoles_UserName",
                 table: "UserRoles",
-                column: "UserId");
+                column: "UserName");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_Username",
                 table: "Users",
                 column: "Username",
-                unique: true,
-                filter: "[Username] IS NOT NULL");
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

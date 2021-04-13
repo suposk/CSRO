@@ -60,7 +60,8 @@ namespace CSRO.Client.Blazor.WebApp.Pages
                 var auth = await AuthenticationStateProvider.GetAuthenticationStateAsync();
                 if (auth != null && auth.User.Identity.IsAuthenticated)
                 {
-                    if (auth.User.Identity.Name.Contains("supolik"))
+                    //if (auth.User.Identity.Name.Contains("supolik"))
+                    if (true)
                     {
                         CanView = true;
 
