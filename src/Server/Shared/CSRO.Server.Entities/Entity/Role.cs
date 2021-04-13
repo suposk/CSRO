@@ -7,6 +7,7 @@ namespace CSRO.Server.Entities.Entity
     {
         [MaxLength(50)]
         [Required]
+        [Key]
         public string Name { get; set; }
     }    
 

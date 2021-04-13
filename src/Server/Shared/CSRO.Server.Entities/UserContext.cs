@@ -62,15 +62,15 @@ namespace CSRO.Server.Entities
             const string un1adm = "live.com#jan.supolik@hotmail.com";
             const string un2 = "read@jansupolikhotmail.onmicrosoft.com";
 
-            Role admin = new Role { Id = 1, Name = "Admin", CreatedAt = DateTime.UtcNow, CreatedBy = "Script", };
+            Role adminRole = new Role { Id = 1, Name = "Admin", CreatedAt = DateTime.UtcNow, CreatedBy = "Script", };
             Role cont = new Role { Id = 3, Name = "Contributor", CreatedAt = DateTime.UtcNow, CreatedBy = "Script", }; ;
             Role user = new Role { Id = 5, Name = "User", CreatedAt = DateTime.UtcNow, CreatedBy = "Script", };
             List<Role> roles = new();
-            roles.Add(admin);
+            roles.Add(adminRole);
             roles.Add(cont);
             roles.Add(user);
 
-            UserRole ur = new UserRole { Id = 1, RoleId = 1,  UserName = un1adm };
+            UserRole ur = new UserRole { Id = 1, RoleName = adminRole.Name,  UserName = un1adm };
             List<UserRole> urlist = new List<UserRole>();
             urlist.Add(ur);
 
@@ -151,7 +151,8 @@ namespace CSRO.Server.Entities
                 .WithMany(uc => uc.UserClaims)
                 .HasForeignKey(fk => fk.UserName);
 
-            modelBuilder.Entity<Role>().HasIndex(a => a.Name).IsUnique();            
+            modelBuilder.Entity<Role>().HasIndex(a => a.Name).IsUnique();
+            //modelBuilder.Entity<Role>().HasKey(a => a.Name);
             modelBuilder.Entity<Role>().HasData(roles);
 
             modelBuilder.Entity<UserRole>()
@@ -159,6 +160,7 @@ namespace CSRO.Server.Entities
                 //.WithMany()
                 .WithMany(ur => ur.UserRoles)
                 .HasForeignKey(fk => fk.UserName);
+
             modelBuilder.Entity<UserRole>().HasData(ur);
         }
 

@@ -11,9 +11,8 @@ namespace CSRO.Server.Auth.Api.Migrations.SqlServerMigrations
                 name: "Roles",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
@@ -22,7 +21,7 @@ namespace CSRO.Server.Auth.Api.Migrations.SqlServerMigrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Roles", x => x.Id);
+                    table.PrimaryKey("PK_Roles", x => x.Name);
                 });
 
             migrationBuilder.CreateTable(
@@ -79,7 +78,7 @@ namespace CSRO.Server.Auth.Api.Migrations.SqlServerMigrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    RoleId = table.Column<int>(type: "int", nullable: false),
+                    RoleName = table.Column<string>(type: "nvarchar(50)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(200)", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -91,11 +90,11 @@ namespace CSRO.Server.Auth.Api.Migrations.SqlServerMigrations
                 {
                     table.PrimaryKey("PK_UserRoles", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_UserRoles_Roles_RoleId",
-                        column: x => x.RoleId,
+                        name: "FK_UserRoles_Roles_RoleName",
+                        column: x => x.RoleName,
                         principalTable: "Roles",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Name",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_UserRoles_Users_UserName",
                         column: x => x.UserName,
@@ -106,12 +105,12 @@ namespace CSRO.Server.Auth.Api.Migrations.SqlServerMigrations
 
             migrationBuilder.InsertData(
                 table: "Roles",
-                columns: new[] { "Id", "CreatedAt", "CreatedBy", "ModifiedAt", "ModifiedBy", "Name" },
+                columns: new[] { "Name", "CreatedAt", "CreatedBy", "Id", "ModifiedAt", "ModifiedBy" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2021, 4, 13, 7, 18, 38, 178, DateTimeKind.Utc).AddTicks(5227), "Script", null, null, "Admin" },
-                    { 3, new DateTime(2021, 4, 13, 7, 18, 38, 178, DateTimeKind.Utc).AddTicks(6460), "Script", null, null, "Contributor" },
-                    { 5, new DateTime(2021, 4, 13, 7, 18, 38, 178, DateTimeKind.Utc).AddTicks(6465), "Script", null, null, "User" }
+                    { "Admin", new DateTime(2021, 4, 13, 7, 43, 12, 645, DateTimeKind.Utc).AddTicks(3505), "Script", 1, null, null },
+                    { "Contributor", new DateTime(2021, 4, 13, 7, 43, 12, 645, DateTimeKind.Utc).AddTicks(4627), "Script", 3, null, null },
+                    { "User", new DateTime(2021, 4, 13, 7, 43, 12, 645, DateTimeKind.Utc).AddTicks(4630), "Script", 5, null, null }
                 });
 
             migrationBuilder.InsertData(
@@ -138,8 +137,8 @@ namespace CSRO.Server.Auth.Api.Migrations.SqlServerMigrations
 
             migrationBuilder.InsertData(
                 table: "UserRoles",
-                columns: new[] { "Id", "CreatedAt", "CreatedBy", "ModifiedAt", "ModifiedBy", "RoleId", "UserName" },
-                values: new object[] { 1, null, null, null, null, 1, "live.com#jan.supolik@hotmail.com" });
+                columns: new[] { "Id", "CreatedAt", "CreatedBy", "ModifiedAt", "ModifiedBy", "RoleName", "UserName" },
+                values: new object[] { 1, null, null, null, null, "Admin", "live.com#jan.supolik@hotmail.com" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_Roles_Name",
@@ -153,9 +152,9 @@ namespace CSRO.Server.Auth.Api.Migrations.SqlServerMigrations
                 column: "UserName");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserRoles_RoleId",
+                name: "IX_UserRoles_RoleName",
                 table: "UserRoles",
-                column: "RoleId");
+                column: "RoleName");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserRoles_UserName",

@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CSRO.Server.Auth.Api.Migrations.SqlServerMigrations
 {
     [DbContext(typeof(UserContext))]
-    [Migration("20210413071838_User1")]
+    [Migration("20210413074313_User1")]
     partial class User1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,10 +23,9 @@ namespace CSRO.Server.Auth.Api.Migrations.SqlServerMigrations
 
             modelBuilder.Entity("CSRO.Server.Entities.Entity.Role", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                    b.Property<string>("Name")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -34,23 +33,21 @@ namespace CSRO.Server.Auth.Api.Migrations.SqlServerMigrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("ModifiedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("ModifiedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
 
-                    b.HasKey("Id");
+                    b.HasKey("Name");
 
                     b.HasIndex("Name")
                         .IsUnique();
@@ -60,24 +57,24 @@ namespace CSRO.Server.Auth.Api.Migrations.SqlServerMigrations
                     b.HasData(
                         new
                         {
-                            Id = 1,
-                            CreatedAt = new DateTime(2021, 4, 13, 7, 18, 38, 178, DateTimeKind.Utc).AddTicks(5227),
+                            Name = "Admin",
+                            CreatedAt = new DateTime(2021, 4, 13, 7, 43, 12, 645, DateTimeKind.Utc).AddTicks(3505),
                             CreatedBy = "Script",
-                            Name = "Admin"
+                            Id = 1
                         },
                         new
                         {
-                            Id = 3,
-                            CreatedAt = new DateTime(2021, 4, 13, 7, 18, 38, 178, DateTimeKind.Utc).AddTicks(6460),
+                            Name = "Contributor",
+                            CreatedAt = new DateTime(2021, 4, 13, 7, 43, 12, 645, DateTimeKind.Utc).AddTicks(4627),
                             CreatedBy = "Script",
-                            Name = "Contributor"
+                            Id = 3
                         },
                         new
                         {
-                            Id = 5,
-                            CreatedAt = new DateTime(2021, 4, 13, 7, 18, 38, 178, DateTimeKind.Utc).AddTicks(6465),
+                            Name = "User",
+                            CreatedAt = new DateTime(2021, 4, 13, 7, 43, 12, 645, DateTimeKind.Utc).AddTicks(4630),
                             CreatedBy = "Script",
-                            Name = "User"
+                            Id = 5
                         });
                 });
 
@@ -252,8 +249,8 @@ namespace CSRO.Server.Auth.Api.Migrations.SqlServerMigrations
                     b.Property<string>("ModifiedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("RoleId")
-                        .HasColumnType("int");
+                    b.Property<string>("RoleName")
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<byte[]>("RowVersion")
                         .IsConcurrencyToken()
@@ -265,7 +262,7 @@ namespace CSRO.Server.Auth.Api.Migrations.SqlServerMigrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RoleId");
+                    b.HasIndex("RoleName");
 
                     b.HasIndex("UserName");
 
@@ -275,7 +272,7 @@ namespace CSRO.Server.Auth.Api.Migrations.SqlServerMigrations
                         new
                         {
                             Id = 1,
-                            RoleId = 1,
+                            RoleName = "Admin",
                             UserName = "live.com#jan.supolik@hotmail.com"
                         });
                 });
@@ -296,9 +293,7 @@ namespace CSRO.Server.Auth.Api.Migrations.SqlServerMigrations
                 {
                     b.HasOne("CSRO.Server.Entities.Entity.Role", "Role")
                         .WithMany()
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("RoleName");
 
                     b.HasOne("CSRO.Server.Entities.Entity.User", "User")
                         .WithMany("UserRoles")
