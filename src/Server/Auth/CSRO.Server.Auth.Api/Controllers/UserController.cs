@@ -16,7 +16,7 @@ using CSRO.Server.Auth.Api.Dtos;
 
 namespace CSRO.Server.Auth.Api.Controllers
 {
-    //TODO[Authorize]
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase

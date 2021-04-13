@@ -105,11 +105,11 @@ namespace CSRO.Client.Blazor.WebApp.AutoMapperProfiles
                 .ReverseMap();
 
             CreateMap<UserRoleDto, Models.UserRole>()
-                .ForMember(s => s.CreatedAt, op => op.Ignore())
-                .ForMember(s => s.CreatedBy, op => op.Ignore())
-                .ForMember(s => s.ModifiedAt, op => op.Ignore())
-                .ForMember(s => s.ModifiedBy, op => op.Ignore())
-                .ForMember(s => s.RowVersion, op => op.Ignore())
+                //.ForMember(s => s.CreatedAt, op => op.Ignore())
+                //.ForMember(s => s.CreatedBy, op => op.Ignore())
+                //.ForMember(s => s.ModifiedAt, op => op.Ignore())
+                //.ForMember(s => s.ModifiedBy, op => op.Ignore())
+                //.ForMember(s => s.RowVersion, op => op.Ignore())
                 //.ForMember(s => s.Role.Id, op => op.MapFrom(ss => ss.RoleId)) //Id is guid      
                 //.ForMember(s => s.Role.Name, op => op.MapFrom(ss => ss.Name)) //Id is guid      
                 .ReverseMap();
