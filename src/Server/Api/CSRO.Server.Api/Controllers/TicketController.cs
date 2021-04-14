@@ -38,10 +38,11 @@ namespace CSRO.Server.Api.Controllers
 
         // GET: api/<VersionController>
         [HttpGet]
-        public async Task<ActionResult<List<TicketDto>>> Get()
+        public async Task<ActionResult<List<TicketDto>>> Get([FromServices] IRestUserService restUserService)
         {
             try
             {
+                //var cl = await restUserService.GetClaimsByUserNameAsync("jan.supolik@hotmail.com");
                 _logger.LogInformation(ApiLogEvents.GetAllItems, $"{nameof(Get)} Started");
 
                 //throw new Exception("some fake value is null");
