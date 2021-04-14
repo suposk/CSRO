@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using CSRO.Server.Auth.Api.Dtos;
+using CSRO.Server.Domain;
 
 namespace CSRO.Server.Auth.Api.AuthAutoMapperProfiles
 {
@@ -40,6 +41,19 @@ namespace CSRO.Server.Auth.Api.AuthAutoMapperProfiles
                 .ForMember(s => s.ModifiedBy, op => op.Ignore())
                 .ForMember(s => s.RowVersion, op => op.Ignore())                                
                 .ForMember(s => s.UserClaims, op => op.Ignore())            
+                .ReverseMap();
+
+            CreateMap<UserClaimDto, Entity.UserClaim>()
+                .ForMember(s => s.Value, op => op.MapFrom(ss => ss.Value))
+                .ForMember(s => s.Type, op => op.MapFrom(ss => ss.Type))
+                .ForMember(s => s.CreatedAt, op => op.Ignore())
+                .ForMember(s => s.CreatedBy, op => op.Ignore())
+                .ForMember(s => s.ModifiedAt, op => op.Ignore())
+                .ForMember(s => s.ModifiedBy, op => op.Ignore())
+                .ForMember(s => s.RowVersion, op => op.Ignore())
+                .ForMember(s => s.Id, op => op.Ignore())//base
+                .ForMember(s => s.User, op => op.Ignore())
+                .ForMember(s => s.UserName, op => op.Ignore())
                 .ReverseMap();
 
         }

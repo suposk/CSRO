@@ -34,6 +34,7 @@ using MediatR;
 using System.Reflection;
 using CSRO.Server.Api.Services;
 using CSRO.Server.Services.Base;
+using CSRO.Server.Core;
 
 namespace CSRO.Server.Api
 {
@@ -153,6 +154,25 @@ namespace CSRO.Server.Api
             .AddPolicyHandler(PollyHelper.GetRetryPolicy());
             ;
 
+            string ApiEndpointAuth = Configuration.GetValue<string>(ConstatCsro.EndPoints.ApiEndpointAuth);
+            services.AddHttpClient(Core.ConstatCsro.EndPoints.ApiEndpointAuth, (client) =>
+            {
+                client.Timeout = TimeSpan.FromMinutes(ConstatCsro.ClientNames.API_TimeOut_Mins);
+                client.BaseAddress = new Uri(ApiEndpointAuth);
+                client.DefaultRequestHeaders.Add("Accept", "application/json");
+            }).ConfigurePrimaryHttpMessageHandler(() =>
+            {
+                return new HttpClientHandler()
+                {
+                    AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip | DecompressionMethods.Brotli,
+                    UseCookies = false
+                };
+            })
+            .SetHandlerLifetime(TimeSpan.FromMinutes(5))
+            .AddPolicyHandler(PollyHelper.GetRetryPolicy())
+            .AddPolicyHandler(PollyHelper.GetRetryPolicy());
+            ;
+
             services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApi(Configuration, "AzureAd")
                 .EnableTokenAcquisitionToCallDownstreamApi()
@@ -186,6 +206,7 @@ namespace CSRO.Server.Api
             services.AddTransient<ISubcriptionRepository, SubcriptionRepository>();
 
             services.AddSingleton<ICacheProvider, CacheProvider>(); //testing
+            services.AddScoped<IRestUserService, RestUserService>();
 
             services.AddApplicationInsightsTelemetry(Configuration["APPINSIGHTS_CONNECTIONSTRING"]);
 

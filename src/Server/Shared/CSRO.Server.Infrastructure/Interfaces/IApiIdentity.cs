@@ -10,5 +10,6 @@ namespace CSRO.Server.Infrastructure
     {
         //int GetUserId();
         string GetUserName();
+        bool IsAuthenticated();
     }
 }

@@ -125,6 +125,25 @@ namespace CSRO.Server.Ado.Api
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddMediatR(Assembly.GetExecutingAssembly());
 
+            string ApiEndpointAuth = Configuration.GetValue<string>(ConstatCsro.EndPoints.ApiEndpointAuth);
+            services.AddHttpClient(Core.ConstatCsro.EndPoints.ApiEndpointAuth, (client) =>
+            {
+                client.Timeout = TimeSpan.FromMinutes(ConstatCsro.ClientNames.API_TimeOut_Mins);
+                client.BaseAddress = new Uri(ApiEndpointAuth);
+                client.DefaultRequestHeaders.Add("Accept", "application/json");
+            }).ConfigurePrimaryHttpMessageHandler(() =>
+            {
+                return new HttpClientHandler()
+                {
+                    AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip | DecompressionMethods.Brotli,
+                    UseCookies = false
+                };
+            })
+            .SetHandlerLifetime(TimeSpan.FromMinutes(5))
+            .AddPolicyHandler(PollyHelper.GetRetryPolicy())
+            .AddPolicyHandler(PollyHelper.GetRetryPolicy());
+            ;
+
             #region Auth
 
             services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)
@@ -152,6 +171,7 @@ namespace CSRO.Server.Ado.Api
             //TODO replace with rest or GRPC service
             services.AddScoped<ILocalUserService, DbUserService>();
             services.AddScoped<IClaimsTransformation, AdoClaimsTransformation>();
+            services.AddScoped<IRestUserService, RestUserService>();
 
             #endregion
 

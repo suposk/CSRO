@@ -1,16 +1,15 @@
 ﻿using AutoMapper;
-using Entity = CSRO.Server.Entities.Entity;
 using CSRO.Server.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using CSRO.Server.Services;
 using CSRO.Server.Auth.Api.Dtos;
+using CSRO.Server.Domain;
+using System.Collections.Generic;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -19,13 +18,13 @@ namespace CSRO.Server.Auth.Api.Controllers
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class UserClaimController : ControllerBase
     {
-        private readonly ILogger<UserController> _logger;
+        private readonly ILogger<UserClaimController> _logger;
         private readonly ILocalUserService _localUserService;
         private readonly IMapper _mapper;
 
-        public UserController(ILogger<UserController> logger,
+        public UserClaimController(ILogger<UserClaimController> logger,
             ILocalUserService localUserService,
             IMapper mapper)
         {
@@ -34,31 +33,31 @@ namespace CSRO.Server.Auth.Api.Controllers
             _mapper = mapper;
         }
 
-        //// GET: api/<UserController>
+        //// GET: api/<UserClaimController>
         //[HttpGet]
         //public IEnumerable<string> Get()
         //{
-        //    return new string[] { "user 1", "user 2" };
+        //    return new string[] { "UserClaim 1", "UserClaim 2" };
         //}
 
         // GET api/<AdoProjectAccessController>/5
-        [HttpGet("{userName}", Name = nameof(GetUserbyUserName))]        
-        public async Task<ActionResult<UserDto>> GetUserbyUserName(string userName)
+        [HttpGet("{userName}", Name = nameof(GetUserClaimsByUserName))]
+        public async Task<ActionResult<List<UserClaimDto>>> GetUserClaimsByUserName(string userName)
         {
             try
             {
-                _logger.LogInformation(ApiLogEvents.GetItem, $"{nameof(GetUserbyUserName)} with {userName} Started");
+                _logger.LogInformation(ApiLogEvents.GetItem, $"{nameof(GetUserClaimsByUserName)} with {userName} Started");
 
-                var repoObj = await _localUserService.GetUserByUserNameAsync(userName).ConfigureAwait(false);
+                var repoObj = await _localUserService.GetUserClaimsByUserNameAsync(userName).ConfigureAwait(false);
                 if (repoObj == null)
                     return NotFound();
-                                
-                var result = _mapper.Map<UserDto>(repoObj);
+
+                var result = _mapper.Map<List<UserClaimDto>>(repoObj);
                 return result;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, nameof(GetUserbyUserName), userName);
+                _logger.LogError(ex, nameof(GetUserClaimsByUserName), userName);
                 return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }
         }
