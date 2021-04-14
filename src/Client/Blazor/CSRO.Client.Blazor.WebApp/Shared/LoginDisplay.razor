@@ -10,7 +10,9 @@
 
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Components.Authorization
+@using CSRO.Client.Services
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IUserDataService UserDataService
 
 <div>
     @if (_isAuthenticated)
@@ -50,8 +52,11 @@
         var user = authState.User;
 
         _isAuthenticated = user.Identity.IsAuthenticated;
-        if (user.Identity.IsAuthenticated)
+        if (_isAuthenticated)
         {
+            //v1 log in
+            var userAuthApi = await UserDataService.GetUserByUserName(user.Identity.Name); 
+
             _name = user.Identity.Name;
             _authMessage = $"{user.Identity.Name} is authenticated.";
             _claims = user.Claims;
