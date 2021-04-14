@@ -39,7 +39,7 @@ namespace CSRO.Server.Ado.Api.Controllers
         }
 
         // GET: api/<AdoProjectController>
-        public async Task<ActionResult<List<ProjectAdo>>> Get([FromServices] IRestUserService restUserService)
+        public async Task<ActionResult<List<ProjectAdo>>> Get()
         {
             try
             {
