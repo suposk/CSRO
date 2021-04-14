@@ -70,7 +70,10 @@ namespace CSRO.Server.Services
         public async Task<List<UserClaim>> GetUserClaimsByUserNameAsync(string userName)
         {
             userName = CheckUserName(userName);
-            return await _context.UserClaims.Where(u => u.User.Username == userName).ToListAsync();
+            return await _context.UserClaims
+                //.Where(u => u.User.Username == userName)
+                .Where(u => u.User.Username.Contains(userName))                
+                .ToListAsync();
         }
 
         public async Task<List<Claim>> GetClaimsByUserNameAsync(string userName)

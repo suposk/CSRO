@@ -168,10 +168,9 @@ namespace CSRO.Server.Ado.Api
                 options.UseSqlServer(UserContextDbConnStr, x => x.MigrationsAssembly(_namespace));
             });
 
-            //TODO replace with rest or GRPC service
-            services.AddScoped<ILocalUserService, DbUserService>();
-            services.AddScoped<IClaimsTransformation, AdoClaimsTransformation>();
+            //TODO replace with rest or GRPC service            
             services.AddScoped<IRestUserService, RestUserService>();
+            services.AddScoped<IClaimsTransformation, AdoClaimsTransformation>();            
 
             #endregion
 
