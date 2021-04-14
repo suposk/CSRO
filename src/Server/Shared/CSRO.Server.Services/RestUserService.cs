@@ -36,8 +36,8 @@ namespace CSRO.Server.Services
             _tokenAcquisition = tokenAcquisition;
             Mapper = mapper;
 
-            ApiPart = "api/userclaim/";
-            Scope = Core.ConstatCsro.Scopes.Scope_Auth_Api;
+            ApiPart = "api/userclaim/";            
+            Scope = Configuration.GetValue<string>(Core.ConstatCsro.Scopes.Scope_Auth_Api);
             ClientName = Core.ConstatCsro.EndPoints.ApiEndpointAuth;
             base.Init();
         }
@@ -47,16 +47,7 @@ namespace CSRO.Server.Services
         public async Task<List<Claim>> GetClaimsByUserNameAsync(string userName, CancellationToken cancelToken = default)
         {
             try
-            {
-                //base.Init();
-                //HttpClientBase = HttpClientFactory.CreateClient(ClientName);
-
-                if (!ApiIdentity.IsAuthenticated())
-                    return null; // user is not autenticated or context of auth was not trasferd
-                
-                //var un = _apiIdentity.GetUserName();
-                //var us = await _tokenAcquisition.GetAuthenticationResultForUserAsync(new List<string> { Scope });
-
+            {          
                 //1. Call azure api
                 await base.AddAuthHeaderAsync();
 
