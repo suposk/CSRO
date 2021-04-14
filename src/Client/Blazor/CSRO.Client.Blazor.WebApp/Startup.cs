@@ -182,9 +182,9 @@ namespace CSRO.Client.Blazor.WebApp
                     UseCookies = false
                 };
             })
-            .SetHandlerLifetime(TimeSpan.FromMinutes(5))
-            .AddPolicyHandler(PollyHelper.GetRetryPolicy())
-            .AddPolicyHandler(PollyHelper.GetRetryPolicy());
+            //.SetHandlerLifetime(TimeSpan.FromMinutes(5))
+            //.AddPolicyHandler(PollyHelper.GetRetryPolicy())
+            //.AddPolicyHandler(PollyHelper.GetRetryPolicy());
             ;
 
             services.AddHttpClient(ConstatCsro.ClientNames.MANAGEMENT_AZURE_EndPoint, (client) =>
