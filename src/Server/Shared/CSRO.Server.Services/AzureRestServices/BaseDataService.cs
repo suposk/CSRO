@@ -14,7 +14,7 @@ namespace CSRO.Server.Services.AzureRestServices
 {
     public class BaseDataService
     {
-        public HttpClient HttpClientBase { get; private set; }
+        public HttpClient HttpClientBase { get; set; }
         protected string ClientName { get; set; }
         protected string ApiPart { get; set; }
         protected string Scope { get; set; }
