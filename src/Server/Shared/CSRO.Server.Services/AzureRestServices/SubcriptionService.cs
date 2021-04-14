@@ -2,6 +2,7 @@
 using CSRO.Server.Domain;
 using CSRO.Server.Domain.AzureDtos;
 using CSRO.Server.Entities.Entity;
+using CSRO.Server.Infrastructure;
 using CSRO.Server.Services.Models;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Identity.Web;
@@ -37,8 +38,9 @@ namespace CSRO.Server.Services.AzureRestServices
             //IAuthCsroService authCsroService,
             ITokenAcquisition tokenAcquisition,
             IMapper mapper,
+            IApiIdentity apiIdentity,
             IConfiguration configuration)
-            : base(httpClientFactory, tokenAcquisition, configuration)
+            : base(httpClientFactory, tokenAcquisition, apiIdentity, configuration)
         {
             Mapper = mapper;
 

@@ -22,8 +22,7 @@ namespace CSRO.Server.Services
         Task<List<Claim>> GetClaimsByUserNameAsync(string userName, CancellationToken cancelToken = default);
     }
     public class RestUserService : BaseDataService, IRestUserService
-    {
-        private readonly IApiIdentity _apiIdentity;
+    {        
         private readonly ITokenAcquisition _tokenAcquisition;
 
         public RestUserService(
@@ -32,9 +31,8 @@ namespace CSRO.Server.Services
             ITokenAcquisition tokenAcquisition,
             IMapper mapper,
             IConfiguration configuration)
-            : base(httpClientFactory, tokenAcquisition, configuration)
-        {
-            _apiIdentity = apiIdentity;
+            : base(httpClientFactory, tokenAcquisition, apiIdentity, configuration)
+        {            
             _tokenAcquisition = tokenAcquisition;
             Mapper = mapper;
 
@@ -50,11 +48,11 @@ namespace CSRO.Server.Services
         public async Task<List<Claim>> GetClaimsByUserNameAsync(string userName, CancellationToken cancelToken = default)
         {
             try
-            {
-                var un = _apiIdentity.GetUserName();
-                if (string.IsNullOrWhiteSpace(un))
+            {                
+                if (!ApiIdentity.IsAuthenticated())
                     return null; // user is not autenticated or context of auth was not trasferd
-
+                
+                //var un = _apiIdentity.GetUserName();
                 //var us = await _tokenAcquisition.GetAuthenticationResultForUserAsync(new List<string> { Scope });
 
                 //1. Call azure api

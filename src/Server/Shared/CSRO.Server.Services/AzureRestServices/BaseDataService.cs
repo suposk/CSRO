@@ -1,9 +1,11 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using CSRO.Server.Infrastructure;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Identity.Web;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Security.Authentication;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -21,22 +23,19 @@ namespace CSRO.Server.Services.AzureRestServices
 
         public readonly IHttpClientFactory HttpClientFactory;
         public readonly ITokenAcquisition _tokenAcquisition;
-
-        //public readonly IAuthCsroService AuthCsroService;
-        //public readonly IMapper Mapper;
+        public readonly IApiIdentity ApiIdentity;
         public readonly IConfiguration Configuration;
 
         public BaseDataService(
             IHttpClientFactory httpClientFactory,
-            //IAuthCsroService authCsroService, 
-            //IMapper mapper,
             ITokenAcquisition tokenAcquisition,
+            IApiIdentity apiIdentity,
             IConfiguration configuration)
         {
             HttpClientFactory = httpClientFactory;
             _tokenAcquisition = tokenAcquisition;
-            //AuthCsroService = authCsroService;
-            //Mapper = mapper;
+
+            ApiIdentity = apiIdentity;                        
             Configuration = configuration;
         }
 
@@ -67,6 +66,9 @@ namespace CSRO.Server.Services.AzureRestServices
 
         public virtual async Task AddAuthHeaderAsync()
         {
+            if (!ApiIdentity.IsAuthenticated())
+                throw new AuthenticationException("CSRO: User or SPN is not Authenticated yet. Can not call downstream API.");
+
             //user_impersonation
             //var apiToken = await AuthCsroService.GetAccessTokenForUserAsync(Scope);
             var apiToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new List<string> { Scope });

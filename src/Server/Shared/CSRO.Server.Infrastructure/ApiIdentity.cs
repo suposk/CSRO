@@ -19,6 +19,12 @@ namespace CSRO.Server.Infrastructure
         //{
         //    return Convert.ToInt16(_context.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
         //}
+
+        public bool IsAuthenticated()
+        {
+            return _context.HttpContext.User.Identity.IsAuthenticated ? true : false;
+        }
+
         public string GetUserName()
         {
             if (_context?.HttpContext == null)

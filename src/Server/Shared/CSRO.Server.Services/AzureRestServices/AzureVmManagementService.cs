@@ -1,5 +1,6 @@
 ﻿using CSRO.Server.Domain;
 using CSRO.Server.Entities.Entity;
+using CSRO.Server.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Identity.Web;
 using System;
@@ -27,8 +28,9 @@ namespace CSRO.Server.Services.AzureRestServices
             //IAuthCsroService authCsroService,
             ITokenAcquisition tokenAcquisition,
             //IMapper mapper,
+            IApiIdentity apiIdentity,
             IConfiguration configuration)
-            : base(httpClientFactory, tokenAcquisition, configuration)
+            : base(httpClientFactory, tokenAcquisition, apiIdentity, configuration)
         {
             ApiPart = "--";
             //Scope = "api://ee2f0320-29c3-432a-bf84-a5d4277ce052/user_impersonation";
