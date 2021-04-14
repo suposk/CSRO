@@ -51,7 +51,11 @@ namespace CSRO.Server.Services
         {
             try
             {
-                var us = await _tokenAcquisition.GetAuthenticationResultForUserAsync(new List<string> { Scope });
+                var un = _apiIdentity.GetUserName();
+                if (string.IsNullOrWhiteSpace(un))
+                    return null; // user is not autenticated or context of auth was not trasferd
+
+                //var us = await _tokenAcquisition.GetAuthenticationResultForUserAsync(new List<string> { Scope });
 
                 //1. Call azure api
                 await base.AddAuthHeaderAsync();

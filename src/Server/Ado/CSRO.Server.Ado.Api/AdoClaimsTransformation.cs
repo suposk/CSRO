@@ -11,7 +11,6 @@ namespace CSRO.Server.Ado.Api
     public class AdoClaimsTransformation : IClaimsTransformation
     {
         private readonly IRestUserService _restUserService;
-
         //private readonly ILocalUserService _localUserService;
 
         public AdoClaimsTransformation(
@@ -28,7 +27,7 @@ namespace CSRO.Server.Ado.Api
             if (principal.Identity.IsAuthenticated)
             {
                 //var aditionalClaims = await _localUserService.GetClaimsByUserNameAsync(principal.Identity.Name);
-                var aditionalClaims = await _restUserService.GetClaimsByUserNameAsync(principal.Identity.Name);
+                var aditionalClaims = await _restUserService.GetClaimsByUserNameAsync(principal.Identity.Name.Replace("live.com#", ""));
                 if (aditionalClaims.HasAnyInCollection())
                 {
                     var identity = principal.Identity as ClaimsIdentity;
