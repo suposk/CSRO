@@ -20,10 +20,10 @@ namespace CSRO.Server.Services
     public interface IRestUserService
     {
         Task<List<Claim>> GetClaimsByUserNameAsync(string userName, CancellationToken cancelToken = default);
+        Task<List<Claim>> GetClaimsByUserNameAsync(string userName, ClaimsPrincipal principal, CancellationToken cancelToken = default);
     }
     public class RestUserService : BaseDataService, IRestUserService
-    {        
-        private readonly ITokenAcquisition _tokenAcquisition;
+    {               
 
         public RestUserService(
             IHttpClientFactory httpClientFactory,
@@ -32,8 +32,7 @@ namespace CSRO.Server.Services
             IMapper mapper,
             IConfiguration configuration)
             : base(httpClientFactory, tokenAcquisition, apiIdentity, configuration)
-        {            
-            _tokenAcquisition = tokenAcquisition;
+        {                        
             Mapper = mapper;
 
             ApiPart = "api/userclaim/";            
@@ -50,6 +49,37 @@ namespace CSRO.Server.Services
             {          
                 //1. Call azure api
                 await base.AddAuthHeaderAsync();
+
+                var url = $"{ApiPart}{userName}";
+                var apiData = await HttpClientBase.GetAsync(url, cancelToken).ConfigureAwait(false);
+
+                if (apiData.IsSuccessStatusCode)
+                {
+                    var stream = await apiData.Content.ReadAsStreamAsync();
+                    var ser = await JsonSerializer.DeserializeAsync<List<UserClaimDto>>(stream, _options);
+                    if (ser.HasAnyInCollection())
+                    {
+                        List<Claim> list = new();
+                        ser.ForEach(a => list.Add(new Claim(a.Type, a.Value)));
+                        return list;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                base.HandleException(ex);
+            }
+            return null;
+        }
+
+        public async Task<List<Claim>> GetClaimsByUserNameAsync(string userName, ClaimsPrincipal principal, CancellationToken cancelToken = default)
+        {
+            try
+            {
+                //1. Call azure api
+                //await base.AddAuthHeaderAsync();
+                var apiToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new List<string> { Scope }, null, null, principal);
+                HttpClientBase.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiToken);
 
                 var url = $"{ApiPart}{userName}";
                 var apiData = await HttpClientBase.GetAsync(url, cancelToken).ConfigureAwait(false);

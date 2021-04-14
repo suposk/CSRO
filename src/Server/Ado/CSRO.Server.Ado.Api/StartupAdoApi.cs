@@ -170,8 +170,8 @@ namespace CSRO.Server.Ado.Api
 
             //TODO replace with rest or GRPC service
             services.AddScoped<ILocalUserService, DbUserService>();
-            services.AddScoped<IClaimsTransformation, AdoClaimsTransformation>();
             services.AddScoped<IRestUserService, RestUserService>();
+            services.AddScoped<IClaimsTransformation, AdoClaimsTransformation>();            
 
             #endregion
 
