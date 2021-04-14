@@ -12,6 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CSRO.Server.Ado.Api.Dtos;
 using Microsoft.AspNetCore.Authorization;
+using CSRO.Server.Services;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -38,10 +39,11 @@ namespace CSRO.Server.Ado.Api.Controllers
         }
 
         // GET: api/<AdoProjectController>
-        public async Task<ActionResult<List<ProjectAdo>>> Get()
+        public async Task<ActionResult<List<ProjectAdo>>> Get([FromServices] IRestUserService restUserService)
         {
             try
             {
+                //var cl = await restUserService.GetClaimsByUserNameAsync("jan.supolik@hotmail.com");
                 _logger.LogInformation(ApiLogEvents.GetAllItems, $"{nameof(Get)} Started");                
                 var all = await _repository.GetList().ConfigureAwait(false);
                 var result = _mapper.Map<List<ProjectAdo>>(all);
