@@ -3,43 +3,52 @@
 @using CSRO.Client.Services.Models;
 
 
-<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-6">
-    @if (!CanView)
-    {
-        <MudText Typo="Typo.h4" GutterBottom="true">You are not autorize for this page</MudText>
-    }
-    else
-    {       
-        @if (IsLoading)
-        {
-            <MudGrid>
-                <MudItem>
-                    <MudProgressCircular Color="Color.Default" Indeterminate="true" />
-                </MudItem>
-                <MudItem>
-                    <MudText>@LoadingMessage</MudText>
-                </MudItem>
-            </MudGrid>
-        }
-        else
-        {
-            <MudTable Items="SettingModels" Hover="true" SortLabel="Sort By" Elevation="0">
-                <HeaderContent>
-                    <MudTh><MudTableSortLabel SortBy="new Func<SettingModel, object>(x => x.Type)">Type</MudTableSortLabel></MudTh>
-                    <MudTh><MudTableSortLabel SortBy="new Func<SettingModel, object>(x => x.Name)">Name</MudTableSortLabel></MudTh>
-                    <MudTh><MudTableSortLabel SortBy="new Func<SettingModel, object>(x => x.Value)">Value</MudTableSortLabel></MudTh>
-                </HeaderContent>
-                <RowTemplate>
-                    <MudTd DataLabel="Type">@context.Type</MudTd>
-                    <MudTd DataLabel="Name">@context.Name</MudTd>
-                    <MudTd DataLabel="Value">@context.Value</MudTd>
-                </RowTemplate>
-                <PagerContent>
-                    <MudTablePager PageSizeOptions="new int[] { 10, 20, 50 }" />
-                </PagerContent>
-            </MudTable>
-        }
-    }
-</MudContainer>
+<AuthorizeView Roles="@CSRO.Client.Core.RolesCsro.Admin">
+    <Authorized>
+        <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-6">
+            @if (!CanView)
+            {
+                <MudText Typo="Typo.h4" GutterBottom="true">You are not autorize for this page</MudText>
+            }
+            else
+            {
+                @if (IsLoading)
+                {
+                    <MudGrid>
+                        <MudItem>
+                            <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+                        </MudItem>
+                        <MudItem>
+                            <MudText>@LoadingMessage</MudText>
+                        </MudItem>
+                    </MudGrid>
+                }
+                else
+                {
+                    <MudTable Items="SettingModels" Hover="true" SortLabel="Sort By" Elevation="0">
+                        <HeaderContent>
+                            <MudTh><MudTableSortLabel SortBy="new Func<SettingModel, object>(x => x.Type)">Type</MudTableSortLabel></MudTh>
+                            <MudTh><MudTableSortLabel SortBy="new Func<SettingModel, object>(x => x.Name)">Name</MudTableSortLabel></MudTh>
+                            <MudTh><MudTableSortLabel SortBy="new Func<SettingModel, object>(x => x.Value)">Value</MudTableSortLabel></MudTh>
+                        </HeaderContent>
+                        <RowTemplate Context="SettingModelContext">
+                            <MudTd DataLabel="Type">@SettingModelContext.Type</MudTd>
+                            <MudTd DataLabel="Name">@SettingModelContext.Name</MudTd>
+                            <MudTd DataLabel="Value">@SettingModelContext.Value</MudTd>
+                        </RowTemplate>
+                        <PagerContent>
+                            <MudTablePager PageSizeOptions="new int[] { 10, 20, 50 }" />
+                        </PagerContent>
+                    </MudTable>
+                }
+            }
+        </MudContainer>
+    </Authorized>
+    <NotAuthorized>
+        <NotAuthorizedCsro>
+        </NotAuthorizedCsro>
+    </NotAuthorized>
+</AuthorizeView>
+
 
 
