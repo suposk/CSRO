@@ -40,6 +40,7 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
 
         protected HashSet<AdoProjectAccessModel> selectedItems = new();
         protected bool IsButtonDisabled => IsLoading || selectedItems.Count == 0;
+        protected bool CanApprove { get; set; }
 
         /// <summary>
         /// Only for DEV
@@ -76,6 +77,8 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
             {
                 ShowLoading();
                 Requests.Clear();
+                CanApprove = await AuthCsroService.HasPermision(Core.PoliciesCsro.CanApproveAdoRequest);
+
                 //if admin
                 if (AdminMode)
                 {

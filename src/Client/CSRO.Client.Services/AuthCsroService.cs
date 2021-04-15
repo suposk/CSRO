@@ -28,13 +28,49 @@ namespace CSRO.Client.Services
             _configuration = configuration;
         }
 
+        public async Task<bool> IsInRole(string role)
+        {
+            if (string.IsNullOrWhiteSpace(role))
+                return false;
+            
+            var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+            if (authState != null && authState.User.Identity.IsAuthenticated)            
+                return authState.User.IsInRole(role);
+            
+            return false;
+        }
+
+        public async Task<bool> HasPermision(string policy)
+        {
+            if (string.IsNullOrWhiteSpace(policy))
+                return false;
+
+            var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+            if (authState != null && authState.User.Identity.IsAuthenticated)
+            {
+                switch (policy)
+                {
+                    case Core.PoliciesCsro.CanApproveAdoRequest:
+                        {
+                            var p1 = authState.User.HasClaim(p => p.Type == Core.ClaimTypesCsro.CanApproveAdoRequest && p.Value == true.ToString());
+                            if (p1)
+                                return true;
+                            break;
+                        }
+                    default:
+                        return false;
+                }                
+            }                  
+            return false;
+        }
+
         public async Task<string> GetAccessTokenForUserAsync(string scope)
         {
             if (RunWithoutAuth)
                 return null;
 
-            var auth = await _authenticationStateProvider.GetAuthenticationStateAsync();
-            if (auth != null && auth.User.Identity.IsAuthenticated)
+            var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+            if (authState != null && authState.User.Identity.IsAuthenticated)
             {
                 try
                 {
