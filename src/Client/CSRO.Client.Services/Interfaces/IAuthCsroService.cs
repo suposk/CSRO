@@ -8,5 +8,7 @@ namespace CSRO.Client.Services
         Task<string> GetAccessTokenForUserAsync(List<string> scopes);
         Task<string> GetAccessTokenForUserAsync(string scope);
         Task<string> GetCurrentUserId();
+        Task<bool> HasPermision(string policy);
+        Task<bool> IsInRole(string role);
     }
 }

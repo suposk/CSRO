@@ -26,27 +26,30 @@
             </MudTooltip>*@
 
 
-        <MudCheckBox Label="View in Admin Mode"
-                     @bind-Checked="@AdminMode" />
-
-        @if (AdminMode)
+        @if (CanApprove)
         {
-            <MudGrid>
-                <MudItem>
-                    <MudButton Disabled="@IsButtonDisabled" ButtonType="ButtonType.Submit" Variant="Variant.Filled"
-                               OnClick="ApproveAsync"
-                               Color="Color.Primary" Class="ml-auto">Approve</MudButton>
-                </MudItem>
-                <MudItem>
-                    <MudButton Disabled="@IsButtonDisabled" ButtonType="ButtonType.Reset" Variant="Variant.Filled"
-                               OnClick="RejectAsync"
-                               Color="Color.Error" Class="ml-auto">Reject</MudButton>
-                </MudItem>
-            </MudGrid>
+                <MudCheckBox Label="View in Admin Mode"
+                             @bind-Checked="@AdminMode" />
 
-            <MudText Class="mt-6"
-                     Inline="true">Selected items: @(selectedItems==null ? "" : string.Join(", ", selectedItems.OrderBy(x=>x.Name).Select(x=>x.Name)))</MudText>
+                @if (AdminMode)
+                {
+                    <MudGrid>
+                        <MudItem>
+                            <MudButton Disabled="@IsButtonDisabled" ButtonType="ButtonType.Submit" Variant="Variant.Filled"
+                                       OnClick="ApproveAsync"
+                                       Color="Color.Primary" Class="ml-auto">Approve</MudButton>
+                        </MudItem>
+                        <MudItem>
+                            <MudButton Disabled="@IsButtonDisabled" ButtonType="ButtonType.Reset" Variant="Variant.Filled"
+                                       OnClick="RejectAsync"
+                                       Color="Color.Error" Class="ml-auto">Reject</MudButton>
+                        </MudItem>
+                    </MudGrid>
 
+                    <MudText Class="mt-6"
+                             Inline="true">Selected items: @(selectedItems == null ? "" : string.Join(", ", selectedItems.OrderBy(x => x.Name).Select(x => x.Name)))</MudText>
+
+                }
         }
 
         <MudTable Dense="true"

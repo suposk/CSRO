@@ -28,13 +28,39 @@ namespace CSRO.Client.Services
             _configuration = configuration;
         }
 
+        public async Task<bool> IsInRole(string role)
+        {
+            if (string.IsNullOrWhiteSpace(role))
+                return false;
+            
+            var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+            if (authState != null && authState.User.Identity.IsAuthenticated)            
+                return authState.User.IsInRole(role);
+            
+            return false;
+        }
+
+        public async Task<bool> HasPermision(string policy)
+        {
+            if (string.IsNullOrWhiteSpace(policy))
+                return false;
+
+            var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+            if (authState != null && authState.User.Identity.IsAuthenticated)
+            {
+                if (Core.PoliciesCsro.PolicyClaimsDictionary.TryGetValue(policy, out System.Security.Claims.Claim claim))
+                    return authState.User.HasClaim(c => c.Type == claim.Type && c.Value == claim.Value);             
+            }                  
+            return false;
+        }
+
         public async Task<string> GetAccessTokenForUserAsync(string scope)
         {
             if (RunWithoutAuth)
                 return null;
 
-            var auth = await _authenticationStateProvider.GetAuthenticationStateAsync();
-            if (auth != null && auth.User.Identity.IsAuthenticated)
+            var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+            if (authState != null && authState.User.Identity.IsAuthenticated)
             {
                 try
                 {

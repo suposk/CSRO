@@ -258,6 +258,12 @@ namespace CSRO.Client.Blazor.WebApp
                 // By default, all incoming requests will be authorized according to the default policy
                 //Will automatical sign in user
                 options.FallbackPolicy = options.DefaultPolicy;
+
+                //options.AddPolicy(PoliciesCsro.CanApproveAdoRequest, policy => policy.RequireClaim(ClaimTypesCsro.CanApproveAdoRequest, true.ToString()));                
+                foreach (var pol in PoliciesCsro.PolicyClaimsDictionary)
+                {
+                    options.AddPolicy(pol.Key, policy => policy.RequireClaim(pol.Value.Type, pol.Value.Value));
+                }
             });
 
             services.AddRazorPages();
