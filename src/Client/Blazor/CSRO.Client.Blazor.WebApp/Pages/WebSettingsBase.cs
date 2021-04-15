@@ -61,6 +61,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages
                 if (auth != null && auth.User.Identity.IsAuthenticated)
                 {
                     var isAdmin = auth.User.IsInRole(Core.RolesCsro.Admin);
+                    var isAdmin2 = await AuthCsroService.IsInRole(Core.RolesCsro.Admin);
 
                     //if (auth.User.Identity.Name.Contains("supolik"))
                     if (true)
