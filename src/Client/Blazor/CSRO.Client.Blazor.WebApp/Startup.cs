@@ -259,7 +259,11 @@ namespace CSRO.Client.Blazor.WebApp
                 //Will automatical sign in user
                 options.FallbackPolicy = options.DefaultPolicy;
 
-                options.AddPolicy(PoliciesCsro.CanApproveAdoRequest, policy => policy.RequireClaim(ClaimTypesCsro.CanApproveAdoRequest, true.ToString()));
+                //options.AddPolicy(PoliciesCsro.CanApproveAdoRequest, policy => policy.RequireClaim(ClaimTypesCsro.CanApproveAdoRequest, true.ToString()));                
+                foreach (var pol in PoliciesCsro.PolicyClaimsDictionary)
+                {
+                    options.AddPolicy(pol.Key, policy => policy.RequireClaim(pol.Value.Type, pol.Value.Value));
+                }
             });
 
             services.AddRazorPages();

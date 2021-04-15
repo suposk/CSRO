@@ -48,18 +48,8 @@ namespace CSRO.Client.Services
             var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
             if (authState != null && authState.User.Identity.IsAuthenticated)
             {
-                switch (policy)
-                {
-                    case Core.PoliciesCsro.CanApproveAdoRequest:
-                        {
-                            var p1 = authState.User.HasClaim(p => p.Type == Core.ClaimTypesCsro.CanApproveAdoRequest && p.Value == true.ToString());
-                            if (p1)
-                                return true;
-                            break;
-                        }
-                    default:
-                        return false;
-                }                
+                if (Core.PoliciesCsro.PolicyClaimsDictionary.TryGetValue(policy, out System.Security.Claims.Claim claim))
+                    return authState.User.HasClaim(c => c.Type == claim.Type && c.Value == claim.Value);             
             }                  
             return false;
         }
