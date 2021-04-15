@@ -38,11 +38,10 @@ namespace CSRO.Server.Api.Controllers
 
         // GET: api/<VersionController>
         [HttpGet]
-        public async Task<ActionResult<List<TicketDto>>> Get([FromServices] IRestUserService restUserService)
+        public async Task<ActionResult<List<TicketDto>>> Get()
         {
             try
-            {
-                //var cl = await restUserService.GetClaimsByUserNameAsync("jan.supolik@hotmail.com");
+            {                
                 _logger.LogInformation(ApiLogEvents.GetAllItems, $"{nameof(Get)} Started");
 
                 //throw new Exception("some fake value is null");
@@ -61,14 +60,14 @@ namespace CSRO.Server.Api.Controllers
         // GET: api/MessageDetails/5        
         [HttpGet("{id}", Name = nameof(GetTicket))]
         //public async Task<ActionResult<TicketDto>> GetTicket(int id)
-        public async Task<ActionResult<TicketDto>> GetTicket(int id, [FromServices] IAdService adService)
+        public async Task<ActionResult<TicketDto>> GetTicket(int id, [FromServices] IAdService adService, [FromServices] IRestUserService restUserService)
         {
             if (id < 1)
                 return BadRequest();            
             try
             {
                 _logger.LogInformation(ApiLogEvents.GetItem, $"{nameof(GetTicket)} with {id} Started");
-
+                //var cl = await restUserService.GetClaimsByUserNameAsync("jan.supolik@hotmail.com");
                 //var ad = await adService.GetCurrentAdUserInfo();
 
                 var repoObj = await _repository.GetId(id).ConfigureAwait(false);

@@ -24,7 +24,8 @@ namespace CSRO.Server.Auth.Api.Controllers
         private readonly ILocalUserService _localUserService;
         private readonly IMapper _mapper;
 
-        public UserClaimController(ILogger<UserClaimController> logger,
+        public UserClaimController(
+            ILogger<UserClaimController> logger,
             ILocalUserService localUserService,
             IMapper mapper)
         {

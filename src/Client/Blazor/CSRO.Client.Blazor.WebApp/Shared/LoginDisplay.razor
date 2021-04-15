@@ -1,32 +1,36 @@
 ﻿@*<AuthorizeView>
-        <Authorized>
-            Hello, @context.User.Identity.Name!
-            <a class="oi-account-login" href="MicrosoftIdentity/Account/SignOut">Log out</a>
-        </Authorized>
-        <NotAuthorized>
-            <a class="oi-account-logout" href="MicrosoftIdentity/Account/SignIn">Log in</a>
-        </NotAuthorized>
-</AuthorizeView>*@
+            <Authorized>
+                Hello, @context.User.Identity.Name!
+                <a class="oi-account-login" href="MicrosoftIdentity/Account/SignOut">Log out</a>
+            </Authorized>
+            <NotAuthorized>
+                <a class="oi-account-logout" href="MicrosoftIdentity/Account/SignIn">Log in</a>
+            </NotAuthorized>
+    </AuthorizeView>*@
 
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Components.Authorization
+@using CSRO.Client.Services
+@using Microsoft.Extensions.Configuration
+@using Microsoft.Identity.Web
+@using System.Security.Principal
+
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IUserDataService UserDataService
+@inject IUserClaimDataService UserClaimDataService
+@inject IConfiguration Configuration
+@inject ITokenAcquisition TokenAcquisition
 
 <div>
     @if (_isAuthenticated)
     {
-        @*<MudText Class="m-1">@_name</MudText>
-        <MudNavLink Class="m-1"
-                    Href="MicrosoftIdentity/Account/SignOut"
-                    Target="_blank"
-                    Match="NavLinkMatch.Prefix">Log out</MudNavLink>*@
         <MudGrid>
             <MudItem>
                 <MudText Class="p-2">@_name</MudText>
             </MudItem>
             <MudItem>
                 <MudNavLink Class="m-1"
-                            Href="MicrosoftIdentity/Account/SignOut"                                                       
+                            Href="MicrosoftIdentity/Account/SignOut"
                             Match="NavLinkMatch.Prefix">Log out</MudNavLink>
             </MudItem>
         </MudGrid>
@@ -55,13 +59,35 @@
         var user = authState.User;
 
         _isAuthenticated = user.Identity.IsAuthenticated;
-        if (user.Identity.IsAuthenticated)
+        if (_isAuthenticated)
         {
+            //v1 log in
+            //var userAuthApi = await UserDataService.GetUserByUserName(user.Identity.Name);
+            var userClaims = await UserClaimDataService.GetUserClaimsByUserName(user.Identity.Name);
+            if (userClaims.HasAnyInCollection())
+            {
+                //var pri = user.Identity as ClaimsPrincipal;
+                ClaimsIdentity claimsIdentityAdd = new ClaimsIdentity(userClaims);
+                user.AddIdentity(claimsIdentityAdd);
+            }
+
+            ////v2 principle
+            //var Scope = Configuration.GetValue<string>(Core.ConstatCsro.Scopes.Scope_Auth_Api);
+            ////var pri = user.Identity as ClaimsPrincipal;
+            //ClaimsPrincipal pri = new ClaimsPrincipal(user.Identity);
+            //try
+            //{
+            //    var apiToken = await TokenAcquisition.GetAccessTokenForUserAsync(new List<string> { Scope }, null, null, pri);
+            //}
+            //catch (Exception ex)
+            //{
+
+            //}
+
             _name = user.Identity.Name;
             _authMessage = $"{user.Identity.Name} is authenticated.";
             _claims = user.Claims;
-            _surnameMessage =
-                $"Surname: {user.FindFirst(c => c.Type == ClaimTypes.Surname)?.Value}";
+            _surnameMessage = $"Surname: {user.FindFirst(c => c.Type == ClaimTypes.Surname)?.Value}";
         }
         else
         {

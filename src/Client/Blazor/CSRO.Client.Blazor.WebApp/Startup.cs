@@ -182,9 +182,9 @@ namespace CSRO.Client.Blazor.WebApp
                     UseCookies = false
                 };
             })
-            .SetHandlerLifetime(TimeSpan.FromMinutes(5))
-            .AddPolicyHandler(PollyHelper.GetRetryPolicy())
-            .AddPolicyHandler(PollyHelper.GetRetryPolicy());
+            //.SetHandlerLifetime(TimeSpan.FromMinutes(5))
+            //.AddPolicyHandler(PollyHelper.GetRetryPolicy())
+            //.AddPolicyHandler(PollyHelper.GetRetryPolicy());
             ;
 
             services.AddHttpClient(ConstatCsro.ClientNames.MANAGEMENT_AZURE_EndPoint, (client) =>
@@ -228,9 +228,9 @@ namespace CSRO.Client.Blazor.WebApp
             //only for client
             services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                 .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
-                .EnableTokenAcquisitionToCallDownstreamApi()    //v1
+                //.EnableTokenAcquisitionToCallDownstreamApi()    //v1
                 //.EnableTokenAcquisitionToCallDownstreamApi(new List<string> { "user.read" })
-                //.EnableTokenAcquisitionToCallDownstreamApi(new List<string> { "user.read", ConstatCsro.Scopes.MANAGEMENT_AZURE_SCOPE })
+                .EnableTokenAcquisitionToCallDownstreamApi(new List<string> { "user.read", "openid", "email", "profile", "offline_access", Configuration.GetValue<string>(Core.ConstatCsro.Scopes.Scope_Auth_Api) })
                 //.EnableTokenAcquisitionToCallDownstreamApi(new List<string> { "https://graph.microsoft.com/.default" })   /v2
                 //.EnableTokenAcquisitionToCallDownstreamApi(new List<string> { "https://graph.microsoft.com/.default", Configuration.GetValue<string>("Scope_Api") })                
                 .AddInMemoryTokenCaches();
@@ -257,7 +257,7 @@ namespace CSRO.Client.Blazor.WebApp
             {
                 // By default, all incoming requests will be authorized according to the default policy
                 //Will automatical sign in user
-                //options.FallbackPolicy = options.DefaultPolicy;
+                options.FallbackPolicy = options.DefaultPolicy;
             });
 
             services.AddRazorPages();
@@ -266,6 +266,7 @@ namespace CSRO.Client.Blazor.WebApp
 
             services.AddTransient<IAuthCsroService, AuthCsroService>();
             services.AddTransient<IUserDataService, UserDataService>();
+            services.AddTransient<IUserClaimDataService, UserClaimDataService>();
 
             services.AddTransient<IVersionService, VersionService>();
             services.AddTransient<IBaseDataService<Ticket>, TicketDataService>();

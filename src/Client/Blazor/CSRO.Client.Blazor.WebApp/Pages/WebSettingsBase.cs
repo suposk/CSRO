@@ -57,9 +57,11 @@ namespace CSRO.Client.Blazor.WebApp.Pages
                 CanView = false;
                 SettingModels.Clear();                
                 
-                var auth = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+                var auth = await AuthenticationStateProvider.GetAuthenticationStateAsync();                
                 if (auth != null && auth.User.Identity.IsAuthenticated)
                 {
+                    var isAdmin = auth.User.IsInRole(Core.RolesCsro.Admin);
+
                     //if (auth.User.Identity.Name.Contains("supolik"))
                     if (true)
                     {
