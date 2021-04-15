@@ -17,6 +17,7 @@
 
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IUserDataService UserDataService
+@inject IUserClaimDataService UserClaimDataService
 @inject IConfiguration Configuration
 @inject ITokenAcquisition TokenAcquisition
 
@@ -61,7 +62,14 @@
         if (_isAuthenticated)
         {
             //v1 log in
-            var userAuthApi = await UserDataService.GetUserByUserName(user.Identity.Name);
+            //var userAuthApi = await UserDataService.GetUserByUserName(user.Identity.Name);
+            var userClaims = await UserClaimDataService.GetUserClaimsByUserName(user.Identity.Name);
+            if (userClaims.HasAnyInCollection())
+            {
+                //var pri = user.Identity as ClaimsPrincipal;
+                ClaimsIdentity claimsIdentityAdd = new ClaimsIdentity(userClaims);
+                user.AddIdentity(claimsIdentityAdd);
+            }
 
             ////v2 principle
             //var Scope = Configuration.GetValue<string>(Core.ConstatCsro.Scopes.Scope_Auth_Api);

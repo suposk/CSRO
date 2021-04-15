@@ -266,6 +266,7 @@ namespace CSRO.Client.Blazor.WebApp
 
             services.AddTransient<IAuthCsroService, AuthCsroService>();
             services.AddTransient<IUserDataService, UserDataService>();
+            services.AddTransient<IUserClaimDataService, UserClaimDataService>();
 
             services.AddTransient<IVersionService, VersionService>();
             services.AddTransient<IBaseDataService<Ticket>, TicketDataService>();
