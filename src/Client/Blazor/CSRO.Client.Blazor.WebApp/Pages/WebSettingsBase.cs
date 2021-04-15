@@ -58,6 +58,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages
                 SettingModels.Clear();                
                 
                 var auth = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+                var isAdmin = auth.User.IsInRole("Admin");
                 if (auth != null && auth.User.Identity.IsAuthenticated)
                 {
                     //if (auth.User.Identity.Name.Contains("supolik"))
