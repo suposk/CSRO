@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace CSRO.Server.Core
+﻿namespace CSRO.Server.Core
 {
     public static class ConstatCsro
     {
