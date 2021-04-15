@@ -1,6 +1,6 @@
-﻿<MudNavMenu Class="mudblazor-navmenu">
+﻿S<MudNavMenu Class="mudblazor-navmenu">
     <div class="docs-nav-fader"></div>
-    <MudNavGroup Title="Easy Sample" Icon="@Icons.Material.Filled.Satellite" Expanded="true" ExpandIcon="@Icons.Material.Filled.ExpandMore" Style="margin-top: 4px;">
+    <MudNavGroup Title="Easy Sample" Icon="@Icons.Material.Filled.Satellite" Expanded="false" ExpandIcon="@Icons.Material.Filled.ExpandMore" Style="margin-top: 4px;">
 
         <MudNavLink Href="/ticketcreate" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Add">Create Sample Ticket</MudNavLink>
         <MudNavLink Href="/ticketsview" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">Sample Tickets</MudNavLink>
@@ -17,20 +17,24 @@
         <MudNavLink Href="/rg/Select" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.SelectAll">Select Resource Group</MudNavLink>
     </MudNavGroup>
 
-    <MudNavGroup Title="Ado" Icon="@Icons.Material.Filled.ReportProblem" Expanded="true" ExpandIcon="@Icons.Material.Filled.ExpandMore" Style="margin-top: 4px;">
+    <MudNavGroup Title="Ado" Icon="@Icons.Material.Filled.ReportProblem" Expanded="false" ExpandIcon="@Icons.Material.Filled.ExpandMore" Style="margin-top: 4px;">
         <MudNavLink Href="/ado/AdoRequestsList" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">Ado Requests</MudNavLink>
         <MudNavLink Href="/ado/ProjectCreate" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Add">Create Ado Project</MudNavLink>
         <MudNavLink Href="/ado/ProjectApproval" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Approval">Project Approval</MudNavLink>
         <MudNavLink Href="/ado/ProjectAccess" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.AccessAlarm">Access to Ado Project</MudNavLink>        
     </MudNavGroup>
 
-    <MudNavGroup Title="Customers DB" Icon="@Icons.Material.Filled.SearchOff" Expanded="true" ExpandIcon="@Icons.Material.Filled.ExpandMore" Style="margin-top: 4px;">
+    <MudNavGroup Title="Customers DB" Icon="@Icons.Material.Filled.SearchOff" Expanded="false" ExpandIcon="@Icons.Material.Filled.ExpandMore" Style="margin-top: 4px;">
         <MudNavLink Href="/Customers/CustomerCodes" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.List">Customer Codes</MudNavLink>              
     </MudNavGroup>
 
-    <MudNavGroup Title="Other" Icon="@Icons.Material.Filled.Nature" Expanded="true" ExpandIcon="@Icons.Material.Filled.ExpandMore" Style="margin-top: 4px;">
+    <MudNavGroup Title="Other" Icon="@Icons.Material.Filled.Nature" Expanded="false" ExpandIcon="@Icons.Material.Filled.ExpandMore" Style="margin-top: 4px;">
         <MudNavLink Href="/appversion" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.FileCopy">App Version</MudNavLink>
-        <MudNavLink Href="/WebSettings" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.SettingsApplications">Web Settings</MudNavLink>
+        <AuthorizeView Roles="@CSRO.Client.Core.RolesCsro.Admin">
+            <Authorized>
+                <MudNavLink Href="/WebSettings" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.SettingsApplications">Web Settings</MudNavLink>
+            </Authorized>
+        </AuthorizeView>        
     </MudNavGroup>
 
     @*<MudNavGroup Title="Mud Views" Icon="@Icons.Custom.MudBlazor" Expanded="false" ExpandIcon="@Icons.Material.ExpandMore" Style="margin-top: 4px;">
