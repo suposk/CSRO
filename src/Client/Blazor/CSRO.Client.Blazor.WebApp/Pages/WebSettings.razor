@@ -31,10 +31,10 @@
                             <MudTh><MudTableSortLabel SortBy="new Func<SettingModel, object>(x => x.Name)">Name</MudTableSortLabel></MudTh>
                             <MudTh><MudTableSortLabel SortBy="new Func<SettingModel, object>(x => x.Value)">Value</MudTableSortLabel></MudTh>
                         </HeaderContent>
-                        <RowTemplate Context="SettingModelContext">
-                            <MudTd DataLabel="Type">@SettingModelContext.Type</MudTd>
-                            <MudTd DataLabel="Name">@SettingModelContext.Name</MudTd>
-                            <MudTd DataLabel="Value">@SettingModelContext.Value</MudTd>
+                        <RowTemplate Context="settingModelContext">
+                            <MudTd DataLabel="Type">@settingModelContext.Type</MudTd>
+                            <MudTd DataLabel="Name">@settingModelContext.Name</MudTd>
+                            <MudTd DataLabel="Value">@settingModelContext.Value</MudTd>
                         </RowTemplate>
                         <PagerContent>
                             <MudTablePager PageSizeOptions="new int[] { 10, 20, 50 }" />
@@ -44,10 +44,12 @@
             }
         </MudContainer>
     </Authorized>
+
     <NotAuthorized>
         <NotAuthorizedCsro>
         </NotAuthorizedCsro>
     </NotAuthorized>
+
 </AuthorizeView>
 
 
