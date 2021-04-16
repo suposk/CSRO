@@ -226,15 +226,23 @@ namespace CSRO.Client.Blazor.WebApp
             #endregion
 
             //only for client
-            services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-                .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
-                //.EnableTokenAcquisitionToCallDownstreamApi()    //v1
-                //.EnableTokenAcquisitionToCallDownstreamApi(new List<string> { "user.read" })
-                .EnableTokenAcquisitionToCallDownstreamApi(new List<string> { "user.read", "openid", "email", "profile", "offline_access", Configuration.GetValue<string>(Core.ConstatCsro.Scopes.Scope_Auth_Api) })
-                //.EnableTokenAcquisitionToCallDownstreamApi(new List<string> { "https://graph.microsoft.com/.default" })   /v2
-                //.EnableTokenAcquisitionToCallDownstreamApi(new List<string> { "https://graph.microsoft.com/.default", Configuration.GetValue<string>("Scope_Api") })                
-                .AddInMemoryTokenCaches();
-                //.AddDistributedTokenCaches();
+            bool useDistributedTokenCaches = true;
+            if (useDistributedTokenCaches)
+            {
+                services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+                    .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
+                    //.EnableTokenAcquisitionToCallDownstreamApi()    //v1
+                    .EnableTokenAcquisitionToCallDownstreamApi(new List<string> { "user.read", "openid", "email", "profile", "offline_access", Configuration.GetValue<string>(Core.ConstatCsro.Scopes.Scope_Auth_Api) })                    
+                    .AddDistributedTokenCaches();
+            }
+            else
+            {
+                services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+                    .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
+                    //.EnableTokenAcquisitionToCallDownstreamApi()    //v1
+                    .EnableTokenAcquisitionToCallDownstreamApi(new List<string> { "user.read", "openid", "email", "profile", "offline_access", Configuration.GetValue<string>(Core.ConstatCsro.Scopes.Scope_Auth_Api) })
+                    .AddInMemoryTokenCaches();                
+            }
             
             services.Configure<MicrosoftIdentityOptions>(options =>
             {

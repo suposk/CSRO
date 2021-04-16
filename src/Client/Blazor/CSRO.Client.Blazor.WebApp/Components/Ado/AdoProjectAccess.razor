@@ -3,6 +3,7 @@
 @using Blazored.FluentValidation
 
 <MudContainer>    
+
         <MudText Typo="Typo.h4" GutterBottom="true">@Title</MudText>
         @if (IsLoading)
         {
@@ -32,6 +33,7 @@
                     {
                         <MudSelect T="@string"
                                     Disabled="@IsReadOnly"
+                                    Dense="true"
                                     OffsetY="true"
                                     Label="Select Organization:"
                                     ValueChanged="OnOrganizationChanged"
@@ -53,6 +55,7 @@
                     @if (ProjectNames?.Count > 0)
                     {
                         <MudSelect T="@string"
+                                   Dense="true"
                                     Disabled="@(IsReadOnly || ProjectNames?.Count <= 0)"
                                     OffsetY="true"
                                     Label="Select Project:"
@@ -99,7 +102,7 @@
             </MudCard>
             @if (!IsReadOnly)
             {
-                <MudText Typo="Typo.body2" Align="Align.Center" Class="my-4">
+                <MudText Typo="Typo.body2" Align="Align.Center" Class="m-1">
                     Fill out the form correctly to see the success message.
                 </MudText>
 
@@ -119,5 +122,5 @@
             }
         </EditForm>
         
-        <MudButton Class="mt-4" OnClick="GoBack" Variant="Variant.Filled" Color="Color.Primary">Go Back</MudButton>    
+        @*<MudButton Class="m-1" OnClick="GoBack" Variant="Variant.Filled" Color="Color.Primary">Go Back</MudButton>*@    
 </MudContainer>

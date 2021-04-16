@@ -41,6 +41,9 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
         protected HashSet<AdoProjectAccessModel> selectedItems = new();
         protected bool IsButtonDisabled => IsLoading || selectedItems.Count == 0;
         protected bool CanApprove { get; set; }
+        protected OperatioTypeIdPair OperatioTypeIdPair { get; set; } = new();
+
+        protected bool ShowDetails { get; set; }
 
         /// <summary>
         /// Only for DEV

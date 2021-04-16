@@ -18,10 +18,16 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
         #region Params and Injects
 
         [Parameter]
-        public string RequestId { get; set; }
+        public OperatioTypeIdPair OperatioTypeIdPair { get; set; } = new();
 
-        [Parameter]
-        public OperatioType OperationTypeTicket { get; set; }
+        //[Parameter]
+        //public string RequestId { get; set; }
+
+        //[Parameter]
+        //public OperatioType OperationTypeTicket { get; set; }
+
+        public string RequestId => OperatioTypeIdPair.Id;
+        public OperatioType OperationTypeTicket => OperatioTypeIdPair.OperatioTypeEnum;
 
         [Inject]
         public NavigationManager NavigationManager { get; set; }
