@@ -161,13 +161,6 @@ namespace CSRO.Server.Ado.Api
                 options.AddPolicy(PoliciesCsro.CanApproveAdoRequest, policy => policy.RequireClaim(ClaimTypesCsro.CanApproveAdoRequest, true.ToString()));
             });
 
-            //todo remve after sing service to talk auth
-            string UserContextDbConnStr = Configuration.GetConnectionString("UserContextDbConnStr");
-            services.AddDbContext<UserContext>(options =>
-            {
-                options.UseSqlServer(UserContextDbConnStr, x => x.MigrationsAssembly(_namespace));
-            });
-
             //TODO replace with rest or GRPC service            
             services.AddScoped<IRestUserService, RestUserService>();
             services.AddScoped<IClaimsTransformation, AdoClaimsTransformation>();            

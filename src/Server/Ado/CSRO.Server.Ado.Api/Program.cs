@@ -42,10 +42,6 @@ namespace CSRO.Server.Ado.Api
                     //context.Database.EnsureDeleted(); logger?.LogInformation("Called EnsureDeleted");
                     //context?.Database.EnsureCreated(); logger?.LogInformation("Called EnsureCreated");
                     context?.Database.Migrate(); logger?.LogInformation("Called Migrate");
-
-                    //TODO REMOVE
-                    var userContext = scope.ServiceProvider.GetService<UserContext>();
-                    userContext.Database.Migrate(); logger?.LogInformation("Called Migrate on UserContext, TODO REMOVE");
                 }
                 catch (Exception ex)
                 {
