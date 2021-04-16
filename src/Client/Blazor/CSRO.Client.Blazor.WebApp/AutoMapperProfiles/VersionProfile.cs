@@ -120,7 +120,7 @@ namespace CSRO.Client.Blazor.WebApp.AutoMapperProfiles
                 .ForMember(s => s.ModifiedAt, op => op.Ignore())
                 .ForMember(s => s.ModifiedBy, op => op.Ignore())
                 .ForMember(s => s.RowVersion, op => op.Ignore())
-                .ForMember(s => s.UserClaims, op => op.Ignore())
+                //.ForMember(s => s.UserClaims, op => op.Ignore())
                 .ReverseMap();
 
             CreateMap<UserClaimDto, Models.UserClaim>()

@@ -164,7 +164,7 @@ namespace CSRO.Server.Ado.Api.Controllers
         }
 
         // POST api/<AdoProjectController>
-        [Authorize(Policy = Core.PoliciesCsro.CanApproveAdoRequest)]
+        [Authorize(Policy = Core.PoliciesCsro.CanApproveAdoRequestPolicy)]
         //[Authorize(Roles = "Admin")]
         [HttpPost, Route(nameof(ApproveAdoProject))]
         public async Task<ActionResult<List<ProjectAdo>>> ApproveAdoProject(List<int> toApprove)
@@ -187,7 +187,7 @@ namespace CSRO.Server.Ado.Api.Controllers
             }
         }
 
-        [Authorize(Policy = Core.PoliciesCsro.CanApproveAdoRequest)]
+        [Authorize(Policy = Core.PoliciesCsro.CanApproveAdoRequestPolicy)]
         [HttpPost, Route(nameof(RejectAdoProject))]
         public async Task<ActionResult<List<ProjectAdo>>> RejectAdoProject(RejectededListDto toReject)
         {

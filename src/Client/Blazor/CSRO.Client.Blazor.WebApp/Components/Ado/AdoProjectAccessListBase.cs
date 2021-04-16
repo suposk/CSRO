@@ -77,7 +77,7 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
             {
                 ShowLoading();
                 Requests.Clear();
-                CanApprove = await AuthCsroService.HasPermision(Core.PoliciesCsro.CanApproveAdoRequest);
+                CanApprove = await AuthCsroService.HasPermision(Core.PoliciesCsro.CanApproveAdoRequestPolicy);
 
                 //if admin
                 if (AdminMode)

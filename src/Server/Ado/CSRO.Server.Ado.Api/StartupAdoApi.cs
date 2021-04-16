@@ -158,7 +158,7 @@ namespace CSRO.Server.Ado.Api
                 //Will automatical sign in user
                 //options.FallbackPolicy = options.DefaultPolicy;
 
-                options.AddPolicy(PoliciesCsro.CanApproveAdoRequest, policy => policy.RequireClaim(ClaimTypesCsro.CanApproveAdoRequest, true.ToString()));
+                options.AddPolicy(PoliciesCsro.CanApproveAdoRequestPolicy, policy => policy.RequireClaim(ClaimTypesCsro.CanApproveAdoRequestClaim, true.ToString()));
             });
 
             //TODO replace with rest or GRPC service            

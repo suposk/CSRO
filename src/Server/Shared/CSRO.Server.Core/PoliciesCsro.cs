@@ -2,6 +2,6 @@
 {
     public static class PoliciesCsro
     {        
-        public const string CanApproveAdoRequest = "CanApproveAdoRequest-Policy";
+        public const string CanApproveAdoRequestPolicy = "CanApproveAdoRequest-Policy";
     }
 }

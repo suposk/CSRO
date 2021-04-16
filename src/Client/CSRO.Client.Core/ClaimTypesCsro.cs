@@ -5,8 +5,8 @@
         /// <summary>
         /// Can approve Add project
         /// </summary>
-        public const string CanApproveAdoRequest = "CanApproveAdoRequest-Csro";
+        public const string CanApproveAdoRequestClaim = "CanApproveAdoRequest-Csro-Claim";
 
-        public const string CanReadAdoRequest = "CanReadAdoRequest-Csro";
+        public const string CanReadAdoRequestClaim = "CanReadAdoRequest-Csro-Claim";
     }
 }
