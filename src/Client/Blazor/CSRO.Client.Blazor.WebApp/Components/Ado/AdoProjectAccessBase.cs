@@ -18,10 +18,22 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
         #region Params and Injects
 
         [Parameter]
-        public string RequestId { get; set; }
+        public OperatioTypeIdPair OperatioTypeIdPair { get; set; } = new();
 
+        /// <summary>
+        /// Tags compenents example depands on sub Id
+        /// </summary>
         [Parameter]
-        public OperatioType OperationTypeTicket { get; set; }
+        public EventCallback<bool> SavedAdoProjectAccess { get; set; }
+
+        //[Parameter]
+        //public string RequestId { get; set; }
+
+        //[Parameter]
+        //public OperatioType OperationTypeTicket { get; set; }
+
+        public string RequestId => OperatioTypeIdPair.Id;
+        public OperatioType OperationTypeTicket => OperatioTypeIdPair.OperatioTypeEnum;
 
         [Inject]
         public NavigationManager NavigationManager { get; set; }
@@ -55,6 +67,18 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
         protected async override Task OnInitializedAsync()
         {
             await Load();
+        }
+
+        protected override async Task OnParametersSetAsync()
+        {            
+            await base.OnParametersSetAsync();
+            if (string.IsNullOrWhiteSpace(RequestId))
+            {
+                Model = new();
+                return;
+            }
+            else
+                await Load();            
         }
 
         private async Task Load()
@@ -113,6 +137,7 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
                         var added = await AdoProjectAccessDataService.AddItemAsync(Model);
                         if (added != null)
                         {
+                            await SavedAdoProjectAccess.InvokeAsync(true);
                             Success = true;
                             Model = added;
                         }
@@ -122,6 +147,7 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
                         var updated = await AdoProjectAccessDataService.UpdateItemAsync(Model);
                         if (updated)
                         {
+                            await SavedAdoProjectAccess.InvokeAsync(true);
                             await CsroDialogService.ShowMessage("Success", $"Update Finished", "Refresh");
                             await Load();
                         }

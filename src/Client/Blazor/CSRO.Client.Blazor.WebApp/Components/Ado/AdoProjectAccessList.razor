@@ -3,7 +3,33 @@
 @using Blazored.FluentValidation
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-6">
-    <MudText Typo="Typo.h4" GutterBottom="true">Requests count: @Requests?.Count</MudText>
+    <div style="max-width: 50%" class="m-4">
+
+        @if (ShowDetails)
+        {
+            <MudFab Color="Color.Primary"
+                    Size="Size.Small"
+                    IconSize="Size.Medium"
+                    Label="Collapse"
+                    OnClick="@((e) => CreateNew(false))"
+                    Icon="@Icons.Material.Filled.Close"></MudFab>
+
+            <AdoProjectAccess SavedAdoProjectAccess="@SavedAdoProjectAccessHandler"
+                              OperatioTypeIdPair="@OperatioTypeIdPair">
+            </AdoProjectAccess>
+        }
+        else
+        {
+            <MudFab Color="Color.Primary"
+                    Size="Size.Small"
+                    IconSize="Size.Medium"
+                    Label="Request Access"                    
+                    OnClick="@((e) => CreateNew(true))"
+                    Icon="@Icons.Material.Filled.Add"></MudFab>
+        }
+    </div>
+
+    <MudText Typo="Typo.h4" GutterBottom="true">Ado Access Requests count: @Requests?.Count</MudText>
     @if (IsLoading)
     {
         <MudGrid>
@@ -17,39 +43,30 @@
     }
     else
     {
-        @*<MudTooltip Text="Add New" Delayed="1">
-                <MudGrid>
-                    <MudItem>
-                        <MudIconButton Link="/ticketcreate" Icon="@Icons.Material.Filled.Add">Request restart</MudIconButton>
-                    </MudItem>
-                </MudGrid>
-            </MudTooltip>*@
-
-
         @if (CanApprove)
         {
-                <MudCheckBox Label="View in Admin Mode"
-                             @bind-Checked="@AdminMode" />
+            <MudCheckBox Label="View in Admin Mode"
+                         @bind-Checked="@AdminMode" />
 
-                @if (AdminMode)
-                {
-                    <MudGrid>
-                        <MudItem>
-                            <MudButton Disabled="@IsButtonDisabled" ButtonType="ButtonType.Submit" Variant="Variant.Filled"
-                                       OnClick="ApproveAsync"
-                                       Color="Color.Primary" Class="ml-auto">Approve</MudButton>
-                        </MudItem>
-                        <MudItem>
-                            <MudButton Disabled="@IsButtonDisabled" ButtonType="ButtonType.Reset" Variant="Variant.Filled"
-                                       OnClick="RejectAsync"
-                                       Color="Color.Error" Class="ml-auto">Reject</MudButton>
-                        </MudItem>
-                    </MudGrid>
+            @if (AdminMode)
+            {
+                <MudGrid>
+                    <MudItem>
+                        <MudButton Disabled="@IsButtonDisabled" ButtonType="ButtonType.Submit" Variant="Variant.Filled"
+                                   OnClick="ApproveAsync"
+                                   Color="Color.Primary" Class="ml-auto">Approve</MudButton>
+                    </MudItem>
+                    <MudItem>
+                        <MudButton Disabled="@IsButtonDisabled" ButtonType="ButtonType.Reset" Variant="Variant.Filled"
+                                   OnClick="RejectAsync"
+                                   Color="Color.Error" Class="ml-auto">Reject</MudButton>
+                    </MudItem>
+                </MudGrid>
 
-                    <MudText Class="mt-6"
-                             Inline="true">Selected items: @(selectedItems == null ? "" : string.Join(", ", selectedItems.OrderBy(x => x.Name).Select(x => x.Name)))</MudText>
+                <MudText Class="mt-6"
+                         Inline="true">Selected items: @(selectedItems == null ? "" : string.Join(", ", selectedItems.OrderBy(x => x.Name).Select(x => x.Name)))</MudText>
 
-                }
+            }
         }
 
         <MudTable Dense="true"
@@ -75,31 +92,19 @@
                 <MudTd DataLabel="Justification">@context.Justification</MudTd>
                 <MudTd DataLabel="Created At">@context.CreatedAt</MudTd>
                 @if (AdminMode == false)
-                {
+                    {
                     <MudPaper Class="demo-grid-paper" Elevation="0">
-                        @*<MudTooltip Text="Edit" Delayed="1">
-                                <MudIconButton Link="@($"ticketedit/{context.Id}")" Icon="@Icons.Material.Filled.Edit"></MudIconButton>
-                            </MudTooltip>
-                            <MudTooltip Text="Details">
-                                <MudIconButton Link="@($"ticketview/{context.Id}")" Icon="@Icons.Material.Filled.Info"></MudIconButton>
-                            </MudTooltip>*@
+                        <MudTooltip Text="Edit" Delayed="1">
+                            <MudIconButton OnClick="@(e => EditRequestAsync(context))" Icon="@Icons.Material.Filled.Edit"></MudIconButton>
+                        </MudTooltip>
+                        <MudTooltip Text="Details">
+                            <MudIconButton OnClick="@(e => ViewRequestAsync(context))" Icon="@Icons.Material.Filled.Info"></MudIconButton>
+                        </MudTooltip>
                         <MudTooltip Text="Delete">
                             <MudIconButton OnClick="@(e => DeleteRequestAsync(context))" Icon="@Icons.Material.Filled.Delete"></MudIconButton>
                         </MudTooltip>
                     </MudPaper>
                     }
-                @*<div>
-                        <div class="d-inline pa-2">
-                            <MudTooltip Text="Edit" Delayed="1">
-                                <MudNavLink Href="@($"ticketedit/{context.Id}")" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Edit"></MudNavLink>
-                            </MudTooltip>
-                        </div>
-                        <div class="d-inline pa-2">
-                            <MudTooltip Text="Details">
-                                <MudNavLink Href="@($"ticketedit/{context.Id}")" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Info"></MudNavLink>
-                            </MudTooltip>
-                        </div>
-                    </div>*@
             </RowTemplate>
             <PagerContent>
                 <MudTablePager PageSizeOptions="new int[] { 10, 20, 50 }" />
