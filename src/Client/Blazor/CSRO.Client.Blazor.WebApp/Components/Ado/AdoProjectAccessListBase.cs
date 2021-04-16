@@ -170,6 +170,11 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
             HideLoading();
         }
 
+        public async Task SavedAdoProjectAccessHandler(bool value)
+        {
+            await Load();
+        }
+
         public Task EditRequestAsync(AdoProjectAccessModel ticket)
         {
             ShowDetails = true;

@@ -14,7 +14,8 @@
                     OnClick="@((e) => CreateNew(false))"
                     Icon="@Icons.Material.Filled.Close"></MudFab>
 
-            <AdoProjectAccess OperatioTypeIdPair="@OperatioTypeIdPair">
+            <AdoProjectAccess SavedAdoProjectAccess="@SavedAdoProjectAccessHandler"
+                              OperatioTypeIdPair="@OperatioTypeIdPair">
             </AdoProjectAccess>
         }
         else

@@ -20,6 +20,12 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
         [Parameter]
         public OperatioTypeIdPair OperatioTypeIdPair { get; set; } = new();
 
+        /// <summary>
+        /// Tags compenents example depands on sub Id
+        /// </summary>
+        [Parameter]
+        public EventCallback<bool> SavedAdoProjectAccess { get; set; }
+
         //[Parameter]
         //public string RequestId { get; set; }
 
@@ -131,6 +137,7 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
                         var added = await AdoProjectAccessDataService.AddItemAsync(Model);
                         if (added != null)
                         {
+                            await SavedAdoProjectAccess.InvokeAsync(true);
                             Success = true;
                             Model = added;
                         }
@@ -140,6 +147,7 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
                         var updated = await AdoProjectAccessDataService.UpdateItemAsync(Model);
                         if (updated)
                         {
+                            await SavedAdoProjectAccess.InvokeAsync(true);
                             await CsroDialogService.ShowMessage("Success", $"Update Finished", "Refresh");
                             await Load();
                         }

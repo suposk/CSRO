@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using CSRO.Common.AdoServices.Models;
 using CSRO.Server.Ado.Api.Services;
 using Entity = CSRO.Server.Entities.Entity;
 using CSRO.Server.Infrastructure;
@@ -14,6 +13,7 @@ using CSRO.Server.Ado.Api.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using CSRO.Server.Ado.Api.Commands;
 using MediatR;
+using CSRO.Server.Domain;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -195,6 +195,40 @@ namespace CSRO.Server.Ado.Api.Controllers
         //public void Put(int id, [FromBody] string value)
         //{
         //}
+
+        [HttpPut()]
+        public async Task<ActionResult<AdoProjectAccessDto>> UpdateAdoProjectAccessRequest(AdoProjectAccessDto dto)
+        {
+            if (dto == null || dto.Id < 1)
+                return BadRequest();
+
+            if (dto.Status > Status.Submitted)
+                return BadRequest($"Can not Modify request if {nameof(dto.Status)} is {dto.Status}. Please Create new request.");
+
+            try
+            {
+                _logger.LogInformation(ApiLogEvents.UpdateItem, $"{nameof(UpdateAdoProjectAccessRequest)} Started");
+
+                var repoObj = await _repository.GetId(dto.Id).ConfigureAwait(false);
+                if (repoObj == null)
+                {
+                    _logger.LogWarning(ApiLogEvents.UpdateItemNotFound, $"{nameof(UpdateAdoProjectAccessRequest)} not found");
+                    return NotFound();
+                }
+
+                repoObj = _mapper.Map<Entity.AdoProjectAccess>(dto);
+                var res = await _repository.UpdateAsync(repoObj).ConfigureAwait(false);
+                if (res != null)
+                    return NoContent();
+                else
+                    return Conflict("Conflict detected, refresh and try again.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, nameof(UpdateAdoProjectAccessRequest), dto);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
+            }
+        }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteAdoProjectAccessRequest(int id)
