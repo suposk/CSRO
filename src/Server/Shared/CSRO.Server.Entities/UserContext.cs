@@ -57,21 +57,21 @@ namespace CSRO.Server.Entities
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            const string guid1adm = "8aa6a8cb-36ed-415a-a12b-07c84af45428";
-            const string guid2 = "44769cb1-cca7-4a19-8bbe-8edea9b99179";
+            var createdAt = new DateTime(2021, 4, 16);
+            const string createdBy = "Script";
             const string un1adm = "live.com#jan.supolik@hotmail.com";
             const string un2 = "read@jansupolikhotmail.onmicrosoft.com";
 
-            Role adminRole = new Role { Id = 1, Name = "Admin", CreatedAt = DateTime.UtcNow, CreatedBy = "Script", };
-            Role cont = new Role { Id = 3, Name = "Contributor", CreatedAt = DateTime.UtcNow, CreatedBy = "Script", }; ;
-            Role user = new Role { Id = 5, Name = "User", CreatedAt = DateTime.UtcNow, CreatedBy = "Script", };
+            Role adminRole = new Role { Id = 1, Name = RolesCsro.Admin, CreatedAt = createdAt, CreatedBy = createdBy, };
+            Role cont = new Role { Id = 3, Name = RolesCsro.Contributor, CreatedAt = createdAt, CreatedBy = createdBy, }; ;
+            Role user = new Role { Id = 5, Name = RolesCsro.User, CreatedAt = createdAt, CreatedBy = createdBy, };
             List<Role> roles = new();
             roles.Add(adminRole);
             roles.Add(cont);
             roles.Add(user);
 
             UserRole ur = new UserRole { Id = 1, RoleName = adminRole.Name,  UserName = un1adm };
-            List<UserRole> urlist = new List<UserRole>();
+            List<UserRole> urlist = new();
             urlist.Add(ur);
 
             modelBuilder.Entity<User>()
@@ -83,17 +83,13 @@ namespace CSRO.Server.Entities
             modelBuilder.Entity<User>().HasData(
                 new User()
                 {
-                    Id = 1,
-                    ObjectId = new Guid(guid1adm),                                       
-                    Username = un1adm,
-                    Active = true,                    
+                    Id = 1,                    
+                    Username = un1adm,                    
                 },
                 new User()
                 {
-                    Id = 2,
-                    ObjectId = new Guid(guid2),
-                    Username = un2,
-                    Active = true,
+                    Id = 2,                    
+                    Username = un2,                    
                 });;
 
             modelBuilder.Entity<UserClaim>().HasData(
@@ -103,14 +99,14 @@ namespace CSRO.Server.Entities
                  Id = 1,
                  UserName = un1adm,
                  //UserGuidId = new Guid(firstUser),
-                 Type = ClaimTypesCsro.CanApproveAdoRequest,
+                 Type = ClaimTypesCsro.CanApproveAdoRequestClaim,
                  Value = "True"
              },
              new UserClaim()
              {
                  Id = 2,
                  UserName = un1adm,
-                 Type = ClaimTypesCsro.CanReadAdoRequest,
+                 Type = ClaimTypesCsro.CanReadAdoRequestClaim,
                  Value = "True"
              },
              new UserClaim()
@@ -126,7 +122,7 @@ namespace CSRO.Server.Entities
                  Id = 4,
                  UserName = un1adm,
                  Type = ClaimTypes.Role,
-                 Value = "Admin"
+                 Value = RolesCsro.Admin
              },
 
              //second user
@@ -134,7 +130,7 @@ namespace CSRO.Server.Entities
              {
                  Id = 21,
                  UserName = un2,
-                 Type = ClaimTypesCsro.CanReadAdoRequest,
+                 Type = ClaimTypesCsro.CanReadAdoRequestClaim,
                  Value = "True"
              },
              new UserClaim()
@@ -142,7 +138,7 @@ namespace CSRO.Server.Entities
                  Id = 22,
                  UserName = un2,
                  Type = ClaimTypes.Email,
-                 Value = "read@someprovider.com"
+                 Value = "read@someFromUserClaimTable.com"
              }
              );
             modelBuilder.Entity<UserClaim>()
@@ -152,7 +148,6 @@ namespace CSRO.Server.Entities
                 .HasForeignKey(fk => fk.UserName);
 
             modelBuilder.Entity<Role>().HasIndex(a => a.Name).IsUnique();
-            //modelBuilder.Entity<Role>().HasKey(a => a.Name);
             modelBuilder.Entity<Role>().HasData(roles);
 
             modelBuilder.Entity<UserRole>()

@@ -2,7 +2,7 @@
 @inherits ProjectApprovalBase
 @using CSRO.Common.AdoServices.Models;
 
-<AuthorizeView Policy="@CSRO.Client.Core.PoliciesCsro.CanApproveAdoRequest">
+<AuthorizeView Policy="@CSRO.Client.Core.PoliciesCsro.CanApproveAdoRequestPolicy">
     <Authorized>
         <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-6">
             <MudText Typo="Typo.h4" GutterBottom="true">@Tickets?.Count Projects are awaiting approval to be created.</MudText>

@@ -158,14 +158,7 @@ namespace CSRO.Server.Ado.Api
                 //Will automatical sign in user
                 //options.FallbackPolicy = options.DefaultPolicy;
 
-                options.AddPolicy(PoliciesCsro.CanApproveAdoRequest, policy => policy.RequireClaim(ClaimTypesCsro.CanApproveAdoRequest, true.ToString()));
-            });
-
-            //todo remve after sing service to talk auth
-            string UserContextDbConnStr = Configuration.GetConnectionString("UserContextDbConnStr");
-            services.AddDbContext<UserContext>(options =>
-            {
-                options.UseSqlServer(UserContextDbConnStr, x => x.MigrationsAssembly(_namespace));
+                options.AddPolicy(PoliciesCsro.CanApproveAdoRequestPolicy, policy => policy.RequireClaim(ClaimTypesCsro.CanApproveAdoRequestClaim, true.ToString()));
             });
 
             //TODO replace with rest or GRPC service            
