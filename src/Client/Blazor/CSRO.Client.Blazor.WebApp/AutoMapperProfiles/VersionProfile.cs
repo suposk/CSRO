@@ -20,8 +20,7 @@ namespace CSRO.Client.Blazor.WebApp.AutoMapperProfiles
         public VersionProfile()
         {            
 
-            CreateMap<AppVersionDto, Models.AppVersion>()
-                //.ForMember(s => s.CurrentUnits, op => op.Ignore())
+            CreateMap<AppVersionDto, Models.AppVersion>()                
                 .ReverseMap();
 
             CreateMap<SdkModels.IdNameSdk, Core.Models.IdName>()
@@ -32,7 +31,8 @@ namespace CSRO.Client.Blazor.WebApp.AutoMapperProfiles
             CreateMap<IdNameDto, Core.Models.IdName>()
                 .ReverseMap();
 
-            CreateMap<TicketDto, Models.Ticket>()                
+            CreateMap<TicketDto, Models.Ticket>()
+                .ForMember(s => s.CreatedBy, op => op.MapFrom(ss => ss.CreatedBy.Replace("live.com#", string.Empty)))
                 .ReverseMap();
 
             CreateMap<VmTicketDto, Models.VmTicket>()
