@@ -63,6 +63,18 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
             await Load();
         }
 
+        protected override async Task OnParametersSetAsync()
+        {            
+            await base.OnParametersSetAsync();
+            if (string.IsNullOrWhiteSpace(RequestId))
+            {
+                Model = new();
+                return;
+            }
+            else
+                await Load();            
+        }
+
         private async Task Load()
         {
             try

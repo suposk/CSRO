@@ -105,6 +105,12 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
         //    return Task.CompletedTask;
         //}
 
+        public void CreateNew(bool value)
+        {
+            ShowDetails = value;
+            OperatioTypeIdPair = new();
+        }
+
         public async Task ApproveAsync()
         {
             try
@@ -162,6 +168,20 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
                 await CsroDialogService.ShowError("Error", $"Detail error: {ex.Message}");
             }
             HideLoading();
+        }
+
+        public Task EditRequestAsync(AdoProjectAccessModel ticket)
+        {
+            ShowDetails = true;
+            OperatioTypeIdPair = new() { OperatioTypeEnum = OperatioType.Edit, Id = ticket.Id.ToString() };
+            return Task.CompletedTask;
+        }
+
+        public Task ViewRequestAsync(AdoProjectAccessModel ticket)
+        {
+            ShowDetails = true;
+            OperatioTypeIdPair = new() { OperatioTypeEnum = OperatioType.View, Id = ticket.Id.ToString() };
+            return Task.CompletedTask;
         }
 
         public async Task DeleteRequestAsync(AdoProjectAccessModel ticket)
