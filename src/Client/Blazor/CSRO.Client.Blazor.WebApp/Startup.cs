@@ -103,29 +103,6 @@ namespace CSRO.Client.Blazor.WebApp
                 }
             }
 
-            #region Distributed Token Caches
-
-            //services.AddCosmosCache((CosmosCacheOptions cacheOptions) =>
-            //{
-            //    cacheOptions.ContainerName = Configuration["CosmosCache:ContainerName"];
-            //    cacheOptions.DatabaseName = Configuration["CosmosCache:DatabaseName"];
-            //    cacheOptions.ClientBuilder = new CosmosClientBuilder(Configuration["CosmosCache:ConnectionString"]);
-            //    cacheOptions.CreateIfNotExists = true;
-            //});
-
-            services.AddDistributedSqlServerCache(options =>
-            {
-                LogSecretVariableValueStartValue(nameof(TokenCacheDbConnStr), TokenCacheDbConnStr);
-
-                options.ConnectionString = TokenCacheDbConnStr;
-                options.SchemaName = "dbo";
-                options.TableName = "TokenCache";
-
-                //def is 2 minutes
-                options.DefaultSlidingExpiration = TimeSpan.FromMinutes(30);
-            });
-            #endregion
-
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             #region Add HttpClient
@@ -224,10 +201,9 @@ namespace CSRO.Client.Blazor.WebApp
             ;
 
             #endregion
-
-            //only for client
-            bool useDistributedTokenCaches = true;
-            if (useDistributedTokenCaches)
+                        
+            var distributedTokenCachesConfig = Configuration.GetSection(nameof(DistributedTokenCachesConfig)).Get<DistributedTokenCachesConfig>();            
+            if (distributedTokenCachesConfig != null && distributedTokenCachesConfig.IsEnabled)
             {
                 services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
                     .AddMicrosoftIdentityWebApp(Configuration.GetSection("AzureAd"))
@@ -243,7 +219,22 @@ namespace CSRO.Client.Blazor.WebApp
                     .EnableTokenAcquisitionToCallDownstreamApi(new List<string> { "user.read", "openid", "email", "profile", "offline_access", Configuration.GetValue<string>(Core.ConstatCsro.Scopes.Scope_Auth_Api) })
                     .AddInMemoryTokenCaches();                
             }
-            
+
+            #region Distributed Token Caches
+
+            services.AddDistributedSqlServerCache(options =>
+            {
+                options.ConnectionString = TokenCacheDbConnStr;
+                options.SchemaName = "dbo";
+                options.TableName = "TokenCache";
+
+                //def is 20 minutes
+                if (distributedTokenCachesConfig?.DefaultSlidingExpirationMinutes > 0)
+                    options.DefaultSlidingExpiration = TimeSpan.FromMinutes(distributedTokenCachesConfig.DefaultSlidingExpirationMinutes);
+            });
+
+            #endregion
+
             services.Configure<MicrosoftIdentityOptions>(options =>
             {
                 options.ResponseType = OpenIdConnectResponseType.Code;

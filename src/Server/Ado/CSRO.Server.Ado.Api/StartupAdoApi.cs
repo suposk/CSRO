@@ -107,21 +107,6 @@ namespace CSRO.Server.Ado.Api
                 }
             }
 
-            #region Distributed Token Caches
-
-            services.AddDistributedSqlServerCache(options =>
-            {
-                //LogSecretVariableValueStartValue(nameof(TokenCacheDbConnStr), TokenCacheDbConnStr);
-
-                options.ConnectionString = TokenCacheDbConnStr;
-                options.SchemaName = "dbo";
-                options.TableName = "TokenCache";
-
-                //def is 2 minutes
-                options.DefaultSlidingExpiration = TimeSpan.FromMinutes(30);
-            });
-            #endregion
-
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddMediatR(Assembly.GetExecutingAssembly());
 
@@ -146,11 +131,36 @@ namespace CSRO.Server.Ado.Api
 
             #region Auth
 
-            services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)
-                .AddMicrosoftIdentityWebApi(Configuration, "AzureAd")
-                .EnableTokenAcquisitionToCallDownstreamApi()
-                .AddInMemoryTokenCaches();
-            //.AddDistributedTokenCaches();    
+            var distributedTokenCachesConfig = Configuration.GetSection(nameof(DistributedTokenCachesConfig)).Get<DistributedTokenCachesConfig>();
+            if (distributedTokenCachesConfig != null && distributedTokenCachesConfig.IsEnabled)
+            {
+                services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)
+                    .AddMicrosoftIdentityWebApi(Configuration, "AzureAd")
+                    .EnableTokenAcquisitionToCallDownstreamApi()                    
+                    .AddDistributedTokenCaches();    
+            }
+            else
+            {
+                services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)
+                    .AddMicrosoftIdentityWebApi(Configuration, "AzureAd")
+                    .EnableTokenAcquisitionToCallDownstreamApi()
+                    .AddInMemoryTokenCaches();                
+            }
+
+            #region Distributed Token Caches
+
+            services.AddDistributedSqlServerCache(options =>
+            {
+                options.ConnectionString = TokenCacheDbConnStr;
+                options.SchemaName = "dbo";
+                options.TableName = "TokenCache";
+
+                //def is 20 minutes
+                if (distributedTokenCachesConfig?.DefaultSlidingExpirationMinutes > 0)
+                    options.DefaultSlidingExpiration = TimeSpan.FromMinutes(distributedTokenCachesConfig.DefaultSlidingExpirationMinutes);
+            });
+
+            #endregion
 
             services.AddAuthorization(options =>
             {
