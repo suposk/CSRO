@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CSRO.Server.Api.MigrationsCustomer.SqlServerMigrations
 {
     [DbContext(typeof(CustomersDbContext))]
-    [Migration("20210419160620_Customer1")]
-    partial class Customer1
+    [Migration("20210419204701_Customer2")]
+    partial class Customer2
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -22,6 +22,11 @@ namespace CSRO.Server.Api.MigrationsCustomer.SqlServerMigrations
 
             modelBuilder.Entity("CSRO.Server.Entities.Entity.ResourceSWI", b =>
                 {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
                     b.Property<string>("AtCode")
                         .HasColumnType("nvarchar(max)");
 
@@ -60,6 +65,8 @@ namespace CSRO.Server.Api.MigrationsCustomer.SqlServerMigrations
 
                     b.Property<string>("SubscriptionName")
                         .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
 
                     b.ToTable("ResourceSWIs");
                 });

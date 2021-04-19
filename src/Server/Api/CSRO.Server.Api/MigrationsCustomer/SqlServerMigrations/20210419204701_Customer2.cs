@@ -2,7 +2,7 @@
 
 namespace CSRO.Server.Api.MigrationsCustomer.SqlServerMigrations
 {
-    public partial class Customer1 : Migration
+    public partial class Customer2 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -10,6 +10,8 @@ namespace CSRO.Server.Api.MigrationsCustomer.SqlServerMigrations
                 name: "ResourceSWIs",
                 columns: table => new
                 {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     AtCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     AtName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     AtSwc = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -26,6 +28,7 @@ namespace CSRO.Server.Api.MigrationsCustomer.SqlServerMigrations
                 },
                 constraints: table =>
                 {
+                    table.PrimaryKey("PK_ResourceSWIs", x => x.Id);
                 });
         }
 

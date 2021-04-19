@@ -1,6 +1,7 @@
 ﻿using CSRO.Server.Infrastructure;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,6 +10,8 @@ namespace CSRO.Server.Entities.Entity
 {
     public class ResourceSWI
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
         public string AtCode { get; set; }
         public string AtName { get; set; }
         public string AtSwc { get; set; }

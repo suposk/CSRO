@@ -72,7 +72,8 @@ namespace CSRO.Server.Api
                     //TODO MOVE 
                     var billingContext = scope.ServiceProvider.GetService<CustomersDbContext>();
                     billingContext?.Database.Migrate();
-                    logger?.LogInformation($"Called Migrate on {nameof(CustomersDbContext)}");                   
+                    logger?.LogInformation($"Called Migrate on {nameof(CustomersDbContext)}");
+                    CustomersDbContext.SeedCustomersDb(billingContext);
                 }
                 catch (Exception ex)
                 {

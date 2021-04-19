@@ -20,6 +20,11 @@ namespace CSRO.Server.Api.MigrationsCustomer.SqlServerMigrations
 
             modelBuilder.Entity("CSRO.Server.Entities.Entity.ResourceSWI", b =>
                 {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
                     b.Property<string>("AtCode")
                         .HasColumnType("nvarchar(max)");
 
@@ -58,6 +63,8 @@ namespace CSRO.Server.Api.MigrationsCustomer.SqlServerMigrations
 
                     b.Property<string>("SubscriptionName")
                         .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
 
                     b.ToTable("ResourceSWIs");
                 });
