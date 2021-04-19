@@ -3,25 +3,24 @@ using CSRO.Server.Entities.Entity;
 using CSRO.Server.Entities;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 
 namespace CSRO.Server.Services
 {
-    public class AtCodecmdbReferenceRepository : Repository<AtCodecmdbReference>, IAtCodecmdbReferenceRepository
-    {
-        private readonly IRepository<AtCodecmdbReference> _repository;
-        private BillingContext _context;
+    public class AtCodecmdbReferenceRepository : IAtCodecmdbReferenceRepository
+    {        
+        private CustomersDbContext _context;
 
-        public AtCodecmdbReferenceRepository(IRepository<AtCodecmdbReference> repository, BillingContext context, IApiIdentity apiIdentity) : base(context, apiIdentity)
-        {
-            _repository = repository;
+        public AtCodecmdbReferenceRepository(CustomersDbContext context, IApiIdentity apiIdentity)
+        {            
             _context = context;
         }
 
-        public override Task<List<AtCodecmdbReference>> GetList()
+        public Task<List<ResourceSWI>> GetList()
         {
-            return GetList();            
+            //return GetList();            
             //var q = _context.AppVersions.Where(e => !_context.AppVersions.Any(e2 => e2.VersionValue > e.VersionValue));
-            //return _repository.GetListFilter(a => a.IsDeleted != true);
+            return _context.ResourceSWIs.ToListAsync();
         }
     }
 }

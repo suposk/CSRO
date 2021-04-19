@@ -70,13 +70,13 @@ namespace CSRO.Server.Api
                 try
                 {
                     //TODO MOVE 
-                    var billingContext = scope.ServiceProvider.GetService<BillingContext>();
+                    var billingContext = scope.ServiceProvider.GetService<CustomersDbContext>();
                     billingContext?.Database.Migrate();
-                    logger?.LogInformation($"Called Migrate on {nameof(BillingContext)}");                   
+                    logger?.LogInformation($"Called Migrate on {nameof(CustomersDbContext)}");                   
                 }
                 catch (Exception ex)
                 {
-                    logger?.LogError(ex, $"An error occurred while migrating the database {nameof(BillingContext)} .");
+                    logger?.LogError(ex, $"An error occurred while migrating the database {nameof(CustomersDbContext)} .");
                 }
 
                 // run the web app
