@@ -21,7 +21,7 @@ namespace CSRO.Server.Services
 
         public Task<List<ResourceSWI>> GetCustomersBySubNames(List<string> subscriptionNames)
         {                        
-            var q = Context.ResourceSWIs.Where(a => subscriptionNames.Contains(a.SubscriptionId)).ToListAsync();                 
+            var q = Context.ResourceSWIs.Where(a => subscriptionNames.Contains(a.SubscriptionName)).ToListAsync();                 
             return q;
         }
 

@@ -51,7 +51,7 @@ namespace CSRO.Server.Api.Controllers
 
                 var all = await _repository.GetCustomersBySubNames(subscriptionNames).ConfigureAwait(false);
                 if (all.IsNullOrEmptyCollection())
-                    return null;
+                    return new List<CustomerDto>();
 
                 var result = _mapper.Map<List<CustomerDto>>(all);
                 return result;
@@ -72,7 +72,7 @@ namespace CSRO.Server.Api.Controllers
 
                 var all = await _repository.GetCustomersBySubIds(subscriptionIds).ConfigureAwait(false);
                 if (all.IsNullOrEmptyCollection())
-                    return null;
+                    return new List<CustomerDto>();
 
                 var result = _mapper.Map<List<CustomerDto>>(all);
                 return result;
