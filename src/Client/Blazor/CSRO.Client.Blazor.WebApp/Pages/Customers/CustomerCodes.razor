@@ -1,165 +1,177 @@
 ﻿@page "/Customers/CustomerCodes"
 @inherits CustomerCodesBase
 
+@using CSRO.Client.Services.Models
 
-<MudContainer>
-    <div>
-        <MudText Typo="Typo.h5" Class="mt-2" GutterBottom="true">Customer Search</MudText>
-        @if (IsLoading)
-        {
-            <MudGrid>
-                <MudItem>
-                    <MudProgressCircular Color="Color.Default" Indeterminate="true" />
-                </MudItem>
-                <MudItem>
-                    <MudText Align="Align.Center">@LoadingMessage</MudText>
-                </MudItem>
-            </MudGrid>
-        }
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-6">
+    <MudText Typo="Typo.h5" Class="mt-2" GutterBottom="true">Customer Search</MudText>
+    @if (IsLoading)
+    {
+        <MudGrid>
+            <MudItem>
+                <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+            </MudItem>
+            <MudItem>
+                <MudText Align="Align.Center">@LoadingMessage</MudText>
+            </MudItem>
+        </MudGrid>
+    }
 
     <MudCard>
         <MudGrid>
-            <MudItem xs="6" sm="3" Class="d-flex align-center justify-center mud-width-full py-8">                
+            <MudItem xs="6" sm="3" Class="d-flex align-center justify-center mud-width-full py-8">
                 <MudCardContent>
                     <MudAutocomplete ResetValueOnEmptyText="true"
-                                        T="@IdName"
-                                        Dense="true"
-                                        Label="All Subscriptions"
-                                        ValueChanged="(e) => OnSubscriptionValueChanged(e)"
-                                        
-                                        SearchFunc="@SearchSubs" />
+                                     T="@IdName"
+                                     Dense="true"
+                                     Label="All Subscriptions"
+                                     ValueChanged="(e) => OnSubscriptionValueChanged(e)"
+                                     SearchFunc="@SearchSubs" />
 
-                </MudCardContent>                
+                </MudCardContent>
             </MudItem>
 
-            <MudItem xs="6" sm="3" Class="d-flex align-center justify-center mud-width-full py-8">                
-                    <MudItem xs="12" md="12">
-                        <MudSelect T="@IdName"                                   
-                                   HelperText="Pick your filtered Subscription"
-                                   MultiSelection="true"   
-                                   Dense="true"
-                                   OffsetY="true"
-                                   @bind-SelectedValues="SelectedSubs">
-                            @foreach (var sub in SubscripionsFiltered)
-                            {
-                                <MudSelectItem T="IdName" Value="@sub">@sub</MudSelectItem>
-                            }
-                        </MudSelect>
-                    </MudItem>                
+            <MudItem xs="6" sm="3" Class="d-flex align-center justify-center mud-width-full py-8">
+                <MudItem xs="12" md="12">
+                    <MudSelect T="@IdName"
+                               HelperText="Pick your filtered Subscription"
+                               MultiSelection="true"
+                               Dense="true"
+                               OffsetY="true"
+                               @bind-SelectedValues="SelectedSubs">
+                        @foreach (var sub in SubscripionsFiltered)
+                        {
+                            <MudSelectItem T="IdName" Value="@sub">@sub</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
             </MudItem>
-            
-            <MudItem xs="6" sm="3" Class="d-flex align-center justify-center mud-width-full py-8">                
-                    col 3                
+
+            <MudItem xs="6" sm="3" Class="d-flex align-center justify-center mud-width-full py-8">
+                col 3
             </MudItem>
 
             <MudItem xs="6" sm="3">
                 <MudText Typo="Typo.body2">MudSelect.SelectedValues:</MudText>
                 <MudText Typo="Typo.body2">{ @(string.Join(", ", SelectedSubs.Select(x=>$"\"{x}\""))) }</MudText>
                 <MudButton Disabled="@SelectedSubs.IsNullOrEmptyCollection()"
-                           Class="mt-4" 
+                           Class="mt-4"
                            OnClick="Search" Variant="Variant.Filled" Color="Color.Primary">Search</MudButton>
             </MudItem>
         </MudGrid>
-    </MudCard>
-
-    <MudCard>
-        <MudTable Items="@Customers" 
-                  Hover="true" 
-                  Breakpoint="Breakpoint.Sm">
-            <ColGroup>                
-                <col />
-                <col />
-                <col />
-                <col style="width:100px;" />
-                <col style="width:100px;" />
-            </ColGroup>
+    </MudCard> 
+    
+        <MudTable Dense="true"
+                  Items="@Customers"
+                  Hover="true"
+                  RowsPerPage="50"
+                  SortLabel="Sort By" Elevation="0">
             <HeaderContent>
-                <MudTh>Show Details</MudTh>
-                <MudTh>Subscription Name</MudTh>
-                <MudTh>Subscription Id</MudTh>
-                <MudTh>CmdbRerence Count</MudTh>
-                <MudTh>OpEnvironment Count</MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<Customer, object>(x => x.AtCode)">AtCode</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<Customer, object>(x => x.AtName)">AtName</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<Customer, object>(x => x.AtSwc)">AtSwc</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<Customer, object>(x => x.Email)">Email</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<Customer, object>(x => x.EmailGroup)">EmailGroup</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<Customer, object>(x => x.ChatChannel)">ChatChannel</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<Customer, object>(x => x.SubscriptionName)">SubscriptionName</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<Customer, object>(x => x.SubscriptionId)">SubscriptionId</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<Customer, object>(x => x.ResourceGroup)">ResourceGroup</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<Customer, object>(x => x.ResourceLocation)">ResourceLocation</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<Customer, object>(x => x.ResourceType)">ResourceType</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<Customer, object>(x => x.AzureResource)">AzureResource</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortBy="new Func<Customer, object>(x => x.OpEnvironment)">OpEnvironment</MudTableSortLabel></MudTh>
             </HeaderContent>
             <RowTemplate>
-                <MudTd><MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="@(() => ShowBtnPress(context.SubscriptionId))">@((context.ShowDetails == true)? "Hide" : "Show") Details</MudButton></MudTd>
-                <MudTd DataLabel="Name">@context.SubscriptionName</MudTd>
-                <MudTd DataLabel="Subscription Id">@context.SubscriptionId</MudTd>
-                <MudTd DataLabel="CmdbRerence Count">@context.cmdbReferenceList.Count</MudTd>
-                <MudTooltip Text="@(string.Join(", ", context.opEnvironmentList.Select(x=>$"\"{x}\"")))">
-                    <MudTd DataLabel="OpEnvironment Count">@context.opEnvironmentList.Count</MudTd>
-                </MudTooltip>
+                <MudTd DataLabel="AtCode">@context.AtCode</MudTd>
+                <MudTd DataLabel="AtName">@context.AtName</MudTd>
+                <MudTd DataLabel="AtSwc">@context.AtSwc</MudTd>
+                <MudTd DataLabel="Email">@context.Email</MudTd>
+                <MudTd DataLabel="EmailGroup">@context.EmailGroup</MudTd>
+                <MudTd DataLabel="ChatChannel">@context.ChatChannel</MudTd>
+                <MudTd DataLabel="SubscriptionName">@context.SubscriptionName</MudTd>
+                <MudTd DataLabel="SubscriptionId">@context.SubscriptionId</MudTd>
+                <MudTd DataLabel="ResourceGroup">@context.ResourceGroup</MudTd>
+                <MudTd DataLabel="ResourceLocation">@context.ResourceLocation</MudTd>
+                <MudTd DataLabel="ResourceType">@context.ResourceType</MudTd>
+                <MudTd DataLabel="AzureResource">@context.AzureResource</MudTd>
+                <MudTd DataLabel="OpEnvironment">@context.OpEnvironment</MudTd>
             </RowTemplate>
-            <ChildRowContent>
-                @if (context.ShowDetails)
-                {
-                    @*<MudTr>
-                        <td colspan="4"> 
-                            <MudExpansionPanels>
-                                <MudExpansionPanel IsExpanded="true" Text="Show opEnvironment">
-                                    <MudTable Items="@context.opEnvironmentList"
-                                              Context="enContext"
-                                              Breakpoint="Breakpoint.Sm" Elevation="0">
-                                        <ColGroup>
-                                            <col />
-                                            <col />
-                                        </ColGroup>
-                                        <HeaderContent>
-                                            <MudTh>opEnvironment</MudTh>
-                                            <MudTh>Value</MudTh>
-                                        </HeaderContent>
-                                        <RowTemplate>
-                                            <MudTd DataLabel="opEnvironment">@enContext.Value</MudTd>
-                                            <MudTd DataLabel="Value">@enContext.Value</MudTd>
-                                        </RowTemplate>
-                                    </MudTable>
-                                </MudExpansionPanel>
-                            </MudExpansionPanels>
-                        </td>
-                    </MudTr>*@
-
-                    <MudTr>
-                        <td colspan="4">
-                            <MudCard Elevation="1">
-                                <MudCardHeader>
-                                    <CardHeaderContent>
-                                        <MudText Typo="Typo.body1">(@context.cmdbReferenceList.Count) AT Codes found in <strong>@context.SubscriptionName</strong></MudText>
-                                    </CardHeaderContent>
-                                </MudCardHeader>
-                                <MudCardContent
-                                     Class="p-4">
-                                    <MudTable Items="@context.cmdbReferenceList"
-                                              Dense="true"
-                                              Striped="true"
-                                              Hover="true"
-                                              RowsPerPage="10"
-                                              Context="cmdbContext"
-                                              Breakpoint="Breakpoint.Sm"
-                                              Elevation="2">
-                                        <ColGroup>
-                                            <col />
-                                            <col />
-                                        </ColGroup>
-                                        <HeaderContent>
-                                            <MudTh>AT Code</MudTh>
-                                            <MudTh>Email</MudTh>
-                                        </HeaderContent>
-                                        <RowTemplate>
-                                            <MudTd DataLabel="billingReference">@cmdbContext.AtCode</MudTd>
-                                            <MudTd DataLabel="cmdbReference">@cmdbContext.Email</MudTd>
-                                        </RowTemplate>
-                                        <PagerContent>
-                                            <MudTablePager PageSizeOptions="new int[]{10, 20, 50}" />
-                                        </PagerContent>
-                                    </MudTable>
-                                </MudCardContent>
-                            </MudCard>
-                        </td>
-                    </MudTr>
-
-                }
-            </ChildRowContent>
+            <PagerContent>
+                <MudTablePager PageSizeOptions="new int[] { 20, 50, 100 }" />
+            </PagerContent>
         </MudTable>
 
-    </MudCard>
-    </div>
+        @*Old code, Nested tables*@
+        @*<MudTable Items="@Customers"
+                      Hover="true"
+                      Breakpoint="Breakpoint.Sm">
+                <ColGroup>
+                    <col />
+                    <col />
+                    <col />
+                    <col style="width:100px;" />
+                    <col style="width:100px;" />
+                </ColGroup>
+                <HeaderContent>
+                    <MudTh>Show Details</MudTh>
+                    <MudTh>Subscription Name</MudTh>
+                    <MudTh>Subscription Id</MudTh>
+                    <MudTh>CmdbRerence Count</MudTh>
+                    <MudTh>OpEnvironment Count</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd><MudButton Variant="Variant.Outlined" Size="Size.Small" OnClick="@(() => ShowBtnPress(context.SubscriptionId))">@((context.ShowDetails == true)? "Hide" : "Show") Details</MudButton></MudTd>
+                    <MudTd DataLabel="Name">@context.SubscriptionName</MudTd>
+                    <MudTd DataLabel="Subscription Id">@context.SubscriptionId</MudTd>
+                    <MudTd DataLabel="CmdbRerence Count">@context.cmdbReferenceList.Count</MudTd>
+                    <MudTooltip Text="@(string.Join(", ", context.opEnvironmentList.Select(x=>$"\"{x}\"")))">
+                        <MudTd DataLabel="OpEnvironment Count">@context.opEnvironmentList.Count</MudTd>
+                    </MudTooltip>
+                </RowTemplate>
+                <ChildRowContent>
+                    @if (context.ShowDetails)
+                    {
+                        <MudTr>
+                            <td colspan="4">
+                                <MudCard Elevation="1">
+                                    <MudCardHeader>
+                                        <CardHeaderContent>
+                                            <MudText Typo="Typo.body1">(@context.cmdbReferenceList.Count) AT Codes found in <strong>@context.SubscriptionName</strong></MudText>
+                                        </CardHeaderContent>
+                                    </MudCardHeader>
+                                    <MudCardContent
+                                         Class="p-4">
+                                        <MudTable Items="@context.cmdbReferenceList"
+                                                  Dense="true"
+                                                  Striped="true"
+                                                  Hover="true"
+                                                  RowsPerPage="10"
+                                                  Context="cmdbContext"
+                                                  Breakpoint="Breakpoint.Sm"
+                                                  Elevation="2">
+                                            <ColGroup>
+                                                <col />
+                                                <col />
+                                            </ColGroup>
+                                            <HeaderContent>
+                                                <MudTh>AT Code</MudTh>
+                                                <MudTh>Email</MudTh>
+                                            </HeaderContent>
+                                            <RowTemplate>
+                                                <MudTd DataLabel="billingReference">@cmdbContext.AtCode</MudTd>
+                                                <MudTd DataLabel="cmdbReference">@cmdbContext.Email</MudTd>
+                                            </RowTemplate>
+                                            <PagerContent>
+                                                <MudTablePager PageSizeOptions="new int[]{10, 20, 50}" />
+                                            </PagerContent>
+                                        </MudTable>
+                                    </MudCardContent>
+                                </MudCard>
+                            </td>
+                        </MudTr>
+
+                    }
+                </ChildRowContent>
+            </MudTable>*@
+    
 </MudContainer>

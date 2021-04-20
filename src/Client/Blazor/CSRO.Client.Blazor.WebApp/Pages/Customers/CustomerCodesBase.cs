@@ -35,6 +35,9 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
         public ISubcriptionDataService SubcriptionDataService { get; set; }
 
         [Inject]
+        public ICustomerDataService CustomerDataService { get; set; }
+
+        [Inject]
         public IResourceGroupService ResourceGroupervice { get; set; }
 
         [Inject]
@@ -132,8 +135,8 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
 
                 await Task.Delay(1);
 
-                //var customers = await SubcriptionService.GetTags(SelectedSubs.Select(a => a.Id).ToList()).ConfigureAwait(false);
-                var customers = await SubcriptionDataService.GetTags(SelectedSubs.Select(a => a.Id).ToList()).ConfigureAwait(false);
+                //var customers = await SubcriptionDataService.GetTags(SelectedSubs.Select(a => a.Id).ToList()).ConfigureAwait(false);
+                var customers = await CustomerDataService.GetCustomersBySubIds(SelectedSubs.Select(a => a.Id).ToList()).ConfigureAwait(false);
                 if (customers?.Count > 0)
                 {                    
                     foreach (var cust in customers)

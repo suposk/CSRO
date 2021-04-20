@@ -26,7 +26,7 @@ namespace CSRO.Client.Services.AzureRestServices
         Task<List<TagNameWithValueList>> GetTags(string subscriptionId, CancellationToken cancelToken = default);
         Task<DefaultTags> GetDefualtTags(string subscriptionId, CancellationToken cancelToken = default);
         Task<Dictionary<string, DefaultTags>> GetDefualtTags(List<string> subscriptionIds, CancellationToken cancelToken = default);
-        Task<List<Customer>> GetTags(List<string> subscriptionIds, CancellationToken cancelToken = default);
+        //Task<List<Customer>> GetTags(List<string> subscriptionIds, CancellationToken cancelToken = default);
     }
 
     public class SubcriptionService : BaseDataService, ISubcriptionService
@@ -178,50 +178,50 @@ namespace CSRO.Client.Services.AzureRestServices
             return null;
         }
 
-        public async Task<List<Customer>> GetTags(List<string> subscriptionIds, CancellationToken cancelToken = default)
-        {
-            try
-            {
-                if (subscriptionIds?.Count <= 0)
-                    throw new Exception($"missing {nameof(subscriptionIds)} parameter");
+        //public async Task<List<Customer>> GetTags(List<string> subscriptionIds, CancellationToken cancelToken = default)
+        //{
+        //    try
+        //    {
+        //        if (subscriptionIds?.Count <= 0)
+        //            throw new Exception($"missing {nameof(subscriptionIds)} parameter");
 
-                Dictionary<string, Task<DefaultTags>> tasks = new();
-                try
-                {
-                    foreach (var subscriptionId in subscriptionIds)
-                    {
-                        //var tags = await GetTags(subscriptionId, cancelToken).ConfigureAwait(false);
-                        var t = GetDefualtTags(subscriptionId, cancelToken);
-                        tasks.Add(subscriptionId, t);
-                    }
-                    await Task.WhenAll(tasks.Values.ToList());
-                }
-                catch (Exception ex)
-                {
-                    throw;
-                }
+        //        Dictionary<string, Task<DefaultTags>> tasks = new();
+        //        try
+        //        {
+        //            foreach (var subscriptionId in subscriptionIds)
+        //            {
+        //                //var tags = await GetTags(subscriptionId, cancelToken).ConfigureAwait(false);
+        //                var t = GetDefualtTags(subscriptionId, cancelToken);
+        //                tasks.Add(subscriptionId, t);
+        //            }
+        //            await Task.WhenAll(tasks.Values.ToList());
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            throw;
+        //        }
 
-                List<Customer> list = new();
-                foreach (var task in tasks)
-                {                    
-                    Customer customer = new Customer 
-                    {
-                        SubscriptionId = task.Key
-                    };                    
-                    if (task.Value.Result.CmdbRerenceList.HasAnyInCollection())
-                        task.Value.Result.CmdbRerenceList.ForEach(a => customer.cmdbReferenceList.Add(new cmdbReference { AtCode = a, Email = "N/A" }));
-                    if (task.Value.Result.OpEnvironmentList.HasAnyInCollection())
-                        task.Value.Result.OpEnvironmentList.ForEach(a => customer.opEnvironmentList.Add(new opEnvironment { Value = a }));
+        //        List<Customer> list = new();
+        //        foreach (var task in tasks)
+        //        {                    
+        //            Customer customer = new Customer 
+        //            {
+        //                SubscriptionId = task.Key
+        //            };                    
+        //            if (task.Value.Result.CmdbRerenceList.HasAnyInCollection())
+        //                task.Value.Result.CmdbRerenceList.ForEach(a => customer.cmdbReferenceList.Add(new cmdbReference { AtCode = a, Email = "N/A" }));
+        //            if (task.Value.Result.OpEnvironmentList.HasAnyInCollection())
+        //                task.Value.Result.OpEnvironmentList.ForEach(a => customer.opEnvironmentList.Add(new opEnvironment { Value = a }));
 
-                    list.Add(customer);
-                }
-                return list;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
+        //            list.Add(customer);
+        //        }
+        //        return list;
+        //    }
+        //    catch (Exception)
+        //    {
+        //        throw;
+        //    }
+        //}
 
         public async Task<Dictionary<string, DefaultTags>> GetDefualtTags(List<string> subscriptionIds, CancellationToken cancelToken = default)
         {            
