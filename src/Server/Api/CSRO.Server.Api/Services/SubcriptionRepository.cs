@@ -26,8 +26,7 @@ namespace CSRO.Server.Api.Services
         private readonly ISubscriptionSdkService _subscriptionSdkService;
         private readonly IAtCodecmdbReferenceRepository _atCodecmdbReferenceRepository;
         private readonly ICacheProvider _cacheProvider;
-        const string cacheKeyProcess = nameof(IdName);
-        private readonly CustomersDbContext _context;
+        const string cacheKeyProcess = nameof(IdName);        
 
         public SubcriptionRepository(
             ISubcriptionService subcriptionService,
@@ -38,8 +37,7 @@ namespace CSRO.Server.Api.Services
             _subcriptionService = subcriptionService;
             _subscriptionSdkService = subscriptionSdkService;
             _cacheProvider = cacheProvider;
-            _atCodecmdbReferenceRepository = atCodecmdbReferenceRepository;
-            //_context = _atCodecmdbReferenceRepository.DatabaseContext as CustomersDbContext;
+            _atCodecmdbReferenceRepository = atCodecmdbReferenceRepository;            
         }
 
         public async Task<List<IdName>> GetSubcriptions(CancellationToken cancelToken = default)
@@ -58,12 +56,6 @@ namespace CSRO.Server.Api.Services
         {
             try
             {
-                //var list = await _subcriptionService.GetTags(subscriptionIds, cancelToken);
-                //if (list.IsNullOrEmptyCollection())
-                //    return null;
-                //else
-                //    return list;
-
                 var dic = await _subcriptionService.GetTagsDictionary(subscriptionIds, cancelToken);
                 if (dic.IsNullOrEmptyCollection())
                     return null;
@@ -77,19 +69,19 @@ namespace CSRO.Server.Api.Services
                             modelAtCodes.AddRange(codes);
                     }
 
-                    ////pass all at codes
-                    //var q = _context.ResourceSWIs.Where(a => modelAtCodes.Contains(a.AtCode)).ToListAsync();                                        
-                    //var dbAtCodes = await q;
+                    //pass all at codes
+                    var q = _atCodecmdbReferenceRepository.Context.ResourceSWIs.Where(a => modelAtCodes.Contains(a.AtCode)).ToListAsync();
+                    var dbAtCodes = await q;
 
-                    //foreach(var cus in dic.Values)
-                    //{
-                    //    foreach(var item in cus.cmdbReferenceList)
-                    //    {                            
-                    //        var found = dbAtCodes.FirstOrDefault(a => a.AtCode == item.AtCode);
-                    //        if (found != null)                            
-                    //            item.Email = found.Email;                            
-                    //    }    
-                    //}
+                    foreach (var cus in dic.Values)
+                    {
+                        foreach (var item in cus.cmdbReferenceList)
+                        {
+                            var found = dbAtCodes.FirstOrDefault(a => a.AtCode == item.AtCode);
+                            if (found != null)
+                                item.Email = found.Email;
+                        }
+                    }
 
                     return dic.Values.ToList();
                 }
