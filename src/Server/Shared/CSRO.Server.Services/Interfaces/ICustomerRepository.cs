@@ -6,10 +6,10 @@ using CSRO.Server.Entities;
 
 namespace CSRO.Server.Services
 {
-    public interface IAtCodecmdbReferenceRepository
+    public interface ICustomerRepository
     {
         CustomersDbContext Context { get; }
-
-        Task<List<ResourceSWI>> GetList();
+        Task<List<ResourceSWI>> GetCustomersBySubNames(List<string> subscriptionNames);
+        Task<List<ResourceSWI>> GetCustomersBySubIds(List<string> subscriptionIds);
     }
 }

@@ -90,7 +90,7 @@ namespace CSRO.Client.Services
             {
                 await base.AddAuthHeaderAsync();
 
-                var url = $"{ApiPart}GetTags";                
+                var url = $"api/customer/GetCustomersBySubIds";                
                 var httpcontent = new StringContent(JsonSerializer.Serialize(subscriptionIds, _options), Encoding.UTF8, "application/json");
                 HttpRequestMessage requestMessage = new HttpRequestMessage { Method = HttpMethod.Get, Content = httpcontent, RequestUri = new Uri(HttpClientBase.BaseAddress + url)};
                 var apiData = await HttpClientBase.SendAsync(requestMessage, cancelToken).ConfigureAwait(false);

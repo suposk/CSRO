@@ -64,13 +64,14 @@ namespace CSRO.Server.Api.Controllers
             try
             {                
                 _logger.LogInformation(ApiLogEvents.GetAllItems, $"{nameof(GetTags)} Started");
+                return null;
 
-                var all = await _repository.GetTags(subscriptionIds).ConfigureAwait(false);
-                if (all.IsNullOrEmptyCollection())
-                    return null;
+                //var all = await _repository.GetTags(subscriptionIds).ConfigureAwait(false);
+                //if (all.IsNullOrEmptyCollection())
+                //    return null;
 
-                var result = _mapper.Map<List<CustomerDto>>(all);
-                return result;
+                //var result = _mapper.Map<List<CustomerDto>>(all);
+                //return result;
             }
             catch (Exception ex)
             {

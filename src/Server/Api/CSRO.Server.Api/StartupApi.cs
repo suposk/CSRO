@@ -277,7 +277,7 @@ namespace CSRO.Server.Api
             services.AddScoped<ITicketRepository, TicketRepository>();
             services.AddScoped<IVersionRepository, VersionRepository>();
             services.AddScoped<IVmTicketRepository, VmTicketRepository>();            
-            services.AddScoped<IAtCodecmdbReferenceRepository, AtCodecmdbReferenceRepository>();
+            services.AddScoped<ICustomerRepository, CustomerRepository>();
 
             #endregion
         }

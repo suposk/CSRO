@@ -17,21 +17,21 @@ namespace CSRO.Server.Api.Services
     public interface ISubcriptionRepository 
     {
         Task<List<IdName>> GetSubcriptions(CancellationToken cancelToken = default);
-        Task<List<CustomerModel>> GetTags(List<string> subscriptionIds, CancellationToken cancelToken = default);
+        //Task<List<CustomerModel>> GetTags(List<string> subscriptionIds, CancellationToken cancelToken = default);
     }
 
     public class SubcriptionRepository : ISubcriptionRepository
     {
         private readonly ISubcriptionService _subcriptionService;
         private readonly ISubscriptionSdkService _subscriptionSdkService;
-        private readonly IAtCodecmdbReferenceRepository _atCodecmdbReferenceRepository;
+        private readonly ICustomerRepository _atCodecmdbReferenceRepository;
         private readonly ICacheProvider _cacheProvider;
         const string cacheKeyProcess = nameof(IdName);        
 
         public SubcriptionRepository(
             ISubcriptionService subcriptionService,
             ISubscriptionSdkService subscriptionSdkService,
-            IAtCodecmdbReferenceRepository atCodecmdbReferenceRepository,
+            ICustomerRepository atCodecmdbReferenceRepository,
             ICacheProvider cacheProvider)
         {
             _subcriptionService = subcriptionService;
@@ -46,50 +46,50 @@ namespace CSRO.Server.Api.Services
             if (cache.HasAnyInCollection())
                 return cache;
 
-            var subsSdk = await _subscriptionSdkService.GetAllSubcriptions(null, cancelToken).ConfigureAwait(false);
+            //var subsSdk = await _subscriptionSdkService.GetAllSubcriptions(null, cancelToken).ConfigureAwait(false);
             var subs = await _subcriptionService.GetSubcriptions(cancelToken);
             _cacheProvider.SetCache(cacheKeyProcess, subs, Core.ConstatCsro.CacheSettings.DefaultDuration);
             return subs;
         }
 
-        public async Task<List<CustomerModel>> GetTags(List<string> subscriptionIds, CancellationToken cancelToken = default)
-        {
-            try
-            {
-                var dic = await _subcriptionService.GetTagsDictionary(subscriptionIds, cancelToken);
-                if (dic.IsNullOrEmptyCollection())
-                    return null;
-                else
-                {                    
-                    List<string> modelAtCodes = new();
-                    foreach(var item in dic.Values)
-                    {
-                        var codes = item.cmdbReferenceList.Select(a => a.AtCode);
-                        if (codes.HasAnyInCollection())
-                            modelAtCodes.AddRange(codes);
-                    }
+        //public async Task<List<CustomerModel>> GetTags(List<string> subscriptionIds, CancellationToken cancelToken = default)
+        //{
+        //    try
+        //    {
+        //        var dic = await _subcriptionService.GetTagsDictionary(subscriptionIds, cancelToken);
+        //        if (dic.IsNullOrEmptyCollection())
+        //            return null;
+        //        else
+        //        {                    
+        //            List<string> modelAtCodes = new();
+        //            foreach(var item in dic.Values)
+        //            {
+        //                var codes = item.cmdbReferenceList.Select(a => a.AtCode);
+        //                if (codes.HasAnyInCollection())
+        //                    modelAtCodes.AddRange(codes);
+        //            }
 
-                    //pass all at codes
-                    var q = _atCodecmdbReferenceRepository.Context.ResourceSWIs.Where(a => modelAtCodes.Contains(a.AtCode)).ToListAsync();
-                    var dbAtCodes = await q;
+        //            //pass all at codes
+        //            var q = _atCodecmdbReferenceRepository.Context.ResourceSWIs.Where(a => modelAtCodes.Contains(a.AtCode)).ToListAsync();
+        //            var dbAtCodes = await q;
 
-                    foreach (var cus in dic.Values)
-                    {
-                        foreach (var item in cus.cmdbReferenceList)
-                        {
-                            var found = dbAtCodes.FirstOrDefault(a => a.AtCode == item.AtCode);
-                            if (found != null)
-                                item.Email = found.Email;
-                        }
-                    }
+        //            foreach (var cus in dic.Values)
+        //            {
+        //                foreach (var item in cus.cmdbReferenceList)
+        //                {
+        //                    var found = dbAtCodes.FirstOrDefault(a => a.AtCode == item.AtCode);
+        //                    if (found != null)
+        //                        item.Email = found.Email;
+        //                }
+        //            }
 
-                    return dic.Values.ToList();
-                }
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
+        //            return dic.Values.ToList();
+        //        }
+        //    }
+        //    catch (Exception)
+        //    {
+        //        throw;
+        //    }
+        //}
     }
 }
