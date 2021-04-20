@@ -26,8 +26,8 @@ namespace CSRO.Server.Services.AzureRestServices
         Task<List<TagNameWithValueListModel>> GetTags(string subscriptionId, CancellationToken cancelToken = default);
         Task<DefaultTagsModel> GetDefualtTags(string subscriptionId, CancellationToken cancelToken = default);
         Task<Dictionary<string, DefaultTagsModel>> GetDefualtTags(List<string> subscriptionIds, CancellationToken cancelToken = default);
-        Task<List<CustomerModel>> GetTags(List<string> subscriptionIds, CancellationToken cancelToken = default);
-        Task<Dictionary<string,CustomerModel>> GetTagsDictionary(List<string> subscriptionIds, CancellationToken cancelToken = default);
+        //Task<List<CustomerModel>> GetTags(List<string> subscriptionIds, CancellationToken cancelToken = default);
+        //Task<Dictionary<string,CustomerModel>> GetTagsDictionary(List<string> subscriptionIds, CancellationToken cancelToken = default);
     }
 
     public class SubcriptionService : BaseDataService, ISubcriptionService
@@ -175,99 +175,99 @@ namespace CSRO.Server.Services.AzureRestServices
             return null;
         }
 
-        public Task<List<CustomerModel>> GetTags(List<string> subscriptionIds, CancellationToken cancelToken = default)
-        {
-            try
-            {
-                if (subscriptionIds?.Count <= 0)
-                    throw new Exception($"missing {nameof(subscriptionIds)} parameter");
+        //public Task<List<CustomerModel>> GetTags(List<string> subscriptionIds, CancellationToken cancelToken = default)
+        //{
+        //    try
+        //    {
+        //        if (subscriptionIds?.Count <= 0)
+        //            throw new Exception($"missing {nameof(subscriptionIds)} parameter");
 
-                #region Task.WhenAll
-                //Dictionary<string, Task<DefaultTags>> tasks = new();
-                //try
-                //{
-                //    foreach (var subscriptionId in subscriptionIds)
-                //    {
-                //        //var tags = await GetTags(subscriptionId, cancelToken).ConfigureAwait(false);
-                //        var t = GetDefualtTags(subscriptionId, cancelToken);
-                //        tasks.Add(subscriptionId, t);
-                //    }
-                //    await Task.WhenAll(tasks.Values.ToList());
-                //}
-                //catch (Exception ex)
-                //{
-                //    throw;
-                //}
+        //        #region Task.WhenAll
+        //        //Dictionary<string, Task<DefaultTags>> tasks = new();
+        //        //try
+        //        //{
+        //        //    foreach (var subscriptionId in subscriptionIds)
+        //        //    {
+        //        //        //var tags = await GetTags(subscriptionId, cancelToken).ConfigureAwait(false);
+        //        //        var t = GetDefualtTags(subscriptionId, cancelToken);
+        //        //        tasks.Add(subscriptionId, t);
+        //        //    }
+        //        //    await Task.WhenAll(tasks.Values.ToList());
+        //        //}
+        //        //catch (Exception ex)
+        //        //{
+        //        //    throw;
+        //        //}
 
-                //List<Customer> list = new();
-                //foreach (var task in tasks)
-                //{
-                //    Customer customer = new Customer
-                //    {
-                //        SubscriptionId = task.Key
-                //    };
-                //    if (task.Value.Result.CmdbRerenceList.HasAnyInCollection())
-                //        task.Value.Result.CmdbRerenceList.ForEach(a => customer.cmdbReferenceList.Add(new cmdbReference { AtCode = a, Email = "N/A" }));
-                //    if (task.Value.Result.OpEnvironmentList.HasAnyInCollection())
-                //        task.Value.Result.OpEnvironmentList.ForEach(a => customer.opEnvironmentList.Add(new opEnvironment { Value = a }));
+        //        //List<Customer> list = new();
+        //        //foreach (var task in tasks)
+        //        //{
+        //        //    Customer customer = new Customer
+        //        //    {
+        //        //        SubscriptionId = task.Key
+        //        //    };
+        //        //    if (task.Value.Result.CmdbRerenceList.HasAnyInCollection())
+        //        //        task.Value.Result.CmdbRerenceList.ForEach(a => customer.cmdbReferenceList.Add(new cmdbReference { AtCode = a, Email = "N/A" }));
+        //        //    if (task.Value.Result.OpEnvironmentList.HasAnyInCollection())
+        //        //        task.Value.Result.OpEnvironmentList.ForEach(a => customer.opEnvironmentList.Add(new opEnvironment { Value = a }));
 
-                //    list.Add(customer);
-                //}
-                //return list;
-                #endregion
+        //        //    list.Add(customer);
+        //        //}
+        //        //return list;
+        //        #endregion
 
-                ConcurrentDictionary<string, DefaultTagsModel> concDic = GetTagsParallel(subscriptionIds, cancelToken);
-                if (concDic?.Count == 0)
-                    return null;
+        //        ConcurrentDictionary<string, DefaultTagsModel> concDic = GetTagsParallel(subscriptionIds, cancelToken);
+        //        if (concDic?.Count == 0)
+        //            return null;
 
-                List<CustomerModel> list = new();
-                foreach (var pair in concDic)
-                {
-                    CustomerModel customer = new CustomerModel
-                    {
-                        SubscriptionId = pair.Key
-                    };
-                    if (pair.Value.CmdbRerenceList.HasAnyInCollection())
-                        //pair.Value.CmdbRerenceList.ForEach(a => customer.cmdbReferenceList.Add(new cmdbReferenceModel { AtCode = a, Email = "N/A" }));
-                        pair.Value.CmdbRerenceList.ForEach(a => customer.cmdbReferenceList.Add(new cmdbReferenceModel { AtCode = a }));
-                    if (pair.Value.OpEnvironmentList.HasAnyInCollection())
-                        pair.Value.OpEnvironmentList.ForEach(a => customer.opEnvironmentList.Add(new opEnvironmentModel { Value = a }));
+        //        List<CustomerModel> list = new();
+        //        foreach (var pair in concDic)
+        //        {
+        //            CustomerModel customer = new CustomerModel
+        //            {
+        //                SubscriptionId = pair.Key
+        //            };
+        //            if (pair.Value.CmdbRerenceList.HasAnyInCollection())
+        //                //pair.Value.CmdbRerenceList.ForEach(a => customer.cmdbReferenceList.Add(new cmdbReferenceModel { AtCode = a, Email = "N/A" }));
+        //                pair.Value.CmdbRerenceList.ForEach(a => customer.cmdbReferenceList.Add(new cmdbReferenceModel { AtCode = a }));
+        //            if (pair.Value.OpEnvironmentList.HasAnyInCollection())
+        //                pair.Value.OpEnvironmentList.ForEach(a => customer.opEnvironmentList.Add(new opEnvironmentModel { Value = a }));
 
-                    list.Add(customer);
-                }
-                return Task.FromResult(list);
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
-        }
+        //            list.Add(customer);
+        //        }
+        //        return Task.FromResult(list);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw;
+        //    }
+        //}
 
-        public Task<Dictionary<string, CustomerModel>> GetTagsDictionary(List<string> subscriptionIds, CancellationToken cancelToken = default)
-        {
-            if (subscriptionIds?.Count <= 0)
-                throw new Exception($"missing {nameof(subscriptionIds)} parameter");
+        //public Task<Dictionary<string, CustomerModel>> GetTagsDictionary(List<string> subscriptionIds, CancellationToken cancelToken = default)
+        //{
+        //    if (subscriptionIds?.Count <= 0)
+        //        throw new Exception($"missing {nameof(subscriptionIds)} parameter");
 
-            ConcurrentDictionary<string, DefaultTagsModel> concDic = GetTagsParallel(subscriptionIds, cancelToken);
-            if (concDic?.Count == 0)
-                return null;
+        //    ConcurrentDictionary<string, DefaultTagsModel> concDic = GetTagsParallel(subscriptionIds, cancelToken);
+        //    if (concDic?.Count == 0)
+        //        return null;
 
-            Dictionary<string, CustomerModel> d = new();
-            foreach (var pair in concDic)
-            {
-                CustomerModel customer = new CustomerModel
-                {
-                    SubscriptionId = pair.Key
-                };
-                if (pair.Value.CmdbRerenceList.HasAnyInCollection())
-                    //pair.Value.CmdbRerenceList.ForEach(a => customer.cmdbReferenceList.Add(new cmdbReferenceModel { AtCode = a, Email = "N/A" }));
-                    pair.Value.CmdbRerenceList.ForEach(a => customer.cmdbReferenceList.Add(new cmdbReferenceModel { AtCode = a }));
-                if (pair.Value.OpEnvironmentList.HasAnyInCollection())
-                    pair.Value.OpEnvironmentList.ForEach(a => customer.opEnvironmentList.Add(new opEnvironmentModel { Value = a }));
-                d.Add(customer.SubscriptionId, customer);
-            }
-            return Task.FromResult(d);
-        }
+        //    Dictionary<string, CustomerModel> d = new();
+        //    foreach (var pair in concDic)
+        //    {
+        //        CustomerModel customer = new CustomerModel
+        //        {
+        //            SubscriptionId = pair.Key
+        //        };
+        //        if (pair.Value.CmdbRerenceList.HasAnyInCollection())
+        //            //pair.Value.CmdbRerenceList.ForEach(a => customer.cmdbReferenceList.Add(new cmdbReferenceModel { AtCode = a, Email = "N/A" }));
+        //            pair.Value.CmdbRerenceList.ForEach(a => customer.cmdbReferenceList.Add(new cmdbReferenceModel { AtCode = a }));
+        //        if (pair.Value.OpEnvironmentList.HasAnyInCollection())
+        //            pair.Value.OpEnvironmentList.ForEach(a => customer.opEnvironmentList.Add(new opEnvironmentModel { Value = a }));
+        //        d.Add(customer.SubscriptionId, customer);
+        //    }
+        //    return Task.FromResult(d);
+        //}
 
         private ConcurrentDictionary<string, DefaultTagsModel> GetTagsParallel(List<string> subscriptionIds, CancellationToken cancelToken)
         {

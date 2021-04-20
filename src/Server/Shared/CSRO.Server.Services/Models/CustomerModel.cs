@@ -6,14 +6,11 @@ using System.Threading.Tasks;
 
 namespace CSRO.Server.Services.Models
 {
-    public class CustomerModel
-    {
-        public string SubscriptionId { get; set; }
-        public string SubscriptionName { get; set; }
-        public List<cmdbReferenceModel> cmdbReferenceList { get; set; } = new();
-        public List<opEnvironmentModel> opEnvironmentList { get; set; } = new();
-        //public bool ShowDetails { get; set; }
-    }
+    //public class CustomerModel
+    //{
+    //    public string SubscriptionId { get; set; }
+    //    public string SubscriptionName { get; set; }
+    //}
 
     /// <summary>
     /// AT Code and Email

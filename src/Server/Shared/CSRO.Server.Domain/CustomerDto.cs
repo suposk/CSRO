@@ -5,12 +5,20 @@ using System.Text;
 namespace CSRO.Server.Domain
 {
     public class CustomerDto
-    {
+    {        
+        public string AtCode { get; set; }
+        public string AtName { get; set; }
+        public string AtSwc { get; set; }
+        public string Email { get; set; }
+        public string EmailGroup { get; set; }
+        public string ChatChannel { get; set; }
         public string SubscriptionId { get; set; }
         public string SubscriptionName { get; set; }
-        public List<cmdbReferenceDto> cmdbReferenceList { get; set; }
-        public List<opEnvironmentDto> opEnvironmentList { get; set; }
-        //public bool ShowDetails { get; set; }
+        public string ResourceGroup { get; set; }
+        public string ResourceLocation { get; set; }
+        public string ResourceType { get; set; }
+        public string AzureResource { get; set; }
+        public string OpEnvironment { get; set; }
     }
 
     /// <summary>

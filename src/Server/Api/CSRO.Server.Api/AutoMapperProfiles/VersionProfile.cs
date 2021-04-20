@@ -39,7 +39,8 @@ namespace CSRO.Server.Api.AutoMapperProfiles
             CreateMap<IdNameDto, IdName>()
                 .ReverseMap();
                         
-            CreateMap<CustomerDto, CustomerModel>()
+            CreateMap<CustomerDto, Entity.ResourceSWI>()
+                .ForMember(s => s.Id, op => op.Ignore())
                 .ReverseMap();
                         
             CreateMap<cmdbReferenceDto, cmdbReferenceModel>()

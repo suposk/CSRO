@@ -1,13 +1,17 @@
-﻿using System;
+﻿using CSRO.Server.Infrastructure;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CSRO.Client.Services.Models
+namespace CSRO.Server.Entities.Entity
 {
-    public class Customer
+    public class ResourceSWI
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
         public string AtCode { get; set; }
         public string AtName { get; set; }
         public string AtSwc { get; set; }
@@ -21,30 +25,5 @@ namespace CSRO.Client.Services.Models
         public string ResourceType { get; set; }
         public string AzureResource { get; set; }
         public string OpEnvironment { get; set; }
-        public bool ShowDetails { get; set; }
-    }
-
-    /// <summary>
-    /// AT Code and Email
-    /// </summary>
-    public class cmdbReference 
-    {
-        public string AtCode { get; set; }
-        public string Email { get; set; }
-    }
-
-    /// <summary>
-    /// Value DEV, PROD
-    /// </summary>
-    public class opEnvironment 
-    {
-        //public string Name { get; set; }
-
-        public string Value { get; set; }
-
-        public override string ToString()
-        {
-            return Value;
-        }
     }
 }
