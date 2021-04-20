@@ -61,7 +61,6 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
         //protected string Title => "Hosting Settings";
 
         protected List<IdName> Subscripions { get; set; } = new();
-
         protected List<IdName> SubscripionsFiltered { get; set; } = new();
 
         protected List<Customer> Customers = new();
@@ -79,6 +78,10 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
 
         protected IdName SelectedSub { get; set; } = new();
         protected HashSet<IdName> SelectedSubs { get; set; } = new();
+
+        protected IdName SelectedRegion;
+        protected HashSet<IdName> SelectedRegions { get; set; } = new();
+
         protected bool IsFilterAutofocused { get; set; } = false;
 
         protected async override Task OnInitializedAsync()
@@ -105,23 +108,43 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
             }
         }
 
-        public async Task OnLocationChanged(IdName value)
-        {
-            if (value != null)
-            {
-                //Model.ResourceGroup.Location = value.Id;                
-                Model.LocationIdName = value;
+        //public async Task OnLocationChanged(IdName value)
+        //{
+        //    if (value != null)
+        //    {
+        //        //Model.ResourceGroup.Location = value.Id;                
+        //        Model.LocationIdName = value;
 
-                ShowLoading();
-                //await LocationIdNameChanged.InvokeAsync(value);
-                await LoadRg(Model.SubcriptionId, value.Id);
-                HideLoading();
+        //        ShowLoading();
+        //        //await LocationIdNameChanged.InvokeAsync(value);
+        //        await LoadRg(Model.SubcriptionId, value.Id);
+        //        HideLoading();
+        //    }
+        //}
+
+        public Task OnSubscriptionsChanged(HashSet<IdName> values)
+        {
+            if (values.HasAnyInCollection())
+            {
+                SelectedRegions?.Clear();
+                SelectedSubs = values;
             }
+            return Task.CompletedTask;
+        }
+
+        public Task OnLocationsChanged(HashSet<IdName> values)
+        {
+            if (values.HasAnyInCollection())
+            {
+                SelectedRegions = values;
+                SelectedSubs?.Clear();                
+            }
+            return Task.CompletedTask;
         }
 
         async Task LoadLocations()
         {
-            if (Locations?.Count == 0)
+            if (Locations.IsNullOrEmptyCollection())
                 Locations = await LocationsService.GetLocations();
         }
 
@@ -134,11 +157,14 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
                 ShowLoading("Please wait ...");
 
                 await Task.Delay(1);
+                List<Customer> customers = null;
 
-                //var customers = await SubcriptionDataService.GetTags(SelectedSubs.Select(a => a.Id).ToList()).ConfigureAwait(false);
-                //var customers = await CustomerDataService.GetCustomersBySubIds(SelectedSubs.Select(a => a.Id).ToList()).ConfigureAwait(false);
-                var customers = await CustomerDataService.GetCustomersBySubNames(SelectedSubs.Select(a => a.Name).ToList()).ConfigureAwait(false);
-                if (customers?.Count > 0)
+                if (SelectedSubs.HasAnyInCollection())
+                    customers = await CustomerDataService.GetCustomersBySubNames(SelectedSubs.Select(a => a.Name).ToList()).ConfigureAwait(false);
+                else
+                    customers = await CustomerDataService.GetCustomersByRegion(SelectedRegions.Select(a => a.Name).ToList()).ConfigureAwait(false);
+
+                if (customers.HasAnyInCollection())
                 {                    
                     foreach (var cust in customers)
                     {
@@ -184,6 +210,8 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
                 Subscripions?.Clear();
                 SubscripionsFiltered?.Clear();
                 SelectedSubs?.Clear();
+                SelectedRegions?.Clear();
+                await LoadLocations();
 
                 //Subscripions = await SubcriptionSdkService.GetAllSubcriptions();   not working properly
                 if (Subscripions.IsNullOrEmptyCollection() || Subscripions.Count <= 10)

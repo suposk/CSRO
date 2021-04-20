@@ -18,12 +18,12 @@ namespace CSRO.Client.Services
     {
         private Dictionary<string, Region> _locDic = new Dictionary<string, Region>
         {
-            { "Europe North", Region.EuropeNorth },
-            { "Europe West", Region.EuropeWest },
-            { "Asia South East", Region.AsiaSouthEast },
-            { "Asia East", Region.AsiaEast },
-            { "US Central", Region.USCentral},
-            { "US East 2", Region.USEast2 },
+            { "North Europe", Region.EuropeNorth },
+            { "West Europe", Region.EuropeWest },
+            { "East South Asia", Region.AsiaSouthEast },
+            { "East Asia", Region.AsiaEast },
+            { "Central US", Region.USCentral},
+            { "East US 2", Region.USEast2 },
             { "Switzerland North", Region.SwitzerlandNorth },
             { "Switzerland West", Region.SwitzerlandWest },
 

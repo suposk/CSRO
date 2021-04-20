@@ -83,5 +83,26 @@ namespace CSRO.Server.Api.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }
         }
+
+        [HttpGet(nameof(GetCustomersByRegion))]
+        public async Task<ActionResult<List<CustomerDto>>> GetCustomersByRegion(List<string> regions)
+        {
+            try
+            {
+                _logger.LogInformation(ApiLogEvents.GetAllItems, $"{nameof(GetCustomersByRegion)} Started");
+
+                var all = await _repository.GetCustomersByRegion(regions).ConfigureAwait(false);
+                if (all.IsNullOrEmptyCollection())
+                    return new List<CustomerDto>();
+
+                var result = _mapper.Map<List<CustomerDto>>(all);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, nameof(GetCustomersByRegion), null);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
+            }
+        }        
     }
 }

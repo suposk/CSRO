@@ -30,5 +30,11 @@ namespace CSRO.Server.Services
             var q = Context.ResourceSWIs.Where(a => subscriptionIds.Contains(a.SubscriptionId)).ToListAsync();
             return q;
         }
+
+        public Task<List<ResourceSWI>> GetCustomersByRegion(List<string> regions)
+        {
+            var q = Context.ResourceSWIs.Where(a => regions.Contains(a.ResourceLocation)).ToListAsync();
+            return q;
+        }
     }
 }

@@ -38,30 +38,47 @@
                                MultiSelection="true"
                                Dense="true"
                                OffsetY="true"
-                               @bind-SelectedValues="SelectedSubs">
+                               SelectedValuesChanged="OnSubscriptionsChanged"
+                               >
                         @foreach (var sub in SubscripionsFiltered)
                         {
                             <MudSelectItem T="IdName" Value="@sub">@sub</MudSelectItem>
                         }
                     </MudSelect>
+                    <MudText Typo="Typo.body2">Selected Sub:</MudText>
+                    <MudText Typo="Typo.body2">@(string.Join(", ", SelectedSubs.Select(x=>$"\"{x}\"")))</MudText>
                 </MudItem>
             </MudItem>
 
             <MudItem xs="6" sm="3" Class="d-flex align-center justify-center mud-width-full py-8">
-                col 3
+                <MudItem xs="12" md="12">
+                    <MudSelect T="@IdName"
+                               HelperText="Pick Region"
+                               MultiSelection="true"
+                               Dense="true"
+                               OffsetY="true"
+                               SelectedValuesChanged="OnLocationsChanged"
+                               >
+                        @foreach (var reg in Locations)
+                        {
+                            <MudSelectItem T="IdName" Value="@reg">@reg</MudSelectItem>
+                        }
+                    </MudSelect>
+                    <MudText Typo="Typo.body2">Selected Loc:</MudText>
+                    <MudText Typo="Typo.body2">@(string.Join(", ", SelectedRegions.Select(x=>$"\"{x}\"")))</MudText>
+                </MudItem>
             </MudItem>
 
-            <MudItem xs="6" sm="3">
-                <MudText Typo="Typo.body2">MudSelect.SelectedValues:</MudText>
-                <MudText Typo="Typo.body2">{ @(string.Join(", ", SelectedSubs.Select(x=>$"\"{x}\""))) }</MudText>
-                <MudButton Disabled="@SelectedSubs.IsNullOrEmptyCollection()"
+            <MudItem xs="6" sm="3" Class="d-flex align-center justify-center mud-width-full py-8">
+                <MudButton Disabled="@(SelectedSubs.IsNullOrEmptyCollection() && SelectedRegions.IsNullOrEmptyCollection())"
                            Class="mt-4"
                            OnClick="Search" Variant="Variant.Filled" Color="Color.Primary">Search</MudButton>
             </MudItem>
         </MudGrid>
     </MudCard> 
     
-        <MudTable Dense="true"
+        <MudTable Class="mt-6"
+                  Dense="true"
                   Items="@Customers"
                   Hover="true"
                   RowsPerPage="50"
