@@ -33,10 +33,10 @@
 
             <MudItem xs="6" sm="3" Class="d-flex align-center justify-center mud-width-full py-8">
                 <MudCardContent>
-                    <MudTextField T="string"        
+                    <MudTextField      
                                   Adornment="Adornment.End"
-                                  AdornmentIcon="@Icons.Material.Filled.Clear" 
-                                  OnAdornmentClick="ClearAtCode"
+                                  AdornmentIcon="@(string.IsNullOrWhiteSpace(AtCode) ? string.Empty : Icons.Material.Filled.Clear)" 
+                                  OnAdornmentClick="@(e => { AtCode = null;})"
                                   @bind-Value="AtCode"
                                   Label="Enter AT Code"                                                                    
                                   />

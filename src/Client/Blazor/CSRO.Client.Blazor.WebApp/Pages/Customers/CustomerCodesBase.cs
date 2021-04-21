@@ -141,11 +141,6 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
             return Task.CompletedTask;
         }
 
-        public void ClearAtCode()
-        {
-            AtCode = null;
-        }
-
         public Task OnSubscriptionsChanged(HashSet<IdName> values)
         {
             if (values.HasAnyInCollection())
