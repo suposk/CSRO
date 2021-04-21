@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace CSRO.Server.Api.Controllers
 {
-    [Authorize]
+    //[Authorize] todo
     [Route("api/[controller]")]
     [ApiController]
     public class CustomerController : ControllerBase
@@ -62,7 +62,28 @@ namespace CSRO.Server.Api.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }
         }
-                       
+                
+        [HttpGet("GetCustomersBySubName/{subscriptionName}")]
+        public async Task<ActionResult<List<CustomerDto>>> GetCustomersBySubName(string subscriptionName)
+        {
+            try
+            {
+                _logger.LogInformation(ApiLogEvents.GetAllItems, $"{nameof(GetCustomersBySubName)} Started");
+
+                var all = await _repository.GetCustomersBySubName(subscriptionName).ConfigureAwait(false);
+                if (all.IsNullOrEmptyCollection())
+                    return new List<CustomerDto>();
+
+                var result = _mapper.Map<List<CustomerDto>>(all);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, nameof(GetCustomersBySubName), null);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
+            }
+        }
+
         [HttpGet(nameof(GetCustomersBySubIds))]
         public async Task<ActionResult<List<CustomerDto>>> GetCustomersBySubIds(List<string> subscriptionIds)
         {
@@ -83,15 +104,15 @@ namespace CSRO.Server.Api.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }
         }
-
-        [HttpGet(nameof(GetCustomersByRegion))]
-        public async Task<ActionResult<List<CustomerDto>>> GetCustomersByRegion(List<string> regions)
+                
+        [HttpGet("GetCustomersBySubId/{subscriptionId}")]
+        public async Task<ActionResult<List<CustomerDto>>> GetCustomersBySubId(string subscriptionId)
         {
             try
             {
-                _logger.LogInformation(ApiLogEvents.GetAllItems, $"{nameof(GetCustomersByRegion)} Started");
+                _logger.LogInformation(ApiLogEvents.GetAllItems, $"{nameof(GetCustomersBySubId)} Started");
 
-                var all = await _repository.GetCustomersByRegion(regions).ConfigureAwait(false);
+                var all = await _repository.GetCustomersBySubId(subscriptionId).ConfigureAwait(false);
                 if (all.IsNullOrEmptyCollection())
                     return new List<CustomerDto>();
 
@@ -100,9 +121,73 @@ namespace CSRO.Server.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, nameof(GetCustomersByRegion), null);
+                _logger.LogError(ex, nameof(GetCustomersBySubId), null);
                 return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }
-        }        
+        }
+
+        [HttpGet(nameof(GetCustomersByRegions))]
+        public async Task<ActionResult<List<CustomerDto>>> GetCustomersByRegions(List<string> regions)
+        {
+            try
+            {
+                _logger.LogInformation(ApiLogEvents.GetAllItems, $"{nameof(GetCustomersByRegions)} Started");
+
+                var all = await _repository.GetCustomersByRegions(regions).ConfigureAwait(false);
+                if (all.IsNullOrEmptyCollection())
+                    return new List<CustomerDto>();
+
+                var result = _mapper.Map<List<CustomerDto>>(all);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, nameof(GetCustomersByRegions), null);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
+            }
+        }
+
+        [HttpGet(nameof(GetCustomersByAtCodes))]
+        public async Task<ActionResult<List<CustomerDto>>> GetCustomersByAtCodes(List<string> atCodes)
+        {
+            try
+            {
+                _logger.LogInformation(ApiLogEvents.GetAllItems, $"{nameof(GetCustomersByAtCodes)} Started");
+
+                var all = await _repository.GetCustomersByAtCodes(atCodes).ConfigureAwait(false);
+                if (all.IsNullOrEmptyCollection())
+                    return new List<CustomerDto>();
+
+                var result = _mapper.Map<List<CustomerDto>>(all);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, nameof(GetCustomersByAtCodes), null);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
+            }
+        }
+
+        [HttpGet("GetCustomersByAtCode/{atCode}")]
+        public async Task<ActionResult<List<CustomerDto>>> GetCustomersByAtCode(string atCode)
+        {
+            try
+            {
+                _logger.LogInformation(ApiLogEvents.GetAllItems, $"{nameof(GetCustomersByAtCode)} Started");
+
+                var all = await _repository.GetCustomersByAtCode(atCode).ConfigureAwait(false);
+                if (all.IsNullOrEmptyCollection())
+                    return new List<CustomerDto>();
+
+                var result = _mapper.Map<List<CustomerDto>>(all);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, nameof(GetCustomersByAtCode), null);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
+            }
+        }
+
     }
 }

@@ -161,8 +161,11 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
 
                 if (SelectedSubs.HasAnyInCollection())
                     customers = await CustomerDataService.GetCustomersBySubNames(SelectedSubs.Select(a => a.Name).ToList()).ConfigureAwait(false);
+                    //customers = await CustomerDataService.GetCustomersBySubName(SelectedSubs.Select(a => a.Name).FirstOrDefault()).ConfigureAwait(false);
                 else
-                    customers = await CustomerDataService.GetCustomersByRegion(SelectedRegions.Select(a => a.Name).ToList()).ConfigureAwait(false);
+                    customers = await CustomerDataService.GetCustomersByRegions(SelectedRegions.Select(a => a.Name).ToList()).ConfigureAwait(false);
+
+                //var atcode = await CustomerDataService.GetCustomersByAtCode("AT25813").ConfigureAwait(false);
 
                 if (customers.HasAnyInCollection())
                 {                    
