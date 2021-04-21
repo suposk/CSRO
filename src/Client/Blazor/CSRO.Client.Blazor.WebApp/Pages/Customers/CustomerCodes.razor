@@ -21,13 +21,23 @@
         <MudGrid>
             <MudItem xs="6" sm="3" Class="d-flex align-center justify-center mud-width-full py-8">
                 <MudCardContent>
-                    <MudAutocomplete ResetValueOnEmptyText="true"
-                                     T="@IdName"
-                                     Dense="true"
-                                     Label="All Subscriptions"
-                                     ValueChanged="(e) => OnSubscriptionValueChanged(e)"
-                                     SearchFunc="@SearchSubs" />
+                    <MudGrid>
+                        <MudItem>
+                            <MudAutocomplete ResetValueOnEmptyText="true"
+                                             T="@IdName"
+                                             Dense="true"
+                                             Label="All Subscriptions"
+                                             @bind-Value="SelectedSub"
+                                             SearchFunc="@SearchSubs" />
+                        </MudItem>
 
+                        @*<MudItem>
+                            <MudIconButton IconSize="Size.Small" Style="height:20px;width:20px"                                    
+                                    Icon="@((SelectedSub == null || string.IsNullOrWhiteSpace(SelectedSub.Name)) ? string.Empty : Icons.Material.Filled.Clear)"
+                                    OnClick="@(e => { SelectedSubs.Clear(); CustomerSearchType = CustomerSearchTypeEnum.None; })">
+                            </MudIconButton>
+                        </MudItem>*@
+                    </MudGrid>
                 </MudCardContent>
             </MudItem>
 
@@ -36,7 +46,7 @@
                     <MudTextField      
                                   Adornment="Adornment.End"
                                   AdornmentIcon="@(string.IsNullOrWhiteSpace(AtCode) ? string.Empty : Icons.Material.Filled.Clear)" 
-                                  OnAdornmentClick="@(e => { AtCode = null;})"
+                                  OnAdornmentClick="@(e => { AtCode = null; CustomerSearchType = CustomerSearchTypeEnum.None; })"
                                   @bind-Value="AtCode"
                                   Label="Enter AT Code"                                                                    
                                   />
@@ -72,7 +82,7 @@
                                SelectedValuesChanged="OnLocationsChanged">
                         @foreach (var reg in Locations)
                         {
-                            <MudSelectItem T="IdName" Value="@reg">@reg</MudSelectItem>
+                            <MudSelectItem @key="reg.Id" T="IdName" Value="@reg">@reg</MudSelectItem>
                         }
                     </MudSelect>
                     <MudText Typo="Typo.body2">Selected Loc:</MudText>
@@ -81,14 +91,14 @@
             </MudItem>
 
             <MudItem xs="6" sm="3" Class="d-flex align-center justify-center mud-width-full py-8">
-                <MudButton Disabled="@(SelectedSubs.IsNullOrEmptyCollection() && SelectedRegions.IsNullOrEmptyCollection())"
+                <MudButton Disabled="@(CustomerSearchType == CustomerSearchTypeEnum.None)"
                            Class="mt-4"
                            OnClick="Search" Variant="Variant.Filled" Color="Color.Primary">Search</MudButton>
             </MudItem>
         </MudGrid>
     </MudCard> 
     
-        <MudTable Class="mt-6"
+        <MudTable Class="mt-10"
                   Dense="true"
                   Items="@Customers"
                   Hover="true"
