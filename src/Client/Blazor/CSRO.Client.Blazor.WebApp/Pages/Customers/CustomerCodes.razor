@@ -32,23 +32,35 @@
             </MudItem>
 
             <MudItem xs="6" sm="3" Class="d-flex align-center justify-center mud-width-full py-8">
-                <MudItem xs="12" md="12">
-                    <MudSelect T="@IdName"
-                               HelperText="Pick your filtered Subscription"
-                               MultiSelection="true"
-                               Dense="true"
-                               OffsetY="true"
-                               SelectedValuesChanged="OnSubscriptionsChanged"
-                               >
-                        @foreach (var sub in SubscripionsFiltered)
-                        {
-                            <MudSelectItem T="IdName" Value="@sub">@sub</MudSelectItem>
-                        }
-                    </MudSelect>
-                    <MudText Typo="Typo.body2">Selected Sub:</MudText>
-                    <MudText Typo="Typo.body2">@(string.Join(", ", SelectedSubs.Select(x=>$"\"{x}\"")))</MudText>
-                </MudItem>
+                <MudCardContent>
+                    <MudTextField T="string"        
+                                  Adornment="Adornment.End"
+                                  AdornmentIcon="@Icons.Material.Filled.Clear" 
+                                  OnAdornmentClick="ClearAtCode"
+                                  @bind-Value="AtCode"
+                                  Label="Enter AT Code"                                                                    
+                                  />
+                </MudCardContent>
             </MudItem>
+
+            @*<MudItem xs="6" sm="3" Class="d-flex align-center justify-center mud-width-full py-8">
+            <MudItem xs="12" md="12">
+                <MudSelect T="@IdName"
+                           HelperText="Pick your filtered Subscription"
+                           MultiSelection="true"
+                           Dense="true"
+                           OffsetY="true"
+                           SelectedValuesChanged="OnSubscriptionsChanged"
+                           >
+                    @foreach (var sub in SubscripionsFiltered)
+                    {
+                        <MudSelectItem T="IdName" Value="@sub">@sub</MudSelectItem>
+                    }
+                </MudSelect>
+                <MudText Typo="Typo.body2">Selected Sub:</MudText>
+                <MudText Typo="Typo.body2">@(string.Join(", ", SelectedSubs.Select(x=>$"\"{x}\"")))</MudText>
+            </MudItem>
+        </MudItem>*@
 
             <MudItem xs="6" sm="3" Class="d-flex align-center justify-center mud-width-full py-8">
                 <MudItem xs="12" md="12">
@@ -57,8 +69,7 @@
                                MultiSelection="true"
                                Dense="true"
                                OffsetY="true"
-                               SelectedValuesChanged="OnLocationsChanged"
-                               >
+                               SelectedValuesChanged="OnLocationsChanged">
                         @foreach (var reg in Locations)
                         {
                             <MudSelectItem T="IdName" Value="@reg">@reg</MudSelectItem>

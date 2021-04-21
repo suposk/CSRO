@@ -84,6 +84,20 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
 
         protected bool IsFilterAutofocused { get; set; } = false;
 
+        //public string AtCode { get; set; } = null;
+        private string _AtCode;
+
+        public string AtCode
+        {
+            get { return _AtCode; }
+            set 
+            {
+                _AtCode = value;
+                InvokeAsync(() => OnAtCodeChanged());
+            }
+        }
+
+
         protected async override Task OnInitializedAsync()
         {
             editContext ??= new EditContext(Model);
@@ -121,6 +135,16 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
         //        HideLoading();
         //    }
         //}
+
+        public Task OnAtCodeChanged()
+        {            
+            return Task.CompletedTask;
+        }
+
+        public void ClearAtCode()
+        {
+            AtCode = null;
+        }
 
         public Task OnSubscriptionsChanged(HashSet<IdName> values)
         {
