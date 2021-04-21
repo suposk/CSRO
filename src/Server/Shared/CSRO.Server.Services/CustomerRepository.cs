@@ -12,8 +12,11 @@ namespace CSRO.Server.Services
     {
         private readonly IApiIdentity _apiIdentity;
         public CustomersDbContext Context { get; }
-
-        public CustomerRepository(CustomersDbContext context, IApiIdentity apiIdentity)
+        public CustomerRepository
+            (
+            CustomersDbContext context, 
+            IApiIdentity apiIdentity
+            )
         {
             Context = context;
             _apiIdentity = apiIdentity;
@@ -25,15 +28,45 @@ namespace CSRO.Server.Services
             return q;
         }
 
+        public Task<List<ResourceSWI>> GetCustomersBySubName(string subscriptionName)
+        {
+            var q = Context.ResourceSWIs.Where(a => a.SubscriptionName.Contains(subscriptionName)).ToListAsync();
+            return q;
+        }
+
         public Task<List<ResourceSWI>> GetCustomersBySubIds(List<string> subscriptionIds)
         {
             var q = Context.ResourceSWIs.Where(a => subscriptionIds.Contains(a.SubscriptionId)).ToListAsync();
             return q;
         }
 
-        public Task<List<ResourceSWI>> GetCustomersByRegion(List<string> regions)
+        public Task<List<ResourceSWI>> GetCustomersBySubId(string subscriptionId)
+        {
+            var q = Context.ResourceSWIs.Where(a => a.SubscriptionId == subscriptionId).ToListAsync();
+            return q;
+        }
+
+        public Task<List<ResourceSWI>> GetCustomersByRegions(List<string> regions)
         {
             var q = Context.ResourceSWIs.Where(a => regions.Contains(a.ResourceLocation)).ToListAsync();
+            return q;
+        }
+
+        public Task<List<ResourceSWI>> GetCustomersByRegion(string region)
+        {
+            var q = Context.ResourceSWIs.Where(a => a.ResourceLocation.Contains(region)).ToListAsync();
+            return q;
+        }
+
+        public Task<List<ResourceSWI>> GetCustomersByAtCodes(List<string> atCodes)
+        {
+            var q = Context.ResourceSWIs.Where(a => atCodes.Contains(a.AtCode)).ToListAsync();
+            return q;
+        }
+
+        public Task<List<ResourceSWI>> GetCustomersByAtCode(string atCode)
+        {
+            var q = Context.ResourceSWIs.Where(a => a.AtCode == atCode).ToListAsync();
             return q;
         }
     }

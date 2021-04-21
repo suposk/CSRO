@@ -17,6 +17,8 @@ using System.Threading.Tasks;
 
 namespace CSRO.Client.Blazor.WebApp.Pages.Customers
 {
+    public enum CustomerSearchTypeEnum { None, Sub, AtCode, Regions, Env }
+
     public class CustomerCodesBase : CsroComponentBase
     {
 
@@ -75,14 +77,68 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
         protected bool IsLocDisabled => string.IsNullOrWhiteSpace(Model?.SubcriptionId) || Locations?.Count == 0;
         protected bool IsRgDisabled => IsLocDisabled | ResourceGroups?.Count == 0;
         protected bool IsNewRgDisabled => IsLocDisabled | string.IsNullOrWhiteSpace(Model.Location);
+                
+        private IdName _SelectedSub;
 
-        protected IdName SelectedSub { get; set; } = new();
-        protected HashSet<IdName> SelectedSubs { get; set; } = new();
+        public IdName SelectedSub
+        {
+            get { return _SelectedSub; }
+            set {
+                _SelectedSub = value;
+                if (value != null && !string.IsNullOrWhiteSpace(value.Name))
+                    SetSearchType(CustomerSearchTypeEnum.Sub);
+            }
+        }
+                
+        private HashSet<IdName> _SelectedSubs = new();
 
-        protected IdName SelectedRegion;
-        protected HashSet<IdName> SelectedRegions { get; set; } = new();
+        public HashSet<IdName> SelectedSubs
+        {
+            get { return _SelectedSubs; }
+            set 
+            {
+                _SelectedSubs = value; 
+                //if (value.IsNullOrEmptyCollection())
+                //    SetSearchType(CustomerSearchTypeEnum.Sub);
+            }
+        }
+
+
+        //protected HashSet<IdName> SelectedRegions { get; set; } = new();
+        private HashSet<IdName> _SelectedRegions = new();
+
+        public HashSet<IdName> SelectedRegions
+        {
+            get { return _SelectedRegions; }
+            set 
+            {
+                _SelectedRegions = value;
+                if (value.HasAnyInCollection())
+                    SetSearchType(CustomerSearchTypeEnum.Regions);
+            }
+        }
+
 
         protected bool IsFilterAutofocused { get; set; } = false;
+
+        protected CustomerSearchTypeEnum CustomerSearchType { get; set; } = CustomerSearchTypeEnum.None;
+
+
+        //public string AtCode { get; set; } = null;
+        private string _AtCode;
+
+        public string AtCode
+        {
+            get { return _AtCode; }
+            set 
+            {
+                _AtCode = value;
+                if (!string.IsNullOrWhiteSpace(value))
+                    SetSearchType(CustomerSearchTypeEnum.AtCode);
+                InvokeAsync(() => OnAtCodeChanged());
+            }
+        }
+
 
         protected async override Task OnInitializedAsync()
         {
@@ -90,23 +146,40 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
             await Load();
         }
 
-
-        public async Task OnSubscriptionValueChanged(IdName value)
+        void SetSearchType(CustomerSearchTypeEnum customerSearchType)
         {
-            if (value != null)
+            switch (customerSearchType)
             {
-                //Model.SubcriptionId = value.Id;
-                //Model.SubcriptionName = value.Name;
-
-                //ShowLoading();
-
-                ////await SubcriptionIdChanged.InvokeAsync(Model.SubcriptionId);
-                //await LoadLocations();
-                ////var tags = await SubcriptionService.GetTags(Model.SubcriptionId);
-                //var defaulTags = await SubcriptionService.GetDefualtTags(Model.SubcriptionId);
-                //HideLoading();
+                case CustomerSearchTypeEnum.AtCode:
+                    SelectedSub = null; 
+                    SelectedRegions = new();
+                    //AtCode = null;
+                    break;
+                case CustomerSearchTypeEnum.None:
+                    SelectedSub = null;
+                    SelectedRegions = new();
+                    AtCode = null;
+                    break;
+                case CustomerSearchTypeEnum.Sub:
+                    //SelectedSub = null;
+                    SelectedRegions = new();
+                    AtCode = null;
+                    break;
+                case CustomerSearchTypeEnum.Regions:
+                    SelectedSub = null;
+                    //SelectedRegions = new();
+                    AtCode = null;
+                    break;
+                case CustomerSearchTypeEnum.Env:
+                    break;
             }
+            CustomerSearchType = customerSearchType;
         }
+
+        //public async Task OnSubscriptionValueChanged(IdName value)
+        //{
+        //    SelectedSub = value;
+        //}
 
         //public async Task OnLocationChanged(IdName value)
         //{
@@ -121,6 +194,11 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
         //        HideLoading();
         //    }
         //}
+
+        public Task OnAtCodeChanged()
+        {            
+            return Task.CompletedTask;
+        }
 
         public Task OnSubscriptionsChanged(HashSet<IdName> values)
         {
@@ -159,10 +237,20 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
                 await Task.Delay(1);
                 List<Customer> customers = null;
 
-                if (SelectedSubs.HasAnyInCollection())
-                    customers = await CustomerDataService.GetCustomersBySubNames(SelectedSubs.Select(a => a.Name).ToList()).ConfigureAwait(false);
-                else
-                    customers = await CustomerDataService.GetCustomersByRegion(SelectedRegions.Select(a => a.Name).ToList()).ConfigureAwait(false);
+                switch (CustomerSearchType)
+                {
+                    case CustomerSearchTypeEnum.AtCode:
+                        customers = await CustomerDataService.GetCustomersByAtCode(AtCode).ConfigureAwait(false);
+                        break;
+                    case CustomerSearchTypeEnum.Sub:
+                        customers = await CustomerDataService.GetCustomersBySubName(SelectedSub?.Name).ConfigureAwait(false);
+                        break;
+                    case CustomerSearchTypeEnum.Regions:
+                        customers = await CustomerDataService.GetCustomersByRegions(SelectedRegions.Select(a => a.Name).ToList()).ConfigureAwait(false);
+                        break;
+                    case CustomerSearchTypeEnum.Env:
+                        break;
+                }
 
                 if (customers.HasAnyInCollection())
                 {                    

@@ -11,6 +11,11 @@ namespace CSRO.Server.Services
         CustomersDbContext Context { get; }
         Task<List<ResourceSWI>> GetCustomersBySubNames(List<string> subscriptionNames);
         Task<List<ResourceSWI>> GetCustomersBySubIds(List<string> subscriptionIds);
-        Task<List<ResourceSWI>> GetCustomersByRegion(List<string> regions);
+        Task<List<ResourceSWI>> GetCustomersByRegions(List<string> regions);
+        Task<List<ResourceSWI>> GetCustomersBySubName(string subscriptionName);
+        Task<List<ResourceSWI>> GetCustomersByRegion(string region);
+        Task<List<ResourceSWI>> GetCustomersBySubId(string subscriptionId);
+        Task<List<ResourceSWI>> GetCustomersByAtCodes(List<string> atCodes);
+        Task<List<ResourceSWI>> GetCustomersByAtCode(string atCode);
     }
 }

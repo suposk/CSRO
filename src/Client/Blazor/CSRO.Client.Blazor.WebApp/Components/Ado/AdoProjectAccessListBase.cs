@@ -55,7 +55,7 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
             set 
             {
                 _AdminMode = value;
-                CallLoad();
+                InvokeAsync(() => LoadAndRerefresh());
             }
         }
 
@@ -68,7 +68,7 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
         /// <summary>
         /// Only for DEV
         /// </summary>
-        async void CallLoad()
+        async Task LoadAndRerefresh()
         {
             await Load();
             StateHasChanged(); //must be here refresh state to bind
