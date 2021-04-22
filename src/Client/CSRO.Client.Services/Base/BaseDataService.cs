@@ -119,7 +119,7 @@ namespace CSRO.Client.Services
             }
         }
 
-        public async Task<TModel> RestGenericSend<TModel, TDto, TParam>(HttpMethod httpMethod, TParam parameter, string route, CancellationToken cancelToken = default) where TModel : class
+        public async Task<TModel> RestSend<TModel, TDto, TParam>(HttpMethod httpMethod, TParam parameter, string route, CancellationToken cancelToken = default) where TModel : class
         {
             if (string.IsNullOrWhiteSpace(route))            
                 throw new ArgumentException($"'{nameof(route)}' cannot be null or whitespace.", nameof(route));

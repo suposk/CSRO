@@ -47,7 +47,7 @@ namespace CSRO.Client.Services
         public Task<List<AdoProjectAccessModel>> RejectAdoProject(List<int> toReject, string rejectReason)
         {
             var data = new RejectededListDto { ToReject = toReject, Reason = rejectReason };
-            return base.RestGenericSend<List<AdoProjectAccessModel>, List<AdoProjectAccessDto>, RejectededListDto>(HttpMethod.Post, data, "RejectAdoProjectAccess");
+            return base.RestSend<List<AdoProjectAccessModel>, List<AdoProjectAccessDto>, RejectededListDto>(HttpMethod.Post, data, "RejectAdoProjectAccess");
 
             //try
             //{
@@ -76,7 +76,7 @@ namespace CSRO.Client.Services
 
         public Task<List<AdoProjectAccessModel>> ApproveAdoProject(List<int> toApprove)
         {
-            return base.RestGenericSend<List<AdoProjectAccessModel>, List<AdoProjectAccessDto>, List<int>>(HttpMethod.Post, toApprove, "RejectAdoProjectAccess");
+            return base.RestSend<List<AdoProjectAccessModel>, List<AdoProjectAccessDto>, List<int>>(HttpMethod.Post, toApprove, "RejectAdoProjectAccess");
         }
 
         public Task<bool> UpdateItemAsync(AdoProjectAccessModel item)

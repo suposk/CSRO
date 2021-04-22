@@ -37,7 +37,7 @@ namespace CSRO.Client.Services
 
         public Task<List<Customer>> GetCustomersBySubIds(List<string> subscriptionIds, CancellationToken cancelToken = default)
         {
-            return base.RestGenericSend<List<Customer>, List<CustomerDto>, List<string>>(HttpMethod.Get, subscriptionIds, "GetCustomersBySubIds");
+            return base.RestSend<List<Customer>, List<CustomerDto>, List<string>>(HttpMethod.Get, subscriptionIds, "GetCustomersBySubIds");
         }
                 
         public Task<List<Customer>> GetCustomersBySubId(string subscriptionId, CancellationToken cancelToken = default)
@@ -47,7 +47,7 @@ namespace CSRO.Client.Services
 
         public Task<List<Customer>> GetCustomersBySubNames(List<string> subscriptionIds, CancellationToken cancelToken = default)
         {
-            return base.RestGenericSend<List<Customer>, List<CustomerDto>, List<string>>(HttpMethod.Get, subscriptionIds, "GetCustomersBySubNames");
+            return base.RestSend<List<Customer>, List<CustomerDto>, List<string>>(HttpMethod.Get, subscriptionIds, "GetCustomersBySubNames");
             //try
             //{
             //    await base.AddAuthHeaderAsync();
@@ -81,7 +81,7 @@ namespace CSRO.Client.Services
 
         public Task<List<Customer>> GetCustomersByRegions(List<string> regions, CancellationToken cancelToken = default)
         {
-            return base.RestGenericSend<List<Customer>, List<CustomerDto>, List<string>>(HttpMethod.Get, regions, "GetCustomersByRegions");
+            return base.RestSend<List<Customer>, List<CustomerDto>, List<string>>(HttpMethod.Get, regions, "GetCustomersByRegions");
         }
 
         public Task<List<Customer>> GetCustomersByAtCode(string atCode, CancellationToken cancelToken = default)
