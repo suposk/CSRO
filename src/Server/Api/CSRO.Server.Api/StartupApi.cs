@@ -35,6 +35,8 @@ using System.Reflection;
 using CSRO.Server.Api.Services;
 using CSRO.Server.Services.Base;
 using CSRO.Server.Core;
+using CSRO.Server.Services.Utils;
+using CSRO.Server.Infrastructure.MessageBus;
 
 namespace CSRO.Server.Api
 {
@@ -201,7 +203,10 @@ namespace CSRO.Server.Api
                 options.RegisterValidatorsFromAssemblyContaining<Server.Services.Validation.BaseAbstractValidator>();
             });
 
-            services.AddScoped<IApiIdentity, ApiIdentity>();            
+            services.AddScoped<IApiIdentity, ApiIdentity>();
+            services.AddScoped<IEmailService, EmailService>();
+            services.AddSingleton<IMessageBus, AzServiceBusMessageBus>();
+
             services.AddTransient<IAzureVmManagementService, AzureVmManagementService>();
             services.AddTransient<ISubcriptionService, SubcriptionService>();
             services.AddTransient<IResourceGroupervice, ResourceGroupervice>();

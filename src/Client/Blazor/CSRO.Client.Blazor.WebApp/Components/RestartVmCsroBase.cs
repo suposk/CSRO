@@ -130,23 +130,24 @@ namespace CSRO.Client.Blazor.WebApp.Components
                         Model = server;
                         if (OperationTypeTicket == OperatioType.View)
                         {
-                            if (Model.VmState == "Restart Started" || !string.Equals(Model.VmState, "VM running"))
-                            {
-                                //need to create delay to update vm state after restart                                                                       
-                                LoadingMessage = $"Current state: {Model.VmState}";
-                                StateHasChanged();
+                            #region Verify old Code
+                            //if (Model.VmState == "Restart Started" || !string.Equals(Model.VmState, "VM running"))
+                            //{
+                            //    //need to create delay to update vm state after restart                                                                       
+                            //    LoadingMessage = $"Current state: {Model.VmState}";
+                            //    StateHasChanged();
 
-                                var running = await VmTicketDataService.VerifyRestartStatusCallback(Model, (status)=> 
-                                {
-                                    LoadingMessage = $"Current state: {status}";
-                                    StateHasChanged();
-                                }).ConfigureAwait(false);
-                                if (running)
-                                {
-                                    Model = await VmTicketDataService.GetItemByIdAsync(Model.Id);                                    
-                                }
-                            }
-
+                            //    var running = await VmTicketDataService.VerifyRestartStatusCallback(Model, (status)=> 
+                            //    {
+                            //        LoadingMessage = $"Current state: {status}";
+                            //        StateHasChanged();
+                            //    }).ConfigureAwait(false);
+                            //    if (running)
+                            //    {
+                            //        Model = await VmTicketDataService.GetItemByIdAsync(Model.Id);                                    
+                            //    }
+                            //}
+                            #endregion
                         }
                     }
                 }
@@ -156,17 +157,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
                     ShowLoading();
                     Subscripions = await SubcriptionSdkService.GetAllSubcriptions();
                     Subscripions = Subscripions ?? new List<IdNameSdk>();
-
 #if DEBUG
-                    //dubug only                    
-                    //if (Subscripions?.Count == 1)
-                    //{
-                    //    for (int i=1; i <= 3; i++)
-                    //    {
-                    //        Subscripions.Add(new IdNameSdk(Guid.NewGuid().ToString(), $"fake sub name {i}"));
-                    //    }
-                    //}
-
                     if (Subscripions?.Count == 1)
                     {
                         var id = Subscripions.First().Id;
@@ -216,8 +207,8 @@ namespace CSRO.Client.Blazor.WebApp.Components
                     {
                         ShowLoading("Creating request");
 
-                        //var added = await VmTicketDataService.AddItemAsync(Model);
-                        var added = await VmTicketDataService.RebootVmAndWaitForConfirmation(Model);
+                        var added = await VmTicketDataService.AddItemAsync(Model);
+                        //var added = await VmTicketDataService.RebootVmAndWaitForConfirmation(Model);
                         if (added != null)
                         {
                             Success = true;

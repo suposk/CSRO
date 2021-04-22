@@ -12,7 +12,7 @@ namespace CSRO.Server.Services
 {
     public interface IVmTicketRepository : IRepository<VmTicket>
     {
-        Task<VmTicket> CreateRestartTicket(VmTicket entity);
+        //Task<VmTicket> CreateRestartTicket(VmTicket entity);
         Task<(bool success, string errorMessage)> RebootVmAndWaitForConfirmation(VmTicket entity);
     }
 
@@ -49,28 +49,28 @@ namespace CSRO.Server.Services
             return _repository.GetListFilter(a => a.IsDeleted != true);
         }
 
-        public async Task<VmTicket> CreateRestartTicket(VmTicket entity)
-        {            
-            try
-            {
-                var vmstatus = await _azureVmManagementService.GetVmDisplayStatus(entity);
-                if (vmstatus.suc == false || vmstatus.status.Contains("deallocat"))
-                    throw new Exception($"Unable to process request: {vmstatus.status}");
+        //public async Task<VmTicket> CreateRestartTicket(VmTicket entity)
+        //{            
+        //    try
+        //    {
+        //        var vmstatus = await _azureVmManagementService.GetVmDisplayStatus(entity);
+        //        if (vmstatus.suc == false || vmstatus.status.Contains("deallocat"))
+        //            throw new Exception($"Unable to process request: {vmstatus.status}");
 
-                var sent = await _azureVmManagementService.RestarVmInAzure(entity).ConfigureAwait(false);
-                if (!sent.suc)
-                    throw new Exception(sent.errorMessage);
+        //        var sent = await _azureVmManagementService.RestarVmInAzure(entity).ConfigureAwait(false);
+        //        if (!sent.suc)
+        //            throw new Exception(sent.errorMessage);
 
-                base.Add(entity, _userId);
-                entity.Status = "Opened";
-                entity.VmState = "Restart Started";
-            }
-            catch
-            {
-                throw;
-            }
-            return entity;
-        }
+        //        base.Add(entity, _userId);
+        //        entity.Status = "Opened";
+        //        entity.VmState = "Restart Started";
+        //    }
+        //    catch
+        //    {
+        //        throw;
+        //    }
+        //    return entity;
+        //}
 
         public async Task<(bool success, string errorMessage)> RebootVmAndWaitForConfirmation(VmTicket entity)
         {
