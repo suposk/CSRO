@@ -35,32 +35,9 @@ namespace CSRO.Client.Services
             base.Init();
         }
 
-        public async Task<List<Customer>> GetCustomersBySubIds(List<string> subscriptionIds, CancellationToken cancelToken = default)
+        public Task<List<Customer>> GetCustomersBySubIds(List<string> subscriptionIds, CancellationToken cancelToken = default)
         {
-            try
-            {
-                await base.AddAuthHeaderAsync();
-
-                var url = $"{ApiPart}GetCustomersBySubIds";                
-                var httpcontent = new StringContent(JsonSerializer.Serialize(subscriptionIds, _options), Encoding.UTF8, "application/json");
-                HttpRequestMessage requestMessage = new HttpRequestMessage { Method = HttpMethod.Get, Content = httpcontent, RequestUri = new Uri(HttpClientBase.BaseAddress + url) };
-                var apiData = await HttpClientBase.SendAsync(requestMessage, cancelToken).ConfigureAwait(false);
-
-                if (apiData.IsSuccessStatusCode)
-                {
-                    var stream = await apiData.Content.ReadAsStreamAsync();
-                    var ser = await JsonSerializer.DeserializeAsync<List<CustomerDto>>(stream, _options);
-                    var result = Mapper.Map<List<Customer>>(ser);
-                    return result;
-                }
-                else
-                    throw new Exception(GetErrorText(apiData));
-            }
-            catch (Exception ex)
-            {
-                base.HandleException(ex);
-                throw;
-            }
+            return base.RestGenericSend<List<Customer>, List<CustomerDto>, List<string>>(HttpMethod.Get, subscriptionIds, "GetCustomersBySubIds");
         }
                 
         public Task<List<Customer>> GetCustomersBySubId(string subscriptionId, CancellationToken cancelToken = default)
@@ -68,32 +45,33 @@ namespace CSRO.Client.Services
             return base.RestGetListById<Customer, CustomerDto>(subscriptionId, "GetCustomersBySubId");
         }
 
-        public async Task<List<Customer>> GetCustomersBySubNames(List<string> subscriptionIds, CancellationToken cancelToken = default)
+        public Task<List<Customer>> GetCustomersBySubNames(List<string> subscriptionIds, CancellationToken cancelToken = default)
         {
-            try
-            {
-                await base.AddAuthHeaderAsync();
+            return base.RestGenericSend<List<Customer>, List<CustomerDto>, List<string>>(HttpMethod.Get, subscriptionIds, "GetCustomersBySubNames");
+            //try
+            //{
+            //    await base.AddAuthHeaderAsync();
 
-                var url = $"{ApiPart}GetCustomersBySubNames";                
-                var httpcontent = new StringContent(JsonSerializer.Serialize(subscriptionIds, _options), Encoding.UTF8, "application/json");
-                HttpRequestMessage requestMessage = new HttpRequestMessage { Method = HttpMethod.Get, Content = httpcontent, RequestUri = new Uri(HttpClientBase.BaseAddress + url) };
-                var apiData = await HttpClientBase.SendAsync(requestMessage, cancelToken).ConfigureAwait(false);
+            //    var url = $"{ApiPart}GetCustomersBySubNames";                
+            //    var httpcontent = new StringContent(JsonSerializer.Serialize(subscriptionIds, _options), Encoding.UTF8, "application/json");
+            //    HttpRequestMessage requestMessage = new HttpRequestMessage { Method = HttpMethod.Get, Content = httpcontent, RequestUri = new Uri(HttpClientBase.BaseAddress + url) };
+            //    var apiData = await HttpClientBase.SendAsync(requestMessage, cancelToken).ConfigureAwait(false);
 
-                if (apiData.IsSuccessStatusCode)
-                {
-                    var stream = await apiData.Content.ReadAsStreamAsync();
-                    var ser = await JsonSerializer.DeserializeAsync<List<CustomerDto>>(stream, _options);
-                    var result = Mapper.Map<List<Customer>>(ser);
-                    return result;
-                }
-                else
-                    throw new Exception(GetErrorText(apiData));
-            }
-            catch (Exception ex)
-            {
-                base.HandleException(ex);
-                throw;
-            }
+            //    if (apiData.IsSuccessStatusCode)
+            //    {
+            //        var stream = await apiData.Content.ReadAsStreamAsync();
+            //        var ser = await JsonSerializer.DeserializeAsync<List<CustomerDto>>(stream, _options);
+            //        var result = Mapper.Map<List<Customer>>(ser);
+            //        return result;
+            //    }
+            //    else
+            //        throw new Exception(GetErrorText(apiData));
+            //}
+            //catch (Exception ex)
+            //{
+            //    base.HandleException(ex);
+            //    throw;
+            //}
         }
 
         public Task<List<Customer>> GetCustomersBySubName(string subscriptionName, CancellationToken cancelToken = default)
@@ -101,32 +79,9 @@ namespace CSRO.Client.Services
             return base.RestGetListById<Customer, CustomerDto>(subscriptionName, "GetCustomersBySubName");
         }
 
-        public async Task<List<Customer>> GetCustomersByRegions(List<string> regions, CancellationToken cancelToken = default)
+        public Task<List<Customer>> GetCustomersByRegions(List<string> regions, CancellationToken cancelToken = default)
         {
-            try
-            {
-                await base.AddAuthHeaderAsync();
-
-                var url = $"{ApiPart}GetCustomersByRegions";
-                var httpcontent = new StringContent(JsonSerializer.Serialize(regions, _options), Encoding.UTF8, "application/json");
-                HttpRequestMessage requestMessage = new HttpRequestMessage { Method = HttpMethod.Get, Content = httpcontent, RequestUri = new Uri(HttpClientBase.BaseAddress + url) };
-                var apiData = await HttpClientBase.SendAsync(requestMessage, cancelToken).ConfigureAwait(false);
-
-                if (apiData.IsSuccessStatusCode)
-                {
-                    var stream = await apiData.Content.ReadAsStreamAsync();
-                    var ser = await JsonSerializer.DeserializeAsync<List<CustomerDto>>(stream, _options);
-                    var result = Mapper.Map<List<Customer>>(ser);
-                    return result;
-                }
-                else
-                    throw new Exception(GetErrorText(apiData));
-            }
-            catch (Exception ex)
-            {
-                base.HandleException(ex);
-                throw;
-            }
+            return base.RestGenericSend<List<Customer>, List<CustomerDto>, List<string>>(HttpMethod.Get, regions, "GetCustomersByRegions");
         }
 
         public Task<List<Customer>> GetCustomersByAtCode(string atCode, CancellationToken cancelToken = default)

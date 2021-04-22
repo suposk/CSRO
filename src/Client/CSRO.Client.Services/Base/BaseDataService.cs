@@ -119,6 +119,36 @@ namespace CSRO.Client.Services
             }
         }
 
+        public async Task<TModel> RestGenericSend<TModel, TDto, TParam>(HttpMethod httpMethod, TParam parameter, string route, CancellationToken cancelToken = default) where TModel : class
+        {
+            try
+            {
+                await AddAuthHeaderAsync();
+                var url = $"{ApiPart}{route}";                
+                var httpcontent = new StringContent(JsonSerializer.Serialize(parameter, _options), Encoding.UTF8, "application/json");
+                HttpRequestMessage requestMessage = new HttpRequestMessage { Method = httpMethod, Content = httpcontent, RequestUri = new Uri(HttpClientBase.BaseAddress + url) };
+                var apiData = await HttpClientBase.SendAsync(requestMessage, cancelToken).ConfigureAwait(false);
+
+                if (apiData.IsSuccessStatusCode)
+                {
+                    var stream = await apiData.Content.ReadAsStreamAsync();
+                    var ser = await JsonSerializer.DeserializeAsync<TDto>(stream, _options, cancelToken);
+                    if (ser == null)
+                        return null;
+
+                    var result = Mapper.Map<TModel>(ser);
+                    return result;
+                }
+                else
+                    throw new Exception(GetErrorText(apiData));
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+                throw;
+            }
+        }
+
         public async Task<TModel> RestAdd<TModel, TDto>(TModel model, string route = null, CancellationToken cancelToken = default) where TModel : class
         {
             try

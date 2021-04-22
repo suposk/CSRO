@@ -44,59 +44,39 @@ namespace CSRO.Client.Services
 
         //RejectAdoProject
 
-        public async Task<List<AdoProjectAccessModel>> RejectAdoProject(List<int> toReject, string rejectReason)
+        public Task<List<AdoProjectAccessModel>> RejectAdoProject(List<int> toReject, string rejectReason)
         {
-            try
-            {
-                await base.AddAuthHeaderAsync();
-                var data = new RejectededListDto { ToReject = toReject, Reason = rejectReason };
+            var data = new RejectededListDto { ToReject = toReject, Reason = rejectReason };
+            return base.RestGenericSend<List<AdoProjectAccessModel>, List<AdoProjectAccessDto>, RejectededListDto>(HttpMethod.Post, data, "RejectAdoProjectAccess");
 
-                var url = $"{ApiPart}RejectAdoProjectAccess";
-                var httpcontent = new StringContent(JsonSerializer.Serialize(data, _options), Encoding.UTF8, "application/json");
-                var apiData = await HttpClientBase.PostAsync(url, httpcontent).ConfigureAwait(false);
+            //try
+            //{
+            //    await base.AddAuthHeaderAsync();                
 
-                if (apiData.IsSuccessStatusCode)
-                {
-                    var stream = await apiData.Content.ReadAsStreamAsync();
-                    var ser = await JsonSerializer.DeserializeAsync<List<AdoProjectAccessDto>>(stream, _options);
-                    var result = Mapper.Map<List<AdoProjectAccessModel>>(ser);
-                    return result;                    
-                }
-                else
-                    throw new Exception(base.GetErrorText(apiData));
-            }
-            catch (Exception ex)
-            {
-                base.HandleException(ex);
-                throw;
-            }
+            //    var url = $"{ApiPart}RejectAdoProjectAccess";
+            //    var httpcontent = new StringContent(JsonSerializer.Serialize(data, _options), Encoding.UTF8, "application/json");
+            //    var apiData = await HttpClientBase.PostAsync(url, httpcontent).ConfigureAwait(false);
+
+            //    if (apiData.IsSuccessStatusCode)
+            //    {
+            //        var stream = await apiData.Content.ReadAsStreamAsync();
+            //        var ser = await JsonSerializer.DeserializeAsync<List<AdoProjectAccessDto>>(stream, _options);
+            //        var result = Mapper.Map<List<AdoProjectAccessModel>>(ser);
+            //        return result;                    
+            //    }
+            //    else
+            //        throw new Exception(base.GetErrorText(apiData));
+            //}
+            //catch (Exception ex)
+            //{
+            //    base.HandleException(ex);
+            //    throw;
+            //}
         }
 
-        public async Task<List<AdoProjectAccessModel>> ApproveAdoProject(List<int> toApprove)
+        public Task<List<AdoProjectAccessModel>> ApproveAdoProject(List<int> toApprove)
         {
-            try
-            {
-                await base.AddAuthHeaderAsync();
-
-                var url = $"{ApiPart}ApproveAdoProjectAccess";
-                var httpcontent = new StringContent(JsonSerializer.Serialize(toApprove, _options), Encoding.UTF8, "application/json");
-                var apiData = await HttpClientBase.PostAsync(url, httpcontent).ConfigureAwait(false);
-
-                if (apiData.IsSuccessStatusCode)
-                {
-                    var stream = await apiData.Content.ReadAsStreamAsync();
-                    var ser = await JsonSerializer.DeserializeAsync<List<AdoProjectAccessDto>>(stream, _options);                    
-                    var result = Mapper.Map<List<AdoProjectAccessModel>>(ser);
-                    return result;
-                }
-                else
-                    throw new Exception(base.GetErrorText(apiData));
-            }
-            catch (Exception ex)
-            {
-                base.HandleException(ex);
-                throw;
-            }
+            return base.RestGenericSend<List<AdoProjectAccessModel>, List<AdoProjectAccessDto>, List<int>>(HttpMethod.Post, toApprove, "RejectAdoProjectAccess");
         }
 
         public Task<bool> UpdateItemAsync(AdoProjectAccessModel item)
