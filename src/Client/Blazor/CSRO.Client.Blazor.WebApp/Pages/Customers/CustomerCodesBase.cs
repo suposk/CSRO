@@ -244,6 +244,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
                         break;
                     case CustomerSearchTypeEnum.Sub:
                         customers = await CustomerDataService.GetCustomersBySubName(SelectedSub?.Name).ConfigureAwait(false);
+                        //customers = await CustomerDataService.GetCustomersBySubId(SelectedSub?.Id).ConfigureAwait(false);
                         break;
                     case CustomerSearchTypeEnum.Regions:
                         customers = await CustomerDataService.GetCustomersByRegions(SelectedRegions.Select(a => a.Name).ToList()).ConfigureAwait(false);

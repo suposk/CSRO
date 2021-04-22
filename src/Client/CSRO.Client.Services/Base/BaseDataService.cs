@@ -1,10 +1,14 @@
 ﻿using AutoMapper;
+using CSRO.Client.Services.Models;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Linq;
+using System.Text;
 
 namespace CSRO.Client.Services
 {
@@ -58,6 +62,177 @@ namespace CSRO.Client.Services
 
             //todo read from config
         }
+
+        public async Task<TModel> RestGetById<TModel, TDto>(string id = null, string route = null, CancellationToken cancelToken = default) where TModel : class
+        {
+            try
+            {
+                await AddAuthHeaderAsync();
+                var url = string.IsNullOrWhiteSpace(route) ? $"{ApiPart}{id}" : $"{ApiPart}{route}/{id}";
+                var apiData = await HttpClientBase.GetAsync(url, cancelToken).ConfigureAwait(false);
+
+                if (apiData.IsSuccessStatusCode)
+                {
+                    var stream = await apiData.Content.ReadAsStreamAsync();
+                    var ser = await JsonSerializer.DeserializeAsync<TDto>(stream, _options, cancelToken);
+                    if (ser == null)
+                        return null;
+
+                    var result = Mapper.Map<TModel>(ser);
+                    return result;
+                }
+                else
+                    throw new Exception(GetErrorText(apiData));
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+                throw;
+            }
+        }
+
+        public async Task<List<TModel>> RestGetListById<TModel, TDto>(string id = null, string route = null, CancellationToken cancelToken = default) where TModel : class
+        {
+            try
+            {
+                await AddAuthHeaderAsync();                
+                var url = string.IsNullOrWhiteSpace(route) ? $"{ApiPart}{id}" : $"{ApiPart}{route}/{id}";
+                var apiData = await HttpClientBase.GetAsync(url, cancelToken).ConfigureAwait(false);
+
+                if (apiData.IsSuccessStatusCode)
+                {
+                    var stream = await apiData.Content.ReadAsStreamAsync();
+                    var ser = await JsonSerializer.DeserializeAsync<List<TDto>>(stream, _options, cancelToken);
+                    if (ser.IsNullOrEmptyCollection())
+                        return new List<TModel>();
+
+                    var result = Mapper.Map<List<TModel>>(ser);
+                    return result;
+                }
+                else
+                    throw new Exception(GetErrorText(apiData));
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+                throw;
+            }
+        }
+
+        public async Task<TModel> RestGenericSend<TModel, TDto, TParam>(HttpMethod httpMethod, TParam parameter, string route, CancellationToken cancelToken = default) where TModel : class
+        {
+            if (string.IsNullOrWhiteSpace(route))            
+                throw new ArgumentException($"'{nameof(route)}' cannot be null or whitespace.", nameof(route));
+
+            if (parameter == null)
+                throw new ArgumentException($"'{nameof(parameter)}' cannot be null", nameof(parameter));
+
+            try
+            {
+                await AddAuthHeaderAsync();
+                var url = $"{ApiPart}{route}";                
+                var httpcontent = new StringContent(JsonSerializer.Serialize(parameter, _options), Encoding.UTF8, "application/json");
+                HttpRequestMessage requestMessage = new HttpRequestMessage { Method = httpMethod, Content = httpcontent, RequestUri = new Uri(HttpClientBase.BaseAddress + url) };
+                var apiData = await HttpClientBase.SendAsync(requestMessage, cancelToken).ConfigureAwait(false);
+
+                if (apiData.IsSuccessStatusCode)
+                {
+                    var stream = await apiData.Content.ReadAsStreamAsync();
+                    var ser = await JsonSerializer.DeserializeAsync<TDto>(stream, _options, cancelToken);
+                    if (ser == null)
+                        return null;
+
+                    var result = Mapper.Map<TModel>(ser);
+                    return result;
+                }
+                else
+                    throw new Exception(GetErrorText(apiData));
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+                throw;
+            }
+        }
+
+        public async Task<TModel> RestAdd<TModel, TDto>(TModel model, string route = null, CancellationToken cancelToken = default) where TModel : class
+        {
+            if (model == null)
+                throw new ArgumentException($"'{nameof(model)}' cannot be null", nameof(model));
+
+            try
+            {
+                await AddAuthHeaderAsync();
+                var url = string.IsNullOrWhiteSpace(route) ? $"{ApiPart}" : $"{ApiPart}{route}";
+                var updateDto = Mapper.Map<TDto>(model);
+                var httpcontent = new StringContent(JsonSerializer.Serialize(updateDto, _options), Encoding.UTF8, "application/json");
+                var apiData = await HttpClientBase.PostAsync(url, httpcontent, cancelToken).ConfigureAwait(false);
+
+                if (apiData.IsSuccessStatusCode)
+                {
+                    var stream = await apiData.Content.ReadAsStreamAsync();
+                    var ser = await JsonSerializer.DeserializeAsync<TDto>(stream, _options, cancelToken);
+                    if (ser == null)
+                        return null;
+
+                    var result = Mapper.Map<TModel>(ser);
+                    return result;
+                }
+                else
+                    throw new Exception(GetErrorText(apiData));
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+                throw;
+            }
+        }
+
+        public async Task<bool> RestUpdate<TModel, TDto>(TModel model, CancellationToken cancelToken = default) where TModel : class
+        {
+            if (model == null)
+                throw new ArgumentException($"'{nameof(model)}' cannot be null", nameof(model));
+
+            try
+            {
+                await AddAuthHeaderAsync();
+                var url = $"{ApiPart}";
+                var updateDto = Mapper.Map<TDto>(model);
+                var httpcontent = new StringContent(JsonSerializer.Serialize(updateDto, _options), Encoding.UTF8, "application/json");
+                var apiData = await HttpClientBase.PutAsync(url, httpcontent, cancelToken).ConfigureAwait(false);
+
+                if (apiData.IsSuccessStatusCode)
+                    return true;
+                else
+                    throw new Exception(GetErrorText(apiData));
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+                throw;
+            }
+        }
+
+        public async Task<bool> RestDeleteById(int id)
+        {
+            try
+            {
+                await AddAuthHeaderAsync();
+                var url = $"{ApiPart}{id}";
+                var apiData = await HttpClientBase.DeleteAsync(url).ConfigureAwait(false);
+
+                if (apiData.IsSuccessStatusCode)
+                    return true;
+                else
+                    throw new Exception(GetErrorText(apiData));
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+                throw;
+            }            
+        }
+
 
         public string GetErrorText(HttpResponseMessage httpResponse)
         {

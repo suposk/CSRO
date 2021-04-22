@@ -37,218 +37,71 @@ namespace CSRO.Client.Services
             base.Init();
         }
 
-        public async Task<AdoProjectAccessModel> AddItemAsync(AdoProjectAccessModel item)
+        public Task<AdoProjectAccessModel> AddItemAsync(AdoProjectAccessModel item)
         {
-            try
-            {
-                await base.AddAuthHeaderAsync();
-
-                string url = null;
-                if (item.Status == Models.Status.Draft)
-                    url = $"{ApiPart}SaveDraftAdoProjectAccess";
-                else
-                    url = $"{ApiPart}RequestAdoProjectAccess";
-                //var url = $"{ApiPart}";
-                var httpcontent = new StringContent(JsonSerializer.Serialize(item, _options), Encoding.UTF8, "application/json");
-                var apiData = await HttpClientBase.PostAsync(url, httpcontent).ConfigureAwait(false);
-                //HttpResponseMessage
-                if (apiData.IsSuccessStatusCode)
-                {
-                    var stream = await apiData.Content.ReadAsStreamAsync();
-                    var ser = await JsonSerializer.DeserializeAsync<AdoProjectAccessDto>(stream, _options);
-                    var result = Mapper.Map<AdoProjectAccessModel>(ser);
-                    return result;
-                }
-                else
-                    throw new Exception(GetErrorText(apiData));
-
-            }
-            catch (Exception ex)
-            {
-                base.HandleException(ex);
-                throw;
-            }
+            return base.RestAdd<AdoProjectAccessModel, AdoProjectAccessDto>(item, "RequestAdoProjectAccess");
         }
 
         //RejectAdoProject
 
-        public async Task<List<AdoProjectAccessModel>> RejectAdoProject(List<int> toReject, string rejectReason)
+        public Task<List<AdoProjectAccessModel>> RejectAdoProject(List<int> toReject, string rejectReason)
         {
-            try
-            {
-                await base.AddAuthHeaderAsync();
-                var data = new RejectededListDto { ToReject = toReject, Reason = rejectReason };
+            var data = new RejectededListDto { ToReject = toReject, Reason = rejectReason };
+            return base.RestGenericSend<List<AdoProjectAccessModel>, List<AdoProjectAccessDto>, RejectededListDto>(HttpMethod.Post, data, "RejectAdoProjectAccess");
 
-                var url = $"{ApiPart}RejectAdoProjectAccess";
-                var httpcontent = new StringContent(JsonSerializer.Serialize(data, _options), Encoding.UTF8, "application/json");
-                var apiData = await HttpClientBase.PostAsync(url, httpcontent).ConfigureAwait(false);
+            //try
+            //{
+            //    await base.AddAuthHeaderAsync();                
 
-                if (apiData.IsSuccessStatusCode)
-                {
-                    var stream = await apiData.Content.ReadAsStreamAsync();
-                    var ser = await JsonSerializer.DeserializeAsync<List<AdoProjectAccessDto>>(stream, _options);
-                    var result = Mapper.Map<List<AdoProjectAccessModel>>(ser);
-                    return result;                    
-                }
-                else
-                    throw new Exception(base.GetErrorText(apiData));
-            }
-            catch (Exception ex)
-            {
-                base.HandleException(ex);
-                throw;
-            }
+            //    var url = $"{ApiPart}RejectAdoProjectAccess";
+            //    var httpcontent = new StringContent(JsonSerializer.Serialize(data, _options), Encoding.UTF8, "application/json");
+            //    var apiData = await HttpClientBase.PostAsync(url, httpcontent).ConfigureAwait(false);
+
+            //    if (apiData.IsSuccessStatusCode)
+            //    {
+            //        var stream = await apiData.Content.ReadAsStreamAsync();
+            //        var ser = await JsonSerializer.DeserializeAsync<List<AdoProjectAccessDto>>(stream, _options);
+            //        var result = Mapper.Map<List<AdoProjectAccessModel>>(ser);
+            //        return result;                    
+            //    }
+            //    else
+            //        throw new Exception(base.GetErrorText(apiData));
+            //}
+            //catch (Exception ex)
+            //{
+            //    base.HandleException(ex);
+            //    throw;
+            //}
         }
 
-        public async Task<List<AdoProjectAccessModel>> ApproveAdoProject(List<int> toApprove)
+        public Task<List<AdoProjectAccessModel>> ApproveAdoProject(List<int> toApprove)
         {
-            try
-            {
-                await base.AddAuthHeaderAsync();
-
-                var url = $"{ApiPart}ApproveAdoProjectAccess";
-                var httpcontent = new StringContent(JsonSerializer.Serialize(toApprove, _options), Encoding.UTF8, "application/json");
-                var apiData = await HttpClientBase.PostAsync(url, httpcontent).ConfigureAwait(false);
-
-                if (apiData.IsSuccessStatusCode)
-                {
-                    var stream = await apiData.Content.ReadAsStreamAsync();
-                    var ser = await JsonSerializer.DeserializeAsync<List<AdoProjectAccessDto>>(stream, _options);                    
-                    var result = Mapper.Map<List<AdoProjectAccessModel>>(ser);
-                    return result;
-                }
-                else
-                    throw new Exception(base.GetErrorText(apiData));
-            }
-            catch (Exception ex)
-            {
-                base.HandleException(ex);
-                throw;
-            }
+            return base.RestGenericSend<List<AdoProjectAccessModel>, List<AdoProjectAccessDto>, List<int>>(HttpMethod.Post, toApprove, "RejectAdoProjectAccess");
         }
 
-        public async Task<bool> UpdateItemAsync(AdoProjectAccessModel item)
+        public Task<bool> UpdateItemAsync(AdoProjectAccessModel item)
         {
-            try
-            {
-                await base.AddAuthHeaderAsync();
-
-                var url = $"{ApiPart}";
-                //var add = Mapper.Map<ProjectAdo>(item);
-                var httpcontent = new StringContent(JsonSerializer.Serialize(item, _options), Encoding.UTF8, "application/json");
-                var apiData = await HttpClientBase.PutAsync(url, httpcontent).ConfigureAwait(false);
-
-                if (apiData.IsSuccessStatusCode)
-                    return true;
-                else
-                    throw new Exception(base.GetErrorText(apiData));
-            }
-            catch (Exception ex)
-            {
-                base.HandleException(ex);
-                throw;
-            }
-            //return false;
+            return base.RestUpdate<AdoProjectAccessModel, AdoProjectAccessDto>(item);
         }
 
-        public async Task<bool> DeleteItemAsync(int id)
+        public Task<bool> DeleteItemAsync(int id)
         {
-            try
-            {
-                await base.AddAuthHeaderAsync();
-
-                var url = $"{ApiPart}{id}";
-                var apiData = await HttpClientBase.DeleteAsync(url).ConfigureAwait(false);
-
-                if (apiData.IsSuccessStatusCode)
-                    return true;
-                else
-                    throw new Exception(base.GetErrorText(apiData));
-            }
-            catch (Exception ex)
-            {
-                base.HandleException(ex);
-            }
-            return false;
+            return base.RestDeleteById(id);
         }
 
-        public async Task<AdoProjectAccessModel> GetItemByIdAsync(int id)
+        public Task<AdoProjectAccessModel> GetItemByIdAsync(int id)
         {
-            try
-            {
-                await base.AddAuthHeaderAsync();
-
-                var url = $"{ApiPart}{id}";
-                var apiData = await HttpClientBase.GetAsync(url).ConfigureAwait(false);
-
-                if (apiData.IsSuccessStatusCode)
-                {
-                    var stream = await apiData.Content.ReadAsStreamAsync();
-                    var ser = await JsonSerializer.DeserializeAsync<AdoProjectAccessDto>(stream, _options);
-                    var result = Mapper.Map<AdoProjectAccessModel>(ser);
-                    return result;
-                }
-                else
-                    throw new Exception(base.GetErrorText(apiData));
-            }
-            catch (Exception ex)
-            {
-                base.HandleException(ex);
-            }
-            return null;
+            return base.RestGetById<AdoProjectAccessModel, AdoProjectAccessDto>(id.ToString());
         }
 
-        public async Task<List<AdoProjectAccessModel>> GetItemsAsync()
+        public Task<List<AdoProjectAccessModel>> GetItemsAsync()
         {
-            try
-            {
-                await base.AddAuthHeaderAsync();
-
-                var url = $"{ApiPart}";
-                var apiData = await HttpClientBase.GetAsync(url).ConfigureAwait(false);
-
-                if (apiData.IsSuccessStatusCode)
-                {
-                    var stream = await apiData.Content.ReadAsStreamAsync();
-                    var ser = await JsonSerializer.DeserializeAsync<List<AdoProjectAccessDto>>(stream, _options);                    
-                    var result = Mapper.Map<List<AdoProjectAccessModel>>(ser);
-                    return result;
-                }
-                else
-                    throw new Exception(base.GetErrorText(apiData));
-            }
-            catch (Exception ex)
-            {
-                base.HandleException(ex);
-                throw;
-            }
+            return base.RestGetListById<AdoProjectAccessModel, AdoProjectAccessDto>();
         }
 
-        public async Task<List<AdoProjectAccessModel>> GetItemsByUserId(string userId) 
+        public Task<List<AdoProjectAccessModel>> GetItemsByUserId(string userId) 
         {
-            try
-            {
-                await base.AddAuthHeaderAsync();
-                //var test = await GetItemByIdAsync(2);
-
-                var url = $"{ApiPart}GetByUserId/{userId}";
-                var apiData = await HttpClientBase.GetAsync(url).ConfigureAwait(false);
-
-                if (apiData.IsSuccessStatusCode)
-                {
-                    var stream = await apiData.Content.ReadAsStreamAsync();
-                    var ser = await JsonSerializer.DeserializeAsync<List<AdoProjectAccessDto>>(stream, _options);
-                    var result = Mapper.Map<List<AdoProjectAccessModel>>(ser);
-                    return result;
-                }
-                else
-                    throw new Exception(base.GetErrorText(apiData));
-            }
-            catch (Exception ex)
-            {
-                base.HandleException(ex);
-                throw;
-            }
+            return base.RestGetListById<AdoProjectAccessModel, AdoProjectAccessDto>(userId, "GetByUserId");
         }
 
         public async Task<List<AdoProjectAccessModel>> GetProjectsForApproval()

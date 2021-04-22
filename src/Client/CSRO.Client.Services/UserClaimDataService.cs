@@ -37,130 +37,30 @@ namespace CSRO.Client.Services
             base.Init();
         }
 
-        public async Task<UserClaim> AddItemAsync(UserClaim item)
+        public Task<UserClaim> AddItemAsync(UserClaim item)
         {
-            try
-            {
-                await base.AddAuthHeaderAsync();                                
-                
-                var url = $"{ApiPart}";
-                var httpcontent = new StringContent(JsonSerializer.Serialize(item, _options), Encoding.UTF8, "application/json");
-                var apiData = await HttpClientBase.PostAsync(url, httpcontent).ConfigureAwait(false);
-                //HttpResponseMessage
-                if (apiData.IsSuccessStatusCode)
-                {
-                    var stream = await apiData.Content.ReadAsStreamAsync();
-                    var ser = await JsonSerializer.DeserializeAsync<UserClaimDto>(stream, _options);
-                    var result = Mapper.Map<UserClaim>(ser);
-                    return result;
-                }
-                else
-                    throw new Exception(GetErrorText(apiData));
-
-            }
-            catch (Exception ex)
-            {
-                base.HandleException(ex);
-                throw;
-            }
+            return base.RestAdd<UserClaim, UserClaimDto>(item);
         }
 
 
-        public async Task<bool> UpdateItemAsync(UserClaim item)
+        public Task<bool> UpdateItemAsync(UserClaim item)
         {
-            try
-            {
-                await base.AddAuthHeaderAsync();
-
-                var url = $"{ApiPart}";
-                //var add = Mapper.Map<ProjectAdo>(item);
-                var httpcontent = new StringContent(JsonSerializer.Serialize(item, _options), Encoding.UTF8, "application/json");
-                var apiData = await HttpClientBase.PutAsync(url, httpcontent).ConfigureAwait(false);
-
-                if (apiData.IsSuccessStatusCode)
-                    return true;
-                else
-                    throw new Exception(base.GetErrorText(apiData));
-            }
-            catch (Exception ex)
-            {
-                base.HandleException(ex);
-                throw;
-            }
-            //return false;
+            return base.RestUpdate<UserClaim, UserClaimDto>(item);
         }
 
-        public async Task<bool> DeleteItemAsync(int id)
+        public Task<bool> DeleteItemAsync(int id)
         {
-            try
-            {
-                await base.AddAuthHeaderAsync();
-
-                var url = $"{ApiPart}{id}";
-                var apiData = await HttpClientBase.DeleteAsync(url).ConfigureAwait(false);
-
-                if (apiData.IsSuccessStatusCode)
-                    return true;
-                else
-                    throw new Exception(base.GetErrorText(apiData));
-            }
-            catch (Exception ex)
-            {
-                base.HandleException(ex);
-            }
-            return false;
+            return base.RestDeleteById(id);
         }
 
-        public async Task<UserClaim> GetItemByIdAsync(int id)
+        public Task<UserClaim> GetItemByIdAsync(int id)
         {
-            try
-            {
-                await base.AddAuthHeaderAsync();
-
-                var url = $"{ApiPart}{id}";
-                var apiData = await HttpClientBase.GetAsync(url).ConfigureAwait(false);
-
-                if (apiData.IsSuccessStatusCode)
-                {
-                    var stream = await apiData.Content.ReadAsStreamAsync();
-                    var ser = await JsonSerializer.DeserializeAsync<UserClaimDto>(stream, _options);
-                    var result = Mapper.Map<UserClaim>(ser);
-                    return result;
-                }
-                else
-                    throw new Exception(base.GetErrorText(apiData));
-            }
-            catch (Exception ex)
-            {
-                base.HandleException(ex);
-            }
-            return null;
+            return base.RestGetById<UserClaim, UserClaimDto>(id.ToString());
         }
 
-        public async Task<List<UserClaim>> GetItemsAsync()
+        public Task<List<UserClaim>> GetItemsAsync()
         {
-            try
-            {
-                await base.AddAuthHeaderAsync();
-
-                var url = $"{ApiPart}";
-                var apiData = await HttpClientBase.GetAsync(url).ConfigureAwait(false);
-
-                if (apiData.IsSuccessStatusCode)
-                {
-                    var stream = await apiData.Content.ReadAsStreamAsync();
-                    var ser = await JsonSerializer.DeserializeAsync<List<UserClaimDto>>(stream, _options);
-                    var result = Mapper.Map<List<UserClaim>>(ser);
-                    return result;
-                }
-                else
-                    throw new Exception(base.GetErrorText(apiData));
-            }
-            catch (Exception ex)
-            {
-                base.HandleException(ex);
-                throw;
-            }
+            return base.RestGetListById<UserClaim, UserClaimDto>();
         }
 
         public async Task<List<Claim>> GetUserClaimsByUserName(string userName)
@@ -168,15 +68,12 @@ namespace CSRO.Client.Services
             try
             {
                 await base.AddAuthHeaderAsync();
-
-                //var url = $"{ApiPart}GetByUserId/{userName}";
+                
                 var url = $"{ApiPart}{userName}";
                 var apiData = await HttpClientBase.GetAsync(url).ConfigureAwait(false);
 
                 if (apiData.IsSuccessStatusCode)
                 {
-                    //var content = await apiData.Content.ReadAsStringAsync();
-                    //var ser = JsonSerializer.Deserialize<UserClaimDto>(content, _options);
                     var stream = await apiData.Content.ReadAsStreamAsync();
                     var ser = await JsonSerializer.DeserializeAsync<List<UserClaimDto>>(stream, _options);
                     if (ser.HasAnyInCollection())
