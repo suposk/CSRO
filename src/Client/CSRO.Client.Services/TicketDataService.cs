@@ -128,30 +128,9 @@ namespace CSRO.Client.Services
             return null;
         }
 
-        public async Task<List<Ticket>> GetItemsAsync()
+        public Task<List<Ticket>> GetItemsAsync()
         {
-            try
-            {
-                await base.AddAuthHeaderAsync();
-
-                var url = $"{ApiPart}";
-                var apiData = await HttpClientBase.GetAsync(url).ConfigureAwait(false);
-
-                if (apiData.IsSuccessStatusCode)
-                {                    
-                    var stream = await apiData.Content.ReadAsStreamAsync();
-                    var ser = await JsonSerializer.DeserializeAsync<List<TicketDto>>(stream, _options);
-                    var result = Mapper.Map<List<Ticket>>(ser);
-                    return result;
-                }
-                else
-                    throw new Exception(GetErrorText(apiData));
-            }
-            catch (Exception ex)
-            {
-                base.HandleException(ex);
-                throw;
-            }
+            return base.RestGetListById<Ticket, TicketDto>();
         }
     }
 }
