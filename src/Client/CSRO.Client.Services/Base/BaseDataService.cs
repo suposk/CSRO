@@ -121,6 +121,12 @@ namespace CSRO.Client.Services
 
         public async Task<TModel> RestGenericSend<TModel, TDto, TParam>(HttpMethod httpMethod, TParam parameter, string route, CancellationToken cancelToken = default) where TModel : class
         {
+            if (string.IsNullOrWhiteSpace(route))            
+                throw new ArgumentException($"'{nameof(route)}' cannot be null or whitespace.", nameof(route));
+
+            if (parameter == null)
+                throw new ArgumentException($"'{nameof(parameter)}' cannot be null", nameof(parameter));
+
             try
             {
                 await AddAuthHeaderAsync();
@@ -151,6 +157,9 @@ namespace CSRO.Client.Services
 
         public async Task<TModel> RestAdd<TModel, TDto>(TModel model, string route = null, CancellationToken cancelToken = default) where TModel : class
         {
+            if (model == null)
+                throw new ArgumentException($"'{nameof(model)}' cannot be null", nameof(model));
+
             try
             {
                 await AddAuthHeaderAsync();
@@ -181,6 +190,9 @@ namespace CSRO.Client.Services
 
         public async Task<bool> RestUpdate<TModel, TDto>(TModel model, CancellationToken cancelToken = default) where TModel : class
         {
+            if (model == null)
+                throw new ArgumentException($"'{nameof(model)}' cannot be null", nameof(model));
+
             try
             {
                 await AddAuthHeaderAsync();
