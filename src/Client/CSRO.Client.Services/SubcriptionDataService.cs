@@ -50,30 +50,9 @@ namespace CSRO.Client.Services
             throw new NotImplementedException();
         }
 
-        public async Task<List<IdName>> GetSubcriptions(CancellationToken cancelToken = default)
+        public Task<List<IdName>> GetSubcriptions(CancellationToken cancelToken = default)
         {
-            try
-            {
-                await base.AddAuthHeaderAsync();
-
-                var url = $"{ApiPart}";
-                var apiData = await HttpClientBase.GetAsync(url, cancelToken).ConfigureAwait(false);
-
-                if (apiData.IsSuccessStatusCode)
-                {                    
-                    var stream = await apiData.Content.ReadAsStreamAsync();
-                    var ser = await JsonSerializer.DeserializeAsync<List<IdNameDto>>(stream, _options);
-                    var result = Mapper.Map<List<IdName>>(ser);
-                    return result;
-                }
-                else
-                    throw new Exception(GetErrorText(apiData));
-            }
-            catch (Exception ex)
-            {
-                base.HandleException(ex);
-                throw;
-            }
+            return base.RestGetListById<IdName, IdNameDto>();
         }
 
 

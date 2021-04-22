@@ -137,30 +137,9 @@ namespace CSRO.Client.Services
             return null;
         }
 
-        public async Task<List<UserClaim>> GetItemsAsync()
+        public Task<List<UserClaim>> GetItemsAsync()
         {
-            try
-            {
-                await base.AddAuthHeaderAsync();
-
-                var url = $"{ApiPart}";
-                var apiData = await HttpClientBase.GetAsync(url).ConfigureAwait(false);
-
-                if (apiData.IsSuccessStatusCode)
-                {
-                    var stream = await apiData.Content.ReadAsStreamAsync();
-                    var ser = await JsonSerializer.DeserializeAsync<List<UserClaimDto>>(stream, _options);
-                    var result = Mapper.Map<List<UserClaim>>(ser);
-                    return result;
-                }
-                else
-                    throw new Exception(base.GetErrorText(apiData));
-            }
-            catch (Exception ex)
-            {
-                base.HandleException(ex);
-                throw;
-            }
+            return base.RestGetListById<UserClaim, UserClaimDto>();
         }
 
         public async Task<List<Claim>> GetUserClaimsByUserName(string userName)
@@ -168,15 +147,12 @@ namespace CSRO.Client.Services
             try
             {
                 await base.AddAuthHeaderAsync();
-
-                //var url = $"{ApiPart}GetByUserId/{userName}";
+                
                 var url = $"{ApiPart}{userName}";
                 var apiData = await HttpClientBase.GetAsync(url).ConfigureAwait(false);
 
                 if (apiData.IsSuccessStatusCode)
                 {
-                    //var content = await apiData.Content.ReadAsStringAsync();
-                    //var ser = JsonSerializer.Deserialize<UserClaimDto>(content, _options);
                     var stream = await apiData.Content.ReadAsStreamAsync();
                     var ser = await JsonSerializer.DeserializeAsync<List<UserClaimDto>>(stream, _options);
                     if (ser.HasAnyInCollection())

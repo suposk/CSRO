@@ -198,57 +198,14 @@ namespace CSRO.Client.Services
             return null;
         }
 
-        public async Task<List<AdoProjectAccessModel>> GetItemsAsync()
+        public Task<List<AdoProjectAccessModel>> GetItemsAsync()
         {
-            try
-            {
-                await base.AddAuthHeaderAsync();
-
-                var url = $"{ApiPart}";
-                var apiData = await HttpClientBase.GetAsync(url).ConfigureAwait(false);
-
-                if (apiData.IsSuccessStatusCode)
-                {
-                    var stream = await apiData.Content.ReadAsStreamAsync();
-                    var ser = await JsonSerializer.DeserializeAsync<List<AdoProjectAccessDto>>(stream, _options);                    
-                    var result = Mapper.Map<List<AdoProjectAccessModel>>(ser);
-                    return result;
-                }
-                else
-                    throw new Exception(base.GetErrorText(apiData));
-            }
-            catch (Exception ex)
-            {
-                base.HandleException(ex);
-                throw;
-            }
+            return base.RestGetListById<AdoProjectAccessModel, AdoProjectAccessDto>();
         }
 
-        public async Task<List<AdoProjectAccessModel>> GetItemsByUserId(string userId) 
+        public Task<List<AdoProjectAccessModel>> GetItemsByUserId(string userId) 
         {
-            try
-            {
-                await base.AddAuthHeaderAsync();
-                //var test = await GetItemByIdAsync(2);
-
-                var url = $"{ApiPart}GetByUserId/{userId}";
-                var apiData = await HttpClientBase.GetAsync(url).ConfigureAwait(false);
-
-                if (apiData.IsSuccessStatusCode)
-                {
-                    var stream = await apiData.Content.ReadAsStreamAsync();
-                    var ser = await JsonSerializer.DeserializeAsync<List<AdoProjectAccessDto>>(stream, _options);
-                    var result = Mapper.Map<List<AdoProjectAccessModel>>(ser);
-                    return result;
-                }
-                else
-                    throw new Exception(base.GetErrorText(apiData));
-            }
-            catch (Exception ex)
-            {
-                base.HandleException(ex);
-                throw;
-            }
+            return base.RestGetListById<AdoProjectAccessModel, AdoProjectAccessDto>(userId, "GetByUserId");
         }
 
         public async Task<List<AdoProjectAccessModel>> GetProjectsForApproval()
