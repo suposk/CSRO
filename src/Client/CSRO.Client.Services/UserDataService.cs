@@ -110,86 +110,19 @@ namespace CSRO.Client.Services
             return false;
         }
 
-        public async Task<User> GetItemByIdAsync(int id)
+        public Task<User> GetItemByIdAsync(int id)
         {
-            try
-            {
-                await base.AddAuthHeaderAsync();
-
-                var url = $"{ApiPart}{id}";
-                var apiData = await HttpClientBase.GetAsync(url).ConfigureAwait(false);
-
-                if (apiData.IsSuccessStatusCode)
-                {
-                    var stream = await apiData.Content.ReadAsStreamAsync();
-                    var ser = await JsonSerializer.DeserializeAsync<UserDto>(stream, _options);
-                    var result = Mapper.Map<User>(ser);
-                    return result;
-                }
-                else
-                    throw new Exception(base.GetErrorText(apiData));
-            }
-            catch (Exception ex)
-            {
-                base.HandleException(ex);
-            }
-            return null;
+            return base.RestGetById<User, UserDto>(id.ToString());
         }
 
-        public async Task<List<User>> GetItemsAsync()
+        public Task<List<User>> GetItemsAsync()
         {
-            try
-            {
-                await base.AddAuthHeaderAsync();
-
-                var url = $"{ApiPart}";
-                var apiData = await HttpClientBase.GetAsync(url).ConfigureAwait(false);
-
-                if (apiData.IsSuccessStatusCode)
-                {
-                    var stream = await apiData.Content.ReadAsStreamAsync();
-                    var ser = await JsonSerializer.DeserializeAsync<List<UserDto>>(stream, _options);
-                    var result = Mapper.Map<List<User>>(ser);
-                    return result;
-                }
-                else
-                    throw new Exception(base.GetErrorText(apiData));
-            }
-            catch (Exception ex)
-            {
-                base.HandleException(ex);
-                throw;
-            }
+            return base.RestGetListById<User, UserDto>();
         }
 
-        public async Task<User> GetUserByUserName(string userName)
+        public Task<User> GetUserByUserName(string userName)
         {
-            try
-            {
-                await base.AddAuthHeaderAsync();
-
-                //var url = $"{ApiPart}GetByUserId/{userName}";
-                var url = $"{ApiPart}{userName}";
-                var apiData = await HttpClientBase.GetAsync(url).ConfigureAwait(false);
-
-                if (apiData.IsSuccessStatusCode)
-                {
-                    //var content = await apiData.Content.ReadAsStringAsync();
-                    //var ser = JsonSerializer.Deserialize<UserDto>(content, _options);
-                    var stream = await apiData.Content.ReadAsStreamAsync();
-                    var ser = await JsonSerializer.DeserializeAsync<UserDto>(stream, _options);
-                    var result = Mapper.Map<User>(ser);
-                    return result;
-                }
-                else
-                    throw new Exception(base.GetErrorText(apiData));
-            }
-            catch (Exception ex)
-            {
-                base.HandleException(ex);
-                //throw;
-            }
-            return null;
+            return base.RestGetById<User, UserDto>(userName);
         }
 
     }

@@ -111,30 +111,9 @@ namespace CSRO.Client.Services
             return false;
         }
 
-        public async Task<UserClaim> GetItemByIdAsync(int id)
+        public Task<UserClaim> GetItemByIdAsync(int id)
         {
-            try
-            {
-                await base.AddAuthHeaderAsync();
-
-                var url = $"{ApiPart}{id}";
-                var apiData = await HttpClientBase.GetAsync(url).ConfigureAwait(false);
-
-                if (apiData.IsSuccessStatusCode)
-                {
-                    var stream = await apiData.Content.ReadAsStreamAsync();
-                    var ser = await JsonSerializer.DeserializeAsync<UserClaimDto>(stream, _options);
-                    var result = Mapper.Map<UserClaim>(ser);
-                    return result;
-                }
-                else
-                    throw new Exception(base.GetErrorText(apiData));
-            }
-            catch (Exception ex)
-            {
-                base.HandleException(ex);
-            }
-            return null;
+            return base.RestGetById<UserClaim, UserClaimDto>(id.ToString());
         }
 
         public Task<List<UserClaim>> GetItemsAsync()

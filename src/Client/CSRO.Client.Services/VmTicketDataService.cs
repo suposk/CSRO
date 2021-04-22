@@ -148,38 +148,8 @@ namespace CSRO.Client.Services
 
         public async Task<VmTicket> AddItemAsync(VmTicket item)
         {
-
-            //try
-            //{
-            //    var vmstatus = await _azureVmManagementService.GetVmDisplayStatus(item);
-            //    if (vmstatus.suc == false || vmstatus.status.Contains("deallocat"))
-            //        throw new Exception($"Unable to process request: {vmstatus.status}");
-
-            //    var sent = await _azureVmManagementService.RestarVmInAzure(item);
-            //    if (!sent.suc)
-            //        throw new Exception(sent.errorMessage);
-            //}
-            //catch
-            //{
-            //    throw;
-            //}
-
-            //string errorTxt = null;
-
             try
-            {
-                //useless try in server
-
-                //var i = 0;
-                //while (i < 5)
-                //{
-                //    i++;
-                //    await Task.Delay(2 * 1000);
-                //    var vmstatus = await _azureVmManagementService.GetVmDisplayStatus(item);
-                //    if (vmstatus.suc && vmstatus.status.Contains("restarting"))
-                //        break;
-                //}                
-
+            {          
                 await base.AddAuthHeaderAsync();
 
                 var url = $"{ApiPart}CreateRestartTicket";
@@ -250,56 +220,14 @@ namespace CSRO.Client.Services
             return false;
         }
 
-        public async Task<VmTicket> GetItemByIdAsync(int id)
+        public Task<VmTicket> GetItemByIdAsync(int id)
         {
-            try
-            {
-                await base.AddAuthHeaderAsync();
-
-                var url = $"{ApiPart}{id}";
-                var apiData = await HttpClientBase.GetAsync(url).ConfigureAwait(false);
-
-                if (apiData.IsSuccessStatusCode)
-                {
-                    var content = await apiData.Content.ReadAsStringAsync();
-                    var ser = JsonSerializer.Deserialize<VmTicketDto>(content, _options);
-                    var result = Mapper.Map<VmTicket>(ser);
-                    return result;
-                }
-                else
-                    throw new Exception(GetErrorText(apiData));
-            }
-            catch (Exception ex)
-            {
-                base.HandleException(ex);
-            }
-            return null;
+            return base.RestGetById<VmTicket, VmTicketDto>(id.ToString());
         }
 
-        public async Task<List<VmTicket>> GetItemsAsync()
+        public Task<List<VmTicket>> GetItemsAsync()
         {
-            try
-            {
-                await base.AddAuthHeaderAsync();
-
-                var url = $"{ApiPart}";
-                var apiData = await HttpClientBase.GetAsync(url).ConfigureAwait(false);
-
-                if (apiData.IsSuccessStatusCode)
-                {
-                    var content = await apiData.Content.ReadAsStringAsync();
-                    var ser = JsonSerializer.Deserialize<List<VmTicketDto>>(content, _options);
-                    var result = Mapper.Map<List<VmTicket>>(ser);
-                    return result;
-                }
-                else
-                    throw new Exception(GetErrorText(apiData));
-            }
-            catch (Exception ex)
-            {
-                base.HandleException(ex);
-            }
-            return null;
+            return base.RestGetListById<VmTicket, VmTicketDto>();
         }
     }
 }

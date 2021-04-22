@@ -172,30 +172,9 @@ namespace CSRO.Client.Services
             return false;
         }
 
-        public async Task<AdoProjectAccessModel> GetItemByIdAsync(int id)
+        public Task<AdoProjectAccessModel> GetItemByIdAsync(int id)
         {
-            try
-            {
-                await base.AddAuthHeaderAsync();
-
-                var url = $"{ApiPart}{id}";
-                var apiData = await HttpClientBase.GetAsync(url).ConfigureAwait(false);
-
-                if (apiData.IsSuccessStatusCode)
-                {
-                    var stream = await apiData.Content.ReadAsStreamAsync();
-                    var ser = await JsonSerializer.DeserializeAsync<AdoProjectAccessDto>(stream, _options);
-                    var result = Mapper.Map<AdoProjectAccessModel>(ser);
-                    return result;
-                }
-                else
-                    throw new Exception(base.GetErrorText(apiData));
-            }
-            catch (Exception ex)
-            {
-                base.HandleException(ex);
-            }
-            return null;
+            return base.RestGetById<AdoProjectAccessModel, AdoProjectAccessDto>(id.ToString());
         }
 
         public Task<List<AdoProjectAccessModel>> GetItemsAsync()
