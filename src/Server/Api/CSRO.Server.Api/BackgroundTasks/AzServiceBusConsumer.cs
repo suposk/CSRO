@@ -13,6 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
 using CSRO.Server.Api.Messaging;
+using CSRO.Server.Api.Commands;
 
 namespace CSRO.Server.Api.BackgroundTasks
 {
@@ -62,12 +63,12 @@ namespace CSRO.Server.Api.BackgroundTasks
                 var body = Encoding.UTF8.GetString(message.Body);//json from service bus
                 var dto = JsonConvert.DeserializeObject<VmOperationRequestMessage>(body);
 
-                //var createApprovedAdoProjectsCommand = new CreateApprovedAdoProjectIdsCommand() { Approved = dto.ApprovedAdoProjectIds, UserId = dto.UserId };
-                //var created = await _mediator.Send(createApprovedAdoProjectsCommand);
+                var vmOperationExecuteCommand = new VmOperationExecuteCommand() {  VmOperationRequestMessage = dto };
+                var response = await _mediator.Send(vmOperationExecuteCommand);
                 //if (created.IsNullOrEmptyCollection() || created.Count != dto.ApprovedAdoProjectIds.Count)
                 //    _logger.LogWarning($"{nameof(OnVmOperationReceived)} Unxcepted result from {nameof(CreateApprovedAdoProjectIdsCommand)} ", created, dto);
 
-                //await _wmOperationRequestMessageReceiverClient.CompleteAsync(message.SystemProperties.LockToken);
+                await _wmOperationRequestMessageReceiverClient.CompleteAsync(message.SystemProperties.LockToken);
             }
             catch (Exception ex)
             {

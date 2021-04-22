@@ -62,6 +62,13 @@ namespace CSRO.Server.Api.Commands
                     return result;
                 }
 
+                var status = await _vmSdkService.GetStatus(ticket.SubcriptionId, ticket.ResorceGroup, ticket.VmName).ConfigureAwait(false);
+                if (status != null && status.DisplayStatus.Contains("deallocat"))
+                {
+                    result.Message = $"Unable to Reboot, Vm is {status.DisplayStatus ?? "Stopped"}";
+                    return result;
+                }
+
                 //save
                 _repository.Add(ticket, _userId);
                 ticket.Status = "Opened";
@@ -78,9 +85,10 @@ namespace CSRO.Server.Api.Commands
                 {
                     if (true)
                     {
-                        message = new VmOperationRequestMessage { Vm = ticket.VmName, UserId = _userId, }.CreateBaseMessage();
+                        message = new VmOperationRequestMessage { Vm = ticket.VmName, UserId = _userId, TicketId = ticket.Id }.CreateBaseMessage();
                         await _messageBus.PublishMessageTopic(message, _serviceBusConfig.VmOperationRequesTopic);
 
+                        result.ReturnedObject = ticket;
                         result.Success = true;
                         return result;
                     }

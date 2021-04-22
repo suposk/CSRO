@@ -21,6 +21,7 @@ namespace CSRO.Common.AzureSdkServices
         Task<List<object>> TryGetData(string subscriptionId, string resourceGroupName, string vmName);
         Task<IDictionary<string, string>> GetTags(string subscriptionId, string resourceGroupName, string vmName, CancellationToken cancelToken = default);
         Task<(bool success, string errorMessage)> IsRebootAllowed(string subscriptionId, string resourceGroupName, string vmName, CancellationToken cancelToken = default);
+        Task<InstanceViewStatus> GetStatus(string subscriptionId, string resourceGroupName, string vmName, CancellationToken cancelToken = default);
     }
 
     public class VmSdkService : IVmSdkService
@@ -99,36 +100,45 @@ namespace CSRO.Common.AzureSdkServices
                 var computeClient = new ComputeManagementClient(subscriptionId, _tokenCredential);
                 var virtualMachinesClient = computeClient.VirtualMachines;
 
-                var statusResults = new List<string>();
-                Response<VirtualMachineInstanceView> result;
-
-                result = await GetStatus(resourceGroupName, vmName, virtualMachinesClient, statusResults, cancelToken);
+                var status = await GetStatus(subscriptionId, resourceGroupName, vmName, cancelToken);
                 //if (statusResults.Contains("deallocat"))
-                if (statusResults.Any(a => a.Contains("deallocat")))
-                    return (false, null, $"Unable to Reboot, Vm is {statusResults.FirstOrDefault() ?? "Stopped"}");
+                if (status != null && status.DisplayStatus.Contains("deallocat"))
+                    return (false, null, $"Unable to Reboot, Vm is {status.DisplayStatus ?? "Stopped"}");
 
                 var reb = await virtualMachinesClient.StartRestartAsync(resourceGroupName, vmName, cancelToken);
                 if (reb != null)
                 {
-                    var up = await reb.UpdateStatusAsync(cancelToken);
-                    result = await GetStatus(resourceGroupName, vmName, virtualMachinesClient, statusResults, cancelToken);
+                    //var up = await reb.UpdateStatusAsync(cancelToken);
+                    //status = await GetStatus(subscriptionId, resourceGroupName, vmName, cancelToken);
                     var wait = reb.WaitForCompletionAsync(cancelToken);
-                    result = await GetStatus(resourceGroupName, vmName, virtualMachinesClient, statusResults, cancelToken);
+                    status = await GetStatus(subscriptionId, resourceGroupName, vmName, cancelToken);
                 }
-                return (true, statusResults.LastOrDefault(), null);
+                return (true, status.DisplayStatus, null);
             }
             catch (Exception ex)
             {
                 return (false, null, $"Error in {nameof(RebootVmAndWaitForConfirmation)}: \n{ex.Message}");
             }
+        }
 
-            static async Task<Response<VirtualMachineInstanceView>> GetStatus(string resourceGroupName, string vmName, VirtualMachinesOperations virtualMachinesClient, List<string> statuses, CancellationToken cancelToken)
-            {
-                Response<VirtualMachineInstanceView> result = await virtualMachinesClient.InstanceViewAsync(resourceGroupName, vmName, cancelToken);
-                var last = result.Value.Statuses.LastOrDefault(a => a.Code.Contains("PowerState"));
-                statuses.Add(last.DisplayStatus);
-                return result;
-            }
+        public async Task<InstanceViewStatus> GetStatus(string subscriptionId, string resourceGroupName, string vmName, CancellationToken cancelToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(subscriptionId))            
+                throw new ArgumentException($"'{nameof(subscriptionId)}' cannot be null or whitespace.", nameof(subscriptionId));
+            
+            if (string.IsNullOrWhiteSpace(resourceGroupName))            
+                throw new ArgumentException($"'{nameof(resourceGroupName)}' cannot be null or whitespace.", nameof(resourceGroupName));
+            
+            if (string.IsNullOrWhiteSpace(vmName))
+                throw new ArgumentException($"'{nameof(vmName)}' cannot be null or whitespace.", nameof(vmName));
+            
+            var computeClient = new ComputeManagementClient(subscriptionId, _tokenCredential);
+            var virtualMachinesClient = computeClient.VirtualMachines;
+
+            Response<VirtualMachineInstanceView> result = await virtualMachinesClient.InstanceViewAsync(resourceGroupName, vmName, cancelToken);
+            var last = result.Value.Statuses.LastOrDefault(a => a.Code.Contains("PowerState"));
+            return last;
+            //return result;
         }
 
         public async Task<(bool success, string errorMessage)> IsRebootAllowed(string subscriptionId, string resourceGroupName, string vmName, CancellationToken cancelToken = default)
@@ -156,21 +166,22 @@ namespace CSRO.Common.AzureSdkServices
                 if (opEnvironment.Value == null || !opEnvironment.Value.Contains("dev", StringComparison.OrdinalIgnoreCase))
                     return (false, $"vm must have {nameof(DefaultTagSdk.opEnvironment)} dev tag assign");
 
-                var privilegedMembers = wmTags.FirstOrDefault(a => a.Key.Equals(nameof(DefaultTagSdk.privilegedMembers)));
-                if (privilegedMembers.Value == null)
-                    return (false, $"No {nameof(DefaultTagSdk.privilegedMembers)} tags on wm assign");
+                //Dont check privilegedMembers TAG
+                //var privilegedMembers = wmTags.FirstOrDefault(a => a.Key.Equals(nameof(DefaultTagSdk.privilegedMembers)));
+                //if (privilegedMembers.Value == null)
+                //    return (false, $"No {nameof(DefaultTagSdk.privilegedMembers)} tags on wm assign");
 
-                var adUserSdk = await _adService.GetCurrentAdUserInfo(includeGroups: false);
-                //todo refactor. Must have value
-                if (adUserSdk != null)
-                {
-                    if (string.IsNullOrWhiteSpace(adUserSdk.SamAccountName))
-                        //posible exception
-                        return (false, $"Failed to retrive {nameof(AdUserSdk.SamAccountName)}");
+                //var adUserSdk = await _adService.GetCurrentAdUserInfo(includeGroups: false);
+                ////todo refactor. Must have value
+                //if (adUserSdk != null)
+                //{
+                //    if (string.IsNullOrWhiteSpace(adUserSdk.SamAccountName))
+                //        //posible exception
+                //        return (false, $"Failed to retrive {nameof(AdUserSdk.SamAccountName)}");
 
-                    if (!privilegedMembers.Value.Contains(adUserSdk.SamAccountName, StringComparison.OrdinalIgnoreCase))
-                        return (false, $"Your account {adUserSdk.SamAccountName} is not set on {nameof(DefaultTagSdk.privilegedMembers)} tags on vm");
-                }
+                //    if (!privilegedMembers.Value.Contains(adUserSdk.SamAccountName, StringComparison.OrdinalIgnoreCase))
+                //        return (false, $"Your account {adUserSdk.SamAccountName} is not set on {nameof(DefaultTagSdk.privilegedMembers)} tags on vm");
+                //}
                 return (true, null);
             }
             catch (Exception ex)
