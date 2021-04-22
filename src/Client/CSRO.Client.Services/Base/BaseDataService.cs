@@ -8,6 +8,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Text;
 
 namespace CSRO.Client.Services
 {
@@ -67,7 +68,7 @@ namespace CSRO.Client.Services
             try
             {
                 await AddAuthHeaderAsync();
-                var url = string.IsNullOrWhiteSpace(route) ? $"{ApiPart}{id}" : $"{ApiPart}{route}/{id}"; ;
+                var url = string.IsNullOrWhiteSpace(route) ? $"{ApiPart}{id}" : $"{ApiPart}{route}/{id}";
                 var apiData = await HttpClientBase.GetAsync(url, cancelToken).ConfigureAwait(false);
 
                 if (apiData.IsSuccessStatusCode)
@@ -95,7 +96,7 @@ namespace CSRO.Client.Services
             try
             {
                 await AddAuthHeaderAsync();                
-                var url = string.IsNullOrWhiteSpace(route) ? $"{ApiPart}{id}" : $"{ApiPart}{route}/{id}"; ;
+                var url = string.IsNullOrWhiteSpace(route) ? $"{ApiPart}{id}" : $"{ApiPart}{route}/{id}";
                 var apiData = await HttpClientBase.GetAsync(url, cancelToken).ConfigureAwait(false);
 
                 if (apiData.IsSuccessStatusCode)
@@ -118,12 +119,33 @@ namespace CSRO.Client.Services
             }
         }
 
+        public async Task<bool> RestUpdate<TModel, TDto>(TModel model, CancellationToken cancelToken = default) where TModel : class
+        {
+            try
+            {
+                await AddAuthHeaderAsync();
+                var url = $"{ApiPart}";
+                var updateDto = Mapper.Map<TDto>(model);
+                var httpcontent = new StringContent(JsonSerializer.Serialize(updateDto, _options), Encoding.UTF8, "application/json");
+                var apiData = await HttpClientBase.PutAsync(url, httpcontent, cancelToken).ConfigureAwait(false);
+
+                if (apiData.IsSuccessStatusCode)
+                    return true;
+                else
+                    throw new Exception(GetErrorText(apiData));
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+                throw;
+            }
+        }
+
         public async Task<bool> RestDeleteById(int id)
         {
             try
             {
                 await AddAuthHeaderAsync();
-
                 var url = $"{ApiPart}{id}";
                 var apiData = await HttpClientBase.DeleteAsync(url).ConfigureAwait(false);
 

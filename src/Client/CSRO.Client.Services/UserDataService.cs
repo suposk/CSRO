@@ -65,28 +65,9 @@ namespace CSRO.Client.Services
         }
 
 
-        public async Task<bool> UpdateItemAsync(User item)
+        public Task<bool> UpdateItemAsync(User item)
         {
-            try
-            {
-                await base.AddAuthHeaderAsync();
-
-                var url = $"{ApiPart}";
-                //var add = Mapper.Map<ProjectAdo>(item);
-                var httpcontent = new StringContent(JsonSerializer.Serialize(item, _options), Encoding.UTF8, "application/json");
-                var apiData = await HttpClientBase.PutAsync(url, httpcontent).ConfigureAwait(false);
-
-                if (apiData.IsSuccessStatusCode)
-                    return true;
-                else
-                    throw new Exception(base.GetErrorText(apiData));
-            }
-            catch (Exception ex)
-            {
-                base.HandleException(ex);
-                throw;
-            }
-            //return false;
+            return base.RestUpdate<User, UserDto>(item);
         }
 
         public Task<bool> DeleteItemAsync(int id)

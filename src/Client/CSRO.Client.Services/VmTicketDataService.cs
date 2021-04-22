@@ -174,29 +174,9 @@ namespace CSRO.Client.Services
             }            
         }
 
-        public async Task<bool> UpdateItemAsync(VmTicket item)
+        public Task<bool> UpdateItemAsync(VmTicket item)
         {
-            try
-            {
-                await base.AddAuthHeaderAsync();
-
-                var url = $"{ApiPart}";
-                var add = Mapper.Map<VmTicketDto>(item);
-                var httpcontent = new StringContent(JsonSerializer.Serialize(add, _options), Encoding.UTF8, "application/json");
-                var apiData = await HttpClientBase.PutAsync(url, httpcontent).ConfigureAwait(false);
-
-                if (apiData.IsSuccessStatusCode)
-                {
-                    return true;
-                }
-                else
-                    throw new Exception(GetErrorText(apiData));
-            }
-            catch (Exception ex)
-            {
-                base.HandleException(ex);
-            }
-            return false;
+            return base.RestUpdate<VmTicket, VmTicketDto>(item);
         }
 
         public Task<bool> DeleteItemAsync(int id)
