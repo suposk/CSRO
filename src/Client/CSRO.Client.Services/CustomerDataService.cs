@@ -129,30 +129,9 @@ namespace CSRO.Client.Services
             }
         }
 
-        public async Task<List<Customer>> GetCustomersByAtCode(string atCode, CancellationToken cancelToken = default)
+        public Task<List<Customer>> GetCustomersByAtCode(string atCode, CancellationToken cancelToken = default)
         {
-            try
-            {
-                await base.AddAuthHeaderAsync();
-
-                var url = $"{ApiPart}GetCustomersByAtCode/{atCode}";
-                var apiData = await HttpClientBase.GetAsync(url, cancelToken).ConfigureAwait(false);
-
-                if (apiData.IsSuccessStatusCode)
-                {
-                    var stream = await apiData.Content.ReadAsStreamAsync();
-                    var ser = await JsonSerializer.DeserializeAsync<List<CustomerDto>>(stream, _options);
-                    var result = Mapper.Map<List<Customer>>(ser);
-                    return result;
-                }
-                else
-                    throw new Exception(base.GetErrorText(apiData));
-            }
-            catch (Exception ex)
-            {
-                base.HandleException(ex);
-                throw;
-            }
+            return base.RestGetListById<Customer, CustomerDto>(atCode, "GetCustomersByAtCode");
         }
     }
 
