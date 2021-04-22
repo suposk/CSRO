@@ -118,6 +118,28 @@ namespace CSRO.Client.Services
             }
         }
 
+        public async Task<bool> RestDeleteById(int id)
+        {
+            try
+            {
+                await AddAuthHeaderAsync();
+
+                var url = $"{ApiPart}{id}";
+                var apiData = await HttpClientBase.DeleteAsync(url).ConfigureAwait(false);
+
+                if (apiData.IsSuccessStatusCode)
+                    return true;
+                else
+                    throw new Exception(GetErrorText(apiData));
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+                throw;
+            }            
+        }
+
+
         public string GetErrorText(HttpResponseMessage httpResponse)
         {
             if (httpResponse.StatusCode == System.Net.HttpStatusCode.BadRequest)

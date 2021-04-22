@@ -89,25 +89,9 @@ namespace CSRO.Client.Services
             //return false;
         }
 
-        public async Task<bool> DeleteItemAsync(int id)
+        public Task<bool> DeleteItemAsync(int id)
         {
-            try
-            {
-                await base.AddAuthHeaderAsync();
-
-                var url = $"{ApiPart}{id}";
-                var apiData = await HttpClientBase.DeleteAsync(url).ConfigureAwait(false);
-
-                if (apiData.IsSuccessStatusCode)
-                    return true;
-                else
-                    throw new Exception(base.GetErrorText(apiData));
-            }
-            catch (Exception ex)
-            {
-                base.HandleException(ex);
-            }
-            return false;
+            return base.RestDeleteById(id);
         }
 
         public Task<User> GetItemByIdAsync(int id)
