@@ -37,32 +37,9 @@ namespace CSRO.Client.Services
             base.Init();
         }
 
-        public async Task<UserClaim> AddItemAsync(UserClaim item)
+        public Task<UserClaim> AddItemAsync(UserClaim item)
         {
-            try
-            {
-                await base.AddAuthHeaderAsync();                                
-                
-                var url = $"{ApiPart}";
-                var httpcontent = new StringContent(JsonSerializer.Serialize(item, _options), Encoding.UTF8, "application/json");
-                var apiData = await HttpClientBase.PostAsync(url, httpcontent).ConfigureAwait(false);
-                //HttpResponseMessage
-                if (apiData.IsSuccessStatusCode)
-                {
-                    var stream = await apiData.Content.ReadAsStreamAsync();
-                    var ser = await JsonSerializer.DeserializeAsync<UserClaimDto>(stream, _options);
-                    var result = Mapper.Map<UserClaim>(ser);
-                    return result;
-                }
-                else
-                    throw new Exception(GetErrorText(apiData));
-
-            }
-            catch (Exception ex)
-            {
-                base.HandleException(ex);
-                throw;
-            }
+            return base.RestAdd<UserClaim, UserClaimDto>(item);
         }
 
 

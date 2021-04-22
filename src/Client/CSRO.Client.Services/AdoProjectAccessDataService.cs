@@ -37,37 +37,9 @@ namespace CSRO.Client.Services
             base.Init();
         }
 
-        public async Task<AdoProjectAccessModel> AddItemAsync(AdoProjectAccessModel item)
+        public Task<AdoProjectAccessModel> AddItemAsync(AdoProjectAccessModel item)
         {
-            try
-            {
-                await base.AddAuthHeaderAsync();
-
-                string url = null;
-                if (item.Status == Models.Status.Draft)
-                    url = $"{ApiPart}SaveDraftAdoProjectAccess";
-                else
-                    url = $"{ApiPart}RequestAdoProjectAccess";
-                //var url = $"{ApiPart}";
-                var httpcontent = new StringContent(JsonSerializer.Serialize(item, _options), Encoding.UTF8, "application/json");
-                var apiData = await HttpClientBase.PostAsync(url, httpcontent).ConfigureAwait(false);
-                //HttpResponseMessage
-                if (apiData.IsSuccessStatusCode)
-                {
-                    var stream = await apiData.Content.ReadAsStreamAsync();
-                    var ser = await JsonSerializer.DeserializeAsync<AdoProjectAccessDto>(stream, _options);
-                    var result = Mapper.Map<AdoProjectAccessModel>(ser);
-                    return result;
-                }
-                else
-                    throw new Exception(GetErrorText(apiData));
-
-            }
-            catch (Exception ex)
-            {
-                base.HandleException(ex);
-                throw;
-            }
+            return base.RestAdd<AdoProjectAccessModel, AdoProjectAccessDto>(item, "RequestAdoProjectAccess");
         }
 
         //RejectAdoProject

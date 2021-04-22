@@ -119,6 +119,36 @@ namespace CSRO.Client.Services
             }
         }
 
+        public async Task<TModel> RestAdd<TModel, TDto>(TModel model, string route = null, CancellationToken cancelToken = default) where TModel : class
+        {
+            try
+            {
+                await AddAuthHeaderAsync();
+                var url = string.IsNullOrWhiteSpace(route) ? $"{ApiPart}" : $"{ApiPart}{route}";
+                var updateDto = Mapper.Map<TDto>(model);
+                var httpcontent = new StringContent(JsonSerializer.Serialize(updateDto, _options), Encoding.UTF8, "application/json");
+                var apiData = await HttpClientBase.PostAsync(url, httpcontent, cancelToken).ConfigureAwait(false);
+
+                if (apiData.IsSuccessStatusCode)
+                {
+                    var stream = await apiData.Content.ReadAsStreamAsync();
+                    var ser = await JsonSerializer.DeserializeAsync<TDto>(stream, _options, cancelToken);
+                    if (ser == null)
+                        return null;
+
+                    var result = Mapper.Map<TModel>(ser);
+                    return result;
+                }
+                else
+                    throw new Exception(GetErrorText(apiData));
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+                throw;
+            }
+        }
+
         public async Task<bool> RestUpdate<TModel, TDto>(TModel model, CancellationToken cancelToken = default) where TModel : class
         {
             try

@@ -116,62 +116,16 @@ namespace CSRO.Client.Services
             return false;
         }
 
-        public async Task<VmTicket> RebootVmAndWaitForConfirmation(VmTicket item)
+        public Task<VmTicket> RebootVmAndWaitForConfirmation(VmTicket item)
         {
-            try
-            {     
-                await base.AddAuthHeaderAsync();
-
-                var url = $"{ApiPart}RebootVmAndWaitForConfirmation";
-                var add = Mapper.Map<VmTicketDto>(item);
-                var httpcontent = new StringContent(JsonSerializer.Serialize(add, _options), Encoding.UTF8, "application/json");
-                var apiData = await HttpClientBase.PostAsync(url, httpcontent).ConfigureAwait(false);
-
-                if (apiData.IsSuccessStatusCode)
-                {
-                    var content = await apiData.Content.ReadAsStringAsync();
-                    var ser = JsonSerializer.Deserialize<VmTicketDto>(content, _options);
-                    var result = Mapper.Map<VmTicket>(ser);
-                    return result;
-                }
-                else
-                    throw new Exception(GetErrorText(apiData));
-            }
-            catch (Exception ex)
-            {
-                base.HandleException(ex);
-                throw;
-            }            
+            return base.RestAdd<VmTicket, VmTicketDto>(item, "RebootVmAndWaitForConfirmation");
         }
 
         // generic methods
 
-        public async Task<VmTicket> AddItemAsync(VmTicket item)
+        public Task<VmTicket> AddItemAsync(VmTicket item)
         {
-            try
-            {          
-                await base.AddAuthHeaderAsync();
-
-                var url = $"{ApiPart}CreateRestartTicket";
-                var add = Mapper.Map<VmTicketDto>(item);
-                var httpcontent = new StringContent(JsonSerializer.Serialize(add, _options), Encoding.UTF8, "application/json");
-                var apiData = await HttpClientBase.PostAsync(url, httpcontent).ConfigureAwait(false);
-
-                if (apiData.IsSuccessStatusCode)
-                {
-                    var content = await apiData.Content.ReadAsStringAsync();
-                    var ser = JsonSerializer.Deserialize<VmTicketDto>(content, _options);
-                    var result = Mapper.Map<VmTicket>(ser);
-                    return result;
-                }
-                else
-                    throw new Exception(GetErrorText(apiData));
-            }
-            catch (Exception ex)
-            {
-                base.HandleException(ex);
-                throw;
-            }            
+            return base.RestAdd<VmTicket, VmTicketDto>(item, "CreateRestartTicket");
         }
 
         public Task<bool> UpdateItemAsync(VmTicket item)
