@@ -151,6 +151,9 @@ namespace CSRO.Server.Api.Controllers
         {
             if (dto == null || dto.Id < 1)
                 return BadRequest();
+
+            if (Enum.TryParse(dto.Status, out Status eStatus) && eStatus > Status.Submitted)
+                return BadRequest($"Can not modify if Status is {eStatus}");
                         
             try
             {
@@ -165,14 +168,10 @@ namespace CSRO.Server.Api.Controllers
 
                 repoObj = _mapper.Map<VmTicket>(dto);
                 _repository.Update(repoObj);
-                if (await _repository.SaveChangesAsync())
-                {
-                    return NoContent();
-                }
-                else
-                {
-                    return Conflict("Conflict detected, refresh and try again.");
-                }
+                if (await _repository.SaveChangesAsync())                
+                    return NoContent();                
+                else                
+                    return Conflict("Conflict detected, refresh and try again.");                
             }
             catch (Exception ex)
             {
@@ -200,11 +199,8 @@ namespace CSRO.Server.Api.Controllers
                 }
 
                 _repository.Remove(repoObj);
-                if (await _repository.SaveChangesAsync())
-                {
-                    return NoContent();
-                }
-
+                if (await _repository.SaveChangesAsync())                
+                    return NoContent();               
             }
             catch (Exception ex)
             {

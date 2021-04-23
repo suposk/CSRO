@@ -7,6 +7,7 @@ using System;
 using CSRO.Common.AzureSdkServices;
 using Microsoft.Extensions.Configuration;
 using CSRO.Server.Services.AzureRestServices;
+using CSRO.Server.Entities.Enums;
 
 namespace CSRO.Server.Services
 {
@@ -51,14 +52,14 @@ namespace CSRO.Server.Services
         {
             //await CreateRestartTicket(entity);
             base.Add(entity, _userId);
-            entity.Status = "Opened";
-            entity.VmState = "Restart Started";
+            entity.Status = Status.Submitted.ToString(); 
+            entity.VmState = "Restart Submitted";
         }
 
         public override void Remove(VmTicket entity, string UserId = null)
         {
             base.Remove(entity, _userId);
-            entity.Status = "Closed";
+            entity.Status = Status.Deleted.ToString(); 
         }
     }
 }

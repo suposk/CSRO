@@ -23,6 +23,11 @@
         Rejected = 40,
 
         /// <summary>
+        /// Ticket is been porocessed
+        /// </summary>
+        Processing = 45,
+
+        /// <summary>
         /// Some error during process.
         /// </summary>
         Failed = 50,

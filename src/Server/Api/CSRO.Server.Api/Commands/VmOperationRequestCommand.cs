@@ -79,9 +79,6 @@ namespace CSRO.Server.Api.Commands
                 }
 
                 //save                
-                ticket.Status = "Opened";
-                ticket.VmState = "Restart Submited";
-                ticket.Note += $"; perfomed action: {ticket.Status}={ticket.VmState}"; //TODO replace with history table
                 _repository.Add(ticket, _userId);
                 if (!await _repository.SaveChangesAsync())
                 {
