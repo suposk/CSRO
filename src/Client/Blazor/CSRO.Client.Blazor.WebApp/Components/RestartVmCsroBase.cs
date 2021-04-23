@@ -215,6 +215,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
                             Model = added;
 
                             ShowLoading("Success, please wait");
+                            StateHasChanged();
                             await Task.Delay(3 * 1000);
                             HideLoading();
 
