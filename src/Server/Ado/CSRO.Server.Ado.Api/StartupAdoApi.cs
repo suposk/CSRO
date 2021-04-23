@@ -191,13 +191,13 @@ namespace CSRO.Server.Ado.Api
 
             services.AddScoped<IApiIdentity, ApiIdentity>();
             services.AddScoped<IEmailService, EmailService>();
+            services.AddSingleton<IMessageBus, AzServiceBusMessageBus>();
 
             services.AddTransient<IProjectAdoServices, ProjectAdoServices>();
             services.AddTransient<IProcessAdoServices, ProcessAdoServices>();
             services.AddSingleton<ICacheProvider, CacheProvider>(); //testing
             services.AddTransient<IPropertyMappingService, AdoPropertyMappingService>();
-
-            services.AddSingleton<IMessageBus, AzServiceBusMessageBus>();
+            
             //services.AddSingleton<IServiceBusConsumer, AzServiceBusConsumer>();
 
             services.AddScoped<IAdoProjectApproverService, AdoProjectApproverService>();

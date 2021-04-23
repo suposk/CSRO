@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using CSRO.Server.Api.Commands;
 using CSRO.Server.Domain;
 using CSRO.Server.Entities.Entity;
 using CSRO.Server.Infrastructure;
 using CSRO.Server.Services;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -24,14 +26,17 @@ namespace CSRO.Server.Api.Controllers
         private readonly ILogger<VmTicketController> _logger;
         //private readonly IRepository<Vm> _repository;
         private readonly IVmTicketRepository _repository;
+        private readonly IMediator _mediator;
         private readonly IMapper _mapper;
 
         public VmTicketController(ILogger<VmTicketController> logger,            
             IVmTicketRepository repository,
+            IMediator mediator,
             IMapper mapper)
         {
             _logger = logger;            
             _repository = repository;
+            _mediator = mediator;
             _mapper = mapper;
         }
 
@@ -92,15 +97,27 @@ namespace CSRO.Server.Api.Controllers
                 _logger.LogInformation(ApiLogEvents.InsertItem, $"{nameof(CreateRestartTicket)} Started");
 
                 var repoObj = _mapper.Map<VmTicket>(dto);
-                await _repository.CreateRestartTicket(repoObj).ConfigureAwait(false);
-                if (await _repository.SaveChangesAsync())
+                var wmOperationRequestCommand = new VmOperationRequestCommand() { VmTicket = repoObj };
+                var responseMessage = await _mediator.Send(wmOperationRequestCommand);
+                if (!responseMessage.Success)
+                    //throw new Exception(responseMessage.Message);
+                    return StatusCode(StatusCodes.Status409Conflict, responseMessage.Message);
+                else
                 {
-                    var result = _mapper.Map<VmTicketDto>(repoObj);
+                    var result = _mapper.Map<VmTicketDto>(responseMessage.ReturnedObject);
                     return CreatedAtRoute(nameof(GetVmTicketById),
                         new { id = result.Id }, result);
                 }
-                else
-                    return null;
+
+                //await _repository.CreateRestartTicket(repoObj).ConfigureAwait(false);
+                //if (await _repository.SaveChangesAsync())
+                //{
+                //    var result = _mapper.Map<VmTicketDto>(repoObj);
+                //    return CreatedAtRoute(nameof(GetVmTicketById),
+                //        new { id = result.Id }, result);
+                //}
+                //else
+                //    return null;
             }
             catch (Exception ex)
             {

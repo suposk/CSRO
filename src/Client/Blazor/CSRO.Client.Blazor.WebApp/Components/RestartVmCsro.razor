@@ -54,6 +54,7 @@
                         {
                             <MudAutocomplete ResetValueOnEmptyText="true"
                                              T="@IdNameSdk"
+                                             Dense="true"
                                              Label="Select Subcription:"
                                              Placeholder="Only dev or appdev"
                                              For="@(() => Model.SubscripionIdName)"
@@ -68,6 +69,7 @@
                             *@
 
                             <MudSelect T="@string"
+                                       Dense="true"
                                        Disabled="@IsRgDisabled"
                                        Label="Select Resource Group:"
                                        ValueChanged="(e) => OnRgChanged(e)"
@@ -82,6 +84,7 @@
                         @if (Vms.Count > 0)
                         {
                             <MudSelect T="@string"
+                                       Dense="true"
                                        Label="Select Vm Name:"
                                        Disabled="@IsVmDisabled"
                                        @bind-Value="Model.VmName"
