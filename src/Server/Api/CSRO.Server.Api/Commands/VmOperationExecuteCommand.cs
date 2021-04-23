@@ -62,14 +62,7 @@ namespace CSRO.Server.Api.Commands
                     result.Success = false;
                     result.Message = "Failed to save to DB";
                     return result;
-                }
-
-                //var status = await _vmSdkService.GetStatus(ticket.SubcriptionId, ticket.ResorceGroup, ticket.VmName).ConfigureAwait(false);
-                //if (status != null && status.DisplayStatus.Contains("deallocat"))
-                //{
-                //    result.Message = $"Unable to Reboot, Vm is {status.DisplayStatus ?? "Stopped"}";
-                //    return result;
-                //}                    
+                }                
 
                 var reb = await _vmSdkService.RebootVmAndWaitForConfirmation(ticket.SubcriptionId, ticket.ResorceGroup, ticket.VmName).ConfigureAwait(false);
                 if (reb.success)
@@ -90,7 +83,7 @@ namespace CSRO.Server.Api.Commands
                     result.Message = "Failed to save to DB";
                     return result;
                 }
-
+                result.Success = true;
                 result.ReturnedObject = ticket;
             }
             catch (Exception ex)

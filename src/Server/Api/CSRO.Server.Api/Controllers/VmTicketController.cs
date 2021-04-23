@@ -99,8 +99,7 @@ namespace CSRO.Server.Api.Controllers
                 var repoObj = _mapper.Map<VmTicket>(dto);
                 var wmOperationRequestCommand = new VmOperationRequestCommand() { VmTicket = repoObj };
                 var responseMessage = await _mediator.Send(wmOperationRequestCommand);
-                if (!responseMessage.Success)
-                    //throw new Exception(responseMessage.Message);
+                if (!responseMessage.Success)                    
                     return StatusCode(StatusCodes.Status409Conflict, responseMessage.Message);
                 else
                 {
@@ -108,21 +107,10 @@ namespace CSRO.Server.Api.Controllers
                     return CreatedAtRoute(nameof(GetVmTicketById),
                         new { id = result.Id }, result);
                 }
-
-                //await _repository.CreateRestartTicket(repoObj).ConfigureAwait(false);
-                //if (await _repository.SaveChangesAsync())
-                //{
-                //    var result = _mapper.Map<VmTicketDto>(repoObj);
-                //    return CreatedAtRoute(nameof(GetVmTicketById),
-                //        new { id = result.Id }, result);
-                //}
-                //else
-                //    return null;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, nameof(CreateRestartTicket), dto);
-                //return StatusCode(StatusCodes.Status500InternalServerError);
+                _logger.LogError(ex, nameof(CreateRestartTicket), dto);                
                 return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }               
         }
@@ -139,21 +127,20 @@ namespace CSRO.Server.Api.Controllers
                 _logger.LogInformation(ApiLogEvents.InsertItem, $"{nameof(RebootVmAndWaitForConfirmation)} Started");
 
                 var repoObj = _mapper.Map<VmTicket>(dto);
-                var res = await _repository.RebootVmAndWaitForConfirmation(repoObj).ConfigureAwait(false);
-                if (res.success)
+                var wmOperationRequestCommand = new VmOperationRequestCommand() { VmTicket = repoObj, WaitForActionToComplete = true };
+                var responseMessage = await _mediator.Send(wmOperationRequestCommand);
+                if (!responseMessage.Success)
+                    return StatusCode(StatusCodes.Status409Conflict, responseMessage.Message);
+                else
                 {
-                    var result = _mapper.Map<VmTicketDto>(repoObj);
+                    var result = _mapper.Map<VmTicketDto>(responseMessage.ReturnedObject);
                     return CreatedAtRoute(nameof(GetVmTicketById),
                         new { id = result.Id }, result);
                 }
-                else
-                    return BadRequest(res.errorMessage);
-
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, nameof(RebootVmAndWaitForConfirmation), dto);
-                //return StatusCode(StatusCodes.Status500InternalServerError);
                 return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }
         }
