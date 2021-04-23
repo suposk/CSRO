@@ -37,6 +37,10 @@
                                           Disabled="true"
                                           @bind-Value="Model.Id" For="@(() => Model.Id)" />
 
+                            <MudTextField Label="Operation:"
+                                          Disabled="true"
+                                          @bind-Value="Model.Operation" For="@(() => Model.Operation)" />
+
                             <MudTextField Label="Status:"
                                           Disabled="true"
                                           @bind-Value="Model.Status" For="@(() => Model.Status)" />
@@ -102,11 +106,11 @@
                                           @bind-Value="Model.VmName"
                                           For="@(() => Model.VmName)" />
                         }
-                                                
-                        <MudTextField Label="External Ticket #(Gsnow)" 
-                                        Placeholder="Example INC123..."
-                                        Disabled="@IsVmDisabled"
-                                        @bind-Value="Model.ExternalTicket" For="@(() => Model.ExternalTicket)" />                        
+
+                        <MudTextField Label="External Ticket #(Gsnow)"
+                                      Placeholder="Example INC123..."
+                                      Disabled="@IsVmDisabled"
+                                      @bind-Value="Model.ExternalTicket" For="@(() => Model.ExternalTicket)" />
 
                         <MudTextField Label="Note:"
                                       Disabled="@IsReadOnly"
