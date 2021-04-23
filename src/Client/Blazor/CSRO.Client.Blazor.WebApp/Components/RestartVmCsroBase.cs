@@ -64,8 +64,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
         protected List<string> Vms { get; set; } = new List<string>();
 
         protected bool IsRgDisabled => ResourceGroups?.Count == 0;
-        protected bool IsVmDisabled => OperationTypeTicket != OperatioType.Create || IsRgDisabled || string.IsNullOrWhiteSpace(Model?.ResorceGroup);
-        protected VmOperatioType VmOperatioTypeEnum { get; set; }
+        protected bool IsVmDisabled => OperationTypeTicket != OperatioType.Create || IsRgDisabled || string.IsNullOrWhiteSpace(Model?.ResorceGroup);       
 
         protected async override Task OnInitializedAsync()
         {            
@@ -195,8 +194,6 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
         public async Task OnValidSubmit(EditContext context)
         {
-            if (OperationTypeTicket == OperatioType.Create)
-                Model.Operation = VmOperatioTypeEnum.ToString();
             var valid = context.Validate();
             if (valid)
             {
