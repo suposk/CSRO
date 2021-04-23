@@ -52,10 +52,11 @@ namespace CSRO.Server.Api.Commands
             try
             {
                 var ticket = await _repository.GetId(request.VmOperationRequestMessage.TicketId);
-
-                //save
+                                                
                 ticket.Status = "Processing";
                 ticket.VmState = "Restart in Progress";
+                ticket.Note += $"; perfomed action: {ticket.Status}={ticket.VmState}"; //TODO replace with history table
+                _repository.Update(ticket, _userId);
                 if (!await _repository.SaveChangesAsync())
                 {
                     result.Success = false;
@@ -81,6 +82,8 @@ namespace CSRO.Server.Api.Commands
                     ticket.Status = "Rejected";
                     ticket.VmState = reb.errorMessage;
                 }
+                ticket.Note += $"; perfomed action: {ticket.Status}={ticket.VmState}"; //TODO replace with history table
+                _repository.Update(ticket, _userId);
                 if (!await _repository.SaveChangesAsync())
                 {
                     result.Success = false;
