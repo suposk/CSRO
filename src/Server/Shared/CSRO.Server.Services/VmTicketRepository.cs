@@ -91,9 +91,8 @@ namespace CSRO.Server.Services
 
                 if (VmRebootDelay > 0)
                     await Task.Delay(VmRebootDelay * 1000).ConfigureAwait(false);
-
-                //update
-                base.Update(entity, _userId);                                
+                                
+                Update(entity, _userId);                                
                 if (res.success)
                 {                    
                     entity.Status = "Completed";
