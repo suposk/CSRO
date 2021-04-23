@@ -100,7 +100,8 @@ namespace CSRO.Server.Api.Controllers
                 var wmOperationRequestCommand = new VmOperationRequestCommand() { VmTicket = repoObj };
                 var responseMessage = await _mediator.Send(wmOperationRequestCommand);
                 if (!responseMessage.Success)
-                    throw new Exception(responseMessage.Message);
+                    //throw new Exception(responseMessage.Message);
+                    return StatusCode(StatusCodes.Status409Conflict, responseMessage.Message);
                 else
                 {
                     var result = _mapper.Map<VmTicketDto>(responseMessage.ReturnedObject);

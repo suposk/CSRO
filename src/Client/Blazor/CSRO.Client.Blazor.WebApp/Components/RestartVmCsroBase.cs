@@ -214,6 +214,10 @@ namespace CSRO.Client.Blazor.WebApp.Components
                             Success = true;
                             Model = added;
 
+                            ShowLoading("Success, please wait");
+                            await Task.Delay(3 * 1000);
+                            HideLoading();
+
                             NavigationManager.NavigateTo($"vm/restart/view/{Model.Id}");
                         }
                     }

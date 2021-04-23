@@ -24,6 +24,7 @@ namespace CSRO.Server.Api.Commands
     public class VmOperationRequestCommandHandler : IRequestHandler<VmOperationRequestCommand, ResponseMessage<VmTicket>>
     {
         private readonly string _userId;
+        private readonly IMediator _mediator;
         private readonly IVmSdkService _vmSdkService;
         private readonly IMessageBus _messageBus;
         private readonly IVmTicketRepository _repository;
@@ -33,12 +34,14 @@ namespace CSRO.Server.Api.Commands
         public VmOperationRequestCommandHandler(
             IConfiguration configuration,
             IApiIdentity apiIdentity,
+            IMediator mediator,
             IVmSdkService vmSdkService,
             IMessageBus messageBus,
             IVmTicketRepository repository,
             ILogger<VmOperationRequestCommandHandler> logger)
         {
             _userId = apiIdentity.GetUserName();
+            _mediator = mediator;
             _vmSdkService = vmSdkService;
             _messageBus = messageBus;
             _repository = repository;
@@ -80,10 +83,11 @@ namespace CSRO.Server.Api.Commands
                     return result;
                 }
                 //send message to bus
-                BusMessageBase message = null;
+                BusMessageBase message = null;                
                 try
                 {
-                    if (true)
+                    bool sentMessageToBus = true; //can be config val
+                    if (sentMessageToBus)
                     {
                         message = new VmOperationRequestMessage { Vm = ticket.VmName, UserId = _userId, TicketId = ticket.Id }.CreateBaseMessage();
                         await _messageBus.PublishMessageTopic(message, _serviceBusConfig.VmOperationRequesTopic);
@@ -96,6 +100,13 @@ namespace CSRO.Server.Api.Commands
                 catch (Exception ex)
                 {
                     _logger.LogError($"Failed to PublishMessageTopic {ex?.Message}", message);
+                }
+                //failover if message is not sent to bus
+                if (result.Success == false)
+                {
+                    var dto = message as VmOperationRequestMessage;
+                    var vmOperationExecuteCommand = new VmOperationExecuteCommand() { VmOperationRequestMessage = dto };
+                    var response = await _mediator.Send(vmOperationExecuteCommand);
                 }
                 result.ReturnedObject = ticket;
             }

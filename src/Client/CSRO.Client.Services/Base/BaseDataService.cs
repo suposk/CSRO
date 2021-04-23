@@ -243,8 +243,8 @@ namespace CSRO.Client.Services
             if (httpResponse.StatusCode == System.Net.HttpStatusCode.Forbidden)
                 return "Forbidden, you don't have permision to perform operation.";
             else
-                //return $"{httpResponse.ReasonPhrase} {httpResponse.Content}";
-                return $"{httpResponse.ReasonPhrase} {httpResponse.Content.ReadAsStringAsync().Result}";
+                //return $"{httpResponse.ReasonPhrase} {httpResponse.Content.ReadAsStringAsync().Result}";
+                return $"{httpResponse.Content.ReadAsStringAsync().Result}";
         }
 
         public virtual void HandleException(Exception ex)
