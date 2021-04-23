@@ -19,6 +19,11 @@ namespace CSRO.Server.Api.Commands
     public class VmOperationRequestCommand : IRequest<ResponseMessage<VmTicket>>    
     {
         public VmTicket VmTicket { get; set; }
+
+        /// <summary>
+        /// Should wait for reboot to complete. Applicable in some case
+        /// </summary>
+        public bool WaitForActionToComplete { get; set; }
     }
 
     public class VmOperationRequestCommandHandler : IRequestHandler<VmOperationRequestCommand, ResponseMessage<VmTicket>>
@@ -68,6 +73,7 @@ namespace CSRO.Server.Api.Commands
                 var status = await _vmSdkService.GetStatus(ticket.SubcriptionId, ticket.ResorceGroup, ticket.VmName).ConfigureAwait(false);
                 if (status != null && status.DisplayStatus.Contains("deallocat"))
                 {
+                    result.Success = false;
                     result.Message = $"Unable to Reboot, Vm is {status.DisplayStatus ?? "Stopped"}";
                     return result;
                 }
@@ -84,13 +90,11 @@ namespace CSRO.Server.Api.Commands
                     return result;
                 }
                 //send message to bus
-                BusMessageBase message = null;                
+                BusMessageBase message = new VmOperationRequestMessage { Vm = ticket.VmName, UserId = _userId, TicketId = ticket.Id }.CreateBaseMessage();
                 try
                 {
-                    bool sentMessageToBus = true; //can be config val
-                    if (sentMessageToBus)
-                    {
-                        message = new VmOperationRequestMessage { Vm = ticket.VmName, UserId = _userId, TicketId = ticket.Id }.CreateBaseMessage();
+                    if (request.WaitForActionToComplete == false)
+                    {                        
                         await _messageBus.PublishMessageTopic(message, _serviceBusConfig.VmOperationRequesTopic);
 
                         result.ReturnedObject = ticket;
@@ -102,12 +106,16 @@ namespace CSRO.Server.Api.Commands
                 {
                     _logger.LogError($"Failed to PublishMessageTopic {ex?.Message}", message);
                 }
-                //failover if message is not sent to bus
-                if (result.Success == false)
+
+                //failover if message is not sent to bus, or want respond
+                if (request.WaitForActionToComplete || result.Success == false)
                 {
                     var dto = message as VmOperationRequestMessage;
                     var vmOperationExecuteCommand = new VmOperationExecuteCommand() { VmOperationRequestMessage = dto };
                     var response = await _mediator.Send(vmOperationExecuteCommand);
+                    //update result
+                    result = response;
+                    return result;
                 }
                 result.ReturnedObject = ticket;
             }
