@@ -146,9 +146,9 @@
                     else if (OperationTypeTicket == OperatioType.Create)
                     {
                         <MudCardActions>
-                            <MudButton Disabled="@IsLoading" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@((e) => Model.Operation = VmOperatioType.Start.ToString())" >@VmOperatioType.Start</MudButton>
-                            <MudButton Disabled="@IsLoading" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@((e) => Model.Operation = VmOperatioType.Stop.ToString())" >@VmOperatioType.Stop</MudButton>
-                            <MudButton Disabled="@IsLoading" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" OnClick="@((e) => Model.Operation = VmOperatioType.Restart.ToString())" >@VmOperatioType.Restart</MudButton>
+                            <MudButton Disabled="@IsLoading" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" StartIcon="@Icons.Material.Filled.PlayArrow" OnClick="@((e) => Model.Operation = VmOperatioType.Start.ToString())" >@VmOperatioType.Start</MudButton>
+                            <MudButton Disabled="@IsLoading" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" StartIcon="@Icons.Material.Filled.Stop"  OnClick="@((e) => Model.Operation = VmOperatioType.Stop.ToString())" >@VmOperatioType.Stop</MudButton>
+                            <MudButton Disabled="@IsLoading" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" StartIcon="@Icons.Material.Filled.Replay"  OnClick="@((e) => Model.Operation = VmOperatioType.Restart.ToString())" >@VmOperatioType.Restart</MudButton>
                         </MudCardActions>
                     }
 

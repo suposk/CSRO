@@ -90,6 +90,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
             {
                 Model.SubcriptionId = value.Id;
                 Model.SubcriptionName = value.Name;
+                LastVmStatus = "Loading...";
 
                 ShowLoading();
                 await LoadRg(value.Id);
@@ -102,6 +103,8 @@ namespace CSRO.Client.Blazor.WebApp.Components
             if (value != null)
             {
                 Model.ResorceGroup = value;
+                LastVmStatus = "Loading...";
+
                 ShowLoading();
                 var vms = await VmService.GetVmNames(Model.SubcriptionId, Model.ResorceGroup);
                 Vms = vms ?? new List<string>();
