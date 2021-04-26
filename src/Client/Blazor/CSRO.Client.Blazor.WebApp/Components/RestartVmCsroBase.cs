@@ -36,7 +36,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
         public IVmService VmService { get; set; }
 
         [Inject]
-        public ISubscriptionSdkService SubcriptionSdkService { get; set; }
+        public ISubcriptionDataService SubcriptionDataService { get; set; }
 
         [Inject]
         public IResourceGroupService ResourceGroupervice { get; set; }
@@ -59,7 +59,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
         protected bool IsReadOnly => OperationTypeTicket == OperatioType.View;
         protected string Title => OperationTypeTicket == OperatioType.Create ? "Request Vm Restart" : $"View {Model.Status} of {Model.VmName}";
-        protected List<IdNameSdk> Subscripions { get; set; }        
+        protected List<IdName> Subscripions { get; set; }        
         protected List<string> ResourceGroups { get; set; } = new List<string>();
         protected List<string> Vms { get; set; } = new List<string>();
 
@@ -86,7 +86,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
             }
         }
 
-        public async Task OnSubscriptionChanged(IdNameSdk value)
+        public async Task OnSubscriptionChanged(IdName value)
         {
             if (value != null)
             {
@@ -177,17 +177,18 @@ namespace CSRO.Client.Blazor.WebApp.Components
                 else
                 {
                     ShowLoading();
-                    Subscripions = await SubcriptionSdkService.GetAllSubcriptions();                    
-                    Subscripions = Subscripions ?? new List<IdNameSdk>();
+                    Subscripions = await SubcriptionDataService.GetSubcriptions(); 
+                    
+                    Subscripions = Subscripions ?? new List<IdName>();
 #if DEBUG
                     if (Subscripions?.Count == 1)
                     {
                         var id = Subscripions.First().Id;
-                        Subscripions.Add(new IdNameSdk(id, $"fake-sub-prod"));
-                        Subscripions.Add(new IdNameSdk(id, $"fake-sub-uat"));
-                        Subscripions.Add(new IdNameSdk(id, $"fake-sub-dev"));
-                        Subscripions.Add(new IdNameSdk(id, $"fake-sub-appdev"));
-                        Subscripions.Add(new IdNameSdk(id, $"fake-sub-test"));
+                        Subscripions.Add(new IdName(id, $"fake-sub-prod"));
+                        Subscripions.Add(new IdName(id, $"fake-sub-uat"));
+                        Subscripions.Add(new IdName(id, $"fake-sub-dev"));
+                        Subscripions.Add(new IdName(id, $"fake-sub-appdev"));
+                        Subscripions.Add(new IdName(id, $"fake-sub-test"));
                     }
 #endif
                 }
@@ -202,7 +203,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
             }
         }
 
-        public async Task<IEnumerable<IdNameSdk>> SearchSubs(string value)
+        public async Task<IEnumerable<IdName>> SearchSubs(string value)
         {
             // In real life use an asynchronous function for fetching data from an api.
             await Task.Delay(50);

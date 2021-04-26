@@ -8,7 +8,7 @@ namespace CSRO.Client.Services.Models
     {
         public VmTicket()
         {
-            _SubscripionIdName = new IdNameSdk();
+            _SubscripionIdName = new IdName();
         }
 
         public string ExternalTicket { get; set; }
@@ -46,8 +46,8 @@ namespace CSRO.Client.Services.Models
         public string Operation { get; set; }
 
 
-        IdNameSdk _SubscripionIdName;
-        public IdNameSdk SubscripionIdName => _SubscripionIdName;
+        IdName _SubscripionIdName;
+        public IdName SubscripionIdName => _SubscripionIdName;
     }
 
 }

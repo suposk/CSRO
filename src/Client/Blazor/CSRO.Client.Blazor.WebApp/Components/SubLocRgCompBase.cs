@@ -72,7 +72,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
         //protected string Title => "Hosting Settings";
 
-        protected List<IdNameSdk> Subscripions { get; set; } = new List<IdNameSdk>();
+        protected List<IdName> Subscripions { get; set; } = new();
         protected List<IdName> Locations { get; set; } = new List<IdName>();
         protected List<string> ResourceGroups { get; set; } = new List<string>();
 
@@ -111,7 +111,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
             }
         }
 
-        public async Task OnSubscriptionValueChanged(IdNameSdk value)
+        public async Task OnSubscriptionValueChanged(IdName value)
         {
             if (value != null)
             {
@@ -168,13 +168,8 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
                 Subscripions?.Clear();
                 var subs = await SubcriptionDataService.GetSubcriptions();
-                if (subs.HasAnyInCollection())
-                {                 
-                    //await CsroDialogService.ShowWarning("Info", "sdk method found no subs");
-                    List<IdNameSdk> list = new List<IdNameSdk>();
-                    subs.ForEach(a => list.Add(new IdNameSdk { Id = a.Id, Name = a.Name }));
-                    Subscripions = list;
-                }
+                if (subs.HasAnyInCollection())                                 
+                    Subscripions = subs;              
 
 #if DEBUG
 
@@ -184,7 +179,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
                 {
                     for (int i = 1; i <= 3; i++)
                     {
-                        Subscripions.Add(new IdNameSdk(Guid.NewGuid().ToString(), $"fake sub name {i}"));
+                        Subscripions.Add(new IdName(Guid.NewGuid().ToString(), $"fake sub name {i}"));
                     }
                 }
                 //Model.ResorceGroup = "dev-VMS";
@@ -202,7 +197,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
             }
         }
 
-        public async Task<IEnumerable<IdNameSdk>> SearchSubs(string value)
+        public async Task<IEnumerable<IdName>> SearchSubs(string value)
         {
             // In real life use an asynchronous function for fetching data from an api.
             await Task.Delay(50);

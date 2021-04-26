@@ -37,7 +37,10 @@ namespace CSRO.Client.Blazor.WebApp.Components
         public NavigationManager NavigationManager { get; set; }
 
         [Inject]
-        public ISubcriptionDataService SubcriptionDataService { get; set; }
+        public ISubcriptionService SubcriptionService { get; set; }
+
+        //[Inject]
+        //public ISubcriptionDataService SubcriptionDataService { get; set; }
 
         [Inject]
         public ICsroDialogService CsroDialogService { get; set; }
@@ -78,11 +81,12 @@ namespace CSRO.Client.Blazor.WebApp.Components
                 ShowLoading();
                 Model = new DefaultTag();
                 
-                var tags = await SubcriptionDataService.GetDefualtTags(SubcriptionId);
+                var tags = await SubcriptionService.GetDefualtTags(SubcriptionId);
                 Tags = tags ?? new DefaultTags();
             }
             catch (Exception ex)
             {
+                await CsroDialogService.ShowError("Error", $"Detail error: {ex.Message}");
                 Logger.LogError(ex, nameof(OnInitializedAsync));
             }
             finally
