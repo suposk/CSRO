@@ -1,4 +1,5 @@
 ﻿using CSRO.Server.Infrastructure;
+using System.Collections.Generic;
 
 namespace CSRO.Server.Entities.Entity
 {
@@ -21,5 +22,7 @@ namespace CSRO.Server.Entities.Entity
         public string VmState { get; set; }
 
         public string Operation { get; set; }
+
+        public ICollection<VmTicketHistory> VmTicketHistoryList { get; set; } = new List<VmTicketHistory>();
     }
 }

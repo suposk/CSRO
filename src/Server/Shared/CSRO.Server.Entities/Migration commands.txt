@@ -3,6 +3,7 @@ Add-Migration Init -Context AppVersionContext -OutputDir Migrations\SqlServerMig
 Add-Migration ExternalTicket -Context AppVersionContext -OutputDir Migrations\SqlServerMigrations
 Add-Migration Customer2 -Context CustomersDbContext -OutputDir MigrationsCustomer\SqlServerMigrations
 Add-Migration TicketOperationAdded -Context AppVersionContext -OutputDir Migrations\SqlServerMigrations
+Add-Migration VmTicketHistoryAdded -Context AppVersionContext -OutputDir Migrations\SqlServerMigrations
 
 //ADO
 Add-Migration Init -Context AdoContext -OutputDir Migrations\SqlServerMigrations

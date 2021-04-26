@@ -27,6 +27,7 @@ namespace CSRO.Server.Api.Commands
         private readonly IVmSdkService _vmSdkService;
         private readonly IMessageBus _messageBus;
         private readonly IVmTicketRepository _repository;
+        private readonly IVmTicketHistoryRepository _vmTicketHistoryRepository;
         private readonly ILogger<VmOperationExecuteCommandHandler> _logger;
         private readonly ServiceBusConfig _serviceBusConfig;
 
@@ -36,12 +37,14 @@ namespace CSRO.Server.Api.Commands
             IVmSdkService vmSdkService,
             IMessageBus messageBus,
             IVmTicketRepository repository,
+            IVmTicketHistoryRepository vmTicketHistoryRepository,
             ILogger<VmOperationExecuteCommandHandler> logger)
         {
             _userId = apiIdentity.GetUserName();
             _vmSdkService = vmSdkService;
             _messageBus = messageBus;
             _repository = repository;
+            _vmTicketHistoryRepository = vmTicketHistoryRepository;
             _logger = logger;
             _serviceBusConfig = configuration.GetSection(nameof(ServiceBusConfig)).Get<ServiceBusConfig>();
         }
@@ -59,12 +62,12 @@ namespace CSRO.Server.Api.Commands
                 }
 
                 ticket.Status = Status.Processing.ToString();
-                ticket.VmState = $"{ticket.Operation} in Progress";
-                //TODO history
-                //ticket.Note += $"; perfomed action: {ticket.Status}={ticket.VmState}"; //TODO replace with history table
-
+                ticket.VmState = $"{ticket.Operation} in Progress";                
+                
                 if (await _repository.UpdateAsync(ticket, _userId) == null)
                     return RetunFailed(result);
+
+                await _vmTicketHistoryRepository.Create(ticket);
 
                 if (vmOperatioType == Entities.Enums.VmOperatioType.Restart)
                 {
@@ -109,11 +112,10 @@ namespace CSRO.Server.Api.Commands
                     }
                 }
 
-                //TODO history
-                //ticket.Note += $"; perfomed action: {ticket.Status}={ticket.VmState}"; //TODO replace with history table
-
                 if (await _repository.UpdateAsync(ticket, _userId) == null)
                     return RetunFailed(result);
+
+                await _vmTicketHistoryRepository.Create(ticket);
 
                 result.Success = true;
                 result.ReturnedObject = ticket;

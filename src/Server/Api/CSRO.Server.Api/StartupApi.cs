@@ -284,6 +284,7 @@ namespace CSRO.Server.Api
             services.AddScoped<IVersionRepository, VersionRepository>();
             services.AddScoped<IVmTicketRepository, VmTicketRepository>();            
             services.AddScoped<ICustomerRepository, CustomerRepository>();
+            services.AddScoped<IVmTicketHistoryRepository, VmTicketHistoryRepository>();
 
             #endregion
 
