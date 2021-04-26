@@ -34,6 +34,7 @@ namespace CSRO.Server.Api.Commands
         private readonly IVmSdkService _vmSdkService;
         private readonly IMessageBus _messageBus;
         private readonly IVmTicketRepository _repository;
+        private readonly IVmTicketHistoryRepository _vmTicketHistoryRepository;
         private readonly ILogger<VmOperationRequestCommandHandler> _logger;
         private readonly ServiceBusConfig _serviceBusConfig;
 
@@ -44,6 +45,7 @@ namespace CSRO.Server.Api.Commands
             IVmSdkService vmSdkService,
             IMessageBus messageBus,
             IVmTicketRepository repository,
+            IVmTicketHistoryRepository vmTicketHistoryRepository,
             ILogger<VmOperationRequestCommandHandler> logger)
         {
             _userId = apiIdentity.GetUserName();
@@ -51,6 +53,7 @@ namespace CSRO.Server.Api.Commands
             _vmSdkService = vmSdkService;
             _messageBus = messageBus;
             _repository = repository;
+            _vmTicketHistoryRepository = vmTicketHistoryRepository;
             _logger = logger;
             _serviceBusConfig = configuration.GetSection(nameof(ServiceBusConfig)).Get<ServiceBusConfig>();
         }
@@ -85,7 +88,7 @@ namespace CSRO.Server.Api.Commands
                     return result;
                 }
 
-                //TODO history
+                await _vmTicketHistoryRepository.Create(ticket);                
 
                 //send message to bus
                 BusMessageBase message = new VmOperationRequestMessage { Vm = ticket.VmName, UserId = _userId, TicketId = ticket.Id }.CreateBaseMessage();

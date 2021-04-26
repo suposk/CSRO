@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace CSRO.Server.Entities.Entity
-{        
+{
     public class AdoProjectHistory : EntitySoftDeleteBase
     {
         public AdoProject AdoProject { get; set; }
@@ -14,4 +14,5 @@ namespace CSRO.Server.Entities.Entity
         public string Operation { get; set; }
         public string Details { get; set; }
     }
+
 }

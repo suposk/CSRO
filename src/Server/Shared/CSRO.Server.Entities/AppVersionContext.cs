@@ -33,6 +33,7 @@ namespace CSRO.Server.Entities
         public DbSet<AppVersion> AppVersions { get; set; }
         public DbSet<Ticket> Tickets { get; set; }
         public DbSet<VmTicket> VmTickets { get; set; }
+        public DbSet<VmTicketHistory> VmTicketHistories { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

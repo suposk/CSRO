@@ -11,9 +11,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace CSRO.Client.Blazor.WebApp.Components.Ado
+namespace CSRO.Client.Blazor.WebApp.Components
 {
-    public class AdoProjectHistoryBase : CsroComponentBase
+    public class VmTicketHistoryCompBase : CsroComponentBase
     {
         #region Params and Injects
 
@@ -30,16 +30,16 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
         public ICsroDialogService CsroDialogService { get; set; }
 
         [Inject]
-        public IAdoProjectHistoryDataService AdoProjectHistoryDataService { get; set; }
+        public IBaseDataService<VmTicketHistory> VmTicketHistoryDataService { get; set; }
 
         [Inject]
-        public ILogger<AdoProjectHistoryBase> Logger { get; set; }
+        public ILogger<VmTicketHistoryCompBase> Logger { get; set; }
 
         #endregion                
         protected bool IsReadOnly => OperationTypeTicket == OperatioType.View;
-        protected string Title => OperationTypeTicket.ToString() + " Project";
+        protected string Title => OperationTypeTicket.ToString() + " Vm Ticket History";
 
-        public List<AdoProjectHistoryModel> History = new();
+        public List<VmTicketHistory> History = new();
 
         protected async override Task OnInitializedAsync()
         {
@@ -57,7 +57,7 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
                     History.Clear();
                     if (int.TryParse(RequestId, out int id))
                     {
-                        var history = await AdoProjectHistoryDataService.GetItemsByParrentIdAsync(id);
+                        var history = await VmTicketHistoryDataService.GetItemsByParrentIdAsync(id);
                         if (history.HasAnyInCollection())
                             History = history;
                     }

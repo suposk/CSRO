@@ -19,12 +19,13 @@ namespace CSRO.Server.Api.AutoMapperProfiles
                 //.ForMember(s => s.CurrentUnits, op => op.Ignore())
                 .ReverseMap();
 
-            CreateMap<TicketDto, Entity.Ticket>()
-                //.ForMember(s => s.CurrentUnits, op => op.Ignore())
+            CreateMap<TicketDto, Entity.Ticket>()                
                 .ReverseMap();
 
-            CreateMap<VmTicketDto, Entity.VmTicket>()
-                //.ForMember(s => s.SubscripionIdName, op => op.Ignore())
+            CreateMap<VmTicketDto, Entity.VmTicket>()                
+                .ReverseMap();
+
+            CreateMap<VmTicketHistoryDto, Entity.VmTicketHistory>()                
                 .ReverseMap();
 
             CreateMap<SubscriptionDto, Subscription>()

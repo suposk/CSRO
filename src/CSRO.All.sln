@@ -46,7 +46,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSRO.Common", "Common\CSRO.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Blazor", "Blazor", "{49379B43-57DA-4FDC-BDD8-FFCAD5423E30}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSRO.Server.Auth.Api", "Server\Auth\CSRO.Server.Auth.Api\CSRO.Server.Auth.Api.csproj", "{1327F257-1FC3-45C3-B375-39032A689A2B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CSRO.Server.Auth.Api", "Server\Auth\CSRO.Server.Auth.Api\CSRO.Server.Auth.Api.csproj", "{1327F257-1FC3-45C3-B375-39032A689A2B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

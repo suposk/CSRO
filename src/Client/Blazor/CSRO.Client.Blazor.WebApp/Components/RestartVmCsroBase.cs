@@ -222,10 +222,6 @@ namespace CSRO.Client.Blazor.WebApp.Components
             {
                 try
                 {
-                    //var testData = await AzureSdkService.TryGetData(Model.SubcriptionId, Model.ResorceGroup, Model.VmName);                                                            
-                    //var sdkSubs = await AzureSdkService.GetAllSubcriptions(Model.SubcriptionId);
-                    //return;
-
                     if (OperationTypeTicket == OperatioType.Create)
                     {
                         ShowLoading("Creating request");
