@@ -28,12 +28,6 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
         public NavigationManager NavigationManager { get; set; }
 
         [Inject]
-        public ISubscriptionSdkService SubcriptionSdkService { get; set; }
-
-        [Inject]
-        public ISubcriptionService SubcriptionService { get; set; }
-
-        [Inject]
         public ISubcriptionDataService SubcriptionDataService { get; set; }
 
         [Inject]
