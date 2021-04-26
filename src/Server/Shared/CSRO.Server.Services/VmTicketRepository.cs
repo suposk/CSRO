@@ -7,6 +7,8 @@ using CSRO.Common.AzureSdkServices;
 using Microsoft.Extensions.Configuration;
 using CSRO.Server.Services.AzureRestServices;
 using CSRO.Server.Entities.Enums;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace CSRO.Server.Services
 {
@@ -44,7 +46,8 @@ namespace CSRO.Server.Services
 
         public override Task<List<VmTicket>> GetList()
         {
-            return _repository.GetListFilter(a => a.IsDeleted != true);
+            //return _repository.GetListFilter(a => a.IsDeleted != true);
+            return _context.VmTickets.Where(a => a.IsDeleted != true).OrderByDescending(a => a.CreatedAt).ToListAsync();
         }
 
         public override void Add(VmTicket entity, string UserId = null)
