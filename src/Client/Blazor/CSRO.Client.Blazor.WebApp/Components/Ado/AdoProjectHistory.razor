@@ -18,6 +18,7 @@
             </MudGrid>
         }
         <MudTable Items="History"
+                  Dense="true"
                   Hover="true" SortLabel="Sort By" Elevation="0">
             <HeaderContent>
                 <MudTh><MudTableSortLabel SortBy="new Func<AdoProjectHistoryModel, object>(x => x.Operation)">Operation</MudTableSortLabel></MudTh>

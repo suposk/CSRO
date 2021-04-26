@@ -11,7 +11,7 @@ namespace CSRO.Server.Services
 {
     public interface IVmTicketHistoryRepository : IRepository<VmTicketHistory>
     {
-        Task<VmTicketHistory> Create(VmTicket vmTicket);
+        Task<VmTicketHistory> Create(VmTicket vmTicket, string userId = null);
         Task<List<VmTicketHistory>> GetHitoryByParentId(int parentId);
     }
 
@@ -19,8 +19,7 @@ namespace CSRO.Server.Services
     {
 
         private readonly IRepository<VmTicketHistory> _repository;
-        private readonly AppVersionContext _context;
-        private readonly string _userId;
+        private readonly AppVersionContext _context;        
 
         public VmTicketHistoryRepository(
             IRepository<VmTicketHistory> repository,
@@ -28,8 +27,7 @@ namespace CSRO.Server.Services
             IApiIdentity apiIdentity) : base(context, apiIdentity)
         {
             _repository = repository;
-            _context = context;
-            _userId = ApiIdentity.GetUserName();
+            _context = context;            
         }
 
         public Task<List<VmTicketHistory>> GetHitoryByParentId(int parentId)
@@ -37,10 +35,10 @@ namespace CSRO.Server.Services
             return _context.VmTicketHistories.Where(a => a.IsDeleted != true && a.VmTicketId == parentId).OrderByDescending(a => a.CreatedAt).ToListAsync();
         }
 
-        public async Task<VmTicketHistory> Create(VmTicket vmTicket)
+        public async Task<VmTicketHistory> Create(VmTicket vmTicket, string userId = null)
         {            
             var add = new VmTicketHistory { VmTicketId = vmTicket.Id, Operation = $"{vmTicket.VmState} {vmTicket.Status}" };
-            _repository.Add(add, _userId);
+            _repository.Add(add, userId);
             try
             {
                 await _repository.SaveChangesAsync();

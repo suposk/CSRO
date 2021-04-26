@@ -5,6 +5,12 @@
                OperationTypeTicket="@OperatioType.Edit">
 </RestartVmCsro>
 
+<div class="m-4">
+    <VmTicketHistoryComp RequestId="@TicketId"
+                         OperationTypeTicket="@OperatioType.Edit">
+    </VmTicketHistoryComp>
+</div>
+
 @code {
     [Parameter]
     public string TicketId { get; set; }

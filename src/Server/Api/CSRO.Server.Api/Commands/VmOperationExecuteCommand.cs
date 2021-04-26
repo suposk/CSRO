@@ -67,7 +67,7 @@ namespace CSRO.Server.Api.Commands
                 if (await _repository.UpdateAsync(ticket, _userId) == null)
                     return RetunFailed(result);
 
-                await _vmTicketHistoryRepository.Create(ticket);
+                await _vmTicketHistoryRepository.Create(ticket, nameof(VmOperationExecuteCommand));
 
                 if (vmOperatioType == Entities.Enums.VmOperatioType.Restart)
                 {
@@ -115,7 +115,7 @@ namespace CSRO.Server.Api.Commands
                 if (await _repository.UpdateAsync(ticket, _userId) == null)
                     return RetunFailed(result);
 
-                await _vmTicketHistoryRepository.Create(ticket);
+                await _vmTicketHistoryRepository.Create(ticket, nameof(VmOperationExecuteCommand));
 
                 result.Success = true;
                 result.ReturnedObject = ticket;

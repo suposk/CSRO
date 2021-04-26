@@ -39,6 +39,9 @@ namespace CSRO.Client.Blazor.WebApp.AutoMapperProfiles
                 .ForMember(s => s.SubscripionIdName, op => op.Ignore())
                 .ReverseMap();
 
+            CreateMap<VmTicketHistoryDto, Models.VmTicketHistory>()                
+                .ReverseMap();
+
             CreateMap<SubscriptionDto, Models.Subscription>()
                 .ReverseMap();
 

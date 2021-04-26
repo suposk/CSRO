@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace CSRO.Server.Api.Controllers
 {
-    //[Authorize] todo
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class CustomerController : ControllerBase
