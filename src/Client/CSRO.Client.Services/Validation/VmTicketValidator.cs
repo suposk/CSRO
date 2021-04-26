@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace CSRO.Client.Services.Validation
 {
-    public class SubscripionIdNameValidator : AbstractValidator<IdNameSdk>
+    public class SubscripionIdNameValidator : AbstractValidator<IdName>
     {
         public SubscripionIdNameValidator()
         {
