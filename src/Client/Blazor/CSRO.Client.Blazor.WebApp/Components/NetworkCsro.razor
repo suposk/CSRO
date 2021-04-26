@@ -28,6 +28,7 @@
                 @if (Networks.NetworkResourceGroupList?.Count > 0)
                 {
                     <MudSelect T="@string"
+                               Dense="true"
                                Disabled="@IsNetRgDisabled"
                                OffsetY="true"
                                Label=@(nameof(Model.NetworkResourceGroup))
@@ -51,6 +52,7 @@
                 @if (Networks.VirtualNetworkList?.Count > 0)
                 {
                     <MudSelect T="@string"
+                               Dense="true"
                                Disabled="@IsVNetDisabled"
                                OffsetY="true"
                                Label=@(nameof(Model.VirtualNetwork))
@@ -74,6 +76,7 @@
                 @if (Networks.SubnetList?.Count > 0)
                 {
                     <MudSelect T="@string"
+                               Dense="true"
                                Disabled="@IsSubnetDisabled"
                                OffsetY="true"
                                Label=@(nameof(Model.Subnet))

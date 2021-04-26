@@ -29,6 +29,7 @@
                     {
                         <MudAutocomplete ResetValueOnEmptyText="true"
                                          T="string"
+                                         Dense="true"
                                          Label=@(nameof(Model.billingReference))
                                          ValueChanged="(e) => OnbillingReferenceChanged(e)"
                                          For="@(() => Model.billingReference)"
@@ -46,6 +47,7 @@
                     {
                         <MudAutocomplete ResetValueOnEmptyText="true"
                                          T="string"
+                                         Dense="true"
                                          Label=@(nameof(Model.opEnvironment))
                                          ValueChanged="(e) => OnopEnvironmentChanged(e)"
                                          For="@(() => Model.opEnvironment)"
@@ -63,6 +65,7 @@
                     {
                         <MudAutocomplete ResetValueOnEmptyText="true"
                                          T="string"
+                                         Dense="true"
                                          Label=@(nameof(Model.cmdbReference))
                                          ValueChanged="(e) => OncmdbReferenceChanged(e)"
                                          For="@(() => Model.cmdbReference)"

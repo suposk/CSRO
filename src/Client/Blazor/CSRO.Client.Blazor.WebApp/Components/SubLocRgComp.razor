@@ -26,6 +26,7 @@
                 <MudCard>
                     <MudCardContent>
                         <MudAutocomplete ResetValueOnEmptyText="true"
+                                         Dense="true"
                                          T="@IdName"
                                          Label="Subcription:"
                                          ValueChanged="(e) => OnSubscriptionValueChanged(e)"
@@ -33,6 +34,7 @@
                                          SearchFunc="@SearchSubs" />
 
                         <MudSelect T="@IdName"
+                                   Dense="true"
                                    Disabled="@IsLocDisabled"
                                    Label="Location"
                                    ToStringFunc="@Model.LocationIdName.IdNameConverter"
@@ -45,6 +47,7 @@
                         </MudSelect>
 
                         <MudSelect T="@string"
+                                   Dense="true"
                                    Disabled="@IsRgDisabled"
                                    OffsetY="true"
                                    Label="Resource Group:"
