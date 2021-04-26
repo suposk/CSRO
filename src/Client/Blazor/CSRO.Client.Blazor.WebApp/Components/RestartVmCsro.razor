@@ -124,15 +124,6 @@
                                       Disabled="@IsReadOnly"
                                       @bind-Value="Model.Note" For="@(() => Model.Note)" />
 
-                        @if (IsReadOnly)
-                        {
-                            <MudTextField Label="Created By:" Disabled="true"
-                                          @bind-Value="Model.CreatedBy" For="@(() => Model.CreatedBy)" />
-
-                            <MudTextField Label="Created At:" Disabled="true"
-                                          @bind-Value="Model.CreatedAt" For="@(() => Model.CreatedAt)" />
-                        }
-
                     </MudCardContent>
                     @if (OperationTypeTicket == OperatioType.Edit)
                     {
