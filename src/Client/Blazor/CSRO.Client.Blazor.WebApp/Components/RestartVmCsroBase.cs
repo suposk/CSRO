@@ -64,7 +64,9 @@ namespace CSRO.Client.Blazor.WebApp.Components
         protected List<string> Vms { get; set; } = new List<string>();
 
         protected bool IsRgDisabled => ResourceGroups?.Count == 0;
-        protected bool IsVmDisabled => OperationTypeTicket != OperatioType.Create || IsRgDisabled || string.IsNullOrWhiteSpace(Model?.ResorceGroup);       
+        protected bool IsVmDisabled => OperationTypeTicket != OperatioType.Create || IsRgDisabled || string.IsNullOrWhiteSpace(Model?.ResorceGroup); 
+        
+        protected string LastVmStatus = "Loading...";
 
         protected async override Task OnInitializedAsync()
         {            
@@ -107,6 +109,19 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
                 HideLoading();
             }
+        }
+
+        public async Task OnVmSelected(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return;
+
+            Model.VmName = value;
+            ShowLoading();
+            var status = await AzureSdkService.GetStatus(Model.SubcriptionId, Model.ResorceGroup, Model.VmName).ConfigureAwait(false);
+            if (status != null)
+                LastVmStatus = status.DisplayStatus;
+            HideLoading();
         }
 
         private async Task Load()
@@ -155,7 +170,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
                 else
                 {
                     ShowLoading();
-                    Subscripions = await SubcriptionSdkService.GetAllSubcriptions();
+                    Subscripions = await SubcriptionSdkService.GetAllSubcriptions();                    
                     Subscripions = Subscripions ?? new List<IdNameSdk>();
 #if DEBUG
                     if (Subscripions?.Count == 1)

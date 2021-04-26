@@ -137,7 +137,12 @@ namespace CSRO.Common.AzureSdkServices
                 if (reb != null)
                 {
                     var wait = reb.WaitForCompletionAsync(cancelToken);
-                    status = await GetStatus(subscriptionId, resourceGroupName, vmName, cancelToken);
+                    //status = await GetStatus(subscriptionId, resourceGroupName, vmName, cancelToken);
+                    while (!status.DisplayStatus.Contains("running"))
+                    {
+                        await Task.Delay(10 * 1000);
+                        status = await GetStatus(subscriptionId, resourceGroupName, vmName, cancelToken);
+                    }
                 }
                 return (true, status.DisplayStatus, null);
             }
@@ -161,11 +166,15 @@ namespace CSRO.Common.AzureSdkServices
                 if (status != null && status.DisplayStatus.Contains("deallocat"))
                     return (false, null, $"Unable to Reboot, Vm is {status.DisplayStatus ?? "Stopped"}");
 
-                var reb = await virtualMachinesClient.StartRestartAsync(resourceGroupName, vmName, cancelToken);
+                var reb = await virtualMachinesClient.StartDeallocateAsync(resourceGroupName, vmName, cancelToken);
                 if (reb != null)
                 {
                     var wait = reb.WaitForCompletionAsync(cancelToken);
-                    status = await GetStatus(subscriptionId, resourceGroupName, vmName, cancelToken);
+                    while (!status.DisplayStatus.Contains("deallocated"))
+                    {
+                        await Task.Delay(10 * 1000);
+                        status = await GetStatus(subscriptionId, resourceGroupName, vmName, cancelToken);                        
+                    }                    
                 }
                 return (true, status.DisplayStatus, null);
             }
