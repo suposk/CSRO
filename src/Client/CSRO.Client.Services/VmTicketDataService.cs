@@ -25,7 +25,7 @@ namespace CSRO.Client.Services
         /// <returns></returns>
         Task<bool> VerifyRestartStatus(VmTicket item);
         Task<bool> VerifyRestartStatusCallback(VmTicket item, Action<string> callbackStatus);        
-        Task<VmTicket> RebootVmAndWaitForConfirmation(VmTicket item);
+        Task<VmTicket> CreateVmTicketAndWaitForConfirmation(VmTicket item);
     }
 
     public class VmTicketDataService : BaseDataService, IVmTicketDataService
@@ -116,16 +116,16 @@ namespace CSRO.Client.Services
             return false;
         }
 
-        public Task<VmTicket> RebootVmAndWaitForConfirmation(VmTicket item)
+        public Task<VmTicket> CreateVmTicketAndWaitForConfirmation(VmTicket item)
         {
-            return base.RestAdd<VmTicket, VmTicketDto>(item, "RebootVmAndWaitForConfirmation");
+            return base.RestAdd<VmTicket, VmTicketDto>(item, "CreateVmTicketAndWaitForConfirmation");
         }
 
         // generic methods
 
         public Task<VmTicket> AddItemAsync(VmTicket item)
         {
-            return base.RestAdd<VmTicket, VmTicketDto>(item, "CreateRestartTicket");
+            return base.RestAdd<VmTicket, VmTicketDto>(item, "CreateVmTicket");
         }
 
         public Task<bool> UpdateItemAsync(VmTicket item)

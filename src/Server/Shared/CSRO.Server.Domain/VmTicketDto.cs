@@ -21,5 +21,7 @@ namespace CSRO.Server.Domain
         public string Status { get; set; }
 
         public string VmState { get; set; }
+
+        public string Operation { get; set; }
     }
 }

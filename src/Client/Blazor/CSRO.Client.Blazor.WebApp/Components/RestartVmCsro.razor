@@ -37,6 +37,10 @@
                                           Disabled="true"
                                           @bind-Value="Model.Id" For="@(() => Model.Id)" />
 
+                            <MudTextField Label="Operation:"
+                                          Disabled="true"
+                                          @bind-Value="Model.Operation" For="@(() => Model.Operation)" />
+
                             <MudTextField Label="Status:"
                                           Disabled="true"
                                           @bind-Value="Model.Status" For="@(() => Model.Status)" />
@@ -87,7 +91,7 @@
                                        Dense="true"
                                        Label="Select Vm Name:"
                                        Disabled="@IsVmDisabled"
-                                       @bind-Value="Model.VmName"
+                                       ValueChanged="OnVmSelected"
                                        For="@(() => Model.VmName)">
                                 @foreach (var item in Vms)
                                 {
@@ -102,11 +106,19 @@
                                           @bind-Value="Model.VmName"
                                           For="@(() => Model.VmName)" />
                         }
-                                                
-                        <MudTextField Label="External Ticket #(Gsnow)" 
-                                        Placeholder="Example INC123..."
-                                        Disabled="@IsVmDisabled"
-                                        @bind-Value="Model.ExternalTicket" For="@(() => Model.ExternalTicket)" />                        
+
+                        @if (!IsReadOnly)
+                        {
+                            <MudTextField T="string"
+                                          Label="Vm State:"
+                                          Disabled="true"
+                                          Text="@LastVmStatus" />
+                        }
+
+                        <MudTextField Label="External Ticket #(Gsnow)"
+                                      Placeholder="Example INC123..."
+                                      Disabled="@IsVmDisabled"
+                                      @bind-Value="Model.ExternalTicket" For="@(() => Model.ExternalTicket)" />
 
                         <MudTextField Label="Note:"
                                       Disabled="@IsReadOnly"
@@ -125,10 +137,26 @@
                         }
 
                     </MudCardContent>
-                    @if (!IsReadOnly)
+                    @if (OperationTypeTicket == OperatioType.Edit)
                     {
                         <MudCardActions>
                             <MudButton Disabled="@IsLoading" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Submit</MudButton>
+                        </MudCardActions>
+                    }
+                    else if (OperationTypeTicket == OperatioType.Create)
+                    {
+                        <MudCardActions>
+                            <MudGrid>
+                                <MudItem>
+                                    <MudButton Disabled="@IsLoading" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" StartIcon="@Icons.Material.Filled.PlayArrow" OnClick="@((e) => Model.Operation = VmOperatioType.Start.ToString())">@VmOperatioType.Start</MudButton>
+                                </MudItem>
+                                <MudItem>
+                                    <MudButton Disabled="@IsLoading" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" StartIcon="@Icons.Material.Filled.Stop" OnClick="@((e) => Model.Operation = VmOperatioType.Stop.ToString())">@VmOperatioType.Stop</MudButton>
+                                </MudItem>
+                                <MudItem>
+                                    <MudButton Disabled="@IsLoading" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" StartIcon="@Icons.Material.Filled.Replay" OnClick="@((e) => Model.Operation = VmOperatioType.Restart.ToString())">@VmOperatioType.Restart</MudButton>
+                                </MudItem>
+                            </MudGrid>
                         </MudCardActions>
                     }
                 </MudCard>

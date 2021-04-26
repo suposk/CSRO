@@ -43,6 +43,8 @@ namespace CSRO.Client.Services.Models
 
         public string VmState { get; set; }
 
+        public string Operation { get; set; }
+
 
         IdNameSdk _SubscripionIdName;
         public IdNameSdk SubscripionIdName => _SubscripionIdName;

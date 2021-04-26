@@ -65,8 +65,6 @@ namespace CSRO.Server.Api.BackgroundTasks
 
                 var vmOperationExecuteCommand = new VmOperationExecuteCommand() {  VmOperationRequestMessage = dto };
                 var response = await _mediator.Send(vmOperationExecuteCommand);
-                //if (created.IsNullOrEmptyCollection() || created.Count != dto.ApprovedAdoProjectIds.Count)
-                //    _logger.LogWarning($"{nameof(OnVmOperationReceived)} Unxcepted result from {nameof(CreateApprovedAdoProjectIdsCommand)} ", created, dto);
 
                 await _wmOperationRequestMessageReceiverClient.CompleteAsync(message.SystemProperties.LockToken);
             }

@@ -66,6 +66,8 @@ namespace CSRO.Client.Blazor.WebApp.Components
         protected bool IsRgDisabled => ResourceGroups?.Count == 0;
         protected bool IsVmDisabled => OperationTypeTicket != OperatioType.Create || IsRgDisabled || string.IsNullOrWhiteSpace(Model?.ResorceGroup);
 
+        protected string LastVmStatus = null;
+
         protected async override Task OnInitializedAsync()
         {            
             await Load();
@@ -73,6 +75,8 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
         async Task LoadRg(string subcriptionId)
         {
+            Model.ResorceGroup = null;
+            Model.VmName = null;
             ResourceGroups.Clear();
             var rgs = await ResourceGroupervice.GetResourceGroups(subcriptionId);
             if (rgs != null)
@@ -87,7 +91,8 @@ namespace CSRO.Client.Blazor.WebApp.Components
             if (value != null)
             {
                 Model.SubcriptionId = value.Id;
-                Model.SubcriptionName = value.Name;
+                Model.SubcriptionName = value.Name;                
+                LastVmStatus = null;
 
                 ShowLoading();
                 await LoadRg(value.Id);
@@ -100,6 +105,9 @@ namespace CSRO.Client.Blazor.WebApp.Components
             if (value != null)
             {
                 Model.ResorceGroup = value;
+                Model.VmName = null;
+                LastVmStatus = null;
+
                 ShowLoading();
                 var vms = await VmService.GetVmNames(Model.SubcriptionId, Model.ResorceGroup);
                 Vms = vms ?? new List<string>();
@@ -107,6 +115,20 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
                 HideLoading();
             }
+        }
+
+        public async Task OnVmSelected(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return;
+
+            Model.VmName = value;
+            LastVmStatus = "Loading...";
+            ShowLoading();
+            var status = await AzureSdkService.GetStatus(Model.SubcriptionId, Model.ResorceGroup, Model.VmName).ConfigureAwait(false);
+            if (status != null)
+                LastVmStatus = status.DisplayStatus;
+            HideLoading();
         }
 
         private async Task Load()
@@ -155,7 +177,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
                 else
                 {
                     ShowLoading();
-                    Subscripions = await SubcriptionSdkService.GetAllSubcriptions();
+                    Subscripions = await SubcriptionSdkService.GetAllSubcriptions();                    
                     Subscripions = Subscripions ?? new List<IdNameSdk>();
 #if DEBUG
                     if (Subscripions?.Count == 1)
@@ -208,7 +230,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
                         ShowLoading("Creating request");
 
                         var added = await VmTicketDataService.AddItemAsync(Model);
-                        //var added = await VmTicketDataService.RebootVmAndWaitForConfirmation(Model);
+                        //var added = await VmTicketDataService.CreateVmTicketAndWaitForConfirmation(Model);
                         if (added != null)
                         {
                             Success = true;

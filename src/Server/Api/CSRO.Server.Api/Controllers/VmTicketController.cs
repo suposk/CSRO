@@ -86,15 +86,15 @@ namespace CSRO.Server.Api.Controllers
         }
 
         //// POST: api/MessageDetails
-        [HttpPost, Route(nameof(CreateRestartTicket))]        
-        public async Task<ActionResult<VmTicketDto>> CreateRestartTicket(VmTicketDto dto)
+        [HttpPost, Route(nameof(CreateVmTicket))]        
+        public async Task<ActionResult<VmTicketDto>> CreateVmTicket(VmTicketDto dto)
         {
             if (dto == null)
                 return BadRequest();
 
             try
             {
-                _logger.LogInformation(ApiLogEvents.InsertItem, $"{nameof(CreateRestartTicket)} Started");
+                _logger.LogInformation(ApiLogEvents.InsertItem, $"{nameof(CreateVmTicket)} Started");
 
                 var repoObj = _mapper.Map<VmTicket>(dto);
                 var wmOperationRequestCommand = new VmOperationRequestCommand() { VmTicket = repoObj };
@@ -110,21 +110,21 @@ namespace CSRO.Server.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, nameof(CreateRestartTicket), dto);                
+                _logger.LogError(ex, nameof(CreateVmTicket), dto);                
                 return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }               
         }
 
         //// POST: api/MessageDetails
-        [HttpPost, Route(nameof(RebootVmAndWaitForConfirmation))]
-        public async Task<ActionResult<VmTicketDto>> RebootVmAndWaitForConfirmation(VmTicketDto dto)
+        [HttpPost, Route(nameof(CreateVmTicketAndWaitForConfirmation))]
+        public async Task<ActionResult<VmTicketDto>> CreateVmTicketAndWaitForConfirmation(VmTicketDto dto)
         {
             if (dto == null)
                 return BadRequest();
 
             try
             {
-                _logger.LogInformation(ApiLogEvents.InsertItem, $"{nameof(RebootVmAndWaitForConfirmation)} Started");
+                _logger.LogInformation(ApiLogEvents.InsertItem, $"{nameof(CreateVmTicketAndWaitForConfirmation)} Started");
 
                 var repoObj = _mapper.Map<VmTicket>(dto);
                 var wmOperationRequestCommand = new VmOperationRequestCommand() { VmTicket = repoObj, WaitForActionToComplete = true };
@@ -140,7 +140,7 @@ namespace CSRO.Server.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, nameof(RebootVmAndWaitForConfirmation), dto);
+                _logger.LogError(ex, nameof(CreateVmTicketAndWaitForConfirmation), dto);
                 return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }
         }
@@ -151,6 +151,9 @@ namespace CSRO.Server.Api.Controllers
         {
             if (dto == null || dto.Id < 1)
                 return BadRequest();
+
+            if (Enum.TryParse(dto.Status, out Status eStatus) && eStatus > Status.Submitted)
+                return BadRequest($"Can not modify if Status is {eStatus}");
                         
             try
             {
@@ -165,14 +168,10 @@ namespace CSRO.Server.Api.Controllers
 
                 repoObj = _mapper.Map<VmTicket>(dto);
                 _repository.Update(repoObj);
-                if (await _repository.SaveChangesAsync())
-                {
-                    return NoContent();
-                }
-                else
-                {
-                    return Conflict("Conflict detected, refresh and try again.");
-                }
+                if (await _repository.SaveChangesAsync())                
+                    return NoContent();                
+                else                
+                    return Conflict("Conflict detected, refresh and try again.");                
             }
             catch (Exception ex)
             {
@@ -200,11 +199,8 @@ namespace CSRO.Server.Api.Controllers
                 }
 
                 _repository.Remove(repoObj);
-                if (await _repository.SaveChangesAsync())
-                {
-                    return NoContent();
-                }
-
+                if (await _repository.SaveChangesAsync())                
+                    return NoContent();               
             }
             catch (Exception ex)
             {

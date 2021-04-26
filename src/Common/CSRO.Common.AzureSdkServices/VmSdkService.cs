@@ -16,12 +16,14 @@ using System.Threading.Tasks;
 namespace CSRO.Common.AzureSdkServices
 {
     public interface IVmSdkService
-    {
-        Task<(bool success, string status, string errorMessage)> RebootVmAndWaitForConfirmation(string subscriptionId, string resourceGroupName, string vmName, CancellationToken cancelToken = default);
+    {        
         Task<List<object>> TryGetData(string subscriptionId, string resourceGroupName, string vmName);
         Task<IDictionary<string, string>> GetTags(string subscriptionId, string resourceGroupName, string vmName, CancellationToken cancelToken = default);
         Task<(bool success, string errorMessage)> IsRebootAllowed(string subscriptionId, string resourceGroupName, string vmName, CancellationToken cancelToken = default);
         Task<InstanceViewStatus> GetStatus(string subscriptionId, string resourceGroupName, string vmName, CancellationToken cancelToken = default);
+        Task<(bool success, string status, string errorMessage)> StartVmAndWaitForConfirmation(string subscriptionId, string resourceGroupName, string vmName, CancellationToken cancelToken = default);
+        Task<(bool success, string status, string errorMessage)> StopVmAndWaitForConfirmation(string subscriptionId, string resourceGroupName, string vmName, CancellationToken cancelToken = default);
+        Task<(bool success, string status, string errorMessage)> RestartVmAndWaitForConfirmation(string subscriptionId, string resourceGroupName, string vmName, CancellationToken cancelToken = default);
     }
 
     public class VmSdkService : IVmSdkService
@@ -30,6 +32,7 @@ namespace CSRO.Common.AzureSdkServices
         private readonly IAdService _adService;
         private readonly ISubscriptionSdkService _subscriptionSdkService;
         private readonly TokenCredential _tokenCredential;
+        const int RetryStatusSeconds = 5;
 
         public VmSdkService
             (
@@ -90,26 +93,23 @@ namespace CSRO.Common.AzureSdkServices
             return null;
         }
 
-        public async Task<(bool success, string status, string errorMessage)> RebootVmAndWaitForConfirmation(string subscriptionId, string resourceGroupName, string vmName, CancellationToken cancelToken = default)
-        {            
+        public async Task<(bool success, string status, string errorMessage)> RestartVmAndWaitForConfirmation(string subscriptionId, string resourceGroupName, string vmName, CancellationToken cancelToken = default)
+        {
             try
             {
                 if (string.IsNullOrWhiteSpace(subscriptionId) | string.IsNullOrWhiteSpace(resourceGroupName) || string.IsNullOrWhiteSpace(vmName))
-                    return (false, null, $"{nameof(RebootVmAndWaitForConfirmation)}: missing parameters");
+                    return (false, null, $"{nameof(RestartVmAndWaitForConfirmation)}: missing parameters");
 
                 var computeClient = new ComputeManagementClient(subscriptionId, _tokenCredential);
                 var virtualMachinesClient = computeClient.VirtualMachines;
 
-                var status = await GetStatus(subscriptionId, resourceGroupName, vmName, cancelToken);
-                //if (statusResults.Contains("deallocat"))
+                var status = await GetStatus(subscriptionId, resourceGroupName, vmName, cancelToken);                
                 if (status != null && status.DisplayStatus.Contains("deallocat"))
                     return (false, null, $"Unable to Reboot, Vm is {status.DisplayStatus ?? "Stopped"}");
 
                 var reb = await virtualMachinesClient.StartRestartAsync(resourceGroupName, vmName, cancelToken);
                 if (reb != null)
                 {
-                    //var up = await reb.UpdateStatusAsync(cancelToken);
-                    //status = await GetStatus(subscriptionId, resourceGroupName, vmName, cancelToken);
                     var wait = reb.WaitForCompletionAsync(cancelToken);
                     status = await GetStatus(subscriptionId, resourceGroupName, vmName, cancelToken);
                 }
@@ -117,7 +117,69 @@ namespace CSRO.Common.AzureSdkServices
             }
             catch (Exception ex)
             {
-                return (false, null, $"Error in {nameof(RebootVmAndWaitForConfirmation)}: \n{ex.Message}");
+                return (false, null, $"Error in {nameof(RestartVmAndWaitForConfirmation)}: \n{ex.Message}");
+            }
+        }
+
+        public async Task<(bool success, string status, string errorMessage)> StartVmAndWaitForConfirmation(string subscriptionId, string resourceGroupName, string vmName, CancellationToken cancelToken = default)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(subscriptionId) | string.IsNullOrWhiteSpace(resourceGroupName) || string.IsNullOrWhiteSpace(vmName))
+                    return (false, null, $"{nameof(StartVmAndWaitForConfirmation)}: missing parameters");
+
+                var computeClient = new ComputeManagementClient(subscriptionId, _tokenCredential);
+                var virtualMachinesClient = computeClient.VirtualMachines;
+
+                var status = await GetStatus(subscriptionId, resourceGroupName, vmName, cancelToken);     
+
+                var reb = await virtualMachinesClient.StartStartAsync(resourceGroupName, vmName, cancelToken);
+                if (reb != null)
+                {
+                    var wait = reb.WaitForCompletionAsync(cancelToken);                    
+                    while (!status.DisplayStatus.Contains("running"))
+                    {
+                        await Task.Delay(RetryStatusSeconds * 1000);
+                        status = await GetStatus(subscriptionId, resourceGroupName, vmName, cancelToken);
+                    }
+                }
+                return (true, status.DisplayStatus, null);
+            }
+            catch (Exception ex)
+            {
+                return (false, null, $"Error in {nameof(StartVmAndWaitForConfirmation)}: \n{ex.Message}");
+            }
+        }
+
+        public async Task<(bool success, string status, string errorMessage)> StopVmAndWaitForConfirmation(string subscriptionId, string resourceGroupName, string vmName, CancellationToken cancelToken = default)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(subscriptionId) | string.IsNullOrWhiteSpace(resourceGroupName) || string.IsNullOrWhiteSpace(vmName))
+                    return (false, null, $"{nameof(StopVmAndWaitForConfirmation)}: missing parameters");
+
+                var computeClient = new ComputeManagementClient(subscriptionId, _tokenCredential);
+                var virtualMachinesClient = computeClient.VirtualMachines;
+
+                var status = await GetStatus(subscriptionId, resourceGroupName, vmName, cancelToken);                
+                if (status != null && status.DisplayStatus.Contains("deallocat"))
+                    return (false, null, $"Unable to Reboot, Vm is {status.DisplayStatus ?? "Stopped"}");
+
+                var reb = await virtualMachinesClient.StartDeallocateAsync(resourceGroupName, vmName, cancelToken);
+                if (reb != null)
+                {
+                    var wait = reb.WaitForCompletionAsync(cancelToken);
+                    while (!status.DisplayStatus.Contains("deallocated"))
+                    {
+                        await Task.Delay(RetryStatusSeconds * 1000);
+                        status = await GetStatus(subscriptionId, resourceGroupName, vmName, cancelToken);                        
+                    }                    
+                }
+                return (true, status.DisplayStatus, null);
+            }
+            catch (Exception ex)
+            {
+                return (false, null, $"Error in {nameof(StopVmAndWaitForConfirmation)}: \n{ex.Message}");
             }
         }
 

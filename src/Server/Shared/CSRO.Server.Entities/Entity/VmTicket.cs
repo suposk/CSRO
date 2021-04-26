@@ -19,5 +19,7 @@ namespace CSRO.Server.Entities.Entity
         public string Status { get; set; }
 
         public string VmState { get; set; }
+
+        public string Operation { get; set; }
     }
 }

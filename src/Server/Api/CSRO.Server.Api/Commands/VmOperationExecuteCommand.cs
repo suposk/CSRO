@@ -52,37 +52,69 @@ namespace CSRO.Server.Api.Commands
             try
             {
                 var ticket = await _repository.GetId(request.VmOperationRequestMessage.TicketId);
-                                                
-                ticket.Status = "Processing";
-                ticket.VmState = "Restart in Progress";
-                ticket.Note += $"; perfomed action: {ticket.Status}={ticket.VmState}"; //TODO replace with history table
-                _repository.Update(ticket, _userId);
-                if (!await _repository.SaveChangesAsync())
+                if (!Enum.TryParse(ticket.Operation, out Entities.Enums.VmOperatioType vmOperatioType) || vmOperatioType == Entities.Enums.VmOperatioType.Unknown)
                 {
-                    result.Success = false;
-                    result.Message = "Failed to save to DB";
+                    result.Message = string.IsNullOrWhiteSpace(ticket.Operation) ? $"{nameof(ticket.Operation)} is missing" : $"Unsupported type of {nameof(ticket.Operation)} {ticket.Operation}";
                     return result;
-                }                
+                }
 
-                var reb = await _vmSdkService.RebootVmAndWaitForConfirmation(ticket.SubcriptionId, ticket.ResorceGroup, ticket.VmName).ConfigureAwait(false);
-                if (reb.success)
+                ticket.Status = Status.Processing.ToString();
+                ticket.VmState = $"{ticket.Operation} in Progress";
+                //TODO history
+                //ticket.Note += $"; perfomed action: {ticket.Status}={ticket.VmState}"; //TODO replace with history table
+
+                if (await _repository.UpdateAsync(ticket, _userId) == null)
+                    return RetunFailed(result);
+
+                if (vmOperatioType == Entities.Enums.VmOperatioType.Restart)
                 {
-                    ticket.Status = "Completed";
-                    ticket.VmState = reb.status;
+                    var reb = await _vmSdkService.RestartVmAndWaitForConfirmation(ticket.SubcriptionId, ticket.ResorceGroup, ticket.VmName).ConfigureAwait(false);
+                    if (reb.success)
+                    {
+                        ticket.Status = Status.Completed.ToString();
+                        ticket.VmState = reb.status;
+                    }
+                    else
+                    {
+                        ticket.Status = Status.Failed.ToString();
+                        ticket.VmState = reb.errorMessage;
+                    }
                 }
-                else
+                else if (vmOperatioType == Entities.Enums.VmOperatioType.Start)
                 {
-                    ticket.Status = "Rejected";
-                    ticket.VmState = reb.errorMessage;
+                    var reb = await _vmSdkService.StartVmAndWaitForConfirmation(ticket.SubcriptionId, ticket.ResorceGroup, ticket.VmName).ConfigureAwait(false);
+                    if (reb.success)
+                    {
+                        ticket.Status = Status.Completed.ToString();
+                        ticket.VmState = reb.status;
+                    }
+                    else
+                    {
+                        ticket.Status = Status.Failed.ToString();
+                        ticket.VmState = reb.errorMessage;
+                    }
                 }
-                ticket.Note += $"; perfomed action: {ticket.Status}={ticket.VmState}"; //TODO replace with history table
-                _repository.Update(ticket, _userId);
-                if (!await _repository.SaveChangesAsync())
+                else if (vmOperatioType == Entities.Enums.VmOperatioType.Stop)
                 {
-                    result.Success = false;
-                    result.Message = "Failed to save to DB";
-                    return result;
+                    var reb = await _vmSdkService.StopVmAndWaitForConfirmation(ticket.SubcriptionId, ticket.ResorceGroup, ticket.VmName).ConfigureAwait(false);
+                    if (reb.success)
+                    {
+                        ticket.Status = Status.Completed.ToString();
+                        ticket.VmState = reb.status;
+                    }
+                    else
+                    {
+                        ticket.Status = Status.Failed.ToString();
+                        ticket.VmState = reb.errorMessage;
+                    }
                 }
+
+                //TODO history
+                //ticket.Note += $"; perfomed action: {ticket.Status}={ticket.VmState}"; //TODO replace with history table
+
+                if (await _repository.UpdateAsync(ticket, _userId) == null)
+                    return RetunFailed(result);
+
                 result.Success = true;
                 result.ReturnedObject = ticket;
             }
@@ -92,6 +124,13 @@ namespace CSRO.Server.Api.Commands
                 _logger.LogError($"{nameof(VmOperationExecuteCommandHandler)} failed due to: {ex.Message}");
             }
             return result;
+
+            static ResponseMessage<VmTicket> RetunFailed(ResponseMessage<VmTicket> result)
+            {
+                result.Success = false;
+                result.Message = "Failed to save to DB";
+                return result;
+            }
         }
     }
 }

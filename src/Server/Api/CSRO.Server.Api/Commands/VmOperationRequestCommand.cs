@@ -2,6 +2,7 @@
 using CSRO.Server.Api.Messaging;
 using CSRO.Server.Domain;
 using CSRO.Server.Entities.Entity;
+using CSRO.Server.Entities.Enums;
 using CSRO.Server.Infrastructure;
 using CSRO.Server.Infrastructure.MessageBus;
 using CSRO.Server.Services;
@@ -60,6 +61,11 @@ namespace CSRO.Server.Api.Commands
             try
             {
                 var ticket = request.VmTicket;
+                if (!Enum.TryParse(ticket.Operation, out VmOperatioType vmOperatioType) || vmOperatioType == VmOperatioType.Unknown)
+                {
+                    result.Message = string.IsNullOrWhiteSpace(ticket.Operation) ? $"{nameof(ticket.Operation)} is missing" : $"Unsupported type of {nameof(ticket.Operation)} {ticket.Operation}";
+                    return result;
+                }
 
                 //validate sub name and tags
                 var canReboot = await _vmSdkService.IsRebootAllowed(ticket.SubcriptionId, ticket.ResorceGroup, ticket.VmName).ConfigureAwait(false);
@@ -70,18 +76,7 @@ namespace CSRO.Server.Api.Commands
                     return result;
                 }
 
-                var status = await _vmSdkService.GetStatus(ticket.SubcriptionId, ticket.ResorceGroup, ticket.VmName).ConfigureAwait(false);
-                if (status != null && status.DisplayStatus.Contains("deallocat"))
-                {
-                    result.Success = false;
-                    result.Message = $"Unable to Reboot, Vm is {status.DisplayStatus ?? "Stopped"}";
-                    return result;
-                }
-
                 //save                
-                ticket.Status = "Opened";
-                ticket.VmState = "Restart Submited";
-                ticket.Note += $"; perfomed action: {ticket.Status}={ticket.VmState}"; //TODO replace with history table
                 _repository.Add(ticket, _userId);
                 if (!await _repository.SaveChangesAsync())
                 {
@@ -89,6 +84,9 @@ namespace CSRO.Server.Api.Commands
                     result.Message = "Failed to save to DB";
                     return result;
                 }
+
+                //TODO history
+
                 //send message to bus
                 BusMessageBase message = new VmOperationRequestMessage { Vm = ticket.VmName, UserId = _userId, TicketId = ticket.Id }.CreateBaseMessage();
                 try
