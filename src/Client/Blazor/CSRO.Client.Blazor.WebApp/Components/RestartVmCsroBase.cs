@@ -64,9 +64,9 @@ namespace CSRO.Client.Blazor.WebApp.Components
         protected List<string> Vms { get; set; } = new List<string>();
 
         protected bool IsRgDisabled => ResourceGroups?.Count == 0;
-        protected bool IsVmDisabled => OperationTypeTicket != OperatioType.Create || IsRgDisabled || string.IsNullOrWhiteSpace(Model?.ResorceGroup); 
-        
-        protected string LastVmStatus = "Loading...";
+        protected bool IsVmDisabled => OperationTypeTicket != OperatioType.Create || IsRgDisabled || string.IsNullOrWhiteSpace(Model?.ResorceGroup);
+
+        protected string LastVmStatus = null;
 
         protected async override Task OnInitializedAsync()
         {            
@@ -75,6 +75,8 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
         async Task LoadRg(string subcriptionId)
         {
+            Model.ResorceGroup = null;
+            Model.VmName = null;
             ResourceGroups.Clear();
             var rgs = await ResourceGroupervice.GetResourceGroups(subcriptionId);
             if (rgs != null)
@@ -89,8 +91,8 @@ namespace CSRO.Client.Blazor.WebApp.Components
             if (value != null)
             {
                 Model.SubcriptionId = value.Id;
-                Model.SubcriptionName = value.Name;
-                LastVmStatus = "Loading...";
+                Model.SubcriptionName = value.Name;                
+                LastVmStatus = null;
 
                 ShowLoading();
                 await LoadRg(value.Id);
@@ -103,7 +105,8 @@ namespace CSRO.Client.Blazor.WebApp.Components
             if (value != null)
             {
                 Model.ResorceGroup = value;
-                LastVmStatus = "Loading...";
+                Model.VmName = null;
+                LastVmStatus = null;
 
                 ShowLoading();
                 var vms = await VmService.GetVmNames(Model.SubcriptionId, Model.ResorceGroup);
@@ -120,6 +123,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
                 return;
 
             Model.VmName = value;
+            LastVmStatus = "Loading...";
             ShowLoading();
             var status = await AzureSdkService.GetStatus(Model.SubcriptionId, Model.ResorceGroup, Model.VmName).ConfigureAwait(false);
             if (status != null)
