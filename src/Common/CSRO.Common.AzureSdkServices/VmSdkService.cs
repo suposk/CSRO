@@ -32,6 +32,7 @@ namespace CSRO.Common.AzureSdkServices
         private readonly IAdService _adService;
         private readonly ISubscriptionSdkService _subscriptionSdkService;
         private readonly TokenCredential _tokenCredential;
+        const int RetryStatusSeconds = 5;
 
         public VmSdkService
             (
@@ -102,8 +103,7 @@ namespace CSRO.Common.AzureSdkServices
                 var computeClient = new ComputeManagementClient(subscriptionId, _tokenCredential);
                 var virtualMachinesClient = computeClient.VirtualMachines;
 
-                var status = await GetStatus(subscriptionId, resourceGroupName, vmName, cancelToken);
-                //if (statusResults.Contains("deallocat"))
+                var status = await GetStatus(subscriptionId, resourceGroupName, vmName, cancelToken);                
                 if (status != null && status.DisplayStatus.Contains("deallocat"))
                     return (false, null, $"Unable to Reboot, Vm is {status.DisplayStatus ?? "Stopped"}");
 
@@ -136,11 +136,10 @@ namespace CSRO.Common.AzureSdkServices
                 var reb = await virtualMachinesClient.StartStartAsync(resourceGroupName, vmName, cancelToken);
                 if (reb != null)
                 {
-                    var wait = reb.WaitForCompletionAsync(cancelToken);
-                    //status = await GetStatus(subscriptionId, resourceGroupName, vmName, cancelToken);
+                    var wait = reb.WaitForCompletionAsync(cancelToken);                    
                     while (!status.DisplayStatus.Contains("running"))
                     {
-                        await Task.Delay(10 * 1000);
+                        await Task.Delay(RetryStatusSeconds * 1000);
                         status = await GetStatus(subscriptionId, resourceGroupName, vmName, cancelToken);
                     }
                 }
@@ -172,7 +171,7 @@ namespace CSRO.Common.AzureSdkServices
                     var wait = reb.WaitForCompletionAsync(cancelToken);
                     while (!status.DisplayStatus.Contains("deallocated"))
                     {
-                        await Task.Delay(10 * 1000);
+                        await Task.Delay(RetryStatusSeconds * 1000);
                         status = await GetStatus(subscriptionId, resourceGroupName, vmName, cancelToken);                        
                     }                    
                 }

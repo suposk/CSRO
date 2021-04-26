@@ -230,7 +230,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
                         ShowLoading("Creating request");
 
                         var added = await VmTicketDataService.AddItemAsync(Model);
-                        //var added = await VmTicketDataService.RebootVmAndWaitForConfirmation(Model);
+                        //var added = await VmTicketDataService.CreateVmTicketAndWaitForConfirmation(Model);
                         if (added != null)
                         {
                             Success = true;
