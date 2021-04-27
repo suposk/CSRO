@@ -72,9 +72,8 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
         protected bool IsRgDisabled => IsLocDisabled | ResourceGroups?.Count == 0;
         protected bool IsNewRgDisabled => IsLocDisabled | string.IsNullOrWhiteSpace(Model.Location);
         protected Dictionary<string, string> ColumnsToDisplay = new();
-
-        //protected bool IsSimpleView { get; set; }
-        private bool _IsSimpleView;
+                
+        private bool _IsSimpleView = true;
 
         public bool IsSimpleView
         {
