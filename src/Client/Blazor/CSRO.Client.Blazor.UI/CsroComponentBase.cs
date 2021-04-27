@@ -8,6 +8,17 @@ namespace CSRO.Client.Blazor.UI
 {
     public class CsroComponentBase : ComponentBase
     {
+        [Parameter]
+        public bool Refresh { get; set; }
+
+
+        /// <summary>
+        /// Callback to other other Components
+        /// </summary>
+        [Parameter]
+        public EventCallback<bool> RefreshChanged { get; set; }
+
+
         public const string LOADING_MESSAGE = "Loading...";
         public const string PROCESSING_MESSAGE = "Processing...";
 
@@ -18,7 +29,13 @@ namespace CSRO.Client.Blazor.UI
         protected bool IsLoadingSecondary { get; set; }
         protected string LoadingMessageSecondary { get; set; } = LOADING_MESSAGE;
 
-        protected bool Success { get; set; }
+        protected bool Success { get; set; }        
+        public async virtual Task RefreshAsync() 
+        {
+            await RefreshChanged.InvokeAsync(true);
+            await LoadAsync();            
+        }
+        public virtual Task LoadAsync() => Task.CompletedTask;        
 
         public virtual void ShowLoading(string loadingMessage = LOADING_MESSAGE)
         {

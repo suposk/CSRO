@@ -68,9 +68,11 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
         protected string LastVmStatus = null;
 
+        protected bool ButtonsDisabled => IsLoading || string.IsNullOrWhiteSpace(Model.VmName);
+
         protected async override Task OnInitializedAsync()
         {            
-            await Load();
+            await LoadAsync();
         }
 
         async Task LoadRg(string subcriptionId)
@@ -131,12 +133,10 @@ namespace CSRO.Client.Blazor.WebApp.Components
             HideLoading();
         }
 
-        private async Task Load()
+        public async override Task LoadAsync()
         {
             try
             {
-                //var loc = await LocationsService.GetLocations();
-
                 if (OperationTypeTicket != OperatioType.Create)
                 {
                     ShowLoading();                    
@@ -144,8 +144,6 @@ namespace CSRO.Client.Blazor.WebApp.Components
                     Model.Id = int.Parse(TicketId);
                     var server = await VmTicketDataService.GetItemByIdAsync(Model.Id);
                     await LoadRg(server?.SubcriptionId);
-                    //var subName = await SubcriptionService.GetSubcription(server?.SubcriptionId);
-                    //var rgName = await ResourceGroupervice.GetResourceGroupsIdName(server?.SubcriptionId);
 
                     if (server != null)
                     {
@@ -255,7 +253,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
                         {
                             var ok = await CsroDialogService.ShowWarning("Update Error", $"Conflic Detected, Please refresh and try again", "Refresh");
                             if (ok)
-                                await Load();
+                                await LoadAsync();
                         }
                     }
                     StateHasChanged();

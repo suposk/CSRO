@@ -49,11 +49,11 @@ namespace CSRO.Server.Ado.Api.Services
             return _context.AdoProjectHistorys.Where(a => a.IsDeleted != true && a.AdoProjectId == parentId).OrderByDescending(a => a.CreatedAt).ToListAsync();
         }
 
-        public override Task<List<AdoProjectHistory>> GetList()
-        {
-            //return _repository.GetListFilter(a => a.IsDeleted != true);
-            return _context.AdoProjectHistorys.Where(a => a.IsDeleted != true).OrderByDescending(a => a.CreatedAt).ToListAsync();
-        }
+        //public override Task<List<AdoProjectHistory>> GetList()
+        //{
+        //    //return _repository.GetListFilter(a => a.IsDeleted != true);
+        //    return _context.AdoProjectHistorys.Where(a => a.IsDeleted != true).OrderByDescending(a => a.CreatedAt).ToListAsync();
+        //}
 
         public async Task<List<AdoProject>> GetPendingProjectsApproval()
         {

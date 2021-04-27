@@ -19,171 +19,163 @@
             </MudGrid>
         }
 
-        @if (Success == false)
-        {
-            <EditForm Model="@Model" OnValidSubmit="OnValidSubmit">
-                @*<DataAnnotationsValidator />*@
-                <FluentValidationValidator />
-                <MudCard>
-                    <MudCardContent>
-                        @if (OperationTypeTicket != OperatioType.Create)
-                        {
-                            <MudTextField Label="Last Vm States:"
-                                          Disabled="true"
-                                          Class="text-warning"
-                                          @bind-Value="Model.VmState" For="@(() => Model.VmState)" />
-
-                            <MudTextField Label="Id:"
-                                          Disabled="true"
-                                          @bind-Value="Model.Id" For="@(() => Model.Id)" />
-
-                            <MudTextField Label="Operation:"
-                                          Disabled="true"
-                                          @bind-Value="Model.Operation" For="@(() => Model.Operation)" />
-
-                            <MudTextField Label="Status:"
-                                          Disabled="true"
-                                          @bind-Value="Model.Status" For="@(() => Model.Status)" />
-
-                            <MudTextField Label="Subcription Name:"
-                                          Disabled="true"
-                                          @bind-Value="Model.SubcriptionName" For="@(() => Model.SubcriptionName)" />
-
-                            <MudTextField Label="Resorce Group:"
-                                          Disabled="true"
-                                          @bind-Value="Model.ResorceGroup" For="@(() => Model.ResorceGroup)" />
-
-                        }
-                        else
-                        {
-                            <MudAutocomplete ResetValueOnEmptyText="true"
-                                             T="@IdName"
-                                             Dense="true"
-                                             Label="Select Subcription:"
-                                             Placeholder="Only dev or appdev"
-                                             For="@(() => Model.SubscripionIdName)"
-                                             ValueChanged="(e) => OnSubscriptionChanged(e)"
-                                             SearchFunc="@SearchSubs" />
-
-                            @*
-            Value="@(new IdName { Name = Model.SubcriptionName })"
-            For="@(() => new IdName { Id = Model.Id.ToString(), Name = Model.SubcriptionName })"
-            For="@(() => SelSubscripion)"
-            <MudSelectItem Value="@(new Pizza() { Name="Cardinale"})" />
-                            *@
-
-                            <MudSelect T="@string"
-                                       Dense="true"
-                                       Disabled="@IsRgDisabled"
-                                       Label="Select Resource Group:"
-                                       ValueChanged="(e) => OnRgChanged(e)"
-                                       For="@(() => Model.ResorceGroup)">
-                                @foreach (var rg in ResourceGroups)
-                                {
-                                    <MudSelectItem T="string" Value="@rg">@rg</MudSelectItem>
-                                }
-                            </MudSelect>
-                        }
-
-                        @if (Vms.Count > 0)
-                        {
-                            <MudSelect T="@string"
-                                       Dense="true"
-                                       Label="Select Vm Name:"
-                                       Disabled="@IsVmDisabled"
-                                       ValueChanged="OnVmSelected"
-                                       For="@(() => Model.VmName)">
-                                @foreach (var item in Vms)
-                                {
-                                    <MudSelectItem T="string" Value="@item">@item</MudSelectItem>
-                                }
-                            </MudSelect>
-                        }
-                        else
-                        {
-                            <MudTextField Label="Vm Name:"
-                                          Disabled="@IsVmDisabled"
-                                          @bind-Value="Model.VmName"
-                                          For="@(() => Model.VmName)" />
-                        }
-
-                        @if (!IsReadOnly)
-                        {
-                            <MudTextField T="string"
-                                          Label="Vm State:"
-                                          Disabled="true"
-                                          Text="@LastVmStatus" />
-                        }
-
-                        <MudTextField Label="External Ticket #(Gsnow)"
-                                      Placeholder="Example INC123..."
-                                      Disabled="@IsVmDisabled"
-                                      @bind-Value="Model.ExternalTicket" For="@(() => Model.ExternalTicket)" />
-
-                        <MudTextField Label="Note:"
-                                      Disabled="@IsReadOnly"
-                                      @bind-Value="Model.Note" For="@(() => Model.Note)" />
-
-                        @if (IsReadOnly)
-                        {
-                            <MudTextField Label="Created By:" Disabled="true"
-                                          @bind-Value="Model.CreatedBy" For="@(() => Model.CreatedBy)" />
-
-                            <MudTextField Label="Created At:" Disabled="true"
-                                          @bind-Value="Model.CreatedAt" For="@(() => Model.CreatedAt)" />
-                        }
-
-                    </MudCardContent>
-                    @if (OperationTypeTicket == OperatioType.Edit)
+        <EditForm Model="@Model" OnValidSubmit="OnValidSubmit">
+            @*<DataAnnotationsValidator />*@
+            <FluentValidationValidator />
+            <MudCard>
+                <MudCardContent>
+                    @if (OperationTypeTicket != OperatioType.Create)
                     {
-                        <MudCardActions>
-                            <MudButton Disabled="@IsLoading" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Submit</MudButton>
-                        </MudCardActions>
-                    }
-                    else if (OperationTypeTicket == OperatioType.Create)
-                    {
-                        <MudCardActions>
-                            <MudGrid>
-                                <MudItem>
-                                    <MudButton Disabled="@IsLoading" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" StartIcon="@Icons.Material.Filled.PlayArrow" OnClick="@((e) => Model.Operation = VmOperatioType.Start.ToString())">@VmOperatioType.Start</MudButton>
-                                </MudItem>
-                                <MudItem>
-                                    <MudButton Disabled="@IsLoading" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" StartIcon="@Icons.Material.Filled.Stop" OnClick="@((e) => Model.Operation = VmOperatioType.Stop.ToString())">@VmOperatioType.Stop</MudButton>
-                                </MudItem>
-                                <MudItem>
-                                    <MudButton Disabled="@IsLoading" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" StartIcon="@Icons.Material.Filled.Replay" OnClick="@((e) => Model.Operation = VmOperatioType.Restart.ToString())">@VmOperatioType.Restart</MudButton>
-                                </MudItem>
-                            </MudGrid>
-                        </MudCardActions>
-                    }
-                </MudCard>
-                @if (OperationTypeTicket == OperatioType.Create)
-                {
-                    <MudText Typo="Typo.body2" Align="Align.Center" Class="my-4">
-                        Fill out the form correctly to see the success message.
-                    </MudText>
+                        <MudTextField Label="Last Vm States:"
+                                        Disabled="true"
+                                        Class="text-warning"
+                                        @bind-Value="Model.VmState" For="@(() => Model.VmState)" />
 
-                    <MudExpansionPanels>
-                        <MudExpansionPanel IsExpanded="true"
-                                           Text="Show Validation Summary">
-                            @if (Success)
+                        <MudTextField Label="Id:"
+                                        Disabled="true"
+                                        @bind-Value="Model.Id" For="@(() => Model.Id)" />
+
+                        <MudTextField Label="Operation:"
+                                        Disabled="true"
+                                        @bind-Value="Model.Operation" For="@(() => Model.Operation)" />
+
+                        <MudTextField Label="Status:"
+                                        Disabled="true"
+                                        @bind-Value="Model.Status" For="@(() => Model.Status)" />
+
+                        <MudTextField Label="Subcription Name:"
+                                        Disabled="true"
+                                        @bind-Value="Model.SubcriptionName" For="@(() => Model.SubcriptionName)" />
+
+                        <MudTextField Label="Resorce Group:"
+                                        Disabled="true"
+                                        @bind-Value="Model.ResorceGroup" For="@(() => Model.ResorceGroup)" />
+
+                    }
+                    else
+                    {
+                        <MudAutocomplete ResetValueOnEmptyText="true"
+                                            T="@IdName"
+                                            Dense="true"
+                                            Label="Select Subcription:"
+                                            Placeholder="Only dev or appdev"
+                                            For="@(() => Model.SubscripionIdName)"
+                                            ValueChanged="(e) => OnSubscriptionChanged(e)"
+                                            SearchFunc="@SearchSubs" />
+
+                        @*
+        Value="@(new IdName { Name = Model.SubcriptionName })"
+        For="@(() => new IdName { Id = Model.Id.ToString(), Name = Model.SubcriptionName })"
+        For="@(() => SelSubscripion)"
+        <MudSelectItem Value="@(new Pizza() { Name="Cardinale"})" />
+                        *@
+
+                        <MudSelect T="@string"
+                                    Dense="true"
+                                    Disabled="@IsRgDisabled"
+                                    Label="Select Resource Group:"
+                                    ValueChanged="(e) => OnRgChanged(e)"
+                                    For="@(() => Model.ResorceGroup)">
+                            @foreach (var rg in ResourceGroups)
                             {
-                                <MudText Color="Color.Success">Success</MudText> }
-                            else
-                            {
-                                <MudText Color="@Color.Error">
-                                    <ValidationSummary />
-                                </MudText>
+                                <MudSelectItem T="string" Value="@rg">@rg</MudSelectItem>
                             }
-                        </MudExpansionPanel>
-                    </MudExpansionPanels>
+                        </MudSelect>
+                    }
+
+                    @if (Vms.Count > 0)
+                    {
+                        <MudSelect T="@string"
+                                    Dense="true"
+                                    Label="Select Vm Name:"
+                                    Disabled="@IsVmDisabled"
+                                    ValueChanged="OnVmSelected"
+                                    For="@(() => Model.VmName)">
+                            @foreach (var item in Vms)
+                            {
+                                <MudSelectItem T="string" Value="@item">@item</MudSelectItem>
+                            }
+                        </MudSelect>
+                    }
+                    else
+                    {
+                        <MudTextField Label="Vm Name:"
+                                        Disabled="@IsVmDisabled"
+                                        @bind-Value="Model.VmName"
+                                        For="@(() => Model.VmName)" />
+                    }
+
+                    @if (!IsReadOnly)
+                    {
+                        <MudTextField T="string"
+                                        Label="Vm State:"
+                                        Disabled="true"
+                                        Text="@LastVmStatus" />
+                    }
+
+                    <MudTextField Label="External Ticket #(Gsnow)"
+                                    Placeholder="Example INC123..."
+                                    Disabled="@IsVmDisabled"
+                                    @bind-Value="Model.ExternalTicket" For="@(() => Model.ExternalTicket)" />
+
+                    <MudTextField Label="Note:"
+                                    Disabled="@IsReadOnly"
+                                    @bind-Value="Model.Note" For="@(() => Model.Note)" />
+
+                </MudCardContent>
+                @if (OperationTypeTicket == OperatioType.Edit)
+                {
+                    <MudCardActions>
+                        <MudButton Disabled="@IsLoading" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Submit</MudButton>                        
+                    </MudCardActions>
                 }
-            </EditForm>
-        }
-        else
-        {
-            <MudText Color="Color.Success" Typo="Typo.h4">Success</MudText>
-        }
-        <MudButton Class="mt-4" OnClick="GoBack" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary">Go Back</MudButton>
+                else if (OperationTypeTicket == OperatioType.Create)
+                {
+                    <MudCardActions>
+                        <MudGrid>
+                            <MudItem>
+                                <MudButton Disabled="@ButtonsDisabled" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" StartIcon="@Icons.Material.Filled.PlayArrow" OnClick="@((e) => Model.Operation = VmOperatioType.Start.ToString())">@VmOperatioType.Start</MudButton>
+                            </MudItem>
+                            <MudItem>
+                                <MudButton Disabled="@ButtonsDisabled" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" StartIcon="@Icons.Material.Filled.Stop" OnClick="@((e) => Model.Operation = VmOperatioType.Stop.ToString())">@VmOperatioType.Stop</MudButton>
+                            </MudItem>
+                            <MudItem>
+                                <MudButton Disabled="@ButtonsDisabled" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto" StartIcon="@Icons.Material.Filled.Replay" OnClick="@((e) => Model.Operation = VmOperatioType.Restart.ToString())">@VmOperatioType.Restart</MudButton>
+                            </MudItem>
+                        </MudGrid>
+                    </MudCardActions>
+                }
+            </MudCard>
+            @if (OperationTypeTicket == OperatioType.Create)
+            {
+                <MudText Typo="Typo.body2" Align="Align.Center" Class="my-4">
+                    Fill out the form correctly to see the success message.
+                </MudText>
+
+                <MudExpansionPanels>
+                    <MudExpansionPanel IsExpanded="true"
+                                        Text="Show Validation Summary">
+                        @if (Success)
+                        {
+                            <MudText Color="Color.Success">Success</MudText> }
+                        else
+                        {
+                            <MudText Color="@Color.Error">
+                                <ValidationSummary />
+                            </MudText>
+                        }
+                    </MudExpansionPanel>
+                </MudExpansionPanels>
+            }
+        </EditForm>
+
+        <MudGrid Class="mt-4">
+            <MudItem>
+                <MudButton OnClick="GoBack" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary">Go Back</MudButton>
+            </MudItem>
+            <MudItem>
+                <MudButton Disabled="@IsLoading" Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshAsync" Class="ml-auto">Refresh</MudButton>
+            </MudItem>
+        </MudGrid>
     </div>
 </MudContainer>
