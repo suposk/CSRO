@@ -81,7 +81,7 @@
                 <MudTh><MudTableSortLabel SortBy="new Func<AdoProjectAccessModel, object>(x => x.Status)">Status</MudTableSortLabel></MudTh>
                 <MudTh><MudTableSortLabel SortBy="new Func<AdoProjectAccessModel, object>(x => x.CreatedBy)">Created By</MudTableSortLabel></MudTh>
                 <MudTh><MudTableSortLabel SortBy="new Func<AdoProjectAccessModel, object>(x => x.Justification)">Justification</MudTableSortLabel></MudTh>
-                <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<AdoProjectAccessModel, object>(x => x.CreatedAt)">Created At</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel InitialDirection="SortDirection.Descending" SortBy="new Func<AdoProjectAccessModel, object>(x => x.CreatedAt)">Created At</MudTableSortLabel></MudTh>
             </HeaderContent>
             <RowTemplate>
                 <MudTd DataLabel="Id">@context.Id</MudTd>

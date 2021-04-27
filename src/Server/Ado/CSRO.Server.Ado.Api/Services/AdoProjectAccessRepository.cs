@@ -56,10 +56,10 @@ namespace CSRO.Server.Ado.Api.Services
             _serviceBusConfig = configuration.GetSection(nameof(ServiceBusConfig)).Get<ServiceBusConfig>();
         }
 
-        public override Task<List<AdoProjectAccess>> GetList()
-        {
-            return _context.AdoProjectAccesses.Where(a => a.IsDeleted != true).OrderByDescending(a => a.CreatedAt).ToListAsync();
-        }
+        //public override Task<List<AdoProjectAccess>> GetList()
+        //{
+        //    return _context.AdoProjectAccesses.Where(a => a.IsDeleted != true).OrderByDescending(a => a.CreatedAt).ToListAsync();
+        //}
 
         public override Task<List<AdoProjectAccess>> GetByUserId(string userId)
         {

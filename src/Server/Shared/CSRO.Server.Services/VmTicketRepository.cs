@@ -44,11 +44,11 @@ namespace CSRO.Server.Services
             VmRebootDelay = configuration.GetValue<int>("VmRebootDelay");
         }
 
-        public override Task<List<VmTicket>> GetList()
-        {
-            //return _repository.GetListFilter(a => a.IsDeleted != true);
-            return _context.VmTickets.Where(a => a.IsDeleted != true).OrderByDescending(a => a.CreatedAt).ToListAsync();
-        }
+        //public override Task<List<VmTicket>> GetList()
+        //{
+        //    //return _repository.GetListFilter(a => a.IsDeleted != true);
+        //    return _context.VmTickets.Where(a => a.IsDeleted != true).OrderByDescending(a => a.CreatedAt).ToListAsync();
+        //}
 
         public override void Add(VmTicket entity, string UserId = null)
         {            
