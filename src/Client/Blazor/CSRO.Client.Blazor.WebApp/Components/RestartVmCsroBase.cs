@@ -68,6 +68,8 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
         protected string LastVmStatus = null;
 
+        protected bool ButtonsDisabled => IsLoading || string.IsNullOrWhiteSpace(Model.VmName);
+
         protected async override Task OnInitializedAsync()
         {            
             await Load();
@@ -131,12 +133,10 @@ namespace CSRO.Client.Blazor.WebApp.Components
             HideLoading();
         }
 
-        private async Task Load()
+        public async Task Load()
         {
             try
             {
-                //var loc = await LocationsService.GetLocations();
-
                 if (OperationTypeTicket != OperatioType.Create)
                 {
                     ShowLoading();                    
@@ -144,8 +144,6 @@ namespace CSRO.Client.Blazor.WebApp.Components
                     Model.Id = int.Parse(TicketId);
                     var server = await VmTicketDataService.GetItemByIdAsync(Model.Id);
                     await LoadRg(server?.SubcriptionId);
-                    //var subName = await SubcriptionService.GetSubcription(server?.SubcriptionId);
-                    //var rgName = await ResourceGroupervice.GetResourceGroupsIdName(server?.SubcriptionId);
 
                     if (server != null)
                     {
