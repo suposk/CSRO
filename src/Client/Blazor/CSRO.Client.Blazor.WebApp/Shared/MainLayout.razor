@@ -21,7 +21,7 @@
     </MudAppBar>
     <MudDrawer @bind-Open="_drawerOpen" Elevation="1">
         <MudDrawerHeader>
-            <MudText Typo="Typo.h5">CSRO Portal</MudText>
+            <MudText Typo="Typo.h5">Menu</MudText>
         </MudDrawerHeader>
         <NavMenu />
     </MudDrawer>
@@ -30,32 +30,11 @@
     </MudMainContent>
 </MudLayout>
 
-@code {
-    
-bool _drawerOpen = true;
+@code {    
+    bool _drawerOpen = true;
 
-void DrawerToggle()
-{
-    _drawerOpen = !_drawerOpen;
-} 
-
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    } 
 }
-
-
-
-
-@*<div class="sidebar">
-        <NavMenu />
-    </div>
-
-
-
-    <div class="main">
-        <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
-        </div>
-
-        <div class="content px-4">
-            @Body
-        </div>
-    </div>*@
