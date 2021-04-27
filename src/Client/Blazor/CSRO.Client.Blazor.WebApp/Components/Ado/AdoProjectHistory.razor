@@ -24,7 +24,7 @@
                 <MudTh><MudTableSortLabel SortBy="new Func<AdoProjectHistoryModel, object>(x => x.Operation)">Operation</MudTableSortLabel></MudTh>
                 <MudTh><MudTableSortLabel SortBy="new Func<AdoProjectHistoryModel, object>(x => x.Details)">Details</MudTableSortLabel></MudTh>
                 <MudTh><MudTableSortLabel SortBy="new Func<AdoProjectHistoryModel, object>(x => x.CreatedBy)">Created By</MudTableSortLabel></MudTh>
-                <MudTh><MudTableSortLabel InitialDirection="SortDirection.Ascending" SortBy="new Func<AdoProjectHistoryModel, object>(x => x.CreatedAt)">Created At</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel InitialDirection="SortDirection.Descending" SortBy="new Func<AdoProjectHistoryModel, object>(x => x.CreatedAt)">Created At</MudTableSortLabel></MudTh>
             </HeaderContent>
             <RowTemplate>
                 <MudTd DataLabel="Operation">@context.Operation</MudTd>
