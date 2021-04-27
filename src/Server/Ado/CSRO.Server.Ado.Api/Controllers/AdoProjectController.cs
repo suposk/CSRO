@@ -14,7 +14,7 @@ using CSRO.Server.Ado.Api.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using CSRO.Server.Services;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+//For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace CSRO.Server.Ado.Api.Controllers
 {
@@ -25,7 +25,6 @@ namespace CSRO.Server.Ado.Api.Controllers
     {
 
         private readonly ILogger<AdoProjectController> _logger;
-        //private readonly IRepository<Vm> _repository;
         private readonly IAdoProjectRepository _repository;
         private readonly IMapper _mapper;
 
@@ -38,13 +37,12 @@ namespace CSRO.Server.Ado.Api.Controllers
             _mapper = mapper;
         }
 
-        // GET: api/<AdoProjectController>
         public async Task<ActionResult<List<ProjectAdo>>> Get()
         {
             try
             {
                 //var cl = await restUserService.GetClaimsByUserNameAsync("jan.supolik@hotmail.com");
-                _logger.LogInformation(ApiLogEvents.GetAllItems, $"{nameof(Get)} Started");                
+                _logger.LogInformation(ApiLogEvents.GetAllItems, $"{nameof(Get)} Started");
                 var all = await _repository.GetList().ConfigureAwait(false);
                 var result = _mapper.Map<List<ProjectAdo>>(all);
                 return result;
@@ -56,7 +54,7 @@ namespace CSRO.Server.Ado.Api.Controllers
             }
         }
 
-        // GET: api/MessageDetails/5        
+
         [HttpGet("{id}", Name = nameof(GetRequestAdoProject))]
         public async Task<ActionResult<ProjectAdo>> GetRequestAdoProject(int id)
         {
@@ -81,7 +79,7 @@ namespace CSRO.Server.Ado.Api.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }
         }
-                
+
         [HttpGet("{organization}/{projectName}/{projectId}", Name = nameof(ProjectExists))]
         public async Task<ActionResult<bool>> ProjectExists(string organization, string projectName, int projectId)
         {
@@ -93,7 +91,7 @@ namespace CSRO.Server.Ado.Api.Controllers
                 _logger.LogInformation(ApiLogEvents.GetItem, $"{nameof(ProjectExists)} with {projectName} {organization} Started");
 
                 var res = await _repository.ProjectExists(organization, projectName, projectId).ConfigureAwait(false);
-                return res ? Ok(true) : NotFound();                    
+                return res ? Ok(true) : NotFound();
             }
             catch (Exception ex)
             {
@@ -132,7 +130,7 @@ namespace CSRO.Server.Ado.Api.Controllers
         }
 
 
-        [HttpPost, Route(nameof(RequestAdoProject))]        
+        [HttpPost, Route(nameof(RequestAdoProject))]
         public async Task<ActionResult<ProjectAdo>> RequestAdoProject(ProjectAdo dto)
         {
             if (dto == null)
@@ -145,11 +143,11 @@ namespace CSRO.Server.Ado.Api.Controllers
             {
                 _logger.LogInformation(ApiLogEvents.RequestItem, $"{nameof(RequestAdoProject)} Started");
 
-                var repoObj = _mapper.Map<Entity.AdoProject>(dto);              
+                var repoObj = _mapper.Map<Entity.AdoProject>(dto);
                 var suc = await _repository.CreateAdoProject(repoObj);
                 if (suc != null)
                 {
-                    var result = _mapper.Map<ProjectAdo>(repoObj);                    
+                    var result = _mapper.Map<ProjectAdo>(repoObj);
                     return CreatedAtRoute(nameof(GetRequestAdoProject),
                         new { id = result.Id }, result);
                 }
@@ -158,12 +156,11 @@ namespace CSRO.Server.Ado.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, nameof(RequestAdoProject), dto);                
+                _logger.LogError(ex, nameof(RequestAdoProject), dto);
                 return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
-            }               
+            }
         }
 
-        // POST api/<AdoProjectController>
         [Authorize(Policy = Core.PoliciesCsro.CanApproveAdoRequestPolicy)]
         //[Authorize(Roles = "Admin")]
         [HttpPost, Route(nameof(ApproveAdoProject))]
@@ -182,7 +179,7 @@ namespace CSRO.Server.Ado.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, nameof(ApproveAdoProject), toApprove);                
+                _logger.LogError(ex, nameof(ApproveAdoProject), toApprove);
                 return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }
         }
@@ -196,7 +193,7 @@ namespace CSRO.Server.Ado.Api.Controllers
 
             try
             {
-                _logger.LogInformation(ApiLogEvents.ApproveItem, $"{nameof(RejectAdoProject)} Started");                
+                _logger.LogInformation(ApiLogEvents.ApproveItem, $"{nameof(RejectAdoProject)} Started");
                 var rejected = await _repository.ApproveRejectAdoProjects(toReject.ToReject, true, toReject.Reason).ConfigureAwait(false);
                 var result = _mapper.Map<List<ProjectAdo>>(rejected);
                 return result;
@@ -208,8 +205,7 @@ namespace CSRO.Server.Ado.Api.Controllers
             }
         }
 
-        //// PUT api/<AdoProjectController>/5
-        [HttpPut()]
+        [HttpPut]
         public async Task<ActionResult<ProjectAdo>> UpdateAdoProjectRequest(ProjectAdo dto)
         {
             if (dto == null || dto.Id < 1)
@@ -231,10 +227,10 @@ namespace CSRO.Server.Ado.Api.Controllers
 
                 repoObj = _mapper.Map<Entity.AdoProject>(dto);
                 var res = await _repository.UpdateAsync(repoObj).ConfigureAwait(false);
-                if (res != null)                
-                    return NoContent();                
-                else                
-                    return Conflict("Conflict detected, refresh and try again.");                
+                if (res != null)
+                    return NoContent();
+                else
+                    return Conflict("Conflict detected, refresh and try again.");
             }
             catch (Exception ex)
             {
@@ -243,10 +239,6 @@ namespace CSRO.Server.Ado.Api.Controllers
             }
         }
 
-
-
-
-        // DELETE api/<AdoProjectController>/5
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteAdoProjectRequest(int id)
         {

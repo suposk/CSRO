@@ -71,9 +71,22 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
         protected bool IsLocDisabled => string.IsNullOrWhiteSpace(Model?.SubcriptionId) || Locations?.Count == 0;
         protected bool IsRgDisabled => IsLocDisabled | ResourceGroups?.Count == 0;
         protected bool IsNewRgDisabled => IsLocDisabled | string.IsNullOrWhiteSpace(Model.Location);
+        protected Dictionary<string, string> ColumnsToDisplay = new();
                 
-        private IdName _SelectedSub;
+        private bool _IsSimpleView = true;
 
+        public bool IsSimpleView
+        {
+            get { return _IsSimpleView; }
+            set 
+            {
+                _IsSimpleView = value;
+                SetColumns(true);
+            }
+        }
+
+
+        private IdName _SelectedSub;
         public IdName SelectedSub
         {
             get { return _SelectedSub; }
@@ -170,28 +183,25 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
             CustomerSearchType = customerSearchType;
         }
 
-        //public async Task OnSubscriptionValueChanged(IdName value)
-        //{
-        //    SelectedSub = value;
-        //}
-
-        //public async Task OnLocationChanged(IdName value)
-        //{
-        //    if (value != null)
-        //    {
-        //        //Model.ResourceGroup.Location = value.Id;                
-        //        Model.LocationIdName = value;
-
-        //        ShowLoading();
-        //        //await LocationIdNameChanged.InvokeAsync(value);
-        //        await LoadRg(Model.SubcriptionId, value.Id);
-        //        HideLoading();
-        //    }
-        //}
-
         public Task OnAtCodeChanged()
         {            
             return Task.CompletedTask;
+        }
+
+        void SetColumns(bool refresh)
+        {
+            ColumnsToDisplay.Clear();
+            ColumnsToDisplay.Add(nameof(Customer.AtCode), nameof(Customer.AtCode));
+            ColumnsToDisplay.Add(nameof(Customer.AtName), nameof(Customer.AtName));
+            ColumnsToDisplay.Add(nameof(Customer.SubscriptionName), nameof(Customer.SubscriptionName));
+            ColumnsToDisplay.Add(nameof(Customer.Email), nameof(Customer.Email));            
+            if (!IsSimpleView)
+            {
+                ColumnsToDisplay.Add(nameof(Customer.AtSwc), nameof(Customer.AtSwc));
+                ColumnsToDisplay.Add(nameof(Customer.OpEnvironment), nameof(Customer.OpEnvironment));
+            }
+            if (refresh)
+                StateHasChanged();
         }
 
         public Task OnSubscriptionsChanged(HashSet<IdName> values)
@@ -289,7 +299,9 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
         {
             try
             {
-                ShowLoading();
+                ShowLoading();                
+                SetColumns(false);
+
                 Subscripions?.Clear();
                 SubscripionsFiltered?.Clear();
                 SelectedSubs?.Clear();
