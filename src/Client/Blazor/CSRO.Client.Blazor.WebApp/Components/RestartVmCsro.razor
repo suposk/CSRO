@@ -174,7 +174,7 @@
                 <MudButton OnClick="GoBack" ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary">Go Back</MudButton>
             </MudItem>
             <MudItem>
-                <MudButton Disabled="@IsLoading" Variant="Variant.Filled" Color="Color.Primary" OnClick="Load" Class="ml-auto">Refresh</MudButton>
+                <MudButton Disabled="@IsLoading" Variant="Variant.Filled" Color="Color.Primary" OnClick="RefreshAsync" Class="ml-auto">Refresh</MudButton>
             </MudItem>
         </MudGrid>
     </div>

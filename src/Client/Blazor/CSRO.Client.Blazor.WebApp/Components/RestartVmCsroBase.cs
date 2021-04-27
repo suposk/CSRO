@@ -72,7 +72,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
         protected async override Task OnInitializedAsync()
         {            
-            await Load();
+            await LoadAsync();
         }
 
         async Task LoadRg(string subcriptionId)
@@ -133,7 +133,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
             HideLoading();
         }
 
-        public async Task Load()
+        public async override Task LoadAsync()
         {
             try
             {
@@ -253,7 +253,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
                         {
                             var ok = await CsroDialogService.ShowWarning("Update Error", $"Conflic Detected, Please refresh and try again", "Refresh");
                             if (ok)
-                                await Load();
+                                await LoadAsync();
                         }
                     }
                     StateHasChanged();

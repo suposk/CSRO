@@ -43,10 +43,19 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
         protected async override Task OnInitializedAsync()
         {
-            await Load();
+            await LoadAsync();
         }
 
-        private async Task Load()
+        protected async override Task OnParametersSetAsync()
+        {
+            await base.OnParametersSetAsync();
+            if (!Refresh)
+                return;
+            else                            
+                await LoadAsync();            
+        }
+
+        public async override Task LoadAsync()
         {
             //load history                                     
             try
