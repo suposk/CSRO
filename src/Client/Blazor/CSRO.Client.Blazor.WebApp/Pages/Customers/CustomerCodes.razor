@@ -97,7 +97,7 @@
     </MudCard>
 
     <MudSwitch Class="mt-5"
-               Label="Simple View"
+               Label=@((IsSimpleView) ? "Simple View (On)" : "Simple View (Off)")
                @bind-Checked="@IsSimpleView" Color="Color.Primary" />
 
     @if (IsSimpleView)
