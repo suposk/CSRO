@@ -39,8 +39,7 @@ namespace CSRO.Server.Ado.Api.Controllers
             _mediator = mediator;
             _mapper = mapper;
         }
-
-        // GET: api/<AdoProjectAccessController>
+                
         [HttpGet]
         public async Task<ActionResult<List<AdoProjectAccessDto>>> Get()
         {
@@ -57,8 +56,7 @@ namespace CSRO.Server.Ado.Api.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }
         }
-
-        // GET api/<AdoProjectAccessController>/5
+                
         [HttpGet("{id}", Name = nameof(GetRequestAdoProjectAccess))]        
         //[HttpGet("GetRequestAdoProjectAccess/{id}")]        
         public async Task<ActionResult<AdoProjectAccessDto>> GetRequestAdoProjectAccess(int id)
@@ -136,9 +134,8 @@ namespace CSRO.Server.Ado.Api.Controllers
             }
         }
 
-        // POST api/<AdoProjectController>
-        [Authorize(Policy = Core.PoliciesCsro.CanApproveAdoRequestPolicy)]
-        //[Authorize(Roles = "Admin")]
+        
+        [Authorize(Policy = Core.PoliciesCsro.CanApproveAdoRequestPolicy)]        
         [HttpPost, Route(nameof(ApproveAdoProjectAccess))]
         public async Task<ActionResult<List<AdoProjectAccessDto>>> ApproveAdoProjectAccess(List<int> toApprove)
         {
@@ -184,19 +181,7 @@ namespace CSRO.Server.Ado.Api.Controllers
             }
         }
 
-        //// POST api/<AdoProjectAccessController>
-        //[HttpPost]
-        //public void Post([FromBody] string value)
-        //{
-        //}
-
-        //// PUT api/<AdoProjectAccessController>/5
-        //[HttpPut("{id}")]
-        //public void Put(int id, [FromBody] string value)
-        //{
-        //}
-
-        [HttpPut()]
+        [HttpPut]
         public async Task<ActionResult<AdoProjectAccessDto>> UpdateAdoProjectAccessRequest(AdoProjectAccessDto dto)
         {
             if (dto == null || dto.Id < 1)
