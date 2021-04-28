@@ -17,5 +17,6 @@ namespace CSRO.Server.Services
         Task<List<ResourceSWI>> GetCustomersBySubId(string subscriptionId);
         Task<List<ResourceSWI>> GetCustomersByAtCodes(List<string> atCodes);
         Task<List<ResourceSWI>> GetCustomersByAtCode(string atCode);
+        Task<List<string>> GetAtCodes();
     }
 }

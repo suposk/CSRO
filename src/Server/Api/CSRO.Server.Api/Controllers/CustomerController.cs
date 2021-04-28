@@ -35,13 +35,30 @@ namespace CSRO.Server.Api.Controllers
             _repository = repository;
             _mapper = mapper;
         }
-                
+
         //[HttpGet]
         //public IEnumerable<string> Get()
         //{
         //    return new string[] { "cus 1", "cus 2" };
         //}
-                
+
+        [HttpGet(nameof(GetAtCodes))]
+        public async Task<ActionResult<List<string>>> GetAtCodes()
+        {
+            try
+            {
+                _logger.LogInformation(ApiLogEvents.GetAllItems, $"{nameof(GetAtCodes)} Started");
+
+                var all = await _repository.GetAtCodes().ConfigureAwait(false);
+                return all;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, nameof(GetAtCodes), null);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
+            }
+        }
+
         [HttpGet(nameof(GetCustomersBySubNames))]
         public async Task<ActionResult<List<CustomerDto>>> GetCustomersBySubNames(List<string> subscriptionNames)
         {
