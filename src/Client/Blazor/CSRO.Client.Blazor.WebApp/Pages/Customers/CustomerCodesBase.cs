@@ -4,9 +4,11 @@ using CSRO.Client.Core.Models;
 using CSRO.Client.Services;
 using CSRO.Client.Services.AzureRestServices;
 using CSRO.Client.Services.Models;
+using CSRO.Common;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.Logging;
+using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,6 +44,12 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
 
         [Inject]
         public ILogger<CustomerCodesBase> Logger { get; set; }
+
+        [Inject]
+        public ICsvExporter CsvExporter { get; set; }
+
+        [Inject]
+        public IJSRuntime JSRuntime { get; set; }
 
         //[Inject]
         //public IAdService AdService { get; set; }
@@ -287,6 +295,23 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
                 Locations = await LocationsService.GetLocations();
         }
 
+        protected async Task Export()
+        {
+            try
+            {
+                if (await JSRuntime.InvokeAsync<bool>("confirm", $"Do you want to export this list to Excel?"))
+                {
+                    var fileBytes = CsvExporter.ExportEventsToCsv(Customers);
+                    var fileName = $"MyReport{DateTime.Now.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture)}.csv";
+                    await JSRuntime.InvokeAsync<object>("saveAsFile", fileName, Convert.ToBase64String(fileBytes));
+                }
+            }
+            catch (Exception ex)
+            {
+                await CsroDialogService.ShowError("Error", ex?.Message);
+            }
+        }
+
         public async Task Search()
         {
             try
@@ -325,10 +350,10 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
                         }                                                                          
                         _customersCache.Add(cust);
                     }
-                    //open first sub
-                    var first = _customersCache.FirstOrDefault();
-                    if (first != null)
-                        first.ShowDetails = true;
+                    ////open first sub
+                    //var first = _customersCache.FirstOrDefault();
+                    //if (first != null)
+                    //    first.ShowDetails = true;
                     Customers = _customersCache;
                 }
             }
@@ -402,12 +427,12 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
             }
         }
 
-        public void ShowBtnPress(string id)
-        {
-            Customer tmpCust = Customers.FirstOrDefault(f => f.SubscriptionId == id);
-            if (tmpCust != null)
-                tmpCust.ShowDetails = !tmpCust.ShowDetails;
-        }
+        //public void ShowBtnPress(string id)
+        //{
+        //    Customer tmpCust = Customers.FirstOrDefault(f => f.SubscriptionId == id);
+        //    if (tmpCust != null)
+        //        tmpCust.ShowDetails = !tmpCust.ShowDetails;
+        //}
 
         public void GoBack()
         {

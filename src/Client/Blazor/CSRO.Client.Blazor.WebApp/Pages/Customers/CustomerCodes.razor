@@ -112,8 +112,11 @@
 
             <MudItem xs="6" sm="3" Class="d-flex align-center justify-center mud-width-full py-8">
                 <MudButton Disabled="@(CustomerSearchType == CustomerSearchTypeEnum.None)"
-                           Class="mt-4"
+                           Class="m-2"
                            OnClick="Search" Variant="Variant.Filled" Color="Color.Primary">Search</MudButton>
+                <MudButton 
+                           Class="m-2"
+                           OnClick="Export" Variant="Variant.Filled" Color="Color.Primary">Export</MudButton>
             </MudItem>
         </MudGrid>
     </MudCard>

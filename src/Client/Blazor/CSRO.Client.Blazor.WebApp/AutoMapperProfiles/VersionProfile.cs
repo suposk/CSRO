@@ -84,7 +84,7 @@ namespace CSRO.Client.Blazor.WebApp.AutoMapperProfiles
                 .ReverseMap();
 
             CreateMap<CustomerDto, Models.Customer>()
-                .ForMember(s => s.ShowDetails, op => op.Ignore())
+                //.ForMember(s => s.ShowDetails, op => op.Ignore())
                 .ReverseMap();
 
             CreateMap<cmdbReferenceDto, Models.cmdbReference>()
