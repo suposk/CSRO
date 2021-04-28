@@ -4,8 +4,6 @@ using CSRO.Client.Core.Models;
 using CSRO.Client.Services;
 using CSRO.Client.Services.AzureRestServices;
 using CSRO.Client.Services.Models;
-using CSRO.Common.AzureSdkServices;
-using CSRO.Common.AzureSdkServices.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.Logging;
@@ -17,11 +15,7 @@ using System.Threading.Tasks;
 
 namespace CSRO.Client.Blazor.WebApp.Pages.Customers
 {
-    public enum CustomerSearchTypeEnum 
-    {
-        None, Sub, 
-        //AtCode, 
-        Regions, Env, SelectedSubs, SelectedAtcodes }
+    public enum CustomerSearchTypeEnum  { None, Regions, SelectedSubs, SelectedAtcodes }
 
     public class CustomerCodesBase : CsroComponentBase
     {
@@ -309,17 +303,14 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
                     case CustomerSearchTypeEnum.SelectedAtcodes:
                         customers = await CustomerDataService.GetCustomersByAtCodes(SelectedAtCodes.ToList()).ConfigureAwait(false);
                         break;
-                    //case CustomerSearchTypeEnum.Sub:
-                    //    customers = await CustomerDataService.GetCustomersBySubName(SelectedSub?.Name).ConfigureAwait(false);                        
-                    //    break;
                     case CustomerSearchTypeEnum.SelectedSubs:
                         customers = await CustomerDataService.GetCustomersBySubNames(SelectedSubs.Select(a => a.Name).ToList()).ConfigureAwait(false);
                         break;
                     case CustomerSearchTypeEnum.Regions:
                         customers = await CustomerDataService.GetCustomersByRegions(SelectedRegions.Select(a => a.Name).ToList()).ConfigureAwait(false);
                         break;
-                    case CustomerSearchTypeEnum.Env:
-                        break;
+                    //case CustomerSearchTypeEnum.Env:
+                    //    break;
                 }
 
                 if (customers.HasAnyInCollection())
