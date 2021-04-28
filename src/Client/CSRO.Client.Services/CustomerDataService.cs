@@ -10,17 +10,21 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace CSRO.Client.Services
 {
     public interface ICustomerDataService
     {
+        //GetAtCodes
+        Task<List<string>> GetAtCodes(CancellationToken cancelToken = default);
         Task<List<Customer>> GetCustomersByRegions(List<string> regions, CancellationToken cancelToken = default);
         Task<List<Customer>> GetCustomersBySubIds(List<string> subscriptionIds, CancellationToken cancelToken = default);
         Task<List<Customer>> GetCustomersBySubId(string subscriptionId, CancellationToken cancelToken = default);
         Task<List<Customer>> GetCustomersBySubNames(List<string> subscriptionIds, CancellationToken cancelToken = default);
         Task<List<Customer>> GetCustomersBySubName(string subscriptionName, CancellationToken cancelToken = default);
         Task<List<Customer>> GetCustomersByAtCode(string atCode, CancellationToken cancelToken = default);
+        Task<List<Customer>> GetCustomersByAtCodes(List<string> atCodes, CancellationToken cancelToken = default);
     }
 
     public class CustomerDataService : BaseDataService, ICustomerDataService
@@ -33,6 +37,33 @@ namespace CSRO.Client.Services
             Scope = Configuration.GetValue<string>(ConstatCsro.Scopes.Scope_Api);
             ClientName = ConstatCsro.EndPoints.ApiEndpoint;
             base.Init();
+        }
+
+        public async Task<List<string>> GetAtCodes(CancellationToken cancelToken = default)
+        {
+            try
+            {
+                await AddAuthHeaderAsync();
+                var url = $"{ApiPart}GetAtCodes";               
+                var apiData = await HttpClientBase.GetAsync(url, cancelToken).ConfigureAwait(false);
+
+                if (apiData.IsSuccessStatusCode)
+                {
+                    var stream = await apiData.Content.ReadAsStreamAsync();
+                    var ser = await JsonSerializer.DeserializeAsync<List<string>>(stream, _options, cancelToken);
+                    if (ser.HasAnyInCollection())
+                        return ser;
+                    else
+                        return new List<string>();
+                }
+                else
+                    throw new Exception(GetErrorText(apiData));
+            }
+            catch (Exception ex)
+            {
+                HandleException(ex);
+                throw;
+            }
         }
 
         public Task<List<Customer>> GetCustomersBySubIds(List<string> subscriptionIds, CancellationToken cancelToken = default)
@@ -87,6 +118,11 @@ namespace CSRO.Client.Services
         public Task<List<Customer>> GetCustomersByAtCode(string atCode, CancellationToken cancelToken = default)
         {
             return base.RestGetListById<Customer, CustomerDto>(atCode, "GetCustomersByAtCode");
+        }
+
+        public Task<List<Customer>> GetCustomersByAtCodes(List<string> atCodes, CancellationToken cancelToken = default)
+        {
+            return base.RestSend<List<Customer>, List<CustomerDto>, List<string>>(HttpMethod.Get, atCodes, "GetCustomersByAtCodes");
         }
     }
 

@@ -7,7 +7,7 @@
             /// <summary>
             /// This is basic Reponce Cache
             /// </summary>
-            public const int DefaultDuration = 120;
+            public const int DefaultDurationSeconds = 120;
         }
 
         public static class ClientNames

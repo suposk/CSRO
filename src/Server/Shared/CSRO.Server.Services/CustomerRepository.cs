@@ -5,22 +5,38 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using CSRO.Common;
 
 namespace CSRO.Server.Services
 {
     public class CustomerRepository : ICustomerRepository
     {
+        private readonly ICacheProvider _cacheProvider;
         private readonly IApiIdentity _apiIdentity;
         public CustomersDbContext Context { get; }
         public CustomerRepository
             (
-            CustomersDbContext context, 
+            CustomersDbContext context,
+            ICacheProvider cacheProvider,
             IApiIdentity apiIdentity
             )
         {
             Context = context;
+            this._cacheProvider = cacheProvider;
             _apiIdentity = apiIdentity;
-        }        
+        }
+
+        public async Task<List<string>> GetAtCodes()
+        {
+            const string cacheKeyProcess = nameof(GetAtCodes);
+            var cache = _cacheProvider.GetFromCache<List<string>>(cacheKeyProcess);
+            if (cache.HasAnyInCollection())
+                return cache;
+
+            var q = await  Context.ResourceSWIs.Select(a => a.AtCode).ToListAsync();
+            _cacheProvider.SetCache(cacheKeyProcess, q, Core.ConstatCsro.CacheSettings.DefaultDurationSeconds);           
+            return q;
+        }
 
         public Task<List<ResourceSWI>> GetCustomersBySubNames(List<string> subscriptionNames)
         {                        

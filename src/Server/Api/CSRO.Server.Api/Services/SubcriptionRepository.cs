@@ -48,7 +48,7 @@ namespace CSRO.Server.Api.Services
 
             //var subsSdk = await _subscriptionSdkService.GetAllSubcriptions(null, cancelToken).ConfigureAwait(false);
             var subs = await _subcriptionService.GetSubcriptions(cancelToken);
-            _cacheProvider.SetCache(cacheKeyProcess, subs, Core.ConstatCsro.CacheSettings.DefaultDuration);
+            _cacheProvider.SetCache(cacheKeyProcess, subs, Core.ConstatCsro.CacheSettings.DefaultDurationSeconds);
             return subs;
         }
 
