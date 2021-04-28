@@ -19,95 +19,78 @@
 
     <MudCard>
         <MudGrid>
-            <!--<MudItem xs="6" sm="3" Class="d-flex align-center justify-center mud-width-full py-8">
-                <MudCardContent>
-                    <MudGrid>
-                        <MudItem>
-                            <MudAutocomplete ResetValueOnEmptyText="true"
-                                             T="@IdName"
-                                             Dense="true"
-                                             Label="All Subscriptions"
-                                             @bind-Value="SelectedSub"
-                                             SearchFunc="@SearchSubs" />
-                        </MudItem>-->
-
-                        @*<MudItem>
-                        <MudIconButton IconSize="Size.Small" Style="height:20px;width:20px"
-                                Icon="@((SelectedSub == null || string.IsNullOrWhiteSpace(SelectedSub.Name)) ? string.Empty : Icons.Material.Filled.Clear)"
-                                OnClick="@(e => { SelectedSubs.Clear(); CustomerSearchType = CustomerSearchTypeEnum.None; })">
-                        </MudIconButton>
-                    </MudItem>*@
-                    <!--</MudGrid>
-                </MudCardContent>
-            </MudItem>-->
-
-            <MudItem xs="6" sm="3" Class="d-flex align-center justify-center mud-width-full py-8">
-            <MudItem xs="12" md="12">
-                <MudSelect T="@IdName"                           
-                           Label="Label Pick your filtered Subscription"
-                           MultiSelection="true"
-                           Dense="true"
-                           OffsetY="true"
-                           SelectedValuesChanged="OnSubscriptionsChanged">
-                    @if (true)
-                    {
-                        <MudTextField Placeholder="Search Sub" 
-                                      Class="m-2"
-                                      Adornment="Adornment.End"
-                                      AdornmentIcon="@(string.IsNullOrWhiteSpace(SearchSubText) ? Icons.Material.Filled.Search : Icons.Material.Filled.Clear)"
-                                      OnAdornmentClick="@(e => { SearchSubText = null; CustomerSearchType = CustomerSearchTypeEnum.None; })"
-                                      @bind-Value="SearchSubText"
-                                      Immediate="true"
-                                      DebounceInterval="500"
-                                      T="string">
-                        </MudTextField>
-                    }
-                    @foreach (var sub in SubscripionsFiltered)
-                    {
-                        <MudSelectItem T="IdName" Value="@sub">@sub</MudSelectItem>
-                    }
-                </MudSelect>
-                <MudText Typo="Typo.body2">Selected Sub:</MudText>
-                <MudText Typo="Typo.body2">@(string.Join(", ", SelectedSubs.Select(x=>$"\"{x}\"")))</MudText>
-            </MudItem>
-        </MudItem>
-
-            <MudItem xs="6" sm="3" Class="d-flex align-center justify-center mud-width-full py-8">
-                <MudCardContent>
-                    <MudTextField 
-                                  Adornment="Adornment.End"
-                                  AdornmentIcon="@(string.IsNullOrWhiteSpace(AtCode) ? string.Empty : Icons.Material.Filled.Clear)"
-                                  OnAdornmentClick="@(e => { AtCode = null; CustomerSearchType = CustomerSearchTypeEnum.None; })"
-                                  @bind-Value="AtCode"
-                                  Immediate="true"
-                                  Label="Enter AT Code" />
-                </MudCardContent>
-            </MudItem>
-
             <MudItem xs="6" sm="3" Class="d-flex align-center justify-center mud-width-full py-8">
                 <MudItem xs="12" md="12">
                     <MudSelect T="@IdName"
-                               HelperText="Pick Region"
+                               Label="Select Subscription(s)"
                                MultiSelection="true"
                                Dense="true"
                                OffsetY="true"
-                               SelectedValuesChanged="OnLocationsChanged">
-                        @foreach (var reg in Locations)
+                               SelectedValuesChanged="OnSubscriptionsChanged">
+                        @if (true)
                         {
-                            <MudSelectItem @key="reg.Id" T="IdName" Value="@reg">@reg</MudSelectItem>
+                            <MudTextField Placeholder="Enter Subcription Name"
+                                          Class="mt-0 mx-2"
+                                          Adornment="Adornment.End"
+                                          AdornmentIcon="@Icons.Material.Filled.Clear"
+                                          OnAdornmentClick="@(e => { SearchSubText = null; CustomerSearchType = CustomerSearchTypeEnum.None; })"
+                                          @bind-Value="SearchSubText"
+                                          Immediate="true"
+                                          DebounceInterval="300"
+                                          T="string">
+                            </MudTextField>
+                        }
+                        @foreach (var sub in SubscripionsFiltered)
+                        {
+                            <MudSelectItem T="IdName" Value="@sub">@sub</MudSelectItem>
                         }
                     </MudSelect>
-                    <MudText Typo="Typo.body2">Selected Loc:</MudText>
-                    <MudText Typo="Typo.body2">@(string.Join(", ", SelectedRegions.Select(x=>$"\"{x}\"")))</MudText>
+                    @if (SelectedSubs.HasAnyInCollection())
+                    {
+                        <MudText Typo="Typo.body2">Selected Sub:</MudText>
+                        <MudText Typo="Typo.body2">@(string.Join(", ", SelectedSubs.Select(x => $"\"{x}\"")))</MudText>
+                    }
                 </MudItem>
-            </MudItem>
+                </MudItem>
 
-            <MudItem xs="6" sm="3" Class="d-flex align-center justify-center mud-width-full py-8">
-                <MudButton Disabled="@(CustomerSearchType == CustomerSearchTypeEnum.None)"
-                           Class="mt-4"
-                           OnClick="Search" Variant="Variant.Filled" Color="Color.Primary">Search</MudButton>
-            </MudItem>
-        </MudGrid>
+                <MudItem xs="6" sm="3" Class="d-flex align-center justify-center mud-width-full py-8">
+                    <MudCardContent>
+                        <MudTextField Adornment="Adornment.End"
+                                      AdornmentIcon="@(string.IsNullOrWhiteSpace(AtCode) ? string.Empty : Icons.Material.Filled.Clear)"
+                                      OnAdornmentClick="@(e => { AtCode = null; CustomerSearchType = CustomerSearchTypeEnum.None; })"
+                                      @bind-Value="AtCode"
+                                      Immediate="true"
+                                      Label="Enter AT Code" />
+                    </MudCardContent>
+                </MudItem>
+
+                <MudItem xs="6" sm="3" Class="d-flex align-center justify-center mud-width-full py-8">
+                    <MudItem xs="12" md="12">
+                        <MudSelect T="@IdName"
+                                   Label="Select Region"
+                                   MultiSelection="true"
+                                   Dense="true"
+                                   OffsetY="true"
+                                   SelectedValuesChanged="OnLocationsChanged">
+                            @foreach (var reg in Locations)
+                            {
+                                <MudSelectItem @key="reg.Id" T="IdName" Value="@reg">@reg</MudSelectItem>
+                            }
+                        </MudSelect>
+                        @if (SelectedRegions.HasAnyInCollection())
+                        {
+                            <MudText Typo="Typo.body2">Selected Loc:</MudText>
+                            <MudText Typo="Typo.body2">@(string.Join(", ", SelectedRegions.Select(x => $"\"{x}\"")))</MudText>
+                        }
+                    </MudItem>
+                    </MudItem>
+
+                    <MudItem xs="6" sm="3" Class="d-flex align-center justify-center mud-width-full py-8">
+                        <MudButton Disabled="@(CustomerSearchType == CustomerSearchTypeEnum.None)"
+                                   Class="mt-4"
+                                   OnClick="Search" Variant="Variant.Filled" Color="Color.Primary">Search</MudButton>
+                    </MudItem>
+</MudGrid>
     </MudCard>
 
     <MudSwitch Class="mt-5"
