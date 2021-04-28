@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace CSRO.Client.Blazor.WebApp.Pages.Customers
 {
-    public enum CustomerSearchTypeEnum { None, Sub, AtCode, Regions, Env }
+    public enum CustomerSearchTypeEnum { None, Sub, AtCode, Regions, Env, SelectedSubs, SelectedAtcodes }
 
     public class CustomerCodesBase : CsroComponentBase
     {
@@ -146,6 +146,32 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
             }
         }
 
+        private string _SearchSubText;
+
+        public string SearchSubText
+        {
+            get { return _SearchSubText; }
+            set 
+            {
+                _SearchSubText = value;
+                if (!string.IsNullOrWhiteSpace(value))
+                    SetSearchType(CustomerSearchTypeEnum.SelectedSubs);                
+                InvokeAsync(() => OnSearchSubTextChanged(value));                
+            }
+        }
+
+
+        public Task OnSearchSubTextChanged(string value)
+        {
+            // if text is null or empty, show complete list
+            if (string.IsNullOrEmpty(value))
+            {
+                SubscripionsFiltered = Subscripions;
+                return Task.CompletedTask;
+            }                        
+            SubscripionsFiltered = Subscripions.Where(x => x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase)).ToList();
+            return Task.CompletedTask;
+        }
 
         protected async override Task OnInitializedAsync()
         {
@@ -167,6 +193,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
                     SelectedRegions = new();
                     AtCode = null;
                     break;
+                case CustomerSearchTypeEnum.SelectedSubs:
                 case CustomerSearchTypeEnum.Sub:
                     //SelectedSub = null;
                     SelectedRegions = new();
@@ -184,7 +211,8 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
         }
 
         public Task OnAtCodeChanged()
-        {            
+        {
+            StateHasChanged();
             return Task.CompletedTask;
         }
 
@@ -247,8 +275,10 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
                         customers = await CustomerDataService.GetCustomersByAtCode(AtCode).ConfigureAwait(false);
                         break;
                     case CustomerSearchTypeEnum.Sub:
-                        customers = await CustomerDataService.GetCustomersBySubName(SelectedSub?.Name).ConfigureAwait(false);
-                        //customers = await CustomerDataService.GetCustomersBySubId(SelectedSub?.Id).ConfigureAwait(false);
+                        customers = await CustomerDataService.GetCustomersBySubName(SelectedSub?.Name).ConfigureAwait(false);                        
+                        break;
+                    case CustomerSearchTypeEnum.SelectedSubs:
+                        customers = await CustomerDataService.GetCustomersBySubNames(SelectedSubs.Select(a => a.Name).ToList()).ConfigureAwait(false);
                         break;
                     case CustomerSearchTypeEnum.Regions:
                         customers = await CustomerDataService.GetCustomersByRegions(SelectedRegions.Select(a => a.Name).ToList()).ConfigureAwait(false);
