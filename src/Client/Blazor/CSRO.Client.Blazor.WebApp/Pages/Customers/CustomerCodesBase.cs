@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace CSRO.Client.Blazor.WebApp.Pages.Customers
 {
-    public enum CustomerSearchTypeEnum { None, Sub, AtCode, Regions, Env }
+    public enum CustomerSearchTypeEnum { None, Sub, AtCode, Regions, Env, SelectedSubs, SelectedAtcodes }
 
     public class CustomerCodesBase : CsroComponentBase
     {
@@ -84,18 +84,6 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
                 SetColumns(true);
             }
         }
-
-
-        private IdName _SelectedSub;
-        public IdName SelectedSub
-        {
-            get { return _SelectedSub; }
-            set {
-                _SelectedSub = value;
-                if (value != null && !string.IsNullOrWhiteSpace(value.Name))
-                    SetSearchType(CustomerSearchTypeEnum.Sub);
-            }
-        }
                 
         private HashSet<IdName> _SelectedSubs = new();
 
@@ -104,9 +92,9 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
             get { return _SelectedSubs; }
             set 
             {
-                _SelectedSubs = value; 
-                //if (value.IsNullOrEmptyCollection())
-                //    SetSearchType(CustomerSearchTypeEnum.Sub);
+                _SelectedSubs = value;
+                if (value.HasAnyInCollection())
+                    SetSearchType(CustomerSearchTypeEnum.SelectedSubs);
             }
         }
 
@@ -146,6 +134,32 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
             }
         }
 
+        private string _SearchSubText;
+
+        public string SearchSubText
+        {
+            get { return _SearchSubText; }
+            set 
+            {
+                _SearchSubText = value;
+                if (!string.IsNullOrWhiteSpace(value))
+                    SetSearchType(CustomerSearchTypeEnum.SelectedSubs);                
+                InvokeAsync(() => OnSearchSubTextChanged(value));                
+            }
+        }
+
+
+        public Task OnSearchSubTextChanged(string value)
+        {
+            // if text is null or empty, show complete list
+            if (string.IsNullOrEmpty(value))
+            {
+                SubscripionsFiltered = Subscripions;
+                return Task.CompletedTask;
+            }                        
+            SubscripionsFiltered = Subscripions.Where(x => x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase)).ToList();
+            return Task.CompletedTask;
+        }
 
         protected async override Task OnInitializedAsync()
         {
@@ -158,22 +172,23 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
             switch (customerSearchType)
             {
                 case CustomerSearchTypeEnum.AtCode:
-                    SelectedSub = null; 
+                    SelectedSubs.Clear();
                     SelectedRegions = new();
                     //AtCode = null;
                     break;
                 case CustomerSearchTypeEnum.None:
-                    SelectedSub = null;
+                    SelectedSubs.Clear();
                     SelectedRegions = new();
                     AtCode = null;
                     break;
+                case CustomerSearchTypeEnum.SelectedSubs:
                 case CustomerSearchTypeEnum.Sub:
                     //SelectedSub = null;
                     SelectedRegions = new();
                     AtCode = null;
                     break;
                 case CustomerSearchTypeEnum.Regions:
-                    SelectedSub = null;
+                    SelectedSubs.Clear();
                     //SelectedRegions = new();
                     AtCode = null;
                     break;
@@ -184,7 +199,8 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
         }
 
         public Task OnAtCodeChanged()
-        {            
+        {
+            //StateHasChanged();
             return Task.CompletedTask;
         }
 
@@ -246,9 +262,11 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
                     case CustomerSearchTypeEnum.AtCode:
                         customers = await CustomerDataService.GetCustomersByAtCode(AtCode).ConfigureAwait(false);
                         break;
-                    case CustomerSearchTypeEnum.Sub:
-                        customers = await CustomerDataService.GetCustomersBySubName(SelectedSub?.Name).ConfigureAwait(false);
-                        //customers = await CustomerDataService.GetCustomersBySubId(SelectedSub?.Id).ConfigureAwait(false);
+                    //case CustomerSearchTypeEnum.Sub:
+                    //    customers = await CustomerDataService.GetCustomersBySubName(SelectedSub?.Name).ConfigureAwait(false);                        
+                    //    break;
+                    case CustomerSearchTypeEnum.SelectedSubs:
+                        customers = await CustomerDataService.GetCustomersBySubNames(SelectedSubs.Select(a => a.Name).ToList()).ConfigureAwait(false);
                         break;
                     case CustomerSearchTypeEnum.Regions:
                         customers = await CustomerDataService.GetCustomersByRegions(SelectedRegions.Select(a => a.Name).ToList()).ConfigureAwait(false);
@@ -342,23 +360,23 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
             }
         }
 
-        public async Task<IEnumerable<IdName>> SearchSubs(string value)
-        {
-            // In real life use an asynchronous function for fetching data from an api.
-            await Task.Delay(50);
+        //public async Task<IEnumerable<IdName>> SearchSubs(string value)
+        //{
+        //    // In real life use an asynchronous function for fetching data from an api.
+        //    await Task.Delay(50);
 
-            // if text is null or empty, show complete list
-            if (string.IsNullOrEmpty(value))
-                return Subscripions;
+        //    // if text is null or empty, show complete list
+        //    if (string.IsNullOrEmpty(value))
+        //        return Subscripions;
                         
-            IsFilterAutofocused = false;
-            SubscripionsFiltered = Subscripions.Where(x => x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase)).ToList();
-            if (SubscripionsFiltered.IsNullOrEmptyCollection())
-                SubscripionsFiltered = Subscripions;
-            else
-                IsFilterAutofocused = true;
-            return Subscripions.IsNullOrEmptyCollection() ? null : SubscripionsFiltered;
-        }
+        //    IsFilterAutofocused = false;
+        //    SubscripionsFiltered = Subscripions.Where(x => x.Name.Contains(value, StringComparison.InvariantCultureIgnoreCase)).ToList();
+        //    if (SubscripionsFiltered.IsNullOrEmptyCollection())
+        //        SubscripionsFiltered = Subscripions;
+        //    else
+        //        IsFilterAutofocused = true;
+        //    return Subscripions.IsNullOrEmptyCollection() ? null : SubscripionsFiltered;
+        //}
 
         public void ShowBtnPress(string id)
         {
