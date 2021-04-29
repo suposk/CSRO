@@ -75,6 +75,7 @@ namespace CSRO.Client.Blazor.WebApp
             }
 
             var azureAdOptions = Configuration.GetSection(nameof(AzureAd)).Get<AzureAd>();
+            var keyVaultConfig = Configuration.GetSection(nameof(KeyVaultConfig)).Get<KeyVaultConfig>();
 
             string ClientSecret = null;
             string TokenCacheDbConnStr = Configuration.GetConnectionString("TokenCacheDbConnStr");
