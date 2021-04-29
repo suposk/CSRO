@@ -21,7 +21,7 @@ namespace CSRO.Client.Services.Models
         public string ResourceType { get; set; }
         public string AzureResource { get; set; }
         public string OpEnvironment { get; set; }
-        public bool ShowDetails { get; set; }
+        //public bool ShowDetails { get; set; }
     }
 
     /// <summary>

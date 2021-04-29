@@ -21,13 +21,15 @@
         <MudGrid>
 
             <MudItem xs="6" sm="3" Class="d-flex align-center justify-center mud-width-full py-8">
-                <MudItem xs="12" md="12">
+                <MudItem xs="12" md="12" Class="ml-2">
                     <MudSelect T="@IdName"
                                Label="Select Subscription(s)"
-                               MultiSelection="true"
+                               MultiSelection="true" 
                                Dense="true"
                                OffsetY="true"
-                               SelectedValuesChanged="OnSubscriptionsChanged">
+                               SelectedValues="@SelectedSubs"
+                               SelectedValuesChanged="OnSubscriptionsChanged"
+                               >
                         @if (Subscripions.HasAnyInCollection())
                         {
                             <MudTextField Placeholder="Enter Subcription Name"
@@ -61,6 +63,7 @@
                                MultiSelection="true"
                                Dense="true"
                                OffsetY="true"
+                               SelectedValues="@SelectedAtCodes"
                                SelectedValuesChanged="OnAtCodesChanged">
                         @if (AtCodesList.HasAnyInCollection())
                         {
@@ -92,10 +95,11 @@
             <MudItem xs="6" sm="3" Class="d-flex align-center justify-center mud-width-full py-8">
                 <MudItem xs="12" md="12">
                     <MudSelect T="@IdName"
-                               Label="Select Region"
+                               Label="Select Region(s)"
                                MultiSelection="true"
                                Dense="true"
                                OffsetY="true"
+                               SelectedValues="@SelectedRegions"
                                SelectedValuesChanged="OnLocationsChanged">
                         @foreach (var reg in Locations)
                         {
@@ -111,9 +115,21 @@
             </MudItem>
 
             <MudItem xs="6" sm="3" Class="d-flex align-center justify-center mud-width-full py-8">
-                <MudButton Disabled="@(CustomerSearchType == CustomerSearchTypeEnum.None)"
-                           Class="mt-4"
-                           OnClick="Search" Variant="Variant.Filled" Color="Color.Primary">Search</MudButton>
+                <MudItem xs="12" md="12">
+                    <div Class="d-flex align-center flex-column py-2 px-1" >
+                        <MudButton Disabled="@(CustomerSearchType == CustomerSearchTypeEnum.None)"
+                                   Class="py-1 m-2"
+                                   OnClick="Search" Variant="Variant.Filled" Color="Color.Primary">Search</MudButton>
+                        @if (Customers.HasAnyInCollection())
+                        {
+                            <MudTooltip Text="Export Selected rows to Csv File.">
+                                <MudButton Disabled="@(SelectedCustomers.IsNullOrEmptyCollection())"
+                                           Class="py-1 m-2"
+                                           OnClick="Export" Variant="Variant.Filled" Color="Color.Success">Export</MudButton>
+                            </MudTooltip>
+                        }
+                    </div>
+                </MudItem>
             </MudItem>
         </MudGrid>
     </MudCard>
@@ -122,6 +138,11 @@
                Label=@((IsSimpleView) ? "Simple View (On)" : "Simple View (Off)")
                @bind-Checked="@IsSimpleView" Color="Color.Primary" />
 
+    @if (Customers.HasAnyInCollection())
+    {
+        <MudText>@($"Total Count: {Customers.Count}")</MudText>
+    }
+
     @if (IsSimpleView)
     {
         <MudTable Class="mt-5"
@@ -129,6 +150,7 @@
                   MultiSelection="true"
                   Items="@Customers" 
                   Hover="true"
+                  @bind-SelectedItems="SelectedCustomers"
                   RowsPerPage="20"
                   SortLabel="Sort By" Elevation="0">
             <HeaderContent>
@@ -157,6 +179,7 @@
                   MultiSelection="true"
                   Items="@Customers"
                   Hover="true"
+                  @bind-SelectedItems="SelectedCustomers"
                   RowsPerPage="20"
                   SortLabel="Sort By" Elevation="0">
             <HeaderContent>

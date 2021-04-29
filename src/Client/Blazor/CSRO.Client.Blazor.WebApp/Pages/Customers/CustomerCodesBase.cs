@@ -4,11 +4,11 @@ using CSRO.Client.Core.Models;
 using CSRO.Client.Services;
 using CSRO.Client.Services.AzureRestServices;
 using CSRO.Client.Services.Models;
-using CSRO.Common.AzureSdkServices;
-using CSRO.Common.AzureSdkServices.Models;
+using CSRO.Common;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.Extensions.Logging;
+using Microsoft.JSInterop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,11 +17,7 @@ using System.Threading.Tasks;
 
 namespace CSRO.Client.Blazor.WebApp.Pages.Customers
 {
-    public enum CustomerSearchTypeEnum 
-    {
-        None, Sub, 
-        //AtCode, 
-        Regions, Env, SelectedSubs, SelectedAtcodes }
+    public enum CustomerSearchTypeEnum  { None, Regions, Subcriptions, AtCodes }
 
     public class CustomerCodesBase : CsroComponentBase
     {
@@ -49,8 +45,11 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
         [Inject]
         public ILogger<CustomerCodesBase> Logger { get; set; }
 
-        //[Inject]
-        //public IAdService AdService { get; set; }
+        [Inject]
+        public ICsvExporter CsvExporter { get; set; }
+
+        [Inject]
+        public IJSRuntime JSRuntime { get; set; }
 
         #endregion
 
@@ -58,27 +57,18 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
         #region Properties
 
         protected EditContext editContext { get; private set; }
-
         protected ResourceGroupModel Model { get; set; } = new();
-
         //protected string Title => "Hosting Settings";
-
         protected List<IdName> Subscripions { get; set; } = new();
         protected List<IdName> SubscripionsFiltered { get; set; } = new();
 
         protected List<Customer> Customers = new();
-
-        List<Customer> _customersCache = new();
-
+        protected HashSet<Customer> SelectedCustomers = new();
 
         protected List<IdName> Locations { get; set; } = new();
-
         protected List<string> AtCodesList { get; set; } = new();
         protected List<string> AtCodesListFiltered { get; set; } = new();
-
-
         protected List<string> ResourceGroups { get; set; } = new();
-
 
         protected bool IsLocDisabled => string.IsNullOrWhiteSpace(Model?.SubcriptionId) || Locations?.Count == 0;
         protected bool IsRgDisabled => IsLocDisabled | ResourceGroups?.Count == 0;
@@ -86,7 +76,6 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
         protected Dictionary<string, string> ColumnsToDisplay = new();
                 
         private bool _IsSimpleView = true;
-
         public bool IsSimpleView
         {
             get { return _IsSimpleView; }
@@ -98,7 +87,6 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
         }
                 
         private HashSet<IdName> _SelectedSubs = new();
-
         public HashSet<IdName> SelectedSubs
         {
             get { return _SelectedSubs; }
@@ -106,12 +94,11 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
             {
                 _SelectedSubs = value;
                 if (value.HasAnyInCollection())
-                    SetSearchType(CustomerSearchTypeEnum.SelectedSubs);
+                    SetSearchType(CustomerSearchTypeEnum.Subcriptions);
             }
         }
 
         private HashSet<string> _SelectedAtCodes = new();
-
         public HashSet<string> SelectedAtCodes
         {
             get { return _SelectedAtCodes; }
@@ -119,15 +106,11 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
             {
                 _SelectedAtCodes = value;
                 if (value.HasAnyInCollection())
-                    SetSearchType(CustomerSearchTypeEnum.SelectedAtcodes);
+                    SetSearchType(CustomerSearchTypeEnum.AtCodes);
             }
         }
 
-
-
-        //protected HashSet<IdName> SelectedRegions { get; set; } = new();
         private HashSet<IdName> _SelectedRegions = new();
-
         public HashSet<IdName> SelectedRegions
         {
             get { return _SelectedRegions; }
@@ -168,7 +151,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
             {
                 _SearchSubText = value;
                 if (!string.IsNullOrWhiteSpace(value))
-                    SetSearchType(CustomerSearchTypeEnum.SelectedSubs);                
+                    SetSearchType(CustomerSearchTypeEnum.Subcriptions);                
                 InvokeAsync(() => OnSearchSubTextChanged(value));                
             }
         }
@@ -182,7 +165,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
             {
                 _SearchAtCode = value;
                 if (!string.IsNullOrWhiteSpace(value))
-                    SetSearchType(CustomerSearchTypeEnum.SelectedAtcodes);
+                    SetSearchType(CustomerSearchTypeEnum.AtCodes);
                 InvokeAsync(() => OnSearchAtCodeChanged(value));
             }
         }
@@ -249,42 +232,34 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
 
         public Task OnSubscriptionsChanged(HashSet<IdName> values)
         {
-            if (values.HasAnyInCollection())
-            {
-                ClearSelectedCollections(CustomerSearchTypeEnum.SelectedSubs);
-                SelectedSubs = values;
-            }
+            if (values.HasAnyInCollection())                           
+                SelectedSubs = values;            
             return Task.CompletedTask;
         }
 
         public Task OnAtCodesChanged(HashSet<string> values)
         {
             if (values.HasAnyInCollection())
-            {
-                ClearSelectedCollections(CustomerSearchTypeEnum.SelectedAtcodes);
-                SelectedAtCodes = values;
-            }
+                SelectedAtCodes = values;            
             return Task.CompletedTask;
         }
 
         public Task OnLocationsChanged(HashSet<IdName> values)
         {
             if (values.HasAnyInCollection())
-            {
-                ClearSelectedCollections(CustomerSearchTypeEnum.Regions);
-                SelectedRegions = values;
-            }
+                SelectedRegions = values;            
             return Task.CompletedTask;
         }
 
         private void ClearSelectedCollections(CustomerSearchTypeEnum type)
         {
-            if (type != CustomerSearchTypeEnum.SelectedSubs)
-                SelectedSubs?.Clear();
-            if (type != CustomerSearchTypeEnum.SelectedAtcodes)
-                SelectedAtCodes?.Clear();
+            if (type != CustomerSearchTypeEnum.Subcriptions)
+                SelectedSubs = new();
+            if (type != CustomerSearchTypeEnum.AtCodes)
+                SelectedAtCodes = new();
             if (type != CustomerSearchTypeEnum.Regions)
-                SelectedRegions?.Clear();
+                SelectedRegions = new();
+            //StateHasChanged();
         }
 
         async Task LoadLocations()
@@ -293,53 +268,52 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
                 Locations = await LocationsService.GetLocations();
         }
 
+        protected async Task Export()
+        {
+            try
+            {
+                if (SelectedCustomers.IsNullOrEmptyCollection())
+                    return;
+
+                if (await JSRuntime.InvokeAsync<bool>("confirm", $"Do you want to export this list to Excel?"))
+                {
+                    var fileBytes = CsvExporter.ExportEventsToCsv(SelectedCustomers.ToList());
+                    var fileName = $"Customers-{CustomerSearchType}-Export-{DateTime.Now.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture)}.csv";
+                    await JSRuntime.InvokeAsync<object>("saveAsFile", fileName, Convert.ToBase64String(fileBytes));
+                }
+            }
+            catch (Exception ex)
+            {
+                await CsroDialogService.ShowError("Error", ex?.Message);
+            }
+        }
+
         public async Task Search()
         {
             try
             {
-                Customers.Clear();
-                _customersCache.Clear();
                 ShowLoading("Please wait ...");
 
-                await Task.Delay(1);
+                Customers.Clear();
+                SelectedCustomers.Clear();               
                 List<Customer> customers = null;
 
                 switch (CustomerSearchType)
                 {
-                    case CustomerSearchTypeEnum.SelectedAtcodes:
+                    case CustomerSearchTypeEnum.AtCodes:
                         customers = await CustomerDataService.GetCustomersByAtCodes(SelectedAtCodes.ToList()).ConfigureAwait(false);
                         break;
-                    //case CustomerSearchTypeEnum.Sub:
-                    //    customers = await CustomerDataService.GetCustomersBySubName(SelectedSub?.Name).ConfigureAwait(false);                        
-                    //    break;
-                    case CustomerSearchTypeEnum.SelectedSubs:
+                    case CustomerSearchTypeEnum.Subcriptions:
                         customers = await CustomerDataService.GetCustomersBySubNames(SelectedSubs.Select(a => a.Name).ToList()).ConfigureAwait(false);
                         break;
                     case CustomerSearchTypeEnum.Regions:
                         customers = await CustomerDataService.GetCustomersByRegions(SelectedRegions.Select(a => a.Name).ToList()).ConfigureAwait(false);
                         break;
-                    case CustomerSearchTypeEnum.Env:
-                        break;
+                    //case CustomerSearchTypeEnum.Env:
+                    //    break;
                 }
-
-                if (customers.HasAnyInCollection())
-                {                    
-                    foreach (var cust in customers)
-                    {
-                        var sub = Subscripions.FirstOrDefault(a => a.Id == cust.SubscriptionId);
-                        if (sub != null && string.IsNullOrWhiteSpace(cust.SubscriptionName))
-                        {
-                            //only if sub name is missing
-                            cust.SubscriptionName = sub.Name;
-                        }                                                                          
-                        _customersCache.Add(cust);
-                    }
-                    //open first sub
-                    var first = _customersCache.FirstOrDefault();
-                    if (first != null)
-                        first.ShowDetails = true;
-                    Customers = _customersCache;
-                }
+                if (customers.HasAnyInCollection())                                    
+                    Customers = customers;                
             }
             catch (Exception ex)
             {
@@ -353,10 +327,8 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
         {
             ResourceGroups?.Clear();
             var rgs = await ResourceGroupervice.GetResourceGroups(subcriptionId, location);
-            if (rgs != null)
-            {
-                ResourceGroups.AddRange(rgs.Select(a => a.Name));
-            }
+            if (rgs != null)            
+                ResourceGroups.AddRange(rgs.Select(a => a.Name));            
             StateHasChanged();
         }
 
@@ -367,7 +339,6 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
                 ShowLoading();                
                 SetColumns(false);
 
-
                 Subscripions?.Clear();
                 SubscripionsFiltered?.Clear();
                 SelectedSubs?.Clear();
@@ -375,30 +346,13 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
 
                 await LoadLocations();
                 AtCodesList = await CustomerDataService.GetAtCodes();
-                AtCodesListFiltered = AtCodesList;
+                AtCodesListFiltered = AtCodesList;                                
 
-                //Subscripions = await SubcriptionSdkService.GetAllSubcriptions();   not working properly
-                if (Subscripions.IsNullOrEmptyCollection() || Subscripions.Count <= 10)
-                {
-                    //var restSubs = await SubcriptionService.GetSubcriptions();
-                    var restSubs = await SubcriptionDataService.GetSubcriptions();
-                    if (restSubs?.Count > 0)                                            
-                        Subscripions = restSubs;                    
-                }
+                var subs = await SubcriptionDataService.GetSubcriptions();
+                if (subs.HasAnyInCollection())                                            
+                    Subscripions = subs;                    
+                
                 SubscripionsFiltered = Subscripions;
-#if DEBUG
-
-                //dubug only
-                //Model.SubcriptionId = "33fb38df-688e-4ca1-8dd8-b46e26262ff8";
-                if (Subscripions?.Count == 1)
-                {
-                    for (int i = 1; i <= 3; i++)
-                    {
-                        Subscripions.Add(new IdName(Guid.NewGuid().ToString(), $"fake sub name {i}"));
-                    }
-                }
-#endif
-
             }
             catch (Exception ex)
             {
@@ -411,12 +365,12 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
             }
         }
 
-        public void ShowBtnPress(string id)
-        {
-            Customer tmpCust = Customers.FirstOrDefault(f => f.SubscriptionId == id);
-            if (tmpCust != null)
-                tmpCust.ShowDetails = !tmpCust.ShowDetails;
-        }
+        //public void ShowBtnPress(string id)
+        //{
+        //    Customer tmpCust = Customers.FirstOrDefault(f => f.SubscriptionId == id);
+        //    if (tmpCust != null)
+        //        tmpCust.ShowDetails = !tmpCust.ShowDetails;
+        //}
 
         public void GoBack()
         {
