@@ -232,42 +232,34 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
 
         public Task OnSubscriptionsChanged(HashSet<IdName> values)
         {
-            if (values.HasAnyInCollection())
-            {
-                ClearSelectedCollections(CustomerSearchTypeEnum.Subcriptions);
-                SelectedSubs = values;
-            }
+            if (values.HasAnyInCollection())                           
+                SelectedSubs = values;            
             return Task.CompletedTask;
         }
 
         public Task OnAtCodesChanged(HashSet<string> values)
         {
             if (values.HasAnyInCollection())
-            {
-                ClearSelectedCollections(CustomerSearchTypeEnum.AtCodes);
-                SelectedAtCodes = values;
-            }
+                SelectedAtCodes = values;            
             return Task.CompletedTask;
         }
 
         public Task OnLocationsChanged(HashSet<IdName> values)
         {
             if (values.HasAnyInCollection())
-            {
-                ClearSelectedCollections(CustomerSearchTypeEnum.Regions);
-                SelectedRegions = values;
-            }
+                SelectedRegions = values;            
             return Task.CompletedTask;
         }
 
         private void ClearSelectedCollections(CustomerSearchTypeEnum type)
         {
             if (type != CustomerSearchTypeEnum.Subcriptions)
-                SelectedSubs?.Clear();
+                SelectedSubs = new();
             if (type != CustomerSearchTypeEnum.AtCodes)
-                SelectedAtCodes?.Clear();
+                SelectedAtCodes = new();
             if (type != CustomerSearchTypeEnum.Regions)
-                SelectedRegions?.Clear();
+                SelectedRegions = new();
+            //StateHasChanged();
         }
 
         async Task LoadLocations()

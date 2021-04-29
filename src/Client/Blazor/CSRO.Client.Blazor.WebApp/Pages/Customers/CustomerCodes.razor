@@ -24,10 +24,12 @@
                 <MudItem xs="12" md="12" Class="ml-2">
                     <MudSelect T="@IdName"
                                Label="Select Subscription(s)"
-                               MultiSelection="true"
+                               MultiSelection="true" 
                                Dense="true"
                                OffsetY="true"
-                               SelectedValuesChanged="OnSubscriptionsChanged">
+                               SelectedValues="@SelectedSubs"
+                               SelectedValuesChanged="OnSubscriptionsChanged"
+                               >
                         @if (Subscripions.HasAnyInCollection())
                         {
                             <MudTextField Placeholder="Enter Subcription Name"
@@ -61,6 +63,7 @@
                                MultiSelection="true"
                                Dense="true"
                                OffsetY="true"
+                               SelectedValues="@SelectedAtCodes"
                                SelectedValuesChanged="OnAtCodesChanged">
                         @if (AtCodesList.HasAnyInCollection())
                         {
@@ -96,6 +99,7 @@
                                MultiSelection="true"
                                Dense="true"
                                OffsetY="true"
+                               SelectedValues="@SelectedRegions"
                                SelectedValuesChanged="OnLocationsChanged">
                         @foreach (var reg in Locations)
                         {
