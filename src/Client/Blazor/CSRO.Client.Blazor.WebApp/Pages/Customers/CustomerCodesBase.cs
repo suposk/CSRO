@@ -230,27 +230,6 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
                 StateHasChanged();
         }
 
-        public Task OnSubscriptionsChanged(HashSet<IdName> values)
-        {
-            if (values.HasAnyInCollection())                           
-                SelectedSubs = values;            
-            return Task.CompletedTask;
-        }
-
-        public Task OnAtCodesChanged(HashSet<string> values)
-        {
-            if (values.HasAnyInCollection())
-                SelectedAtCodes = values;            
-            return Task.CompletedTask;
-        }
-
-        public Task OnLocationsChanged(HashSet<IdName> values)
-        {
-            if (values.HasAnyInCollection())
-                SelectedRegions = values;            
-            return Task.CompletedTask;
-        }
-
         private void ClearSelectedCollections(CustomerSearchTypeEnum type)
         {
             if (type != CustomerSearchTypeEnum.Subcriptions)

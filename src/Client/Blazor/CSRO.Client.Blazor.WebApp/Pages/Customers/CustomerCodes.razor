@@ -27,8 +27,7 @@
                                MultiSelection="true" 
                                Dense="true"
                                OffsetY="true"
-                               SelectedValues="@SelectedSubs"
-                               SelectedValuesChanged="OnSubscriptionsChanged"
+                               @bind-SelectedValues="SelectedSubs"                                                              
                                >
                         @if (Subscripions.HasAnyInCollection())
                         {
@@ -43,10 +42,9 @@
                                           T="string">
                             </MudTextField>
                         }
-                        @foreach (var sub in SubscripionsFiltered)
-                        {
+                        <Virtualize Context="sub" Items="SubscripionsFiltered">
                             <MudSelectItem T="IdName" @key="@sub.Id" Value="@sub">@sub</MudSelectItem>
-                        }
+                        </Virtualize>
                     </MudSelect>
                     @if (SelectedSubs.HasAnyInCollection())
                     {
@@ -63,8 +61,8 @@
                                MultiSelection="true"
                                Dense="true"
                                OffsetY="true"
-                               SelectedValues="@SelectedAtCodes"
-                               SelectedValuesChanged="OnAtCodesChanged">
+                               @bind-SelectedValues="SelectedAtCodes"                                                                                                                           
+                               >
                         @if (AtCodesList.HasAnyInCollection())
                         {
                             <MudTextField Placeholder="Enter Atcode"
@@ -78,10 +76,9 @@
                                           T="string">
                             </MudTextField>
                         }
-                        @foreach (var item in AtCodesListFiltered)
-                        {
+                        <Virtualize Context="item" Items="AtCodesListFiltered">
                             <MudSelectItem T="string" @key="item" Value="@item">@item</MudSelectItem>
-                        }
+                        </Virtualize>
                     </MudSelect>
                     @if (SelectedAtCodes.HasAnyInCollection())
                     {
@@ -99,8 +96,8 @@
                                MultiSelection="true"
                                Dense="true"
                                OffsetY="true"
-                               SelectedValues="@SelectedRegions"
-                               SelectedValuesChanged="OnLocationsChanged">
+                               @bind-SelectedValues="SelectedRegions"
+                               >
                         @foreach (var reg in Locations)
                         {
                             <MudSelectItem @key="reg.Id" T="IdName" Value="@reg">@reg</MudSelectItem>
