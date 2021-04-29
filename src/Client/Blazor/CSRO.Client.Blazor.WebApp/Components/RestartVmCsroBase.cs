@@ -179,6 +179,8 @@ namespace CSRO.Client.Blazor.WebApp.Components
                     
                     Subscripions = Subscripions ?? new List<IdName>();
 #if DEBUG
+                    if (Model.ExternalTicket == null)
+                        Model.ExternalTicket = "Inc132666FakeTicket";
                     if (Subscripions?.Count == 1)
                     {
                         var id = Subscripions.First().Id;
