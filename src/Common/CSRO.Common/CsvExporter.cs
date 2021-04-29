@@ -14,6 +14,9 @@ namespace CSRO.Common
     {
         public byte[] ExportEventsToCsv<T>(List<T> listToExport)
         {
+            if (listToExport is null)            
+                throw new System.ArgumentNullException(nameof(listToExport));            
+
             using var memoryStream = new MemoryStream();
             using (var streamWriter = new StreamWriter(memoryStream))
             {

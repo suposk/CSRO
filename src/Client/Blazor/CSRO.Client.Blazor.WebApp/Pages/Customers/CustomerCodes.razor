@@ -114,7 +114,7 @@
                 <MudButton Disabled="@(CustomerSearchType == CustomerSearchTypeEnum.None)"
                            Class="m-2"
                            OnClick="Search" Variant="Variant.Filled" Color="Color.Primary">Search</MudButton>
-                <MudButton 
+                <MudButton Disabled="@(SelectedCustomers.IsNullOrEmptyCollection())"
                            Class="m-2"
                            OnClick="Export" Variant="Variant.Filled" Color="Color.Primary">Export</MudButton>
             </MudItem>
@@ -132,6 +132,7 @@
                   MultiSelection="true"
                   Items="@Customers" 
                   Hover="true"
+                  @bind-SelectedItems="SelectedCustomers"
                   RowsPerPage="20"
                   SortLabel="Sort By" Elevation="0">
             <HeaderContent>
@@ -160,6 +161,7 @@
                   MultiSelection="true"
                   Items="@Customers"
                   Hover="true"
+                  @bind-SelectedItems="SelectedCustomers"
                   RowsPerPage="20"
                   SortLabel="Sort By" Elevation="0">
             <HeaderContent>

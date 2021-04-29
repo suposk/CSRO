@@ -63,6 +63,8 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
         protected List<IdName> SubscripionsFiltered { get; set; } = new();
 
         protected List<Customer> Customers = new();
+        protected HashSet<Customer> SelectedCustomers = new();
+
         protected List<IdName> Locations { get; set; } = new();
         protected List<string> AtCodesList { get; set; } = new();
         protected List<string> AtCodesListFiltered { get; set; } = new();
@@ -278,9 +280,12 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
         {
             try
             {
+                if (SelectedCustomers.IsNullOrEmptyCollection())
+                    return;
+
                 if (await JSRuntime.InvokeAsync<bool>("confirm", $"Do you want to export this list to Excel?"))
                 {
-                    var fileBytes = CsvExporter.ExportEventsToCsv(Customers);
+                    var fileBytes = CsvExporter.ExportEventsToCsv(SelectedCustomers.ToList());
                     var fileName = $"Customers-{CustomerSearchType}-Export-{DateTime.Now.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture)}.csv";
                     await JSRuntime.InvokeAsync<object>("saveAsFile", fileName, Convert.ToBase64String(fileBytes));
                 }
@@ -295,9 +300,10 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
         {
             try
             {
-                Customers.Clear();                
                 ShowLoading("Please wait ...");
 
+                Customers.Clear();
+                SelectedCustomers.Clear();               
                 List<Customer> customers = null;
 
                 switch (CustomerSearchType)
