@@ -17,17 +17,125 @@
         </MudGrid>
     }
 
-    <MudCard>
-        <MudGrid>
+<MudCard>
 
+    <MudGrid>
+        <MudItem xs="6" sm="3" Class="d-flex align-center justify-center mud-width-full py-8">
+            <MudItem xs="12" md="12" Class="ml-2">
+                <MudSelect T="@IdName"
+                           Label="Select Subscription(s)"
+                           MultiSelection="true"
+                           Dense="true"
+                           OffsetY="true"
+                           @bind-SelectedValues="SelectedSubs">
+                    @if (Subscripions.HasAnyInCollection())
+                    {
+                        <MudTextField Placeholder="Enter Subcription Name"
+                                      Class="mt-0 mx-2"
+                                      Adornment="Adornment.End"
+                                      AdornmentIcon="@Icons.Material.Filled.Clear"
+                                      OnAdornmentClick="@(e => { SearchSubText = null; CustomerSearchType = CustomerSearchTypeEnum.None; })"
+                                      @bind-Value="SearchSubText"
+                                      Immediate="true"
+                                      DebounceInterval="300"
+                                      T="string">
+                        </MudTextField>
+                    }
+                    <Virtualize Context="sub" Items="SubscripionsFiltered">
+                        <MudSelectItem T="IdName" @key="@sub.Id" Value="@sub">@sub</MudSelectItem>
+                    </Virtualize>
+                </MudSelect>
+            </MudItem>
+        </MudItem>
+
+        <MudItem xs="6" sm="3" Class="d-flex align-center justify-center mud-width-full py-8">
+            <MudItem xs="12" md="12">
+                <MudSelect T="string"
+                           Label="Select Atcode(s)"
+                           MultiSelection="true"
+                           Dense="true"
+                           OffsetY="true"
+                           @bind-SelectedValues="SelectedAtCodes">
+                    @if (AtCodesList.HasAnyInCollection())
+                    {
+                        <MudTextField Placeholder="Enter Atcode"
+                                      Class="mt-0 mx-2"
+                                      Adornment="Adornment.End"
+                                      AdornmentIcon="@Icons.Material.Filled.Clear"
+                                      OnAdornmentClick="@(e => { SearchAtCode = null; CustomerSearchType = CustomerSearchTypeEnum.None; })"
+                                      @bind-Value="SearchAtCode"
+                                      Immediate="true"
+                                      DebounceInterval="300"
+                                      T="string">
+                        </MudTextField>
+                    }
+                    <Virtualize Context="item" Items="AtCodesListFiltered">
+                        <MudSelectItem T="string" @key="item" Value="@item">@item</MudSelectItem>
+                    </Virtualize>
+                </MudSelect>
+            </MudItem>
+        </MudItem>
+
+
+        <MudItem xs="6" sm="3" Class="d-flex align-center justify-center mud-width-full py-8">
+            <MudItem xs="12" md="12">
+                <MudSelect T="@IdName"
+                           Label="Select Region(s)"
+                           MultiSelection="true"
+                           Dense="true"
+                           OffsetY="true"
+                           @bind-SelectedValues="SelectedRegions">
+                    @foreach (var reg in Locations)
+                    {
+                        <MudSelectItem @key="reg.Id" T="IdName" Value="@reg">@reg</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+        </MudItem>
+
+        <MudItem xs="6" sm="3" Class="d-flex align-center justify-center mud-width-full py-8">
+            <MudItem xs="12" md="12">
+                @if (SelectedSubs.HasAnyInCollection())
+                {
+                    <MudText Typo="Typo.body2"><b>Selected Subcriptions:</b></MudText>
+                    <MudText Typo="Typo.body2">@(string.Join(", ", SelectedSubs.Select(x => $"\"{x}\"")))</MudText>
+                }
+                @if (SelectedAtCodes.HasAnyInCollection())
+                {
+                    <MudText Typo="Typo.body2"><b>Selected AtCodes:</b></MudText>
+                    <MudText Typo="Typo.body2">@(string.Join(", ", SelectedAtCodes.Select(x => $"\"{x}\"")))</MudText>
+                }
+                @if (SelectedRegions.HasAnyInCollection())
+                {
+                    <MudText Typo="Typo.body2"><b>Selected Regions:</b></MudText>
+                    <MudText Typo="Typo.body2">@(string.Join(", ", SelectedRegions.Select(x => $"\"{x}\"")))</MudText>
+                }
+                <div Class="d-flex align-center flex-column py-2 px-1">
+                    <MudButton Disabled="@(CustomerSearchType == CustomerSearchTypeEnum.None)"
+                               Class="py-1 m-2"
+                               OnClick="Search" Variant="Variant.Filled" Color="Color.Primary">Search</MudButton>
+                    @if (Customers.HasAnyInCollection())
+                    {
+                        <MudTooltip Text="Export Selected rows to Csv File.">
+                            <MudButton Disabled="@(SelectedCustomers.IsNullOrEmptyCollection())"
+                                       Class="py-1 m-2"
+                                       OnClick="Export" Variant="Variant.Filled" Color="Color.Success">Export</MudButton>
+                        </MudTooltip>
+                    }
+                </div>
+            </MudItem>
+        </MudItem>
+    </MudGrid>
+
+    @*<MudGrid>
             <MudItem xs="6" sm="3" Class="d-flex align-center justify-center mud-width-full py-8">
                 <MudItem xs="12" md="12" Class="ml-2">
                     <MudSelect T="@IdName"
                                Label="Select Subscription(s)"
-                               MultiSelection="true" 
+                               MultiSelection="true"
                                Dense="true"
                                OffsetY="true"
-                               @bind-SelectedValues="SelectedSubs"                                                              
+                               @bind-SelectedValues="SelectedSubs"
                                >
                         @if (Subscripions.HasAnyInCollection())
                         {
@@ -61,7 +169,7 @@
                                MultiSelection="true"
                                Dense="true"
                                OffsetY="true"
-                               @bind-SelectedValues="SelectedAtCodes"                                                                                                                           
+                               @bind-SelectedValues="SelectedAtCodes"
                                >
                         @if (AtCodesList.HasAnyInCollection())
                         {
@@ -128,8 +236,9 @@
                     </div>
                 </MudItem>
             </MudItem>
-        </MudGrid>
-    </MudCard>
+        </MudGrid>*@
+
+</MudCard>
 
     <MudSwitch Class="mt-5"
                Label=@((IsSimpleView) ? "Simple View (On)" : "Simple View (Off)")
