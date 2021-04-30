@@ -43,8 +43,8 @@ namespace CSRO.Server.Api.Controllers
                 bool UseKeyVault = _configuration.GetValue<bool>("UseKeyVault");
                 list.Add($"{nameof(UseKeyVault)} = {UseKeyVault}");
 
-                string TokenCacheDbConnStr = _configuration.GetConnectionString("TokenCacheDbConnStr");
-                list.Add($"{nameof(TokenCacheDbConnStr)} = {TokenCacheDbConnStr.ReplaceWithStars()}");
+                string TokenCacheDbCs = _configuration.GetConnectionString("TokenCacheDbCs");
+                list.Add($"{nameof(TokenCacheDbCs)} = {TokenCacheDbCs.ReplaceWithStars()}");
 
                 string SqlConnString = _configuration.GetConnectionString("SqlConnString");
                 list.Add($"{nameof(SqlConnString)} = {SqlConnString.ReplaceWithStars()}");

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace CSRO.Common.AdoServices
+namespace CSRO.Common
 {
     public class AdoConfig
     {

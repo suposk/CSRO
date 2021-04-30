@@ -10,7 +10,7 @@ dotnet sql-cache create "Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=CSRO
 - statup.cs
 services.AddDistributedSqlServerCache(options =>
 {
-    options.ConnectionString = Configuration.GetConnectionString("TokenCacheDbConnStr");
+    options.ConnectionString = Configuration.GetConnectionString("TokenCacheDbCs");
     options.SchemaName = "dbo";
     options.TableName = "TokenCache";
 });
@@ -18,5 +18,5 @@ services.AddDistributedSqlServerCache(options =>
 
 - app settings
 "ConnectionStrings": {
-"TokenCacheDbConnStr": "Data Source=(LocalDb)\\MSSQLLocalDB;Database=CSRO.TokenCacheDb;Trusted_Connection=True;"
+"TokenCacheDbCs": "Data Source=(LocalDb)\\MSSQLLocalDB;Database=CSRO.TokenCacheDb;Trusted_Connection=True;"
 },
