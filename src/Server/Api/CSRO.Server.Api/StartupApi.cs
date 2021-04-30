@@ -77,44 +77,12 @@ namespace CSRO.Server.Api
             else if (_env.IsStaging())
             {
                 ;
-            }
-
-            var azureAdOptions = Configuration.GetSection(nameof(AzureAd)).Get<AzureAd>();
-
-            string ClientSecret = null;
-            string SqlConnString = Configuration.GetConnectionString("SqlConnString");
-            string TokenCacheDbConnStr = Configuration.GetConnectionString("TokenCacheDbConnStr");
-            string ClientSecretVaultName = Configuration.GetValue<string>("ClientSecretVaultName");
-
-            bool UseKeyVault = Configuration.GetValue<bool>("UseKeyVault");            
-            if (UseKeyVault)
-            {
-                try
-                {
-                    var VaultName = Configuration.GetValue<string>("CsroVaultNeuDev");
-                    var azureServiceTokenProvider = new AzureServiceTokenProvider();
-                    var keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
-
-                    ClientSecret = keyVaultClient.GetSecretAsync(VaultName, ClientSecretVaultName).Result.Value;
-                    azureAdOptions.ClientSecret = ClientSecret;
-                    Configuration["AzureAd:ClientSecret"] = ClientSecret;
-
-                    var SqlConnStringVault = keyVaultClient.GetSecretAsync(VaultName, "SqlConnStringVault").Result.Value;
-                    SqlConnString = SqlConnStringVault;
-                    Configuration["ConnectionStrings:SqlConnString"] = SqlConnString;
-
-                    var TokenCacheDbConnStrVault = keyVaultClient.GetSecretAsync(VaultName, "TokenCacheDbConnStrVault").Result.Value;
-                    TokenCacheDbConnStr = TokenCacheDbConnStrVault;
-                    Configuration["ConnectionStrings:TokenCacheDbConnStr"] = TokenCacheDbConnStr;
-                }
-                catch (Exception ex)
-                {
-                    _logger?.LogError("Error reading Keyvalut", ex);
-                }
-            }
+            }     
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddMediatR(Assembly.GetExecutingAssembly());
+
+            services.AddApplicationServices(Configuration, _logger);
 
             services.AddHttpClient(Core.ConstatCsro.ClientNames.MANAGEMENT_AZURE_EndPoint, (client) =>
             {
@@ -152,37 +120,6 @@ namespace CSRO.Server.Api
             .AddPolicyHandler(PollyHelper.GetRetryPolicy())
             .AddPolicyHandler(PollyHelper.GetRetryPolicy());
             ;
-
-            var distributedTokenCachesConfig = Configuration.GetSection(nameof(DistributedTokenCachesConfig)).Get<DistributedTokenCachesConfig>();
-            if (distributedTokenCachesConfig != null && distributedTokenCachesConfig.IsEnabled)
-            {
-                services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)
-                    .AddMicrosoftIdentityWebApi(Configuration, "AzureAd")
-                    .EnableTokenAcquisitionToCallDownstreamApi()
-                    .AddDistributedTokenCaches();
-            }
-            else
-            {
-                services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)
-                    .AddMicrosoftIdentityWebApi(Configuration, "AzureAd")
-                    .EnableTokenAcquisitionToCallDownstreamApi()
-                    .AddInMemoryTokenCaches();
-            }
-
-            #region Distributed Token Caches
-
-            services.AddDistributedSqlServerCache(options =>
-            {
-                options.ConnectionString = TokenCacheDbConnStr;
-                options.SchemaName = "dbo";
-                options.TableName = "TokenCache";
-
-                //def is 20 minutes
-                if (distributedTokenCachesConfig?.DefaultSlidingExpirationMinutes > 0)
-                    options.DefaultSlidingExpiration = TimeSpan.FromMinutes(distributedTokenCachesConfig.DefaultSlidingExpirationMinutes);
-            });
-
-            #endregion
 
             //services.Configure<MicrosoftIdentityOptions>(options =>
             //{
@@ -253,25 +190,26 @@ namespace CSRO.Server.Api
             services.AddDbContext<AppVersionContext>(options =>
             {
                 if (UseSqlLiteDb)                                               
-                    options.UseSqlite(Configuration.GetConnectionString("SqlLiteConnString"), x => x.MigrationsAssembly(_namespace));                
+                    options.UseSqlite(Configuration.GetConnectionString(KeyVaultConfig.ConnectionStrings.ApiDb), x => x.MigrationsAssembly(_namespace));                
                 else                                                   
-                    options.UseSqlServer(SqlConnString, x => x.MigrationsAssembly(_namespace));                                
+                    options.UseSqlServer(Configuration.GetConnectionString(KeyVaultConfig.ConnectionStrings.ApiDb), x => x.MigrationsAssembly(_namespace));                                
             });
                         
             services.AddDbContext<CustomersDbContext>(options =>
             {
-                //if (UseSqlLiteDb)
-                //    options.UseSqlite(Configuration.GetConnectionString("SqlLiteConnString"), x => x.MigrationsAssembly(_namespace));
-                //else
-                    options.UseSqlServer(Configuration.GetConnectionString("SqlCustomerDbConnString"), x => x.MigrationsAssembly(_namespace));
+                var cs = Configuration.GetConnectionString(KeyVaultConfig.ConnectionStrings.CustomerDb);
+                if (UseSqlLiteDb)
+                    options.UseSqlite(Configuration.GetConnectionString(KeyVaultConfig.ConnectionStrings.CustomerDb), x => x.MigrationsAssembly(_namespace));
+                else
+                    options.UseSqlServer(Configuration.GetConnectionString(KeyVaultConfig.ConnectionStrings.CustomerDb), x => x.MigrationsAssembly(_namespace));
             });
 
             services.AddDbContext<TokenCacheContext>(options =>
             {
                 if (UseSqlLiteDb)                                    
-                    options.UseSqlite(Configuration.GetConnectionString("SqlLiteConnString"));                
+                    options.UseSqlite(Configuration.GetConnectionString(KeyVaultConfig.ConnectionStrings.TokenCacheDb));                
                 else                
-                    options.UseSqlServer(TokenCacheDbConnStr);
+                    options.UseSqlServer(Configuration.GetConnectionString(KeyVaultConfig.ConnectionStrings.TokenCacheDb));
                                 
             });
 

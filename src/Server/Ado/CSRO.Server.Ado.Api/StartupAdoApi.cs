@@ -72,43 +72,10 @@ namespace CSRO.Server.Ado.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
-            var azureAdOptions = Configuration.GetSection(nameof(AzureAd)).Get<AzureAd>();
-
-            string ClientSecret = null;
-            string SqlConnString = Configuration.GetConnectionString("SqlConnString");
-            string TokenCacheDbConnStr = Configuration.GetConnectionString("TokenCacheDbConnStr");
-            string ClientSecretVaultName = Configuration.GetValue<string>("ClientSecretVaultName");
-
-            bool UseKeyVault = Configuration.GetValue<bool>("UseKeyVault");
-            if (UseKeyVault)
-            {
-                try
-                {
-                    var VaultName = Configuration.GetValue<string>("CsroVaultNeuDev");
-                    var azureServiceTokenProvider = new AzureServiceTokenProvider();
-                    var keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
-
-                    ClientSecret = keyVaultClient.GetSecretAsync(VaultName, ClientSecretVaultName).Result.Value;
-                    azureAdOptions.ClientSecret = ClientSecret;
-                    Configuration["AzureAd:ClientSecret"] = ClientSecret;
-
-                    var SqlConnStringVault = keyVaultClient.GetSecretAsync(VaultName, "SqlConnStringVault").Result.Value;
-                    SqlConnString = SqlConnStringVault;
-                    Configuration["ConnectionStrings:SqlConnString"] = SqlConnString;
-
-                    var TokenCacheDbConnStrVault = keyVaultClient.GetSecretAsync(VaultName, "TokenCacheDbConnStrVault").Result.Value;
-                    TokenCacheDbConnStr = TokenCacheDbConnStrVault;
-                    Configuration["ConnectionStrings:TokenCacheDbConnStr"] = TokenCacheDbConnStr;
-                }
-                catch (Exception ex)
-                {
-                    _logger?.LogError("Error reading Keyvalut", ex);
-                }
-            }
-
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddMediatR(Assembly.GetExecutingAssembly());
+
+            services.AddApplicationServices(Configuration, _logger);
 
             string ApiEndpointAuth = Configuration.GetValue<string>(ConstatCsro.EndPoints.ApiEndpointAuth);
             services.AddHttpClient(Core.ConstatCsro.EndPoints.ApiEndpointAuth, (client) =>
@@ -129,38 +96,7 @@ namespace CSRO.Server.Ado.Api
             .AddPolicyHandler(PollyHelper.GetRetryPolicy());
             ;
 
-            #region Auth
-
-            var distributedTokenCachesConfig = Configuration.GetSection(nameof(DistributedTokenCachesConfig)).Get<DistributedTokenCachesConfig>();
-            if (distributedTokenCachesConfig != null && distributedTokenCachesConfig.IsEnabled)
-            {
-                services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)
-                    .AddMicrosoftIdentityWebApi(Configuration, "AzureAd")
-                    .EnableTokenAcquisitionToCallDownstreamApi()                    
-                    .AddDistributedTokenCaches();    
-            }
-            else
-            {
-                services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)
-                    .AddMicrosoftIdentityWebApi(Configuration, "AzureAd")
-                    .EnableTokenAcquisitionToCallDownstreamApi()
-                    .AddInMemoryTokenCaches();                
-            }
-
-            #region Distributed Token Caches
-
-            services.AddDistributedSqlServerCache(options =>
-            {
-                options.ConnectionString = TokenCacheDbConnStr;
-                options.SchemaName = "dbo";
-                options.TableName = "TokenCache";
-
-                //def is 20 minutes
-                if (distributedTokenCachesConfig?.DefaultSlidingExpirationMinutes > 0)
-                    options.DefaultSlidingExpiration = TimeSpan.FromMinutes(distributedTokenCachesConfig.DefaultSlidingExpirationMinutes);
-            });
-
-            #endregion
+            #region Auth                        
 
             services.AddAuthorization(options =>
             {
@@ -217,17 +153,17 @@ namespace CSRO.Server.Ado.Api
             services.AddDbContext<AdoContext>(options =>
             {
                 if (UseSqlLiteDb)
-                    options.UseSqlite(Configuration.GetConnectionString("SqlLiteConnString"), x => x.MigrationsAssembly(_namespace));
+                    options.UseSqlite(Configuration.GetConnectionString(KeyVaultConfig.ConnectionStrings.AdoDb), x => x.MigrationsAssembly(_namespace));
                 else
-                    options.UseSqlServer(SqlConnString, x => x.MigrationsAssembly(_namespace));
+                    options.UseSqlServer(Configuration.GetConnectionString(KeyVaultConfig.ConnectionStrings.AdoDb), x => x.MigrationsAssembly(_namespace));
             });
 
             services.AddDbContext<TokenCacheContext>(options =>
             {
                 if (UseSqlLiteDb)
-                    options.UseSqlite(Configuration.GetConnectionString("SqlLiteConnString"));
+                    options.UseSqlite(Configuration.GetConnectionString(KeyVaultConfig.ConnectionStrings.TokenCacheDb));
                 else
-                    options.UseSqlServer(TokenCacheDbConnStr);
+                    options.UseSqlServer(Configuration.GetConnectionString(KeyVaultConfig.ConnectionStrings.TokenCacheDb));
 
             });
 

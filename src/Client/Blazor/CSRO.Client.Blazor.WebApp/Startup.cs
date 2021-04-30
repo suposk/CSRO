@@ -64,38 +64,53 @@ namespace CSRO.Client.Blazor.WebApp
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {           
-
-            if (_env.IsDevelopment())
-            {
-                ;
-            }
-            else if (_env.IsStaging())
-            {
-                ;
-            }
-
             var azureAdOptions = Configuration.GetSection(nameof(AzureAd)).Get<AzureAd>();
+            var keyVaultConfig = Configuration.GetSection(nameof(KeyVaultConfig)).Get<KeyVaultConfig>();
+            var adoConfig = Configuration.GetSection(nameof(AdoConfig)).Get<AdoConfig>();
+            _logger.LogInformation($"{nameof(KeyVaultConfig.UseKeyVault)} = {keyVaultConfig.UseKeyVault}");
 
-            string ClientSecret = null;
-            string TokenCacheDbConnStr = Configuration.GetConnectionString("TokenCacheDbConnStr");
-            string ClientSecretVaultName = Configuration.GetValue<string>("ClientSecretVaultName");
-
-            bool UseKeyVault = Configuration.GetValue<bool>("UseKeyVault");
-            if (UseKeyVault)
+            if (keyVaultConfig.UseKeyVault)
             {
                 try
                 {
-                    var VaultName = Configuration.GetValue<string>("CsroVaultNeuDev");
+                    //_logger.LogInformation($"Delay to wait for AUTH api to start");
+                    //Task.Delay(10 * 1000).Wait();
+
+                    _logger.LogInformation($"{nameof(KeyVaultConfig.KeyVaultName)} = {keyVaultConfig.KeyVaultName}");
                     var azureServiceTokenProvider = new AzureServiceTokenProvider();
                     var keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
 
-                    ClientSecret = keyVaultClient.GetSecretAsync(VaultName, ClientSecretVaultName).Result.Value;
-                    azureAdOptions.ClientSecret = ClientSecret;
-                    Configuration["AzureAd:ClientSecret"] = ClientSecret;
+                    //clien secret
+                    if (keyVaultConfig.ClientSecretVaultKey != null)
+                    {
+                        azureAdOptions.ClientSecret = keyVaultClient.GetSecretAsync(keyVaultConfig.KeyVaultName, keyVaultConfig.ClientSecretVaultKey).Result.Value;
+                        Configuration[KeyVaultConfig.Constants.AzureAdClientSecret] = azureAdOptions.ClientSecret;
+                        _logger.LogSecretVariableValueStartValue(KeyVaultConfig.Constants.AzureAdClientSecret, azureAdOptions.ClientSecret);
+                    }
 
-                    var TokenCacheDbConnStrVault = keyVaultClient.GetSecretAsync(VaultName, "TokenCacheDbConnStrVault").Result.Value;
-                    TokenCacheDbConnStr = TokenCacheDbConnStrVault;
-                    Configuration["ConnectionStrings:TokenCacheDbConnStr"] = TokenCacheDbConnStr;                                        
+                    //SPN clien secret
+                    var spnAd = Configuration.GetSection(nameof(SpnAd)).Get<SpnAd>();
+                    if (keyVaultConfig.SpnClientSecretVaultKey != null)
+                    {
+                        spnAd.ClientSecret = keyVaultClient.GetSecretAsync(keyVaultConfig.KeyVaultName, keyVaultConfig.SpnClientSecretVaultKey).Result.Value;
+                        Configuration[KeyVaultConfig.Constants.SpnClientSecret] = spnAd.ClientSecret;
+                        _logger?.LogSecretVariableValueStartValue(KeyVaultConfig.Constants.SpnClientSecret, spnAd.ClientSecret);
+                    }
+
+                    //ConnectionStrings
+                    if (keyVaultConfig.TokenCacheDbCsVaultKey != null)
+                    {
+                        Configuration["ConnectionStrings:" + KeyVaultConfig.ConnectionStrings.TokenCacheDb] = keyVaultClient.GetSecretAsync(keyVaultConfig.KeyVaultName, keyVaultConfig.TokenCacheDbCsVaultKey).Result.Value;
+                        _logger.LogSecretVariableValueStartValue(KeyVaultConfig.ConnectionStrings.TokenCacheDb, Configuration["ConnectionStrings:" + KeyVaultConfig.ConnectionStrings.TokenCacheDb]);
+                    }
+
+                    //ado
+                    if (keyVaultConfig.AdoPersonalAccessTokenVaultKey != null)
+                    {
+                        adoConfig.AdoPersonalAccessToken = keyVaultClient.GetSecretAsync(keyVaultConfig.KeyVaultName, keyVaultConfig.AdoPersonalAccessTokenVaultKey).Result.Value;
+                        Configuration["AdoConfig:" + nameof(adoConfig.AdoPersonalAccessToken)] = adoConfig.AdoPersonalAccessToken;
+                        _logger.LogSecretVariableValueStartValue(nameof(adoConfig.AdoPersonalAccessToken), adoConfig.AdoPersonalAccessToken);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -224,7 +239,7 @@ namespace CSRO.Client.Blazor.WebApp
 
             services.AddDistributedSqlServerCache(options =>
             {
-                options.ConnectionString = TokenCacheDbConnStr;
+                options.ConnectionString = Configuration.GetConnectionString(KeyVaultConfig.ConnectionStrings.TokenCacheDb);
                 options.SchemaName = "dbo";
                 options.TableName = "TokenCache";
 
@@ -238,10 +253,10 @@ namespace CSRO.Client.Blazor.WebApp
             services.Configure<MicrosoftIdentityOptions>(options =>
             {
                 options.ResponseType = OpenIdConnectResponseType.Code;
-                if (UseKeyVault && !string.IsNullOrWhiteSpace(azureAdOptions.ClientSecret))
+                if (keyVaultConfig.UseKeyVault && !string.IsNullOrWhiteSpace(azureAdOptions.ClientSecret))
                     options.ClientSecret = azureAdOptions.ClientSecret;
-                if (UseKeyVault)
-                    LogSecretVariableValueStartValue(ClientSecretVaultName, azureAdOptions.ClientSecret);
+                if (keyVaultConfig.UseKeyVault)
+                    _logger.LogSecretVariableValueStartValue(keyVaultConfig.ClientSecretVaultKey, azureAdOptions.ClientSecret);
             });
 
             services.AddControllersWithViews()
@@ -351,28 +366,6 @@ namespace CSRO.Client.Blazor.WebApp
                 endpoints.MapBlazorHub();
                 endpoints.MapFallbackToPage("/_Host");
             });
-        }
-
-        const int lengthToLog = 6;
-        private void LogSecretVariableValueStartValue(string variable, string value)
-        {
-            try
-            {
-                if (string.IsNullOrEmpty(value))
-                {
-                    Console.WriteLine($"{nameof(LogSecretVariableValueStartValue)}Console Error->{variable} is null");
-                    _logger.LogError($"{nameof(LogSecretVariableValueStartValue)}->{variable} is null");
-                }
-                else
-                {
-                    Console.WriteLine($"{nameof(LogSecretVariableValueStartValue)}Console->{variable} = {value.Substring(startIndex: 0, length: lengthToLog)}");
-                    _logger.LogWarning($"{nameof(LogSecretVariableValueStartValue)}->{variable} = {value.Substring(startIndex: 0, length: lengthToLog)}");
-                }
-            }
-            catch(Exception ex)
-            {
-                _logger?.LogError($"jano exception in {nameof(LogSecretVariableValueStartValue)}", ex);
-            }
         }
     }
 }

@@ -89,8 +89,8 @@ namespace CSRO.Client.Blazor.WebApp.Pages
                         SettingModels.Add(new SettingModel { Name = nameof(UseKeyVault), Value = UseKeyVault.ToString(), Type = "Config" });
 
                         string ClientSecret = null;
-                        string TokenCacheDbConnStr = Configuration.GetConnectionString("TokenCacheDbConnStr");                        
-                        SettingModels.Add(new SettingModel { Name = nameof(TokenCacheDbConnStr), Value = TokenCacheDbConnStr.ReplaceWithStars(), Type = "Config" });
+                        string TokenCacheDbCs = Configuration.GetConnectionString("TokenCacheDbCs");                        
+                        SettingModels.Add(new SettingModel { Name = nameof(TokenCacheDbCs), Value = TokenCacheDbCs.ReplaceWithStars(), Type = "Config" });
 
                         string ClientSecretVaultName = Configuration.GetValue<string>("ClientSecretVaultName");
                         SettingModels.Add(new SettingModel { Name = nameof(ClientSecretVaultName), Value = ClientSecretVaultName, Type = "Config" });
@@ -119,8 +119,8 @@ namespace CSRO.Client.Blazor.WebApp.Pages
 
                                 var s2 = await keyVaultClient.GetSecretAsync(VaultName, "TokenCacheDbConnStrVault");
                                 var TokenCacheDbConnStrVault = s2.Value;
-                                TokenCacheDbConnStr = TokenCacheDbConnStrVault;
-                                SettingModels.Add(new SettingModel { Name = nameof(TokenCacheDbConnStr), Value = TokenCacheDbConnStr.ReplaceWithStars(), Type = "KeuVault" });
+                                TokenCacheDbCs = TokenCacheDbConnStrVault;
+                                SettingModels.Add(new SettingModel { Name = nameof(TokenCacheDbCs), Value = TokenCacheDbCs.ReplaceWithStars(), Type = "KeuVault" });
                             }
                             catch (Exception ex)
                             {
