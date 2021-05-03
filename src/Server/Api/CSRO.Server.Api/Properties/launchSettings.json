@@ -24,7 +24,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "dotnetRunMessages": "true",
-      "applicationUrl": "https://localhost:6001;http://localhost:6601"
+      "applicationUrl": "https://localhost:6003;http://localhost:6603"
     },
     "Api Production": {
       "commandName": "Project",
@@ -33,7 +33,7 @@
         "ASPNETCORE_ENVIRONMENT": "Production"
       },
       "dotnetRunMessages": "true",
-      "applicationUrl": "https://localhost:6001;http://localhost:6601"
+      "applicationUrl": "https://localhost:6003;http://localhost:6603"
     }
   }
 }
