@@ -24,7 +24,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "dotnetRunMessages": "true",
-      "applicationUrl": "https://localhost:6002;http://localhost:6602"
+      "applicationUrl": "https://localhost:6004;http://localhost:6604"
     },
     "Ado.Api Production": {
       "commandName": "Project",
@@ -33,7 +33,7 @@
         "ASPNETCORE_ENVIRONMENT": "Production"
       },
       "dotnetRunMessages": "true",
-      "applicationUrl": "https://localhost:6002;http://localhost:6602"
+      "applicationUrl": "https://localhost:6004;http://localhost:6604"
     }
   }
 }
