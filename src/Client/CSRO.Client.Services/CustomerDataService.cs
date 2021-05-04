@@ -25,6 +25,7 @@ namespace CSRO.Client.Services
         Task<List<Customer>> GetCustomersBySubName(string subscriptionName, CancellationToken cancelToken = default);
         Task<List<Customer>> GetCustomersByAtCode(string atCode, CancellationToken cancelToken = default);
         Task<List<Customer>> GetCustomersByAtCodes(List<string> atCodes, CancellationToken cancelToken = default);
+        Task<List<Customer>> GetCustomersByEnvironment(string env, CancellationToken cancelToken = default);
     }
 
     public class CustomerDataService : BaseDataService, ICustomerDataService
@@ -123,6 +124,11 @@ namespace CSRO.Client.Services
         public Task<List<Customer>> GetCustomersByAtCodes(List<string> atCodes, CancellationToken cancelToken = default)
         {
             return base.RestSend<List<Customer>, List<CustomerDto>, List<string>>(HttpMethod.Get, atCodes, "GetCustomersByAtCodes");
+        }
+
+        public Task<List<Customer>> GetCustomersByEnvironment(string env, CancellationToken cancelToken = default)
+        {
+            return base.RestGetListById<Customer, CustomerDto>(env, "GetCustomersByEnvironment");
         }
     }
 

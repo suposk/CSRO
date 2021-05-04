@@ -85,5 +85,11 @@ namespace CSRO.Server.Services
             var q = Context.ResourceSWIs.Where(a => a.AtCode == atCode).ToListAsync();
             return q;
         }
+
+        public Task<List<ResourceSWI>> GetCustomersByEnvironment(string env)
+        {
+            var q = Context.ResourceSWIs.Where(a => a.OpEnvironment == env).ToListAsync();
+            return q;
+        }
     }
 }

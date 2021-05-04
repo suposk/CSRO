@@ -206,5 +206,26 @@ namespace CSRO.Server.Api.Controllers
             }
         }
 
+        [HttpGet("GetCustomersByEnvironment/{env}")]
+        public async Task<ActionResult<List<CustomerDto>>> GetCustomersByEnvironment(string env)
+        {
+            try
+            {
+                _logger.LogInformation(ApiLogEvents.GetAllItems, $"{nameof(GetCustomersByAtCode)} Started");
+
+                var all = await _repository.GetCustomersByEnvironment(env).ConfigureAwait(false);
+                if (all.IsNullOrEmptyCollection())
+                    return new List<CustomerDto>();
+
+                var result = _mapper.Map<List<CustomerDto>>(all);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, nameof(GetCustomersByEnvironment), null);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
+            }
+        }        
+
     }
 }
