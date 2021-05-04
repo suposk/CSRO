@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace CSRO.Client.Blazor.WebApp.Pages.Customers
 {
-    public enum CustomerSearchTypeEnum  { None, Regions, Subcriptions, AtCodes }
+    public enum CustomerSearchTypeEnum  { None, Regions, Subcriptions, AtCodes, Env}
 
     public class CustomerCodesBase : CsroComponentBase
     {
@@ -64,6 +64,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
 
         protected List<Customer> Customers = new();
         protected HashSet<Customer> SelectedCustomers = new();
+        protected List<string> Environments = new List<string> { "DEV", "TEST", "UAT", "PROD" };
 
         protected List<IdName> Locations { get; set; } = new();
         protected List<string> AtCodesList { get; set; } = new();
@@ -85,7 +86,21 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
                 SetColumns(true);
             }
         }
-                
+
+        private string _SelEnv;
+
+        public string SelEnv
+        {
+            get { return _SelEnv; }
+            set 
+            {
+                _SelEnv = value;
+                if (!string.IsNullOrWhiteSpace(value))
+                    SetSearchType(CustomerSearchTypeEnum.Env);
+            }
+        }
+
+
         private HashSet<IdName> _SelectedSubs = new();
         public HashSet<IdName> SelectedSubs
         {
@@ -237,7 +252,9 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
             if (type != CustomerSearchTypeEnum.AtCodes)
                 SelectedAtCodes = new();
             if (type != CustomerSearchTypeEnum.Regions)
-                SelectedRegions = new();            
+                SelectedRegions = new();
+            if (type != CustomerSearchTypeEnum.Env)
+                SelEnv = null;
         }
 
         async Task LoadLocations()
@@ -287,8 +304,9 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
                     case CustomerSearchTypeEnum.Regions:
                         customers = await CustomerDataService.GetCustomersByRegions(SelectedRegions.Select(a => a.Name).ToList()).ConfigureAwait(false);
                         break;
-                    //case CustomerSearchTypeEnum.Env:
-                    //    break;
+                    case CustomerSearchTypeEnum.Env:
+                        customers = await CustomerDataService.GetCustomersByEnvironment(SelEnv).ConfigureAwait(false);
+                        break;
                 }
                 if (customers.HasAnyInCollection())                                    
                     Customers = customers;                
