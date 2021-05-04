@@ -46,13 +46,13 @@ namespace CSRO.Server.Ado.Api.Controllers
             try
             {
                 _logger.LogInformation(ApiLogEvents.GetAllItems, $"{nameof(Get)} Started");
-                var all = await _repository.GetList().ConfigureAwait(false);
+                var all = await _repository.GetListFilter(a => a.IsDeleted != true).ConfigureAwait(false);
                 var result = _mapper.Map<List<AdoProjectAccessDto>>(all);
                 return result;
             }
             catch (Exception ex)
-            {
-                _logger.LogError(ex, nameof(Get), null);
+            {                
+                _logger.LogErrorCsro(ex);
                 return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }
         }
@@ -78,7 +78,7 @@ namespace CSRO.Server.Ado.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, nameof(GetRequestAdoProjectAccess), id);
+                _logger.LogError(ex, nameof(GetRequestAdoProjectAccess), id);                
                 return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }
         }
@@ -98,7 +98,7 @@ namespace CSRO.Server.Ado.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, nameof(GetByUserId), null);
+                _logger.LogError(ex, nameof(GetByUserId), userId);
                 return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }
         }

@@ -313,7 +313,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, nameof(OnInitializedAsync));
+                Logger.LogErrorCsro(ex);
                 await CsroDialogService.ShowError("Error", $"Detail error: {ex.Message}");
             }
             HideLoading();
@@ -352,8 +352,8 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
                 SubscripionsFiltered = Subscripions;
             }
             catch (Exception ex)
-            {
-                Logger.LogError(ex, nameof(OnInitializedAsync));
+            {                
+                Logger.LogErrorCsro(ex);
                 await CsroDialogService.ShowError("Error", $"Detail error: {ex.Message}");
             }
             finally

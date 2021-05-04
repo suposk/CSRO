@@ -74,7 +74,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, nameof(OnInitializedAsync));
+                Logger.LogErrorCsro(ex);
             }
             HideLoading();
         }
