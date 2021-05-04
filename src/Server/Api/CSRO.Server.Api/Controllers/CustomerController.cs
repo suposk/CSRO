@@ -54,7 +54,7 @@ namespace CSRO.Server.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, nameof(GetAtCodes), null);
+                _logger.LogErrorCsro(ex);
                 return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }
         }
@@ -75,7 +75,7 @@ namespace CSRO.Server.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, nameof(GetCustomersBySubNames), null);
+                _logger.LogError(ex, nameof(GetCustomersBySubNames), subscriptionNames);
                 return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }
         }
@@ -96,7 +96,7 @@ namespace CSRO.Server.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, nameof(GetCustomersBySubName), null);
+                _logger.LogError(ex, nameof(GetCustomersBySubName), subscriptionName);
                 return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }
         }
@@ -117,7 +117,7 @@ namespace CSRO.Server.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, nameof(GetCustomersBySubIds), null);
+                _logger.LogError(ex, nameof(GetCustomersBySubIds), subscriptionIds);
                 return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }
         }
@@ -138,7 +138,7 @@ namespace CSRO.Server.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, nameof(GetCustomersBySubId), null);
+                _logger.LogError(ex, nameof(GetCustomersBySubId), subscriptionId);
                 return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }
         }
@@ -159,7 +159,7 @@ namespace CSRO.Server.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, nameof(GetCustomersByRegions), null);
+                _logger.LogError(ex, nameof(GetCustomersByRegions), regions);
                 return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }
         }
@@ -180,7 +180,7 @@ namespace CSRO.Server.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, nameof(GetCustomersByAtCodes), null);
+                _logger.LogError(ex, nameof(GetCustomersByAtCodes), atCodes);
                 return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }
         }
@@ -201,7 +201,7 @@ namespace CSRO.Server.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, nameof(GetCustomersByAtCode), null);
+                _logger.LogError(ex, nameof(GetCustomersByAtCode), atCode);
                 return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }
         }
@@ -222,7 +222,7 @@ namespace CSRO.Server.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, nameof(GetCustomersByEnvironment), null);
+                _logger.LogError(ex, nameof(GetCustomersByEnvironment), env);
                 return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }
         }        

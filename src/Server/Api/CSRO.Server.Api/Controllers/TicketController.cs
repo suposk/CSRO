@@ -46,13 +46,13 @@ namespace CSRO.Server.Api.Controllers
 
                 //throw new Exception("some fake value is null");
 
-                var all = await _repository.GetList().ConfigureAwait(false);
+                var all = await _repository.GetListFilter(a => a.IsDeleted != true).ConfigureAwait(false);
                 var result = _mapper.Map<List<TicketDto>>(all);
                 return result;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, nameof(Get), null);
+                _logger.LogErrorCsro(ex);
                 return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }
         }

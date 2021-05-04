@@ -237,7 +237,10 @@ namespace CSRO.Client.Services
         public string GetErrorText(HttpResponseMessage httpResponse)
         {
             if (httpResponse.StatusCode == System.Net.HttpStatusCode.BadRequest)
-                return "BadRequest, Incorrect input";
+            {
+                var message = httpResponse.Content.ReadAsStringAsync().Result;
+                return $"BadRequest, {(string.IsNullOrWhiteSpace(message) ? "Wrong Input" : message)}";
+            }
             if (httpResponse.StatusCode == System.Net.HttpStatusCode.Unauthorized)
                 return "Unauthorized, you are not autorized.";
             if (httpResponse.StatusCode == System.Net.HttpStatusCode.Forbidden)
@@ -247,9 +250,13 @@ namespace CSRO.Client.Services
                 return $"{httpResponse.Content.ReadAsStringAsync().Result}";
         }
 
+        /// <summary>
+        /// Not doing anything now.
+        /// </summary>
+        /// <param name="ex"></param>
         public virtual void HandleException(Exception ex)
         {
-            Console.WriteLine($"{nameof(HandleException)}: {ex}");
+            //Console.WriteLine($"{nameof(HandleException)}: {ex}");
         }
 
         public virtual async Task AddAuthHeaderAsync()

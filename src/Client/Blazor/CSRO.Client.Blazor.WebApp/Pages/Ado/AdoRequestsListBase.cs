@@ -58,7 +58,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Ado
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, nameof(OnInitializedAsync));
+                Logger.LogErrorCsro(ex);
                 await CsroDialogService.ShowError("Error", $"Detail error: {ex.Message}");
             }
             HideLoading();
@@ -80,7 +80,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Ado
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, nameof(DeleteTicketAsync));
+                Logger.LogErrorCsro(ex);
                 await CsroDialogService.ShowError("Error", $"Detail error: {ex.Message}");
             }
         }

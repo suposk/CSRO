@@ -56,7 +56,7 @@ namespace CSRO.Server.Ado.Api.Validation
                 var exisit = await _projectAdoServices.ProjectExistInAdo(projectAdo.Organization, projectAdo.Name);
                 return !exisit;
             }
-            catch (Exception ex) { _logger.LogError(ex, nameof(ProjectName), null); }
+            catch (Exception ex) { _logger.LogError(ex, nameof(ProjectName), projectAdo); }
             return false;
         }
 
@@ -73,7 +73,7 @@ namespace CSRO.Server.Ado.Api.Validation
                 var exisit = await _adoProjectRepository.ProjectExists(projectAdo.Organization, projectAdo.Name, projectAdo.Id);
                 return !exisit;
             }
-            catch (Exception ex) { _logger.LogError(ex, nameof(ProjecAlredyRequested), null); }
+            catch (Exception ex) { _logger.LogError(ex, nameof(ProjecAlredyRequested), projectAdo); }
             return false;
         }
     }

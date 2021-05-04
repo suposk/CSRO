@@ -92,7 +92,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, nameof(OnInitializedAsync));
+                Logger.LogErrorCsro(ex);
             }
             finally
             {
@@ -147,7 +147,7 @@ namespace CSRO.Client.Blazor.WebApp.Components
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError(ex, nameof(OnValidSubmit));
+                    Logger.LogErrorCsro(ex);
                     await CsroDialogService.ShowError("Error", $"Detail error: {ex.Message}");
                 }
                 finally

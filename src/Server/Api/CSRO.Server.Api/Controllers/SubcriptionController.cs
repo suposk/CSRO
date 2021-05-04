@@ -53,7 +53,7 @@ namespace CSRO.Server.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, nameof(Get), null);
+                _logger.LogErrorCsro(ex);
                 return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }
         }
@@ -75,7 +75,7 @@ namespace CSRO.Server.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, nameof(GetTags), null);
+                _logger.LogError(ex, nameof(GetTags), subscriptionIds);
                 return StatusCode(StatusCodes.Status500InternalServerError, ex?.Message);
             }
         }
