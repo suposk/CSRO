@@ -25,37 +25,44 @@
                         @if (OperationTypeTicket != OperatioType.Create)
                         {
                             <MudTextField Label="Id:"
+                                          Margin="Margin.Dense"
                                           Disabled="true"
                                           @bind-Value="Model.Id" For="@(() => Model.Id)" />
                         }
                         <MudCheckBox Label="On Behalf" @bind-Checked="Model.IsOnBehalf"
-                                     Disabled="@IsReadOnly"
+                                     Disabled="@IsReadOnly"                                     
                                      @bind-Value="Model.IsOnBehalf" For="@(() => Model.IsOnBehalf)" />
 
                         <MudTextField Label="Requested For:" HelperText="Name of Person"
                                       Disabled="@IsReadOnly"
+                                      Margin="Margin.Dense"
                                       @bind-Value="Model.RequestedFor" For="@(() => Model.RequestedFor)" />
 
                         @if (Model.IsOnBehalf)
                         {
                             <MudTextField Label="Created By:" HelperText="Name of Person"
                                           Disabled="@IsReadOnly"
+                                          Margin="Margin.Dense"
                                           @bind-Value="Model.CreatedBy" For="@(() => Model.CreatedBy)" />
                         }
 
                         <MudTextField Label="Description:"
                                       Disabled="@IsReadOnly"
+                                      Margin="Margin.Dense"
                                       @bind-Value="Model.Description" For="@(() => Model.Description)" />
 
                         @if (IsReadOnly)
                         {
                             <MudTextField Label="Created By:" Disabled="true"
+                                          Margin="Margin.Dense"
                                           @bind-Value="Model.CreatedBy" For="@(() => Model.CreatedBy)" />
 
                             <MudTextField Label="Created At:" Disabled="true"
+                                          Margin="Margin.Dense"
                                           @bind-Value="Model.CreatedAt" For="@(() => Model.CreatedAt)" />
 
                             <MudTextField Label="Modified At:" Disabled="true"
+                                          Margin="Margin.Dense"
                                           @bind-Value="Model.ModifiedAt" For="@(() => Model.ModifiedAt)" />
                         }
 
