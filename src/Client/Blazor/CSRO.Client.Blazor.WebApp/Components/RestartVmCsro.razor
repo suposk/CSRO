@@ -28,27 +28,33 @@
                     {
                         <MudTextField Label="Last Vm States:"
                                         Disabled="true"
+                                        Margin="Margin.Dense"
                                         Class="text-warning"
                                         @bind-Value="Model.VmState" For="@(() => Model.VmState)" />
 
                         <MudTextField Label="Id:"
                                         Disabled="true"
+                                      Margin="Margin.Dense"
                                         @bind-Value="Model.Id" For="@(() => Model.Id)" />
 
                         <MudTextField Label="Operation:"
                                         Disabled="true"
+                                      Margin="Margin.Dense"
                                         @bind-Value="Model.Operation" For="@(() => Model.Operation)" />
 
                         <MudTextField Label="Status:"
                                         Disabled="true"
+                                      Margin="Margin.Dense"
                                         @bind-Value="Model.Status" For="@(() => Model.Status)" />
 
                         <MudTextField Label="Subcription Name:"
                                         Disabled="true"
+                                      Margin="Margin.Dense"
                                         @bind-Value="Model.SubcriptionName" For="@(() => Model.SubcriptionName)" />
 
                         <MudTextField Label="Resorce Group:"
                                         Disabled="true"
+                                      Margin="Margin.Dense"
                                         @bind-Value="Model.ResorceGroup" For="@(() => Model.ResorceGroup)" />
 
                     }
@@ -72,6 +78,7 @@
 
                         <MudSelect T="@string"
                                     Dense="true"
+                                   Margin="Margin.Dense"
                                     Disabled="@IsRgDisabled"
                                     Label="Select Resource Group:"
                                     ValueChanged="(e) => OnRgChanged(e)"
@@ -101,6 +108,7 @@
                     {
                         <MudTextField Label="Vm Name:"
                                         Disabled="@IsVmDisabled"
+                                      Margin="Margin.Dense"
                                         @bind-Value="Model.VmName"
                                         For="@(() => Model.VmName)" />
                     }
@@ -109,17 +117,20 @@
                     {
                         <MudTextField T="string"
                                         Label="Vm State:"
+                                      Margin="Margin.Dense"
                                         Disabled="true"
                                         Text="@LastVmStatus" />
                     }
 
                     <MudTextField Label="External Ticket #(Gsnow)"
                                     Placeholder="Example INC123..."
+                                  Margin="Margin.Dense"
                                     Disabled="@IsVmDisabled"
                                     @bind-Value="Model.ExternalTicket" For="@(() => Model.ExternalTicket)" />
 
                     <MudTextField Label="Note:"
                                     Disabled="@IsReadOnly"
+                                  Margin="Margin.Dense"
                                     @bind-Value="Model.Note" For="@(() => Model.Note)" />
 
                 </MudCardContent>

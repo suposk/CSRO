@@ -25,6 +25,7 @@
                     {
                         <MudTextField Label="Id:"
                                         Disabled="true"
+                                      Margin="Margin.Dense"
                                         @bind-Value="Model.Id" 
                                         For="@(() => Model.Id)" />
                     }
@@ -48,6 +49,7 @@
                     {
 
                         <MudTextField Label="Organization Name"
+                                      Margin="Margin.Dense"
                                         @bind-Value="Model.Organization"
                                         For="@(() => Model.Organization)" />
                     }
@@ -71,21 +73,25 @@
                     {
 
                         <MudTextField Label="Project Name"
+                                      Margin="Margin.Dense"
                                         Disabled="@IsReadOnly"
                                         @bind-Value="Model.Name"
                                         For="@(() => Model.Name)" />
                     }
 
                     <MudTextField Label="Justification:"
+                                  Margin="Margin.Dense"
                                     Disabled="@IsReadOnly"
                                     @bind-Value="Model.Justification" For="@(() => Model.Justification)" />
 
                     @if (IsReadOnly)
                     {
                         <MudTextField Label="Created By:" Disabled="true"
+                                      Margin="Margin.Dense"
                                         @bind-Value="Model.CreatedBy" For="@(() => Model.CreatedBy)" />
 
                         <MudTextField Label="Created At:" Disabled="true"
+                                      Margin="Margin.Dense"
                                         @bind-Value="Model.CreatedAt" For="@(() => Model.CreatedAt)" />
                     }
 

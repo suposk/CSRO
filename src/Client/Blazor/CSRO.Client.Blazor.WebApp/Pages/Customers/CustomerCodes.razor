@@ -32,6 +32,8 @@
                     {
                         <MudTextField Placeholder="Enter Subcription Name"
                                       Class="mt-0 mx-2"
+                                      Variant="Variant.Outlined"
+                                      Margin="Margin.Dense"
                                       Adornment="Adornment.End"
                                       AdornmentIcon="@Icons.Material.Filled.Clear"
                                       OnAdornmentClick="@(e => { SearchSubText = null; CustomerSearchType = CustomerSearchTypeEnum.None; })"
@@ -60,6 +62,8 @@
                     {
                         <MudTextField Placeholder="Enter Atcode"
                                       Class="mt-0 mx-2"
+                                      Variant="Variant.Outlined"
+                                      Margin="Margin.Dense"
                                       Adornment="Adornment.End"
                                       AdornmentIcon="@Icons.Material.Filled.Clear"
                                       OnAdornmentClick="@(e => { SearchAtCode = null; CustomerSearchType = CustomerSearchTypeEnum.None; })"
@@ -98,6 +102,7 @@
                 <MudSelect T="@string"
                            Label="Select Environment"                           
                            Dense="true"
+                           Margin="Margin.Dense"
                            OffsetY="true"
                            @bind-Value="SelEnv">
                     @foreach (var env in Environments)
