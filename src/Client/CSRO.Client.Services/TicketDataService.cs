@@ -21,8 +21,7 @@ namespace CSRO.Client.Services
             IConfiguration configuration)
             : base(httpClientFactory, authCsroService, mapper, configuration)
         {
-            ApiPart = "api/ticket/";
-            //Scope = "api://ee2f0320-29c3-432a-bf84-a5d4277ce052/user_impersonation";            
+            ApiPart = "api/ticket/";         
             Scope = Configuration.GetValue<string>(ConstatCsro.Scopes.Scope_Api);            
             ClientName = ConstatCsro.EndPoints.ApiEndpoint;
             base.Init();

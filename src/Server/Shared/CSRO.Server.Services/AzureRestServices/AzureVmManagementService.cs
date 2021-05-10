@@ -33,7 +33,6 @@ namespace CSRO.Server.Services.AzureRestServices
             : base(httpClientFactory, tokenAcquisition, apiIdentity, configuration)
         {
             ApiPart = "--";
-            //Scope = "api://ee2f0320-29c3-432a-bf84-a5d4277ce052/user_impersonation";
             Scope = Core.ConstatCsro.Scopes.MANAGEMENT_AZURE_SCOPE;
             //ClientName = "api";
             ClientName = Core.ConstatCsro.ClientNames.MANAGEMENT_AZURE_EndPoint;

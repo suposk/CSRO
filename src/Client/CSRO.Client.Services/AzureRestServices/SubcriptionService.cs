@@ -43,7 +43,6 @@ namespace CSRO.Client.Services.AzureRestServices
         {
             //_azureSdkService = azureSdkService;
             ApiPart = "--";
-            //Scope = "api://ee2f0320-29c3-432a-bf84-a5d4277ce052/user_impersonation";
             Scope = ConstatCsro.Scopes.MANAGEMENT_AZURE_SCOPE;
             //ClientName = "api";
             ClientName = ConstatCsro.ClientNames.MANAGEMENT_AZURE_EndPoint;

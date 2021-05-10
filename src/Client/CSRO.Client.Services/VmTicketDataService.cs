@@ -37,8 +37,7 @@ namespace CSRO.Client.Services
             IHttpClientFactory httpClientFactory, IAuthCsroService authCsroService, IMapper mapper, IConfiguration configuration)
             : base(httpClientFactory, authCsroService, mapper, configuration)
         {
-            ApiPart = "api/vmticket/";
-            //Scope = "api://ee2f0320-29c3-432a-bf84-a5d4277ce052/user_impersonation";
+            ApiPart = "api/vmticket/";            
             Scope = Configuration.GetValue<string>(ConstatCsro.Scopes.Scope_Api);
             ClientName = ConstatCsro.EndPoints.ApiEndpoint;
 
