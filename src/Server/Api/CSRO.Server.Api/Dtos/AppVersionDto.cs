@@ -20,5 +20,6 @@ namespace CSRO.Server.Api.Dtos
         public string DetailsFormat { get; set; }
 
         public DateTime? ReleasedAt { get; set; }
+        public string FileName { get; set; }
     }
 }
