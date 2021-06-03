@@ -1,5 +1,4 @@
 using AutoMapper;
-using CSRO.Client.Blazor.WebApp.Data;
 using CSRO.Client.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Components;
