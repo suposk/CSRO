@@ -211,44 +211,44 @@ namespace CSRO.Client.Blazor.WebApp.Components
 
         public async Task OnSubmitHandler()
         {
-            var valid = editContext.Validate();
-            if (valid)
+            try
             {
-                try
+                if (OperationTypeTicket == OperatioType.Create)
                 {
-                    if (OperationTypeTicket == OperatioType.Create)
+                    var valid = editContext.Validate();
+                    if (!valid)
+                        return;
+
+                    ShowLoading("Creating Resorce Group");
+
+                    var added = await ResourceGroupervice.CreateRgAsync(Model);
+                    if (added != null)
                     {
-                        ShowLoading("Creating Resorce Group");
+                        //TODO fix workaround
+                        string copyAdded = added.ResourceGroup.Name;
+                        await Task.Delay(1 * 100);
+                        ResourceGroups.Add(copyAdded);
+                        Model.ResourceGroup.Name = ResourceGroups.FirstOrDefault();
+                        StateHasChanged();
+                        await Task.Delay(1 * 10);                            
+                        Model.ResourceGroup.Name = copyAdded;
+                        await Task.Delay(1 * 10);
 
-                        var added = await ResourceGroupervice.CreateRgAsync(Model);
-                        if (added != null)
-                        {
-                            //TODO fix workaround
-                            string copyAdded = added.ResourceGroup.Name;
-                            await Task.Delay(1 * 100);
-                            ResourceGroups.Add(copyAdded);
-                            Model.ResourceGroup.Name = ResourceGroups.FirstOrDefault();
-                            StateHasChanged();
-                            await Task.Delay(1 * 10);                            
-                            Model.ResourceGroup.Name = copyAdded;
-                            await Task.Delay(1 * 10);
-
-                            UI.Helpers.EditFormExtensions.ClearValidationMessages(editContext);
-                            StateHasChanged();
-                        }
+                        UI.Helpers.EditFormExtensions.ClearValidationMessages(editContext);
+                        StateHasChanged();
                     }
+                }
            
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogErrorCsro(ex);
-                    await CsroDialogService.ShowError("Error", $"Detail error: {ex.Message}");
-                }
-                finally
-                {
-                    HideLoading();
-                }
             }
+            catch (Exception ex)
+            {
+                Logger.LogErrorCsro(ex);
+                await CsroDialogService.ShowError("Error", $"Detail error: {ex.Message}");
+            }
+            finally
+            {
+                HideLoading();
+            }            
         }
 
         public void GoBack()
