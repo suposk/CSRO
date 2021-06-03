@@ -135,11 +135,18 @@ namespace CSRO.Client.Services.AzureRestServices
                     if (ser?.Value?.Count > 0)
                     {
                         var result = new List<TagNameWithValueList>();
+                        Dictionary<string, HashSet<string>> filter = new();
+                        
                         foreach (var item in ser.Value)
                         {
-                            //result.Add(new TagNameWithValueList { TagName = item.TagName, Values = item.Values.Select(a => a.TagValue).ToList()});
-                            result.Add(new TagNameWithValueList { TagName = item.TagName.Trim(), Values = item.Values.Where(a => !string.IsNullOrWhiteSpace(a.TagValue)).Select(a => a.TagValue).ToList() });
+                            //result.Add(new TagNameWithValueList { TagName = item.TagName.Trim(), Values = item.Values.Where(a => !string.IsNullOrWhiteSpace(a.TagValue)).Select(a => a.TagValue).ToList() });
+                            var tagNameList = new TagNameWithValueList { TagName = item.TagName.Trim(), Values = item.Values.Where(a => !string.IsNullOrWhiteSpace(a.TagValue)).Select(a => a.TagValue).ToList() };
+                            if (!filter.ContainsKey(tagNameList.TagName))
+                                filter.Add(tagNameList.TagName, new HashSet<string>());
+                            tagNameList.Values.ForEach(a => filter[tagNameList.TagName].Add(a));
                         }
+                        foreach(var item in filter)
+                            result.Add(new TagNameWithValueList{ TagName = item.Key, Values = item.Value.ToList() });
                         return result;
                     }
                 }
