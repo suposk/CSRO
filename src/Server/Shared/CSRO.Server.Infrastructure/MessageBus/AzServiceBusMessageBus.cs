@@ -3,6 +3,7 @@ using Microsoft.Azure.ServiceBus.Core;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
+using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -32,7 +33,7 @@ namespace CSRO.Server.Infrastructure.MessageBus
                 //CorrelationId = Guid.NewGuid().ToString()
             };
             await client.SendAsync(serviceBusMessage);
-            Console.WriteLine($"Sent message to Queue {client.Path}");
+            Debug.WriteLine($"Sent message to Queue {client.Path}");
             await client.CloseAsync();
         }
 
@@ -52,7 +53,7 @@ namespace CSRO.Server.Infrastructure.MessageBus
                 //CorrelationId = Guid.NewGuid().ToString()
             };
             await client.SendAsync(serviceBusMessage);
-            Console.WriteLine($"Sent message to Topic {client.Path}");
+            Debug.WriteLine($"Sent message to Topic {client.Path}");
             await client.CloseAsync();
         }
     }
