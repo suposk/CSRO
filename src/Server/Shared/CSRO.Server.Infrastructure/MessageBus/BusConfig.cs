@@ -29,7 +29,7 @@ namespace CSRO.Server.Infrastructure.MessageBus
 
         public override string ToString()
         {
-            return $"{nameof(IsBusEnabled)}={IsBusEnabled},{nameof(BusType)}={BusType}";
+            return $"{nameof(IsBusEnabled)}: {IsBusEnabled}, {nameof(BusType)}: {BusType}";
         }
     }
 }
