@@ -309,7 +309,9 @@ namespace CSRO.Client.Blazor.WebApp.Pages.Customers
                         break;
                 }
                 if (customers.HasAnyInCollection())                                    
-                    Customers = customers;                
+                    Customers = customers;
+
+                Logger.LogInformation($"Found {Customers?.Count} results");
             }
             catch (Exception ex)
             {

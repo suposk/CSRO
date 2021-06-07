@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CSRO.Server.Entities;
+using Serilog;
 
 namespace CSRO.Server.Auth.Api
 {
@@ -58,6 +59,9 @@ namespace CSRO.Server.Auth.Api
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<StartupAuthApi>();
+                }).UseSerilog((context, config) =>
+                {
+                    config.ReadFrom.Configuration(context.Configuration);
                 });
     }
 }

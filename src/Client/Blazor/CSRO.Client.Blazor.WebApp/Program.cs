@@ -6,7 +6,7 @@ using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.AzureKeyVault;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -22,19 +22,15 @@ namespace CSRO.Client.Blazor.WebApp
             CreateHostBuilder(args).Build().Run();
         }
 
-        //public static IHostBuilder CreateHostBuilder(string[] args) =>
-        //    Host.CreateDefaultBuilder(args)
-        //        .ConfigureWebHostDefaults(webBuilder =>
-        //        {
-        //            webBuilder.UseStartup<Startup>();
-        //        });
-
-
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
+                })
+                .UseSerilog((context, config) =>
+                {
+                    config.ReadFrom.Configuration(context.Configuration);
                 })
                 .ConfigureAppConfiguration((context, config) =>
                 {

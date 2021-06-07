@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CSRO.Server.Entities;
+using Serilog;
 
 namespace CSRO.Server.Ado.Api
 {
@@ -68,6 +69,9 @@ namespace CSRO.Server.Ado.Api
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<StartupAdoApi>();
+                }).UseSerilog((context, config) =>
+                {
+                    config.ReadFrom.Configuration(context.Configuration);
                 });
     }
 }
