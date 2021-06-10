@@ -77,35 +77,12 @@ namespace CSRO.Client.Blazor.WebApp.Pages
                         var userAuth = await UserDataService.GetUserByUserName(auth.User.Identity.Name);
 
                         var azureAdOptions = Configuration.GetSection(nameof(AzureAd)).Get<AzureAd>();
-                        var dic = DictionaryOfPropertiesFromInstance(azureAdOptions);
-                        if (dic != null)
-                        {
-                            foreach(var item in dic)
-                            {
-                                var set = new SettingModel { Type = "AzureAd", Name = item.Key };
-                                //var val = item.Value.GetValue(item);                                
-                                var val = item.Value.GetValue(azureAdOptions);
-                                set.Value = val?.ToString().ReplaceWithStars();
-                                SettingModels.Add(set);
-                            }                            
-                            //SettingModels.Add(new SettingModel { Name = "AzureAd", Value = "", Type = "" });
-                        }
-
-                        bool UseKeyVault = Configuration.GetValue<bool>("UseKeyVault");
-                        SettingModels.Add(new SettingModel { Name = nameof(UseKeyVault), Value = UseKeyVault.ToString(), Type = "Config" });
-
-                        string ClientSecret = null;
-                        string TokenCacheDbCs = Configuration.GetConnectionString("TokenCacheDbCs");                        
+                                                
+                        string TokenCacheDbCs = Configuration.GetConnectionString(KeyVaultConfig.ConnectionStrings.TokenCacheDb);                        
                         SettingModels.Add(new SettingModel { Name = nameof(TokenCacheDbCs), Value = TokenCacheDbCs.ReplaceWithStars(), Type = "Config" });
-
-                        string ClientSecretVaultName = Configuration.GetValue<string>("ClientSecretVaultName");
-                        SettingModels.Add(new SettingModel { Name = nameof(ClientSecretVaultName), Value = ClientSecretVaultName, Type = "Config" });
 
                         string ApiEndpoint = Configuration.GetValue<string>("ApiEndpoint");
                         SettingModels.Add(new SettingModel { Name = nameof(ApiEndpoint), Value = ApiEndpoint, Type = "Config" });
-
-                        var VaultName = Configuration.GetValue<string>("CsroVaultNeuDev");
-                        SettingModels.Add(new SettingModel { Name = "CsroVaultNeuDev", Value = VaultName.ReplaceWithStars(15), Type = "Config" });
                                                 
                         bool UseChainTokenCredential = Configuration.GetValue<bool>("UseChainTokenCredential");
                         SettingModels.Add(new SettingModel { Name = nameof(UseChainTokenCredential), Value = UseChainTokenCredential.ToString(), Type = "Config" });
@@ -113,26 +90,38 @@ namespace CSRO.Client.Blazor.WebApp.Pages
                         var keyVaultConfig = Configuration.GetSection(nameof(KeyVaultConfig)).Get<KeyVaultConfig>();
                         Logger.LogInformation($"{nameof(KeyVaultConfig.UseKeyVault)} = {keyVaultConfig.UseKeyVault}");
 
-                        //if (keyVaultConfig.UseKeyVault)
-                        if (true)
+                        var readfromKV = true; //todo change for testing
+                        //if (readfromKV)
+                        if (readfromKV || keyVaultConfig.UseKeyVault)                        
                         {
+                            Logger.LogInformation($"{nameof(KeyVaultConfig.KeyVaultName)} = {keyVaultConfig.KeyVaultName}");
+                            string type = "KeyVault-SecretClient";
+                            ShowLoading(type);
+
+                            //var clientSecretCredential = new ClientSecretCredential(azureAdOptions.TenantId, azureAdOptions.ClientId, azureAdOptions.ClientSecret); //works
+                            //var clientSecretCredential = new InteractiveBrowserCredential(); //forbiden
+                            var clientSecretCredential = new DefaultAzureCredential(); //forbiden
+                            //var clientSecretCredential = new DefaultAzureCredential(true); //forbiden
+                            //var clientSecretCredential = new ManagedIdentityCredential(); //forbiden                                                                
+
+                            try
+                            {                                
+                                var client = new SecretClient(new Uri(keyVaultConfig.KeyVaultName), clientSecretCredential);
+
+                                var secBund = await client.GetSecretAsync(keyVaultConfig.TokenCacheDbCsVaultKey);
+                                if (secBund != null)                                                                                                       
+                                    SettingModels.Add(new SettingModel { Name = nameof(TokenCacheDbCs), Value = secBund.Value?.Value?.ReplaceWithStars(), Type = type });                                
+                            }
+                            catch (Exception ex)
+                            {
+                                //await CsroDialogService.ShowError($"Error in SecretClient {clientSecretCredential}", $"{ex.Message}");
+                                SettingModels.Add(new SettingModel { Name = nameof(TokenCacheDbCs), Value = ex.Message, Type = type });
+                            }
 
                             try
                             {
-                                Logger.LogInformation($"{nameof(KeyVaultConfig.KeyVaultName)} = {keyVaultConfig.KeyVaultName}");
-                                var clientSecretCredential = new ClientSecretCredential(azureAdOptions.TenantId, azureAdOptions.ClientId, azureAdOptions.ClientSecret); //works
-                                //var clientSecretCredential = new InteractiveBrowserCredential(); //forbiden
-                                //var clientSecretCredential = new DefaultAzureCredential(); //forbiden
-                                //var clientSecretCredential = new DefaultAzureCredential(true); //forbiden
-                                //var clientSecretCredential = new ManagedIdentityCredential(); //forbiden                                                                
-                                var client = new SecretClient(new Uri(keyVaultConfig.KeyVaultName), clientSecretCredential);
-
-                                var secBund = await client.GetSecretAsync(keyVaultConfig.ClientSecretVaultKey);
-                                if (secBund != null)
-                                {
-                                    var sec = secBund.Value.Value;
-                                }
-
+                                type = "KeyVault-KeyVaultClient";
+                                ShowLoading(type);
                                 var keyVaultClient = new KeyVaultClient(
                                     async (authority, resource, scope) =>
                                     {
@@ -143,41 +132,64 @@ namespace CSRO.Client.Blazor.WebApp.Pages
                                                 new[] { "https://vault.azure.net/.default" }));
                                         return token.Token;
                                     });
-                                var val = await keyVaultClient.GetSecretAsync(keyVaultConfig.KeyVaultName, keyVaultConfig.ClientSecretVaultKey);
+                                var val = await keyVaultClient.GetSecretAsync(keyVaultConfig.KeyVaultName, keyVaultConfig.TokenCacheDbCsVaultKey);
+                                if (val != null)
+                                    SettingModels.Add(new SettingModel { Name = nameof(TokenCacheDbCs), Value = val.Value?.ReplaceWithStars(), Type = type});
                                 Logger.LogSecretVariableValueStartValue($"{nameof(KeyVaultConfig.KeyVaultName)}", val.Value);
                             }
                             catch (Exception ex)
                             {
-                                await CsroDialogService.ShowError("Error", $"{ex.Message}");
+                                //await CsroDialogService.ShowError($"Error in KeyVaultClient {clientSecretCredential}", $"{ex.Message}");
+                                SettingModels.Add(new SettingModel { Name = nameof(TokenCacheDbCs), Value = ex.Message, Type = type });
                             }
-                        }
 
-                        //UseKeyVault = true;
-                        if (UseKeyVault)
-                        {
                             try
                             {
-                                //SettingModels.Add(new SettingModel { Name = "UseKeyVault", Value = "", Type = "" });
-                                VaultName = keyVaultConfig.KeyVaultName;
-                                ClientSecretVaultName = keyVaultConfig.ClientSecretVaultKey;
-
+                                type = "KeyVault-AzureServiceTokenProvider";
+                                ShowLoading(type);
+                                //SettingModels.Add(new SettingModel { Name = "UseKeyVault", Value = "", Type = "" });                                                               
                                 //works
                                 var azureServiceTokenProvider = new AzureServiceTokenProvider();
                                 var keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
-                                                                
-
-                                var s1 = await keyVaultClient.GetSecretAsync(VaultName, ClientSecretVaultName);
-                                ClientSecret = s1.Value;
-                                SettingModels.Add(new SettingModel { Name = nameof(ClientSecret), Value = ClientSecret.ReplaceWithStars(), Type = "KeuVault" });
-
-                                var s2 = await keyVaultClient.GetSecretAsync(VaultName, "TokenCacheDbConnStrVault");
-                                var TokenCacheDbConnStrVault = s2.Value;
-                                TokenCacheDbCs = TokenCacheDbConnStrVault;
-                                SettingModels.Add(new SettingModel { Name = nameof(TokenCacheDbCs), Value = TokenCacheDbCs.ReplaceWithStars(), Type = "KeuVault" });
+                                
+                                var s2 = await keyVaultClient.GetSecretAsync(keyVaultConfig.KeyVaultName, keyVaultConfig.TokenCacheDbCsVaultKey);                                
+                                SettingModels.Add(new SettingModel { Name = nameof(TokenCacheDbCs), Value = s2?.Value.ReplaceWithStars(), Type = type });
                             }
                             catch (Exception ex)
                             {
-                                await CsroDialogService.ShowError("Error", $"{ex.Message}");
+                                //await CsroDialogService.ShowError("Error in AzureServiceTokenProvider", $"{ex.Message}");
+                                SettingModels.Add(new SettingModel { Name = nameof(TokenCacheDbCs), Value = ex.Message, Type = type });
+                            }
+                        }
+
+                        //AzureAd
+                        var dic = DictionaryOfPropertiesFromInstance(azureAdOptions);
+                        if (dic != null)
+                        {
+                            foreach (var item in dic)
+                            {
+                                var set = new SettingModel { Type = "AzureAd", Name = item.Key };
+                                //var val = item.Value.GetValue(item);    //common error, don't use                            
+                                var val = item.Value.GetValue(azureAdOptions);
+                                set.Value = val?.ToString().ReplaceWithStars();
+                                SettingModels.Add(set);
+                            }
+                        }
+
+                        //KeyVaultConfig
+                        dic = null;
+                        dic = DictionaryOfPropertiesFromInstance(keyVaultConfig);
+                        if (dic != null)
+                        {
+                            foreach (var item in dic)
+                            {
+                                var set = new SettingModel { Type = "KeyVaultConfig", Name = item.Key };                                
+                                var val = item.Value.GetValue(keyVaultConfig);
+                                if (val != null)
+                                {
+                                    set.Value = val?.ToString();
+                                    SettingModels.Add(set);
+                                }
                             }
                         }
                     }

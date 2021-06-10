@@ -41,28 +41,33 @@ namespace CSRO.Client.Blazor.UI
         {
             IsLoading = true;
             LoadingMessage = loadingMessage;
+            StateHasChanged();
         }
 
         public virtual void ShowProcessing(string loadingMessage = PROCESSING_MESSAGE)
         {
             IsLoading = true;
             LoadingMessage = loadingMessage;
+            StateHasChanged();
         }
 
         public virtual void HideLoading()
         {
             IsLoading = false;
+            StateHasChanged();
         }
 
         public virtual void ShowLoadingSecondary(string loadingMessage = LOADING_MESSAGE)
         {
             IsLoadingSecondary = true;
             LoadingMessageSecondary = loadingMessage;
+            StateHasChanged();
         }
 
         public virtual void HideLoadingSecondary()
         {
             IsLoadingSecondary = false;
+            StateHasChanged();
         }
     }
 }
