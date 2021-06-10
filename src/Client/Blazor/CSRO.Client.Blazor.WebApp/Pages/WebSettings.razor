@@ -25,7 +25,9 @@
                 }
                 else
                 {
-                    <MudTable Items="SettingModels" Hover="true" SortLabel="Sort By" Elevation="0">
+                    <MudTable Items="SettingModels" Hover="true" SortLabel="Sort By" 
+                              RowsPerPage="20"
+                              Elevation="0">
                         <HeaderContent>
                             <MudTh><MudTableSortLabel SortBy="new Func<SettingModel, object>(x => x.Type)">Type</MudTableSortLabel></MudTh>
                             <MudTh><MudTableSortLabel SortBy="new Func<SettingModel, object>(x => x.Name)">Name</MudTableSortLabel></MudTh>
