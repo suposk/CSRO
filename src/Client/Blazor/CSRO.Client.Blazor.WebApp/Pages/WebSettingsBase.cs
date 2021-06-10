@@ -96,11 +96,12 @@ namespace CSRO.Client.Blazor.WebApp.Pages
                         {
                             Logger.LogInformation($"{nameof(KeyVaultConfig.KeyVaultName)} = {keyVaultConfig.KeyVaultName}");
                             string type = "KeyVault-SecretClient";
+                            int replaceChars = 20;
                             ShowLoading(type);
 
-                            //var clientSecretCredential = new ClientSecretCredential(azureAdOptions.TenantId, azureAdOptions.ClientId, azureAdOptions.ClientSecret); //works
+                            var clientSecretCredential = new ClientSecretCredential(azureAdOptions.TenantId, azureAdOptions.ClientId, azureAdOptions.ClientSecret); //works
                             //var clientSecretCredential = new InteractiveBrowserCredential(); //forbiden
-                            var clientSecretCredential = new DefaultAzureCredential(); //forbiden
+                            //var clientSecretCredential = new DefaultAzureCredential(); //forbiden
                             //var clientSecretCredential = new DefaultAzureCredential(true); //forbiden
                             //var clientSecretCredential = new ManagedIdentityCredential(); //forbiden                                                                
 
@@ -110,7 +111,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages
 
                                 var secBund = await client.GetSecretAsync(keyVaultConfig.TokenCacheDbCsVaultKey);
                                 if (secBund != null)                                                                                                       
-                                    SettingModels.Add(new SettingModel { Name = nameof(TokenCacheDbCs), Value = secBund.Value?.Value?.ReplaceWithStars(), Type = type });                                
+                                    SettingModels.Add(new SettingModel { Name = nameof(TokenCacheDbCs), Value = secBund.Value?.Value?.ReplaceWithStars(replaceChars), Type = type });                                
                             }
                             catch (Exception ex)
                             {
@@ -134,8 +135,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages
                                     });
                                 var val = await keyVaultClient.GetSecretAsync(keyVaultConfig.KeyVaultName, keyVaultConfig.TokenCacheDbCsVaultKey);
                                 if (val != null)
-                                    SettingModels.Add(new SettingModel { Name = nameof(TokenCacheDbCs), Value = val.Value?.ReplaceWithStars(), Type = type});
-                                Logger.LogSecretVariableValueStartValue($"{nameof(KeyVaultConfig.KeyVaultName)}", val.Value);
+                                    SettingModels.Add(new SettingModel { Name = nameof(TokenCacheDbCs), Value = val.Value?.ReplaceWithStars(replaceChars), Type = type});                                
                             }
                             catch (Exception ex)
                             {
@@ -153,7 +153,7 @@ namespace CSRO.Client.Blazor.WebApp.Pages
                                 var keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
                                 
                                 var s2 = await keyVaultClient.GetSecretAsync(keyVaultConfig.KeyVaultName, keyVaultConfig.TokenCacheDbCsVaultKey);                                
-                                SettingModels.Add(new SettingModel { Name = nameof(TokenCacheDbCs), Value = s2?.Value.ReplaceWithStars(), Type = type });
+                                SettingModels.Add(new SettingModel { Name = nameof(TokenCacheDbCs), Value = s2?.Value.ReplaceWithStars(replaceChars), Type = type });
                             }
                             catch (Exception ex)
                             {
