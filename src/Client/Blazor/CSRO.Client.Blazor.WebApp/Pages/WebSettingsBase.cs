@@ -120,23 +120,35 @@ namespace CSRO.Client.Blazor.WebApp.Pages
                             try
                             {
                                 Logger.LogInformation($"{nameof(KeyVaultConfig.KeyVaultName)} = {keyVaultConfig.KeyVaultName}");
-                                var client = new SecretClient(new Uri(keyVaultConfig.KeyVaultName), new InteractiveBrowserCredential()); //forbiden
-                                //client = new SecretClient(new Uri(keyVaultConfig.KeyVaultName), new DefaultAzureCredential()); //forbiden
-                                //client = new SecretClient(new Uri(keyVaultConfig.KeyVaultName), new DefaultAzureCredential(true)); //forbiden
-                                //client = new SecretClient(new Uri(keyVaultConfig.KeyVaultName), new ManagedIdentityCredential()); //forbiden
-                                //client = new SecretClient(new Uri(keyVaultConfig.KeyVaultName), CsroTokenCredentialProvider.GetCredential()); //forbiden
-                                var clientSecretCredential = new ClientSecretCredential( azureAdOptions.TenantId, azureAdOptions.ClientId, azureAdOptions.ClientSecret);
-                                client = new SecretClient(new Uri(keyVaultConfig.KeyVaultName), clientSecretCredential); //works
+                                var clientSecretCredential = new ClientSecretCredential(azureAdOptions.TenantId, azureAdOptions.ClientId, azureAdOptions.ClientSecret); //works
+                                //var clientSecretCredential = new InteractiveBrowserCredential(); //forbiden
+                                //var clientSecretCredential = new DefaultAzureCredential(); //forbiden
+                                //var clientSecretCredential = new DefaultAzureCredential(true); //forbiden
+                                //var clientSecretCredential = new ManagedIdentityCredential(); //forbiden                                                                
+                                var client = new SecretClient(new Uri(keyVaultConfig.KeyVaultName), clientSecretCredential);
 
                                 var secBund = await client.GetSecretAsync(keyVaultConfig.ClientSecretVaultKey);
                                 if (secBund != null)
                                 {
                                     var sec = secBund.Value.Value;
                                 }
+
+                                var keyVaultClient = new KeyVaultClient(
+                                    async (authority, resource, scope) =>
+                                    {
+                                        //var credential = new DefaultAzureCredential(false);
+                                        var credential = clientSecretCredential;
+                                        var token = await credential.GetTokenAsync(
+                                            new Azure.Core.TokenRequestContext(
+                                                new[] { "https://vault.azure.net/.default" }));
+                                        return token.Token;
+                                    });
+                                var val = await keyVaultClient.GetSecretAsync(keyVaultConfig.KeyVaultName, keyVaultConfig.ClientSecretVaultKey);
+                                Logger.LogSecretVariableValueStartValue($"{nameof(KeyVaultConfig.KeyVaultName)}", val.Value);
                             }
                             catch (Exception ex)
                             {
-                                //await CsroDialogService.ShowError("Error", $"{ex.Message}");
+                                await CsroDialogService.ShowError("Error", $"{ex.Message}");
                             }
                         }
 
