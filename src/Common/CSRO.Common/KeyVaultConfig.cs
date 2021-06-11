@@ -45,6 +45,10 @@
         /// Connection string 
         /// </summary>
         public string AzureServiceBusVaultKey { get; set; }
+        /// <summary>
+        /// Create Identy in AppService, Add access policy for this app/guid in keyvault
+        /// </summary>
+        public string AppServiceManagedIdentityId { get; set; }
 
         public static class Constants 
         {

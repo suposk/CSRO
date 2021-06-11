@@ -88,22 +88,23 @@ namespace CSRO.Client.Blazor.WebApp.Pages
                         SettingModels.Add(new SettingModel { Name = nameof(UseChainTokenCredential), Value = UseChainTokenCredential.ToString(), Type = "Config" });
 
                         var keyVaultConfig = Configuration.GetSection(nameof(KeyVaultConfig)).Get<KeyVaultConfig>();
-                        Logger.LogInformation($"{nameof(KeyVaultConfig.UseKeyVault)} = {keyVaultConfig.UseKeyVault}");
+                        Logger.LogInformation($"{nameof(KeyVaultConfig.UseKeyVault)} = {keyVaultConfig?.UseKeyVault}");
 
                         var readfromKV = true; //todo change for testing
                         //if (readfromKV)
-                        if (readfromKV || keyVaultConfig.UseKeyVault)                        
+                        if (keyVaultConfig != null && (readfromKV || keyVaultConfig.UseKeyVault))                        
                         {
                             Logger.LogInformation($"{nameof(KeyVaultConfig.KeyVaultName)} = {keyVaultConfig.KeyVaultName}");
                             string type = "KeyVault-SecretClient";
-                            int replaceChars = 20;
+                            int replaceChars = 30;
                             ShowLoading(type);
 
                             var clientSecretCredential = new ClientSecretCredential(azureAdOptions.TenantId, azureAdOptions.ClientId, azureAdOptions.ClientSecret); //works
                             //var clientSecretCredential = new InteractiveBrowserCredential(); //forbiden
                             //var clientSecretCredential = new DefaultAzureCredential(); //forbiden
                             //var clientSecretCredential = new DefaultAzureCredential(true); //forbiden
-                            //var clientSecretCredential = new ManagedIdentityCredential(); //forbiden                                                                
+                            //var clientSecretCredential = new ManagedIdentityCredential(); //forbiden
+                            //var clientSecretCredential = new ManagedIdentityCredential(keyVaultConfig.AppServiceManagedIdentityId); //works, need to set access in portal    
 
                             try
                             {                                

@@ -26,7 +26,7 @@
                 else
                 {
                     <MudTable Items="SettingModels" Hover="true" SortLabel="Sort By" 
-                              RowsPerPage="20"
+                              RowsPerPage="30"
                               Elevation="0">
                         <HeaderContent>
                             <MudTh><MudTableSortLabel SortBy="new Func<SettingModel, object>(x => x.Type)">Type</MudTableSortLabel></MudTh>
@@ -39,7 +39,7 @@
                             <MudTd DataLabel="Value">@settingModelContext.Value</MudTd>
                         </RowTemplate>
                         <PagerContent>
-                            <MudTablePager PageSizeOptions="new int[] { 10, 20, 50 }" />
+                            <MudTablePager PageSizeOptions="new int[] { 10, 30, 50 }" />
                         </PagerContent>
                     </MudTable>
                 }
