@@ -73,27 +73,32 @@ namespace CSRO.Server.Infrastructure
                     //ConnectionStrings
                     if (keyVaultConfig.ApiDbCsVaultKey != null)
                     {
-                        Configuration["ConnectionStrings:" + KeyVaultConfig.ConnectionStrings.ApiDb] = keyVaultClient.GetSecretAsync(keyVaultConfig.KeyVaultName, keyVaultConfig.ApiDbCsVaultKey).Result.Value;
+                        if (!keyVaultConfig.UseLocalDb)
+                            Configuration["ConnectionStrings:" + KeyVaultConfig.ConnectionStrings.ApiDb] = keyVaultClient.GetSecretAsync(keyVaultConfig.KeyVaultName, keyVaultConfig.ApiDbCsVaultKey).Result.Value;
                         _logger?.LogSecretVariableValueStartValue(KeyVaultConfig.ConnectionStrings.ApiDb, Configuration["ConnectionStrings:" + KeyVaultConfig.ConnectionStrings.ApiDb]);
                     }
                     if (keyVaultConfig.TokenCacheDbCsVaultKey != null)
                     {
-                        Configuration["ConnectionStrings:" + KeyVaultConfig.ConnectionStrings.TokenCacheDb] = keyVaultClient.GetSecretAsync(keyVaultConfig.KeyVaultName, keyVaultConfig.TokenCacheDbCsVaultKey).Result.Value;
+                        if (!keyVaultConfig.UseLocalDb)
+                            Configuration["ConnectionStrings:" + KeyVaultConfig.ConnectionStrings.TokenCacheDb] = keyVaultClient.GetSecretAsync(keyVaultConfig.KeyVaultName, keyVaultConfig.TokenCacheDbCsVaultKey).Result.Value;
                         _logger?.LogSecretVariableValueStartValue(KeyVaultConfig.ConnectionStrings.TokenCacheDb, Configuration["ConnectionStrings:" + KeyVaultConfig.ConnectionStrings.TokenCacheDb]);
                     }
                     if (keyVaultConfig.CustomerDbCsVaultKey != null)
                     {
-                        Configuration["ConnectionStrings:" + KeyVaultConfig.ConnectionStrings.CustomerDb] = keyVaultClient.GetSecretAsync(keyVaultConfig.KeyVaultName, keyVaultConfig.CustomerDbCsVaultKey).Result.Value;
+                        if (!keyVaultConfig.UseLocalDb)
+                            Configuration["ConnectionStrings:" + KeyVaultConfig.ConnectionStrings.CustomerDb] = keyVaultClient.GetSecretAsync(keyVaultConfig.KeyVaultName, keyVaultConfig.CustomerDbCsVaultKey).Result.Value;
                         _logger?.LogSecretVariableValueStartValue(KeyVaultConfig.ConnectionStrings.CustomerDb, Configuration["ConnectionStrings:" + KeyVaultConfig.ConnectionStrings.CustomerDb]);
                     }
                     if (keyVaultConfig.AuthDbCsVaultKey != null)
                     {
-                        Configuration["ConnectionStrings:" + KeyVaultConfig.ConnectionStrings.AuthDb] = keyVaultClient.GetSecretAsync(keyVaultConfig.KeyVaultName, keyVaultConfig.AuthDbCsVaultKey).Result.Value;
+                        if (!keyVaultConfig.UseLocalDb)
+                            Configuration["ConnectionStrings:" + KeyVaultConfig.ConnectionStrings.AuthDb] = keyVaultClient.GetSecretAsync(keyVaultConfig.KeyVaultName, keyVaultConfig.AuthDbCsVaultKey).Result.Value;
                         _logger?.LogSecretVariableValueStartValue(KeyVaultConfig.ConnectionStrings.AuthDb, Configuration["ConnectionStrings:" + KeyVaultConfig.ConnectionStrings.AuthDb]);
                     }
                     if (keyVaultConfig.AdoDbCsVaultKey != null)
                     {
-                        Configuration["ConnectionStrings:" + KeyVaultConfig.ConnectionStrings.AdoDb] = keyVaultClient.GetSecretAsync(keyVaultConfig.KeyVaultName, keyVaultConfig.AdoDbCsVaultKey).Result.Value;
+                        if (!keyVaultConfig.UseLocalDb)
+                            Configuration["ConnectionStrings:" + KeyVaultConfig.ConnectionStrings.AdoDb] = keyVaultClient.GetSecretAsync(keyVaultConfig.KeyVaultName, keyVaultConfig.AdoDbCsVaultKey).Result.Value;
                         _logger?.LogSecretVariableValueStartValue(KeyVaultConfig.ConnectionStrings.AdoDb, Configuration["ConnectionStrings:" + KeyVaultConfig.ConnectionStrings.AdoDb]);
                     }
 
