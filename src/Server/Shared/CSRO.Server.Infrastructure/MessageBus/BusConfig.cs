@@ -11,7 +11,7 @@ namespace CSRO.Server.Infrastructure.MessageBus
         /// <summary>
         /// Azure 
         /// </summary>
-        AzureServiceBuse, 
+        AzureServiceBus, 
         /// <summary>
         /// In memory local dev
         /// </summary>
@@ -25,11 +25,12 @@ namespace CSRO.Server.Infrastructure.MessageBus
     {
         public bool IsBusEnabled { get; set; }
         public string BusType { get; set; }
+        public int BusDelayStartInSec { get; set; }
         public BusTypeEnum BusTypeEnum => Enum.TryParse(BusType, true, out BusTypeEnum busTypeEnum) ? busTypeEnum : default(BusTypeEnum);
 
         public override string ToString()
         {
-            return $"{nameof(IsBusEnabled)}: {IsBusEnabled}, {nameof(BusType)}: {BusType}";
+            return $"{nameof(IsBusEnabled)}: {IsBusEnabled}, {nameof(BusType)}: {BusType}, {nameof(BusDelayStartInSec)}: {BusDelayStartInSec}";
         }
     }
 }

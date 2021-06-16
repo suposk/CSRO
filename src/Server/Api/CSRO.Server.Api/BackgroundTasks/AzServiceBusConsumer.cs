@@ -19,12 +19,12 @@ namespace CSRO.Server.Api.BackgroundTasks
 {
     public class AzServiceBusConsumer : BackgroundService, IServiceBusConsumer
     {
-        private readonly IReceiverClient _wmOperationRequestMessageReceiverClient;             
+        private IReceiverClient _wmOperationRequestMessageReceiverClient;             
         private readonly IConfiguration _configuration;
         private readonly IMessageBus _messageBus;
         private readonly IMediator _mediator;
         private readonly ILogger<AzServiceBusConsumer> _logger;
-        private readonly ServiceBusConfig _serviceBusConfig;
+        private ServiceBusConfig _serviceBusConfig;
 
         public AzServiceBusConsumer(
             IConfiguration configuration,
@@ -37,21 +37,33 @@ namespace CSRO.Server.Api.BackgroundTasks
             _messageBus = messageBus;
             _mediator = mediator;
             _logger = logger;
+        }
 
-            var serviceBusConnectionString = configuration.GetConnectionString("AzureServiceBus");
-            _serviceBusConfig = configuration.GetSection(nameof(ServiceBusConfig)).Get<ServiceBusConfig>();
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            await Start();
+        }
+
+        public override async Task StopAsync(CancellationToken cancellationToken)
+        {
+            await Stop();
+            await base.StopAsync(cancellationToken);
+        }
+
+        public async Task Start()
+        {
+
+            var serviceBusConnectionString = _configuration.GetConnectionString("AzureServiceBus");
+            _serviceBusConfig = _configuration.GetSection(nameof(ServiceBusConfig)).Get<ServiceBusConfig>();
+            var busConfig = _configuration.GetSection(nameof(BusConfig)).Get<BusConfig>();
+            if (busConfig != null)
+            {
+                _logger.LogWarning($"{busConfig.BusType} with ConnectionString {serviceBusConnectionString.ReplaceWithStars(20)} will delay start for {busConfig.BusDelayStartInSec} ");
+                await Task.Delay(busConfig.BusDelayStartInSec);
+                _logger.LogWarning($"{busConfig.BusType} connecting...");
+            }
 
             _wmOperationRequestMessageReceiverClient = new SubscriptionClient(serviceBusConnectionString, _serviceBusConfig.VmOperationRequesTopic, _serviceBusConfig.VmOperationRequesSub);
-        }
-
-        protected override Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            Start();
-            return Task.CompletedTask;
-        }
-
-        public void Start()
-        {
             var messageHandlerOptions = new MessageHandlerOptions(OnServiceBusException) { MaxConcurrentCalls = 5, AutoComplete = false };
             _wmOperationRequestMessageReceiverClient?.RegisterMessageHandler(OnVmOperationReceived, messageHandlerOptions);
         }
@@ -81,9 +93,9 @@ namespace CSRO.Server.Api.BackgroundTasks
         }
 
 
-        public void Stop()
+        public async Task Stop()
         {
-
+            await _wmOperationRequestMessageReceiverClient?.CloseAsync();
         }
     }
 }

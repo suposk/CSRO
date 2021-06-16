@@ -21,9 +21,9 @@ namespace CSRO.Server.Ado.Api.BackgroundTasks
 {
     public class AzServiceBusConsumer : BackgroundService, IServiceBusConsumer
     {        
-        private readonly IReceiverClient approvedAdoProjcetMessageReceiverClient;
-        private readonly IReceiverClient rejectedAdoProjcetMessageReceiverClient;
-        private readonly IQueueClient queueReceiverClient;
+        private IReceiverClient _approvedAdoProjcetMessageReceiverClient;
+        private IReceiverClient _rejectedAdoProjcetMessageReceiverClient;
+        private IQueueClient _queueReceiverClient;
 
         private readonly IConfiguration _configuration;
         private readonly IMessageBus _messageBus;
@@ -32,7 +32,7 @@ namespace CSRO.Server.Ado.Api.BackgroundTasks
         private readonly IAdoProjectRepository _adoProjectRepository;
         private readonly IAdoProjectHistoryRepository _adoProjectHistoryRepository;
         private readonly ILogger<AzServiceBusConsumer> _logger;
-        private readonly ServiceBusConfig _serviceBusConfig;
+        private ServiceBusConfig _serviceBusConfig;
 
         public AzServiceBusConsumer(
             IConfiguration configuration,
@@ -51,29 +51,39 @@ namespace CSRO.Server.Ado.Api.BackgroundTasks
             _adoProjectRepository = adoProjectRepository;
             _adoProjectHistoryRepository = adoProjectHistoryRepository;
             _logger = logger;
+        }
 
-            var serviceBusConnectionString = configuration.GetConnectionString("AzureServiceBus");
-            _serviceBusConfig = configuration.GetSection(nameof(ServiceBusConfig)).Get<ServiceBusConfig>();
-            
-            approvedAdoProjcetMessageReceiverClient = new SubscriptionClient(serviceBusConnectionString, _serviceBusConfig.ApprovedAdoProjectsTopic, _serviceBusConfig.ApprovedAdoProjectsSub);
-            rejectedAdoProjcetMessageReceiverClient = new SubscriptionClient(serviceBusConnectionString, _serviceBusConfig.RejectedAdoProjectsTopic, _serviceBusConfig.RejectedAdoProjectsSub);
-            
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        {
+            await Start();            
+        }
+
+        public override async Task StopAsync(CancellationToken cancellationToken)
+        {
+            await Stop();
+            await base.StopAsync(cancellationToken);
+        }
+
+        public async Task Start()
+        {
+            var serviceBusConnectionString = _configuration.GetConnectionString("AzureServiceBus");
+            _serviceBusConfig = _configuration.GetSection(nameof(ServiceBusConfig)).Get<ServiceBusConfig>();
+            var busConfig = _configuration.GetSection(nameof(BusConfig)).Get<BusConfig>();
+            if (busConfig != null)
+            {
+                _logger.LogWarning($"{busConfig.BusType} with ConnectionString {serviceBusConnectionString.ReplaceWithStars(20)} will delay start for {busConfig.BusDelayStartInSec} ");
+                await Task.Delay(busConfig.BusDelayStartInSec);
+                _logger.LogWarning($"{busConfig.BusType} connecting...");
+            }
+
+            _approvedAdoProjcetMessageReceiverClient = new SubscriptionClient(serviceBusConnectionString, _serviceBusConfig.ApprovedAdoProjectsTopic, _serviceBusConfig.ApprovedAdoProjectsSub);
+            _rejectedAdoProjcetMessageReceiverClient = new SubscriptionClient(serviceBusConnectionString, _serviceBusConfig.RejectedAdoProjectsTopic, _serviceBusConfig.RejectedAdoProjectsSub);
             //queueReceiverClient = new QueueClient(serviceBusConnectionString, _serviceBusConfig.QueueNameTest);
-        }
 
-        protected override Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            Start();
-            return Task.CompletedTask;
-        }
-
-        public void Start()
-        {
             var messageHandlerOptions = new MessageHandlerOptions(OnServiceBusException) { MaxConcurrentCalls = 5 , AutoComplete = false };
 
-            approvedAdoProjcetMessageReceiverClient?.RegisterMessageHandler(OnApprovedReceived, messageHandlerOptions);
-            rejectedAdoProjcetMessageReceiverClient?.RegisterMessageHandler(OnRejectedReceived, messageHandlerOptions);
-
+            _approvedAdoProjcetMessageReceiverClient?.RegisterMessageHandler(OnApprovedReceived, messageHandlerOptions);
+            _rejectedAdoProjcetMessageReceiverClient?.RegisterMessageHandler(OnRejectedReceived, messageHandlerOptions);
             //queueReceiverClient?.RegisterMessageHandler(ExecuteQueueMessageProcessing, messageHandlerOptions);
         }
 
@@ -89,7 +99,7 @@ namespace CSRO.Server.Ado.Api.BackgroundTasks
                 if (created.IsNullOrEmptyCollection() || created.Count != dto.ApprovedAdoProjectIds.Count)                
                     _logger.LogWarning($"{nameof(OnApprovedReceived)} Unxcepted result from {nameof(CreateApprovedAdoProjectIdsCommand)} ", created, dto);
                 
-                await approvedAdoProjcetMessageReceiverClient.CompleteAsync(message.SystemProperties.LockToken);
+                await _approvedAdoProjcetMessageReceiverClient.CompleteAsync(message.SystemProperties.LockToken);
             }
             catch (Exception ex)
             {
@@ -106,7 +116,7 @@ namespace CSRO.Server.Ado.Api.BackgroundTasks
 
                 //TOTO sent email beack to user
 
-                await rejectedAdoProjcetMessageReceiverClient.CompleteAsync(message.SystemProperties.LockToken);
+                await _rejectedAdoProjcetMessageReceiverClient.CompleteAsync(message.SystemProperties.LockToken);
             }
             catch (Exception ex)
             {
@@ -132,9 +142,11 @@ namespace CSRO.Server.Ado.Api.BackgroundTasks
         }
 
 
-        public void Stop()
+        public async Task Stop()
         {
-
+            await _approvedAdoProjcetMessageReceiverClient?.CloseAsync();
+            await _rejectedAdoProjcetMessageReceiverClient?.CloseAsync();
+            //await _queueReceiverClient?.CloseAsync();
         }
     }
 }

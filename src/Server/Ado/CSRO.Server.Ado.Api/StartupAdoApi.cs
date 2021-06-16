@@ -75,7 +75,7 @@ namespace CSRO.Server.Ado.Api
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddMediatR(Assembly.GetExecutingAssembly());
 
-            services.AddApplicationServices(Configuration, _logger);
+            services.AddApplicationServices(Configuration, _env, _logger);
 
             string ApiEndpointAuth = Configuration.GetValue<string>(ConstatCsro.EndPoints.ApiEndpointAuth);
             services.AddHttpClient(Core.ConstatCsro.EndPoints.ApiEndpointAuth, (client) =>
@@ -184,7 +184,7 @@ namespace CSRO.Server.Ado.Api
             {
                 _logger.LogInformation($"{nameof(BusConfig)} is {busConfig} ", busConfig);
                 //_logger.LogInformation("BusConfig is {busConfig} ", busConfig);
-                if (busConfig.IsBusEnabled && busConfig.BusTypeEnum == BusTypeEnum.AzureServiceBuse)
+                if (busConfig.IsBusEnabled && busConfig.BusTypeEnum == BusTypeEnum.AzureServiceBus)
                 {
                     //should be last to hav all dependencies
                     services.AddHostedService<ProjectApprovalHostedService>(sp =>

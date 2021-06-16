@@ -82,7 +82,7 @@ namespace CSRO.Server.Api
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddMediatR(Assembly.GetExecutingAssembly());
 
-            services.AddApplicationServices(Configuration, _logger);
+            services.AddApplicationServices(Configuration, _env, _logger);
 
             services.AddHttpClient(Core.ConstatCsro.ClientNames.MANAGEMENT_AZURE_EndPoint, (client) =>
             {
@@ -233,7 +233,7 @@ namespace CSRO.Server.Api
             {
                 _logger.LogInformation($"{nameof(BusConfig)} is {busConfig} ", busConfig);
                 //_logger.LogInformation("BusConfig is {busConfig} ", busConfig);
-                if (busConfig.IsBusEnabled && busConfig.BusTypeEnum == BusTypeEnum.AzureServiceBuse)
+                if (busConfig.IsBusEnabled && busConfig.BusTypeEnum == BusTypeEnum.AzureServiceBus)
                 {
                     services.AddHostedService<AzServiceBusConsumer>(sp =>
                     {
