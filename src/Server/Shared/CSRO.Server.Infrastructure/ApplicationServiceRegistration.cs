@@ -1,5 +1,4 @@
 ﻿using CSRO.Common;
-using MediatR;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.Services.AppAuthentication;
@@ -9,11 +8,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using Azure.Identity;
 
 namespace CSRO.Server.Infrastructure

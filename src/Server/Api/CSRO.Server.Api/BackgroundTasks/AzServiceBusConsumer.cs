@@ -59,7 +59,7 @@ namespace CSRO.Server.Api.BackgroundTasks
             if (busConfig != null)
             {
                 _logger.LogWarning($"{busConfig.BusType} with ConnectionString {serviceBusConnectionString.ReplaceWithStars(20)} will delay start for {busConfig.BusDelayStartInSec} ");
-                await Task.Delay(busConfig.BusDelayStartInSec);
+                await Task.Delay(busConfig.BusDelayStartInSec * 1000);
                 _logger.LogWarning($"{busConfig.BusType} connecting...");
             }
 
