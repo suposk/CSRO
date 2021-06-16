@@ -6,6 +6,11 @@
         /// Override App setting with valuers from Azure Key Vault
         /// </summary>
         public bool UseKeyVault { get; set; }
+        /// <summary>
+        /// Set for local db debuging
+        /// </summary>
+        public bool UseLocalDb { get; set; }
+
         public string KeyVaultName { get; set; }
         public string ClientSecretVaultKey { get; set; }
         public string SpnClientSecretVaultKey { get; set; }
