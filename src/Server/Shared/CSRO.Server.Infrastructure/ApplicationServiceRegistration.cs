@@ -1,10 +1,12 @@
 ﻿using CSRO.Common;
 using MediatR;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Identity.Web;
 using System;
 using System.Collections.Generic;
@@ -12,12 +14,13 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Azure.Identity;
 
 namespace CSRO.Server.Infrastructure
 {
     public static class ApplicationServiceRegistration
     {
-        public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration Configuration, ILogger _logger = null)
+        public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration Configuration, IWebHostEnvironment env,  ILogger _logger = null)
         {
 
             try
@@ -32,8 +35,29 @@ namespace CSRO.Server.Infrastructure
                 if (keyVaultConfig.UseKeyVault)
                 {
                     _logger?.LogInformation($"{nameof(KeyVaultConfig.KeyVaultName)} = {keyVaultConfig.KeyVaultName}");
-                    var azureServiceTokenProvider = new AzureServiceTokenProvider();
-                    var keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
+                    
+                    KeyVaultClient keyVaultClient;
+
+                    if (env != null && env.IsDevelopment())
+                    {
+                        var clientSecretCredential = new ClientSecretCredential(azureAdOptions.TenantId, azureAdOptions.ClientId, azureAdOptions.ClientSecret); //works
+                        keyVaultClient = new KeyVaultClient(
+                            async (authority, resource, scope) =>
+                            {
+                                //var credential = new DefaultAzureCredential(false);
+                                var credential = clientSecretCredential;
+                                var token = await credential.GetTokenAsync(
+                                    new Azure.Core.TokenRequestContext(
+                                        new[] { "https://vault.azure.net/.default" }), default);
+                                return token.Token;
+                            });
+                    }
+                    else
+                    {
+                        var azureServiceTokenProvider = new AzureServiceTokenProvider();
+                        keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
+                    }
+
 
                     //clien secret
                     if (keyVaultConfig.ClientSecretVaultKey != null)
@@ -71,12 +95,12 @@ namespace CSRO.Server.Infrastructure
                     if (keyVaultConfig.AuthDbCsVaultKey != null)
                     {
                         Configuration["ConnectionStrings:" + KeyVaultConfig.ConnectionStrings.AuthDb] = keyVaultClient.GetSecretAsync(keyVaultConfig.KeyVaultName, keyVaultConfig.AuthDbCsVaultKey).Result.Value;
-                        _logger.LogSecretVariableValueStartValue(KeyVaultConfig.ConnectionStrings.AuthDb, Configuration["ConnectionStrings:" + KeyVaultConfig.ConnectionStrings.AuthDb]);
+                        _logger?.LogSecretVariableValueStartValue(KeyVaultConfig.ConnectionStrings.AuthDb, Configuration["ConnectionStrings:" + KeyVaultConfig.ConnectionStrings.AuthDb]);
                     }
                     if (keyVaultConfig.AdoDbCsVaultKey != null)
                     {
                         Configuration["ConnectionStrings:" + KeyVaultConfig.ConnectionStrings.AdoDb] = keyVaultClient.GetSecretAsync(keyVaultConfig.KeyVaultName, keyVaultConfig.AdoDbCsVaultKey).Result.Value;
-                        _logger.LogSecretVariableValueStartValue(KeyVaultConfig.ConnectionStrings.AdoDb, Configuration["ConnectionStrings:" + KeyVaultConfig.ConnectionStrings.AdoDb]);
+                        _logger?.LogSecretVariableValueStartValue(KeyVaultConfig.ConnectionStrings.AdoDb, Configuration["ConnectionStrings:" + KeyVaultConfig.ConnectionStrings.AdoDb]);
                     }
 
                     //ado
@@ -85,7 +109,7 @@ namespace CSRO.Server.Infrastructure
                         var adoConfig = Configuration.GetSection(nameof(AdoConfig)).Get<AdoConfig>();
                         adoConfig.AdoPersonalAccessToken = keyVaultClient.GetSecretAsync(keyVaultConfig.KeyVaultName, keyVaultConfig.AdoPersonalAccessTokenVaultKey).Result.Value;
                         Configuration["AdoConfig:" + nameof(adoConfig.AdoPersonalAccessToken)] = adoConfig.AdoPersonalAccessToken;
-                        _logger.LogSecretVariableValueStartValue(nameof(adoConfig.AdoPersonalAccessToken), adoConfig.AdoPersonalAccessToken);
+                        _logger?.LogSecretVariableValueStartValue(nameof(adoConfig.AdoPersonalAccessToken), adoConfig.AdoPersonalAccessToken);
                     }
 
                     //Service bus

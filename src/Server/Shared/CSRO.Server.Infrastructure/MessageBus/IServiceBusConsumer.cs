@@ -1,8 +1,10 @@
-﻿namespace CSRO.Server.Infrastructure.MessageBus
+﻿using System.Threading.Tasks;
+
+namespace CSRO.Server.Infrastructure.MessageBus
 {
     public interface IServiceBusConsumer
     {
-        void Start();
-        void Stop();
+        Task Start();
+        Task Stop();
     }
 }

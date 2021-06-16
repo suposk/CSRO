@@ -8,16 +8,6 @@ namespace CSRO.Client.Core.Helpers
 {
     public static class GetValueHelper 
     {
-        public static string ReplaceWithStars(this string text, int visibleCharsCount = 8)
-        {
-            if (string.IsNullOrWhiteSpace(text) || text.Length <= visibleCharsCount)
-                return text;
-            var result = text.Substring(0, visibleCharsCount);
-            var stars = new string('*', text.Length - visibleCharsCount);
-            result += stars;
-            return result;
-        }
-
         public static string GetVal(string text, string patern)
         {
             if (string.IsNullOrWhiteSpace(text) || string.IsNullOrWhiteSpace(patern))

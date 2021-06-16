@@ -72,7 +72,7 @@ namespace CSRO.Server.Auth.Api
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddMediatR(Assembly.GetExecutingAssembly());
 
-            services.AddApplicationServices(Configuration, _logger);
+            services.AddApplicationServices(Configuration, _env, _logger);
 
             #region Auth
 
