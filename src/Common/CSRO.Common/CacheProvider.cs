@@ -9,12 +9,14 @@ namespace CSRO.Common
     {
         const int CacheSeconds = 300; //5 min
         T GetFromCache<T>(string key) where T : class;
+        T GetFromCache<T>(string key, string id) where T : class;
         void SetCache<T>(string key, T value) where T : class;
         void SetCache<T>(string key, T value, int seconds = CacheSeconds) where T : class;
         void SetCache<T>(string key, string id, T value) where T : class;
         void SetCache<T>(string key, string id, T value, int seconds = CacheSeconds) where T : class;
         void ClearCache(string key);
         void ClearCache(string key, string id);
+        
     }
 
     public class CacheProvider : ICacheProvider
@@ -29,6 +31,12 @@ namespace CSRO.Common
         public T GetFromCache<T>(string key) where T : class
         {
             var cachedResponse = _cache.Get(key);
+            return cachedResponse as T;
+        }
+
+        public T GetFromCache<T>(string key, string id) where T : class
+        {
+            var cachedResponse = _cache.Get($"{key}-{id}");
             return cachedResponse as T;
         }
 

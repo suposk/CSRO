@@ -61,12 +61,13 @@ namespace CSRO.Client.Services
         public async Task<List<IdName>> GetSubcriptions(CancellationToken cancelToken = default)
         {
             var key = nameof(GetSubcriptions);
-            var cache = _cacheProvider.GetFromCache<List<IdName>>(nameof(GetSubcriptions));
+            var id = await base.AuthCsroService.GetCurrentUserId();
+            var cache = _cacheProvider.GetFromCache<List<IdName>>(key, id);
             if (cache.HasAnyInCollection())
                 return cache;
                         
             var subs = await base.RestGetListById<IdName, IdNameDto>();
-            _cacheProvider.SetCache(key, subs, 2 * 60);
+            _cacheProvider.SetCache(key, id, subs, 2 * 60);
             return subs;            
         }
 
