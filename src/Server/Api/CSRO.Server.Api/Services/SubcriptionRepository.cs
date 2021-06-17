@@ -42,13 +42,13 @@ namespace CSRO.Server.Api.Services
 
         public async Task<List<IdName>> GetSubcriptions(CancellationToken cancelToken = default)
         {
-            var cache = _cacheProvider.GetFromCache<List<IdName>>(cacheKeyProcess);
-            if (cache.HasAnyInCollection())
-                return cache;
+            //var cache = _cacheProvider.GetFromCache<List<IdName>>(cacheKeyProcess);
+            //if (cache.HasAnyInCollection())
+            //    return cache;
 
             //var subsSdk = await _subscriptionSdkService.GetAllSubcriptions(null, cancelToken).ConfigureAwait(false);
             var subs = await _subcriptionService.GetSubcriptions(cancelToken);
-            _cacheProvider.SetCache(cacheKeyProcess, subs, Core.ConstatCsro.CacheSettings.DefaultDurationSeconds);
+            //_cacheProvider.SetCache(cacheKeyProcess, subs, Core.ConstatCsro.CacheSettings.DefaultDurationSeconds);
             return subs;
         }
 
