@@ -3,6 +3,7 @@ using CSRO.Client.Core;
 using CSRO.Client.Core.Models;
 using CSRO.Client.Services.Dtos;
 using CSRO.Client.Services.Models;
+using CSRO.Common;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -25,14 +26,21 @@ namespace CSRO.Client.Services
     }
     public class SubcriptionDataService : BaseDataService, ISubcriptionDataService
     {
-        public SubcriptionDataService(IHttpClientFactory httpClientFactory, IAuthCsroService authCsroService, IMapper mapper, 
+        private readonly ICacheProvider _cacheProvider;
+
+        public SubcriptionDataService(
+            IHttpClientFactory httpClientFactory, 
+            IAuthCsroService authCsroService, 
+            IMapper mapper,
+            ICacheProvider cacheProvider,
             IConfiguration configuration)
             : base(httpClientFactory, authCsroService, mapper, configuration)
         {
             ApiPart = "api/subcription/";                   
             Scope = Configuration.GetValue<string>(ConstatCsro.Scopes.Scope_Api);            
             ClientName = ConstatCsro.EndPoints.ApiEndpoint;
-            base.Init();
+            _cacheProvider = cacheProvider;
+            base.Init();            
         }
 
         public Task<DefaultTags> GetDefualtTags(string subscriptionId, CancellationToken cancelToken = default)
@@ -50,9 +58,16 @@ namespace CSRO.Client.Services
             throw new NotImplementedException();
         }
 
-        public Task<List<IdName>> GetSubcriptions(CancellationToken cancelToken = default)
+        public async Task<List<IdName>> GetSubcriptions(CancellationToken cancelToken = default)
         {
-            return base.RestGetListById<IdName, IdNameDto>();
+            var key = nameof(GetSubcriptions);
+            var cache = _cacheProvider.GetFromCache<List<IdName>>(nameof(GetSubcriptions));
+            if (cache.HasAnyInCollection())
+                return cache;
+                        
+            var subs = await base.RestGetListById<IdName, IdNameDto>();
+            _cacheProvider.SetCache(key, subs, 2 * 60);
+            return subs;            
         }
 
 

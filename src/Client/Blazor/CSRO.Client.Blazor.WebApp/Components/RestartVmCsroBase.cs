@@ -130,7 +130,8 @@ namespace CSRO.Client.Blazor.WebApp.Components
             var status = await AzureSdkService.GetStatus(Model.SubcriptionId, Model.ResorceGroup, Model.VmName).ConfigureAwait(false);
             if (status != null)
                 LastVmStatus = status.DisplayStatus;
-            HideLoading();
+            //HideLoading();
+            await InvokeAsync(() => HideLoading());
         }
 
         public async override Task LoadAsync()
