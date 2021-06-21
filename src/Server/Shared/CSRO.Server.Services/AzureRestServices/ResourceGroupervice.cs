@@ -64,7 +64,8 @@ namespace CSRO.Server.Services.AzureRestServices
                     if (ser?.Value?.Count > 0)
                     {
                         //exception
-                        var result = Mapper.Map<List<ResourceGroup>>(ser.Value);
+                        //var result = Mapper.Map<List<ResourceGroup>>(ser.Value);
+                        var result = Mapper.Map<List<ResourceGroup>>(ser.Value).OrderBy(a => a.Name).ToList();
                         return result;
                     }
                 }
