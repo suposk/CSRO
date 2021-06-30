@@ -64,9 +64,9 @@ namespace CSRO.Client.Blazor.WebApp.Components
                 {
                     ShowLoading();
                     History.Clear();
-                    if (int.TryParse(RequestId, out int id))
+                    if (!string.IsNullOrWhiteSpace(RequestId))
                     {
-                        var history = await VmTicketHistoryDataService.GetItemsByParrentIdAsync(id);
+                        var history = await VmTicketHistoryDataService.GetItemsByParrentIdAsync(RequestId);
                         if (history.HasAnyInCollection())
                             History = history;
                     }

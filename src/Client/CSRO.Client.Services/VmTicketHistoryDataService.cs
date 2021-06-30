@@ -22,7 +22,7 @@ namespace CSRO.Client.Services
             base.Init();
         }
 
-        public Task<List<VmTicketHistory>> GetItemsByParrentIdAsync(int parrentId)
+        public Task<List<VmTicketHistory>> GetItemsByParrentIdAsync(string parrentId)
         {
             ApiPart = $"api/VmTicket/{parrentId}/VmTicketHistory";
             return base.RestGetListById<VmTicketHistory, VmTicketHistoryDto>(null);

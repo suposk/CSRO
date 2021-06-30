@@ -55,9 +55,9 @@ namespace CSRO.Client.Blazor.WebApp.Components.Ado
                 {
                     ShowLoading();
                     History.Clear();
-                    if (int.TryParse(RequestId, out int id))
+                    if (!string.IsNullOrWhiteSpace(RequestId))
                     {
-                        var history = await AdoProjectHistoryDataService.GetItemsByParrentIdAsync(id);
+                        var history = await AdoProjectHistoryDataService.GetItemsByParrentIdAsync(RequestId);
                         if (history.HasAnyInCollection())
                             History = history;
                     }

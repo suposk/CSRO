@@ -75,7 +75,7 @@ namespace CSRO.Client.Services
             throw new NotImplementedException();
         }
 
-        public async Task<List<AdoProjectHistoryModel>> GetItemsByParrentIdAsync(int parrentId)
+        public async Task<List<AdoProjectHistoryModel>> GetItemsByParrentIdAsync(string parrentId)
         {
             try
             {

@@ -15,6 +15,6 @@ namespace CSRO.Client.Services
         Task<T> GetItemByIdAsync(int id);
         Task<List<T>> GetItemsAsync();
         virtual Task<List<T>> GetItemsByUserId(string userId) { throw new NotImplementedException(); }
-        virtual Task<List<T>> GetItemsByParrentIdAsync(int parrentId) { throw new NotImplementedException(); }
+        virtual Task<List<T>> GetItemsByParrentIdAsync(string parrentId) { throw new NotImplementedException(); }
     }
 }
